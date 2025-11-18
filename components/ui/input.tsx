@@ -6,7 +6,8 @@ export default function Input({
     value,
     onChange,
     type = "text",
-    required
+    required,
+    disableCopyPaste = false,
 }: {
     id: string;
     placeholder?: string;
@@ -14,7 +15,9 @@ export default function Input({
     onChange: React.Dispatch<React.SetStateAction<string>>;
     type?: string;
     required?: boolean;
+    disableCopyPaste?: boolean;
 }) {
+
     return (
         <input
             id={id}
@@ -24,6 +27,9 @@ export default function Input({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             required={required}
+            onCopy={(e) => disableCopyPaste && e.preventDefault()}
+            onPaste={(e) => disableCopyPaste && e.preventDefault()}
+            onCut={(e) => disableCopyPaste && e.preventDefault()}
         />
     )
 }

@@ -6,8 +6,9 @@ import { checkPasswordStrength } from "@/utils/password-strength-meter";
 import { useState } from "react";
 import { toast } from "sonner"
 import { login, signup } from "./action";
-import { MailIcon } from "lucide-react";
+import { Eye, EyeOff, MailIcon } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import Link from "next/link";
 
 function SignInForm({
     email, setEmail,
@@ -15,9 +16,10 @@ function SignInForm({
     email: string;
     setEmail: React.Dispatch<React.SetStateAction<string>>;
 }) {
-    
+
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,21 +56,29 @@ function SignInForm({
                     <label className="text-sm font-medium" htmlFor="password">
                         Password
                     </label>
-                    <a
+                    <Link
                         href="/forgot-password"
                         className="text-xs text-primary hover:text-primary/80"
                     >
                         Forgot password?
-                    </a>
+                    </Link>
                 </div>
-                <Input
-                    id="password"
-                    type="password"
-                    placeholder="min 8 chars"
-                    value={password}
-                    onChange={setPassword}
-                    required
-                />
+                <div className="relative">
+                    <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder=""
+                        value={password}
+                        onChange={setPassword}
+                        required
+                        disableCopyPaste
+                    />
+                    <button className="absolute inset-y-0 right-0 pr-3 flex items-center" type="button" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ?
+                            <EyeOff color="gray" />
+                            : <Eye color="gray" />}
+                    </button>
+                </div>
             </div>
 
             <Button
@@ -90,13 +100,14 @@ function SignUpForm({
 }: {
     email: string;
     setEmail: React.Dispatch<React.SetStateAction<string>>;
-        setMode: React.Dispatch<React.SetStateAction<"signin" | "signup" | "confirm">>;
+    setMode: React.Dispatch<React.SetStateAction<"signin" | "signup" | "confirm">>;
 }) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPasswordWarning, setShowPasswordWarning] = useState(false);
     const [passwordFeedback, setPasswordFeedback] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSignup = (async (e: React.FormEvent) => {
         e.preventDefault();
@@ -127,6 +138,7 @@ function SignUpForm({
     })
 
 
+
     return (
         <form className="space-y-4" onSubmit={handleSignup}>
             <div className="space-y-2">
@@ -147,14 +159,22 @@ function SignUpForm({
                 <label className="text-sm font-medium" htmlFor="password">
                     Password
                 </label>
-                <Input
-                    id="password"
-                    type="password"
-                    placeholder="Create a password"
-                    value={password}
-                    onChange={setPassword}
-                    required
-                />
+                <div className="relative">
+                    <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Create a password"
+                        value={password}
+                        onChange={setPassword}
+                        required
+                        disableCopyPaste
+                    />
+                    <button className="absolute inset-y-0 right-0 pr-3 flex items-center" type="button" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ?
+                            <EyeOff color="gray" />
+                            : <Eye color="gray" />}
+                    </button>
+                </div>
             </div>
 
             <div className="space-y-2">
@@ -168,7 +188,9 @@ function SignUpForm({
                     value={confirmPassword}
                     onChange={setConfirmPassword}
                     required
+                    disableCopyPaste
                 />
+
             </div>
 
             {showPasswordWarning && <PasswordWarning feedback={passwordFeedback} />}

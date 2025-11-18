@@ -109,8 +109,8 @@
   --secondary: #23272f; /* Soft Slate */
   --secondary-foreground: #f4f6fa;
 
-  --muted: #161a20;
-  --muted-foreground: #9ba3b0; /* Quiet Gray */
+  --muted: #e3e6ec;
+--muted-foreground: #9ba3b0;
 
   --accent: #161a20;
   --accent-foreground: #f4f6fa;
@@ -148,3 +148,12 @@
   }
 }
 
+.faint-grid-bg {
+  background-color: #0d1016;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}

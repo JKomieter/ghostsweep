@@ -1,0 +1,202 @@
+import { createClient } from "@/utils/supabase/server";
+import { listEmails } from "@/utils/sweep/list-emails";
+import { decryptToken, encryptToken } from "@/utils/token-crypto";
+import { google } from "googleapis";
+import { NextResponse } from "next/server";
+import {
+    EmailMetadata,
+    getEmailMetadataFromClient,
+} from "@/utils/sweep/get-email-metadata";
+import { summarizeByDomain } from "@/utils/sweep/summarize-by-domain";
+import { getBreaches } from "@/utils/sweep/get-breaches";
+
+export async function GET() {
+    const scanStartedAt = Date.now();
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // get the gmail account
+    const { data: gmailAccount, error: gmailAccountError } = await supabase
+        .from("gmail_accounts")
+        .select(
+            "gmail_address, access_token_encrypted, refresh_token_encrypted, token_expires_at"
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .single();
+
+    if (gmailAccountError && gmailAccountError.code !== "PGRST116") {
+        console.error("Error fetching Gmail account:", gmailAccountError);
+        return NextResponse.json(
+            { error: "Internal Server Error", code: "GMAIL_ACCOUNT_NOT_FOUND" },
+            { status: 500 }
+        );
+    } else if (gmailAccountError && gmailAccountError.code === "PGRST116") {
+        return NextResponse.json(
+            { error: "No Gmail account connected", code: "GMAIL_ACCOUNT_NOT_FOUND" },
+            { status: 404 }
+        );
+    }
+
+    if (!gmailAccount) {
+        return NextResponse.json(
+            { error: "No Gmail account connected", code: "GMAIL_ACCOUNT_NOT_FOUND" },
+            { status: 404 }
+        );
+    }
+
+    // decrypt tokens
+    const decryptedAccessToken = decryptToken(
+        gmailAccount.access_token_encrypted
+    );
+    const decryptedRefreshToken = decryptToken(
+        gmailAccount.refresh_token_encrypted
+    );
+
+    // prepare OAuth client
+    const clientId = process.env.GOOGLE_CLIENT_ID!;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI!;
+    const oauth2Client = new google.auth.OAuth2(
+        clientId,
+        clientSecret,
+        redirectUri
+    );
+    oauth2Client.setCredentials({
+        access_token: decryptedAccessToken,
+        refresh_token: decryptedRefreshToken,
+    });
+
+    // check expiry & refresh if needed
+    let accessTokenToUse = decryptedAccessToken;
+
+    try {
+        const currentTimeSec = Math.floor(scanStartedAt / 1000);
+
+        // if token_expires_at is stored as ISO string, do this instead:
+        // const tokenExpirySec = Math.floor(new Date(gmailAccount.token_expires_at).getTime() / 1000);
+        const tokenExpirySec = gmailAccount.token_expires_at;
+
+        if (!tokenExpirySec || tokenExpirySec < currentTimeSec) {
+            // try to refresh using refresh token
+            const { credentials } = await oauth2Client.refreshAccessToken();
+
+            if (!credentials.access_token) {
+                throw new Error("No access token in refreshed credentials");
+            }
+
+            accessTokenToUse = credentials.access_token;
+
+            // update DB with new encrypted token + expiry
+            const newExpirySec = credentials.expiry_date
+                ? Math.floor(credentials.expiry_date / 1000)
+                : currentTimeSec + 3600; // fallback: +1h
+
+            const { error: updateError } = await supabase
+                .from("gmail_accounts")
+                .update({
+                    access_token_encrypted: encryptToken(accessTokenToUse),
+                    token_expires_at: newExpirySec,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq("user_id", user.id);
+
+            if (updateError) {
+                console.error("Failed to update refreshed token:", updateError);
+            }
+        }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+        console.error("Error refreshing Gmail token:", err?.response?.data || err);
+
+        // invalid_grant usually means user revoked access or refresh token is dead
+        const message =
+            err?.response?.data?.error || err?.message || "Token refresh failed";
+
+        if (message.includes("invalid_grant")) {
+            return NextResponse.json(
+                {
+                    error: "Gmail connection expired or revoked. Please reconnect.",
+                    code: "GMAIL_RECONNECT_REQUIRED",
+                },
+                { status: 401 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: "Failed to refresh Gmail token" },
+            { status: 500 }
+        );
+    }
+
+    // now use the final access token
+    oauth2Client.setCredentials({
+        access_token: accessTokenToUse,
+        refresh_token: decryptedRefreshToken,
+    });
+
+    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+
+    // get user subscription
+    const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from("user_subscriptions")
+        .select("current_plan")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .single();
+
+    if (subscriptionError && subscriptionError.code !== "PGRST116") {
+        console.error("Error fetching subscription data:", subscriptionError);
+        return NextResponse.json(
+            { error: "Internal Server Error", code: "INTERNAL_SERVER_ERROR" },
+            { status: 500 }
+        );
+    }
+
+    const current_plan = subscriptionData?.current_plan || "free";
+
+    // list emails
+    const list = await listEmails(accessTokenToUse, current_plan, gmail);
+
+    const metadataList: EmailMetadata[] = [];
+
+    // fetch metadata for each email
+    for (const message of list) {
+        if (message.id) {
+            try {
+                const metadata = await getEmailMetadataFromClient(gmail, message.id);
+                metadataList.push(metadata);
+            } catch (error) {
+                console.error(
+                    `Error fetching metadata for message ID ${message.id}:`,
+                    error
+                );
+            }
+        }
+    }
+
+    // summarize by domain
+    const domainSummaries = await summarizeByDomain(metadataList);
+
+    // get breaches associated with the email
+    const breaches = await getBreaches(gmailAccount.gmail_address);
+
+    // save the sweep data (edge function can use service_role internally)
+    await supabase.functions.invoke("save-sweep-data", {
+        body: {
+            userId: user.id,
+            email: gmailAccount.gmail_address,
+            summary: domainSummaries || [],
+            breaches: breaches || [],
+            scanStartedAt: new Date(scanStartedAt).toISOString(),
+        },
+    });
+
+    return NextResponse.json({ message: "Sweep completed successfully" });
+}
