@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Mail, RefreshCw, Unplug } from "lucide-react";
 import Input from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -38,6 +38,7 @@ export default function ConnectEmailModal({
     const [removeOpen, setRemoveOpen] = useState(false);
     const [removing, setRemoving] = useState(false);
     const [removeError, setRemoveError] = useState<string | null>(null);
+    const queryClient = useQueryClient()
 
     const { data, status } = useQuery({
         queryKey: ['gmailAccount'],
@@ -74,6 +75,12 @@ export default function ConnectEmailModal({
             setRemoveError("Couldn’t disconnect this email. Please try again.");
         } finally {
             setRemoving(false);
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['gmailAccount'] }),
+                queryClient.invalidateQueries({ queryKey: ['services'] }),
+                queryClient.invalidateQueries({ queryKey: ['breaches'] }),
+                queryClient.invalidateQueries({ queryKey: ['metrics'] }),
+            ])
         }
     };
 

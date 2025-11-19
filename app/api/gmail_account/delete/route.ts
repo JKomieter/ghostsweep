@@ -14,11 +14,17 @@ export async function DELETE() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Delete any gmail_accounts rows for this user
-    const { error } = await supabase
-        .from("gmail_accounts")
-        .delete()
-        .eq("user_id", user.id);
+    const { error } = await supabase.functions.invoke('delete-gmail', {
+        body: { userId: user.id },
+    })
+
+    if (error) {
+        console.error("Error deleting sweep data:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
 
     if (error) {
         console.error("Error deleting gmail account:", error);
