@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { MoveLeft } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,7 +10,6 @@ import { toast } from "sonner";
 export default function ForgotPassword() {
     const [mode, setMode] = useState<"forgot" | "confirm">("forgot");
     const [email, setEmail] = useState("")
-    const router = useRouter();
 
     const handleForgotPassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,9 +62,9 @@ export default function ForgotPassword() {
 
 
                             <Link href="/login">
-                            <Button variant="link" className="w-full mt-4 text-sm">
-                                <MoveLeft /> Back to login
-                            </Button>
+                                <Button variant="link" className="w-full mt-4 text-sm">
+                                    <MoveLeft /> Back to login
+                                </Button>
                             </Link>
                         </form>
                     </>
