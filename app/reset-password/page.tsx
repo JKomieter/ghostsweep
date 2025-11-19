@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -14,7 +14,7 @@ const passwordRegex =
 export default function ResetPasswordPage() {
     const supabase = createClient()
     const router = useRouter()
-    const searchParams = useSearchParams()
+    // const searchParams = useSearchParams()
 
     const [newPassword, setNewPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
         // const type = searchParams.get("type")
         // For standard Supabase recovery links, a session will already be set.
         checkSession()
-    }, [supabase, searchParams])
+    }, [supabase])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
