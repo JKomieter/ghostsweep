@@ -9,12 +9,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const baseUrl = process.env.NODE_ENV === "production" ? "https://www.ghostsweep.com" : "http://localhost:3000"
     // Generate a password reset link using Supabase and email it to the user
     const { data, error } = await supabase.auth.resetPasswordForEmail(
         email,
         {
-            redirectTo: `${baseUrl}/reset-password`,
+            redirectTo: `https://www.ghostsweep.com/reset-password`,
         }
     );
     if (error) {

@@ -13,22 +13,21 @@ export default function ForgotPassword() {
 
     const handleForgotPassword = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Call the API to send the reset password email
+
         const response = await fetch("/api/reset-password", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),
         });
 
         if (response.ok) {
             setMode("confirm");
+            toast.success("Password reset link sent. Check your inbox.");
         } else {
             toast.error("Failed to send reset password email. Please try again.");
             console.error("Failed to send reset password email", response.statusText);
         }
-    }
+    };
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
