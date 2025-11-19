@@ -9,7 +9,8 @@ export default function Input({
     required,
     disableCopyPaste = false,
     readOnly = false,
-    className = ""
+    className = "",
+    autoComplete= ""
 }: {
     id: string;
     placeholder?: string;
@@ -20,6 +21,7 @@ export default function Input({
     disableCopyPaste?: boolean;
     readOnly?: boolean
     className?: string
+    autoComplete?: string
 }) {
 
     return (
@@ -35,6 +37,7 @@ export default function Input({
             onPaste={(e) => disableCopyPaste && e.preventDefault()}
             onCut={(e) => disableCopyPaste && e.preventDefault()}
             readOnly={readOnly}
+            autoComplete={autoComplete}
         />
     )
 }

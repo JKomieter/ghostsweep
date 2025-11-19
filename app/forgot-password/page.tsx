@@ -34,8 +34,8 @@ export default function ForgotPassword() {
     return (
         <div className="min-h-screen bg-background flex">
             <div className="flex-1 flex items-center justify-center w-full">
-                <div className="border rounded-md p-8 max-w-md sm:min-w-sm flex items-center justify-center flex-col">
-                    <div className="rounded-full bg-muted p-4">
+                <div className="border rounded-lg p-8 max-w-md sm:min-w-sm flex items-center justify-center flex-col bg-[#050505]">
+                    <div className="rounded-full border border-border p-4">
                         <KeyRound className="text-primary" size={30} />
                     </div>
                     { 
