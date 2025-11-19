@@ -9,11 +9,12 @@ export async function POST(request: Request) {
     }
 
     try {
+        const baseUrl = process.env.NODE_ENV === "production" ? process.env.NEXT_PUBLIC_BASE_URL! : process.env.NEXT_PUBLIC_BASE_URL_DEV!
         // Generate a password reset link using Supabase and email it to the user
         const { data, error } = await supabase.auth.resetPasswordForEmail(
             email,
             {
-                redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password`,
+                redirectTo: `${baseUrl}/reset-password`,
             }
         );
         if (error) {
