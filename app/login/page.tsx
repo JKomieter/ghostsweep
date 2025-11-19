@@ -252,7 +252,9 @@ export default function LoginPage() {
             <div className="flex-1 grid lg:grid-cols-2 grid-cols-1">
 
                 {/* Branding */}
-                <div className="lg:block hidden bg-neutral-700">
+                <div className="lg:block hidden bg-neutral-700" style={{
+                    background: "linear-gradient(to bottom, rgba(0,242,222,0.15), rgba(0,0,0,0.6)),url('security.png')"
+                }}>
                     <div className="inline-flex flex-col items-start h-full p-12 lg:p-24">
                         <h1 className="text-4xl font-bold">
                             Sweep your <span className="text-primary">digital footprint</span>.
