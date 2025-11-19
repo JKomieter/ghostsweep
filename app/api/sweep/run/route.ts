@@ -21,6 +21,44 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // check if user is free — only allow one sweep per month
+    // get user subscription
+    const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from("user_subscriptions")
+        .select("current_plan, last_sweep_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .single();
+
+    if (subscriptionError && subscriptionError.code !== "PGRST116") {
+        console.error("Error fetching subscription data:", subscriptionError);
+        return NextResponse.json(
+            { error: "Internal Server Error", code: "INTERNAL_SERVER_ERROR" },
+            { status: 500 }
+        );
+    }
+
+    // If user is FREE, enforce monthly limit
+    if (subscriptionData?.current_plan !== "pro" && subscriptionData?.last_sweep_at) {
+        const lastSweep = new Date(subscriptionData.last_sweep_at);
+        const now = new Date();
+
+        const sameMonth =
+            lastSweep.getUTCFullYear() === now.getUTCFullYear() &&
+            lastSweep.getUTCMonth() === now.getUTCMonth();
+
+        if (sameMonth) {
+            return NextResponse.json(
+                {
+                    error: "Monthly limit reached",
+                    code: "MONTHLY_LIMIT_REACHED",
+                    message: "You've already used your free sweep for this month. Upgrade to Pro to unlock unlimited scans."
+                },
+                { status: 403 }
+            );
+        }
+    }
+
     // get the gmail account
     const { data: gmailAccount, error: gmailAccountError } = await supabase
         .from("gmail_accounts")
@@ -142,22 +180,6 @@ export async function GET() {
     });
 
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-
-    // get user subscription
-    const { data: subscriptionData, error: subscriptionError } = await supabase
-        .from("user_subscriptions")
-        .select("current_plan")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .single();
-
-    if (subscriptionError && subscriptionError.code !== "PGRST116") {
-        console.error("Error fetching subscription data:", subscriptionError);
-        return NextResponse.json(
-            { error: "Internal Server Error", code: "INTERNAL_SERVER_ERROR" },
-            { status: 500 }
-        );
-    }
 
     const current_plan = subscriptionData?.current_plan || "free";
 

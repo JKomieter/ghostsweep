@@ -26,7 +26,7 @@ export default function ForgotPassword() {
         if (response.ok) {
             setMode("confirm");
         } else {
-            toast("Failed to send reset password email. Please try again.");
+            toast.error("Failed to send reset password email. Please try again.");
             console.error("Failed to send reset password email", response.statusText);
         }
     }

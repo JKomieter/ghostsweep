@@ -51,7 +51,7 @@ export default function ServiceDetails({
         queryKey: ['serviceDetails', serviceId],
         queryFn: async (): Promise<Service> => {
 
-            const res = await fetch(`/api/services/${serviceId}`);
+            const res = await fetch(`/api/user-services/${serviceId}`);
             if (!res.ok) {
                 throw new Error("Network response was not ok");
             }

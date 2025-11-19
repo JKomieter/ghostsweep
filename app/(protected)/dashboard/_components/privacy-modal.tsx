@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -29,6 +29,7 @@ import {
     AlertCircle,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function PrivacyToolsModal({
     open,
@@ -88,7 +89,9 @@ export default function PrivacyToolsModal({
 
             setDeleteSuccess("All sweep data for this account has been deleted.");
             setDeleteDialogOpen(false);
+            toast.success("All sweep data for this account has been deleted.")
         } catch (err) {
+            toast.error("Couldn’t delete your data. Please try again.")
             console.error("Error deleting sweep data:", err);
             setDeleteError("Couldn’t delete your data. Please try again.");
         } finally {
@@ -180,7 +183,7 @@ export default function PrivacyToolsModal({
                                         onClick={() => {
                                             // TODO: open your template UI / navigate e.g. /tools/data-removal
                                             // For now maybe show a toast or navigate to a placeholder page.
-                                            window.location.href = "/tools/data-removal";
+                                            window.location.href = "/dashboard/tools/data-removal";
                                         }}
                                     >
                                         Open

@@ -26,7 +26,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Spinner } from "@/components/ui/spinner"
 import { Category, Service } from "@/types"
 import { formatDate } from "@/utils/format-date"
 import ServiceDetails from "./service-details"
@@ -177,7 +176,7 @@ export default function ServiceTable() {
         queryKey: ["services", query, category, page],
         queryFn: async (): Promise<{ services: Service[], total: number}> => {
             const res = await fetch(
-                `/api/services?query=${encodeURIComponent(
+                `/api/user-services?query=${encodeURIComponent(
                     query,
                 )}&category=${encodeURIComponent(category || "")}&page=${page}`,
             )
@@ -243,7 +242,7 @@ export default function ServiceTable() {
     const hasHiddenServices = isFree && totalCount > visibleCount
 
     return (
-        <div className="mt-8 rounded-xl border border-white/10 bg-[#0f0f0f] p-5 max-h-[450px] overflow-y-auto overflow-x-auto">
+        <div className="mt-8 rounded-xl border border-white/10 bg-[#050505] p-5 max-h-[450px] overflow-y-auto overflow-x-auto">
             <div className="flex items-center justify-between gap-6">
                 <input
                     className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"

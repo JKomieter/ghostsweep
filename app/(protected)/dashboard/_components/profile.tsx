@@ -111,7 +111,7 @@ export default function Profile({
                 return;
             }
 
-            toast(() => (
+            toast.success(() => (
                 <div className="flex fle-row items-center gap-2">
                     <CircleCheck color="green" /> Password changed successfully
                 </div>

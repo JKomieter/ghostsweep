@@ -8,7 +8,8 @@ export default function Input({
     type = "text",
     required,
     disableCopyPaste = false,
-    readOnly = false
+    readOnly = false,
+    className = ""
 }: {
     id: string;
     placeholder?: string;
@@ -18,13 +19,14 @@ export default function Input({
     required?: boolean;
     disableCopyPaste?: boolean;
     readOnly?: boolean
+    className?: string
 }) {
 
     return (
         <input
             id={id}
             type={type}
-            className="w-full rounded-md bg-background border border-border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className={`w-full rounded-md bg-background border border-border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}

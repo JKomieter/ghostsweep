@@ -12,9 +12,9 @@ export default function SweepCard() {
     const [isConnecting, setIsConnecting] = useState(false);
     // const queryClient = useQueryClient();
 
-    const {data} = useQuery({
+    const { data } = useQuery({
         queryKey: ['gmailAccount'],
-        queryFn: async (): Promise<{gmail_address: string | null}> => {
+        queryFn: async (): Promise<{ gmail_address: string | null }> => {
             const res = await fetch('/api/gmail_account');
             if (!res.ok) {
                 throw new Error('Failed to fetch Gmail account');
@@ -24,22 +24,34 @@ export default function SweepCard() {
         refetchOnWindowFocus: false,
     })
 
-    const onSweep = async () => { 
+    const onSweep = async () => {
         try {
             setIsSweeping(true);
             const res = await fetch('/api/sweep/run');
             const data = await res.json();
             if (!res.ok) {
-               if (data.code === 'GMAIL_ACCOUNT_NOT_FOUND') {
+                if (data.code === 'GMAIL_ACCOUNT_NOT_FOUND') {
                     toast.error('No Gmail account connected. Please connect your Gmail first.');
                     return
-               }
-               throw new Error(data.error);
+                } else if (data.code === "MONTHLY_LIMIT_REACHED") {
+                    toast.error(() => (
+                        <div>
+                            <span className="font-medium">You’ve Hit Your Monthly Sweep Limit</span>
+                            <p className="text-sm text-muted-foreground">
+                                Stay protected. Go Pro for unlimited sweeps and detailed insights.
+                            </p>
+                            <Button variant="outline" size="sm" className="mt-2">
+                                Upgrade to Pro
+                            </Button>
+                        </div>
+                    ))
+                }
+                else throw new Error(data.error);
             }
 
         } catch (error) {
             console.error('Error running sweep:', JSON.stringify(error));
-            toast('Failed to run sweep. Please try again later.')
+            toast.error('Failed to run sweep. Please try again later.')
         } finally {
             setIsSweeping(false);
         }

@@ -29,7 +29,10 @@ function SignInForm({
             toast("Login successful!");
         } catch (error) {
             console.error("Login error:", error);
-            toast("An error occurred during login. Please try again.");
+            if (error instanceof Error && error.message === "Invalid login credentials") {
+                toast.error("Login failed. Please check your username and password");
+                return
+            }
         } finally {
             setIsLoading(false);
         }

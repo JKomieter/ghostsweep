@@ -49,7 +49,7 @@ export async function GET() {
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
 
-    const breaches = subscriptionData?.current_plan !== "free" ? (data || []).slice(0, 1) : data || [];
+    const breaches = subscriptionData?.current_plan !== "free" ? (data || []).slice(0, 2) : data || [];
 
     return NextResponse.json({ breaches: breaches || [], total: breachCount });
 }

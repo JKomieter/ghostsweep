@@ -15,8 +15,44 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "GhostSweep",
-  description: "",
+  title: "GhostSweep — Protect Your Digital Footprint",
+  description:
+    "GhostSweep helps you uncover hidden accounts, detect breaches, and take control of where your data lives. Scan your inbox, review connected services, and secure your digital presence with privacy-first tools.",
+  keywords: [
+    "privacy",
+    "data security",
+    "email scanner",
+    "breach detection",
+    "account cleanup",
+    "digital footprint",
+    "inbox scanner",
+    "account discovery",
+    "privacy tools",
+  ],
+  openGraph: {
+    title: "GhostSweep — Protect Your Digital Footprint",
+    description:
+      "Scan your inbox, uncover hidden services, detect breaches, and take control of your data exposure.",
+    url: "https://ghostsweep.app",
+    siteName: "GhostSweep",
+    images: [
+      {
+        url: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png", // Replace with your actual OG image
+        width: 1200,
+        height: 630,
+        alt: "GhostSweep — Privacy Dashboard",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GhostSweep — Protect Your Digital Footprint",
+    description:
+      "Uncover hidden accounts, detect breaches, and secure your personal data.",
+    images: ["https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"],
+  },
 };
 
 

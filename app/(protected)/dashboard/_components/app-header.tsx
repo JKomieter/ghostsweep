@@ -13,6 +13,9 @@ import { useState } from "react";
 import ConnectEmailModal from "./connected-email-account";
 import SubscriptionModal from "./subscription";
 import PrivacyToolsModal from "./privacy-modal";
+import Link from "next/link";
+import { SupportModal } from "./support-modal";
+import { toast } from "sonner";
 
 
 export default function Header() {
@@ -20,6 +23,7 @@ export default function Header() {
     const [openConnectEmail, setOpenConnectEmail] = useState(false)
     const [openSubscription, setOpenSubscription] = useState(false)
     const [openPrivacy, setOpenPrivacy] = useState(false)
+    const [openSupport, setOpenSupport] = useState(false)
 
     const { data, status } = useQuery({
         queryKey: ['plan'],
@@ -39,15 +43,28 @@ export default function Header() {
         },
     })
 
+    const handleLogout = async () => {
+        try {
+            await fetch("/api/signout", {
+                method: "POST"
+            })
+            window.location.href = "/login"
+        } catch (error) {
+            console.error("Failed to log out. Please try again.", error)
+            toast.error("Failed to log out. Please try again.")
+        }
+    }
+
     return (
         <div className="h-14 relative flex">
-            <div className="fixed flex-1 left-0 top-0 w-full h-14 bg-background/95 backdrop-blur-sm flex items-center px-4 border-b border-border z-10">
+            <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-10 border-border/60 bg-background/80 backdrop-blur-sm">
                 <div className="flex-1 px-4 flex justify-between items-center">
+                    <Link href="/dashboard">
                     <div className="flex flex-row items-center space-x-2">
                         <Logo className="h-6 w-auto" />
                         <span className="font-medium text-lg text-foreground md:block hidden">GhostSweep</span>
                     </div>
-
+                    </Link>
                     {/* Plan Badge */}
                     <div>
                         {status === 'pending' ? (
@@ -78,6 +95,12 @@ export default function Header() {
                                 <DropdownMenuItem onClick={() => setOpenPrivacy(true)}>
                                     Privacy Tools 
                                 </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setOpenSupport(true)}>
+                                    Support
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleLogout()}>
+                                    Logout
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -87,6 +110,7 @@ export default function Header() {
             <ConnectEmailModal open={openConnectEmail} onOpenChangeAction={setOpenConnectEmail} />
             <SubscriptionModal open={openSubscription} onOpenChangeAction={setOpenSubscription} />
             <PrivacyToolsModal open={openPrivacy} onOpenChangeAction={setOpenPrivacy} />
+            <SupportModal open={openSupport} onOpenChangeAction={setOpenSupport} />
         </div>
     )
 }

@@ -35,56 +35,7 @@ const faqs = [
 
 export default function HomePage() {
     return (
-        <main className="min-h-screen bg-background text-foreground">
-            {/* Top bar */}
-            <header className="border-b border-border/60 bg-background/80 backdrop-blur-sm sticky top-0 z-30">
-                <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-                    <div className="flex items-center gap-2">
-                        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-primary/10">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/30" />
-                            <span className="relative inline-flex h-3 w-3 rounded-full bg-primary" />
-                        </div>
-                        <span className="text-sm font-semibold tracking-tight">
-                            GhostSweep
-                        </span>
-                    </div>
-                    <nav className="hidden items-center gap-6 text-xs text-muted-foreground sm:flex">
-                        <a href="#how" className="hover:text-foreground transition-colors">
-                            How it works
-                        </a>
-                        <a
-                            href="#security"
-                            className="hover:text-foreground transition-colors"
-                        >
-                            Security
-                        </a>
-                        <a
-                            href="#pricing"
-                            className="hover:text-foreground transition-colors"
-                        >
-                            Pricing
-                        </a>
-                        <a href="#faq" className="hover:text-foreground transition-colors">
-                            FAQ
-                        </a>
-                    </nav>
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href="/login"
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Log in
-                        </Link>
-                        <Link
-                            href="/signup"
-                            className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
-                        >
-                            Start free scan
-                            <ArrowRight className="h-3 w-3" />
-                        </Link>
-                    </div>
-                </div>
-            </header>
+        <main className="min-h-screen bg-background text-foreground">            
 
             <div className="mx-auto max-w-5xl px-4 pb-16 pt-10 space-y-16">
                 {/* Hero */}
@@ -113,7 +64,7 @@ export default function HomePage() {
 
                     <div className="flex flex-wrap items-center gap-3">
                         <Link
-                            href="/signup"
+                            href="/login"
                             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
                         >
                             Scan your inbox (Free)
@@ -396,7 +347,7 @@ export default function HomePage() {
                                 <li>• Disconnect and delete data anytime</li>
                             </ul>
                             <Link
-                                href="/signup"
+                                href="/login"
                                 className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-medium hover:bg-white/5 transition"
                             >
                                 Start free scan
@@ -470,7 +421,7 @@ export default function HomePage() {
                     </p>
                     <div className="flex flex-wrap items-center gap-3">
                         <Link
-                            href="/signup"
+                            href="/login"
                             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
                         >
                             Start your free scan
@@ -487,13 +438,13 @@ export default function HomePage() {
                     <p>© {new Date().getFullYear()} GhostSweep. All rights reserved.</p>
                     <div className="flex gap-4">
                         <Link
-                            href="/legal/privacy"
+                            href="/home/legal/privacy"
                             className="hover:text-foreground transition-colors"
                         >
                             Privacy Policy
                         </Link>
                         <Link
-                            href="/legal/terms"
+                            href="/home/legal/terms"
                             className="hover:text-foreground transition-colors"
                         >
                             Terms

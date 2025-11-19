@@ -53,7 +53,7 @@ export default function Breaches() {
 
 
     return (
-        <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-5 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
+        <div className="rounded-xl border border-white/10 bg-[#050505] p-5 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
             <div className="mb-4">
                 <h2 className="font-medium">
                     Recent Breaches

@@ -1,22 +1,19 @@
 // app/tools/data-removal/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { AlertCircle, Lock, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Input from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
 
-type PlanData = {
-    current_plan: "free" | "pro";
-};
 
-type ServiceTemplateService = {
+type Service = {
     id: string;
     name: string | null;
     domain: string | null;
@@ -24,111 +21,60 @@ type ServiceTemplateService = {
     category: string | null;
 };
 
-// Adjust this type if your /api/services response is different
-type ServicesApiResponse = {
-    services: ServiceTemplateService[];
-};
+
 
 export default function DataRemovalToolPage() {
     const router = useRouter();
-    const supabase = createClient();
-
-    const [plan, setPlan] = useState<PlanData | null>(null);
-    const [planLoading, setPlanLoading] = useState(false);
-    const [planError, setPlanError] = useState<string | null>(null);
-
-    const [services, setServices] = useState<ServiceTemplateService[]>([]);
-    const [servicesLoading, setServicesLoading] = useState(false);
-    const [servicesError, setServicesError] = useState<string | null>(null);
 
     const [selectedServiceId, setSelectedServiceId] = useState<string>("");
-    const [userEmail, setUserEmail] = useState<string>("");
     const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
     // Load plan info
-    useEffect(() => {
-        const fetchPlan = async () => {
-            try {
-                setPlanLoading(true);
-                setPlanError(null);
+    const { data: plan, status: planStatus} = useQuery({
+        queryKey: ['plan'],
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+            const res = await fetch('/api/plan', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-                const res = await fetch("/api/plan", {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                });
-
-                if (!res.ok) {
-                    throw new Error("Failed to fetch plan");
-                }
-
-                const json = (await res.json()) as PlanData;
-                setPlan(json);
-            } catch (err) {
-                console.error("Error fetching plan:", err);
-                setPlanError("Couldn’t load your plan.");
-            } finally {
-                setPlanLoading(false);
+            if (!res.ok) {
+                throw new Error('Failed to fetch plan data');
             }
-        };
 
-        void fetchPlan();
-    }, []);
+            return res.json();
+        },
+    })
 
-    // Load user email
-    useEffect(() => {
-        const loadUserEmail = async () => {
-            try {
-                const { data, error } = await supabase.auth.getUser();
-                if (error) {
-                    console.error("Error fetching user:", error);
-                    return;
-                }
-                if (data.user?.email) {
-                    setUserEmail(data.user.email);
-                }
-            } catch (err) {
-                console.error("Error getting user email:", err);
+    const {data: services, status: servicesStatus} = useQuery({
+        queryKey: ["allServices"],
+        queryFn: async (): Promise<Service[]> => {
+            const res = await fetch("/api/services", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch services");
             }
-        };
 
-        void loadUserEmail();
-    }, [supabase]);
+            const json = (await res.json())
+            return json.services
+        }
+    })
 
-    // Load services (for Pro users, but we can pre-load once page mounts)
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                setServicesLoading(true);
-                setServicesError(null);
+    
 
-                // Adjust this endpoint to your actual services API.
-                // For example, if your /api/services returns { services, total }:
-                const res = await fetch("/api/services?page=1", {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                });
 
-                if (!res.ok) {
-                    throw new Error("Failed to fetch services");
-                }
-
-                const json = (await res.json()) as ServicesApiResponse & { total?: number };
-                setServices(json.services ?? []);
-            } catch (err) {
-                console.error("Error fetching services:", err);
-                setServicesError("Couldn’t load your services.");
-            } finally {
-                setServicesLoading(false);
-            }
-        };
-
-        void fetchServices();
-    }, []);
 
     const isPro = plan?.current_plan === "pro";
+    const planLoading = planStatus === "pending"
+    const servicesLoading = servicesStatus === "pending"
 
     const selectedService = useMemo(
-        () => services.find((s) => s.id === selectedServiceId) ?? null,
+        () => services?.find((s) => s.id === selectedServiceId) ?? null,
         [services, selectedServiceId]
     );
 
@@ -141,7 +87,7 @@ export default function DataRemovalToolPage() {
     const emailBody = useMemo(() => {
         const serviceName = selectedService?.name || "your service";
         const serviceDomain = selectedService?.domain || "";
-        const email = userEmail || "[your email here]";
+        const email =  "[your email here]";
 
         return [
             `To the ${serviceName} Privacy Team,`,
@@ -165,7 +111,7 @@ export default function DataRemovalToolPage() {
         ]
             .filter(Boolean)
             .join("\n");
-    }, [selectedService, userEmail]);
+    }, [selectedService]);
 
     const privacyEmail = selectedService?.default_privacy_email || "";
 
@@ -243,10 +189,10 @@ export default function DataRemovalToolPage() {
                         ) : (
                             <p className="text-sm text-red-400">Couldn&apos;t load your plan.</p>
                         )}
-                        {planError && (
+                        {planStatus === "error" && (
                             <p className="flex items-center gap-1 text-[11px] text-red-400">
                                 <AlertCircle className="h-3 w-3" />
-                                {planError}
+                                Problem getting your current plan
                             </p>
                         )}
                     </div>
@@ -297,21 +243,21 @@ export default function DataRemovalToolPage() {
                                     <Select
                                         value={selectedServiceId}
                                         onValueChange={(val) => setSelectedServiceId(val)}
-                                        disabled={servicesLoading || services.length === 0}
+                                        disabled={servicesLoading || services?.length === 0}
                                     >
                                         <SelectTrigger className="w-full bg-[#111111] border-white/15 text-sm">
                                             <SelectValue
                                                 placeholder={
                                                     servicesLoading
                                                         ? "Loading services..."
-                                                        : services.length === 0
+                                                        : services?.length === 0
                                                             ? "No services found from sweeps yet"
                                                             : "Select a service"
                                                 }
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {services.map((service) => (
+                                            {services?.map((service) => (
                                                 <SelectItem key={service.id} value={service.id}>
                                                     {service.name || "Unknown service"}
                                                     {service.domain ? ` (${service.domain})` : ""}
@@ -322,10 +268,10 @@ export default function DataRemovalToolPage() {
                                 </div>
                             </div>
 
-                            {servicesError && (
+                            {servicesStatus === "error" && (
                                 <p className="flex items-center gap-1 text-[11px] text-red-400">
                                     <AlertCircle className="h-3 w-3" />
-                                    {servicesError}
+                                    Problem getting services
                                 </p>
                             )}
                         </div>
@@ -345,12 +291,14 @@ export default function DataRemovalToolPage() {
                                 </label>
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
-                                        <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Mail className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
                                             value={privacyEmail || ""}
                                             readOnly
                                             placeholder="No dedicated privacy email stored for this service"
-                                            className="pl-8 bg-[#111111] border-white/15 text-sm"
+                                            id="email"
+                                            type="email"
+                                            onChange={() => {}}
                                         />
                                     </div>
                                     <Button
@@ -381,7 +329,8 @@ export default function DataRemovalToolPage() {
                                 <Input
                                     value={emailSubject}
                                     readOnly
-                                    className="bg-[#111111] border-white/15 text-sm"
+                                    onChange={() =>{}}
+                                    id="subject"
                                 />
                             </div>
 
