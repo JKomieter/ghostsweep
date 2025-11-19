@@ -2,12 +2,28 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
 import { Settings } from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Profile from "./profile";
+import { useState } from "react";
+import ConnectEmailModal from "./connected-email-account";
+import SubscriptionModal from "./subscription";
+import PrivacyToolsModal from "./privacy-modal";
 
 
 export default function Header() {
-    const {data, status} = useQuery({
+    const [openProfile, setOpenProfile] = useState(false)
+    const [openConnectEmail, setOpenConnectEmail] = useState(false)
+    const [openSubscription, setOpenSubscription] = useState(false)
+    const [openPrivacy, setOpenPrivacy] = useState(false)
+
+    const { data, status } = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{current_plan: "free" | "pro"}> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -37,18 +53,40 @@ export default function Header() {
                         {status === 'pending' ? (
                             <span className="h-7 w-11 bg-neutral-quaternary"></span>
                         ) : (
-                                <span className={`px-3 py-1 rounded-full ${data?.current_plan === "free" ? "bg-gray-800" : "bg-primary/10"} text-primary text-sm font-medium uppercase`}>{data?.current_plan}</span>
+                            <span className={`px-3 py-1 rounded-full ${data?.current_plan === "free" ? "bg-gray-800" : "bg-primary/10"} text-primary text-sm font-medium uppercase`}>{data?.current_plan}</span>
                         )}
                     </div>
 
                     <div className="flex flex-row items-center space-x-4">
                         <Button variant={"ghost"} size="sm">Upgrade</Button>
-                        <Button variant="ghost" size="icon">
-                            <Settings className="h-5 w-5" />
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Button variant="ghost" size="icon">
+                                    <Settings  />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setOpenProfile(true)}>
+                                    Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setOpenConnectEmail(true)}>
+                                    Connect email accounts
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setOpenSubscription(true)}>
+                                    Subscription & Billing
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setOpenPrivacy(true)}>
+                                    Privacy Tools 
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </div>
+            <Profile open={openProfile} onOpenChangeAction={setOpenProfile} />
+            <ConnectEmailModal open={openConnectEmail} onOpenChangeAction={setOpenConnectEmail} />
+            <SubscriptionModal open={openSubscription} onOpenChangeAction={setOpenSubscription} />
+            <PrivacyToolsModal open={openPrivacy} onOpenChangeAction={setOpenPrivacy} />
         </div>
     )
 }

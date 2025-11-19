@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const publicRoutes = ["/login", "/forgot-password", "/"];
+const publicRoutes = ["/login", "/forgot-password", "/api/auth/confirm"];
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -40,6 +40,7 @@ export async function updateSession(request: NextRequest) {
         !user &&
         !publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
     ) {
+        console.log('No user session detected in middleware.')
         // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
         url.pathname = '/login'

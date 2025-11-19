@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
             token_hash,
         })
         if (!error) {
+            console.log("Successfully confirmed user's email.")
             redirectTo.searchParams.delete('next')
             return NextResponse.redirect(redirectTo)
         }

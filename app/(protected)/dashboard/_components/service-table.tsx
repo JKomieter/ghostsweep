@@ -27,54 +27,11 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Spinner } from "@/components/ui/spinner"
+import { Category, Service } from "@/types"
+import { formatDate } from "@/utils/format-date"
+import ServiceDetails from "./service-details"
 
-const formatDate = (dateString: string | null) => {
-    // return example 6d ago, 2y ago, 3m ago
-    if (!dateString) return "Unknown"
-    const date = new Date(dateString)
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const seconds = Math.floor(diff / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const hours = Math.floor(minutes / 60)
-    const days = Math.floor(hours / 24)
-    const months = Math.floor(days / 30)
-    const years = Math.floor(days / 365)
-    if (years > 0) return `${years}y ago`
-    if (months > 0) return `${months}m ago`
-    if (days > 0) return `${days}d ago`
-    if (hours > 0) return `${hours}h ago`
-    if (minutes > 0) return `${minutes}m ago`
-    return `${seconds}s ago`
-}
 
-interface Service {
-    id: string
-    user_id: string
-    first_seen_at: string | null
-    last_seen_at: string | null
-    email_count: number | null
-    is_breached: boolean | null
-    service: {
-        id: string
-        name: string | null
-        domain: string | null
-        default_privacy_email: string | null
-        category: string | null
-    }
-}
-
-type Category =
-    | "social"
-    | "shopping"
-    | "subscriptions"
-    | "finance"
-    | "developer"
-    | "newsletters"
-    | "travel"
-    | "gaming"
-    | "education"
-    | "health"
 
 const categories: Category[] = [
     "social",
@@ -88,6 +45,10 @@ const categories: Category[] = [
     "education",
     "health",
 ]
+
+type TableMeta = {
+    onView: (service: Service) => void
+}
 
 export const columns: ColumnDef<Service>[] = [
     {
@@ -188,26 +149,33 @@ export const columns: ColumnDef<Service>[] = [
     {
         id: "actions",
         enableHiding: false,
-        cell: () => (
-            <Button variant="link" size="sm" className="px-0">
+        cell: ({row, table}) => {
+            const meta = table.options.meta as TableMeta | undefined
+
+            return (
+            <Button variant="link" size="sm" className="px-0" onClick={() => {
+                meta?.onView(row.original)
+            }}>
                 View
             </Button>
-        ),
+            )
+        },
     },
 ]
 
 export default function ServiceTable() {
     const [query, setQuery] = useState("")
     const [category, setCategory] = useState<Category | undefined>()
-    const [page, setPage] = useState(1)
-    // const [sorting, setSorting] = useState<SortingState>([])
-    // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
+    const [page, setPage] = useState(1);
+    const [serviceToViewId, setServiceToViewId] = useState<string>();
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+    
     const { data, status } = useQuery({
         queryKey: ["services", query, category, page],
-        queryFn: async (): Promise<Service[]> => {
+        queryFn: async (): Promise<{ services: Service[], total: number}> => {
             const res = await fetch(
                 `/api/services?query=${encodeURIComponent(
                     query,
@@ -217,15 +185,33 @@ export default function ServiceTable() {
                 throw new Error("Network response was not ok")
             }
             const json = await res.json()
-            return json.services as Service[]
+            return json
         },
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
     })
+    
+    const { data: plan } = useQuery({
+        queryKey: ['plan'],
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+            const res = await fetch('/api/plan', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
+            if (!res.ok) {
+                throw new Error('Failed to fetch plan data');
+            }
+
+            return res.json();
+        },
+    })
+    
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
-        data: data || [],
+        data: data?.services || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -234,19 +220,30 @@ export default function ServiceTable() {
             columnVisibility,
             rowSelection,
         },
-        manualPagination: true, // we're paginating on the server with `page`
+        manualPagination: true, 
+        meta: {
+            onView: (service: Service) => {
+                setServiceToViewId(service.service.id)
+                setIsDetailsOpen(true)
+            }
+        }
     })
-
+    
     const reset = () => {
         setQuery("")
         setCategory(undefined)
         setPage(1)
     }
 
+    
     const isLoading = status === "pending"
+    const isFree = plan?.current_plan === "free"
+    const visibleCount = data?.services?.length ?? 0
+    const totalCount = data?.total ?? visibleCount
+    const hasHiddenServices = isFree && totalCount > visibleCount
 
     return (
-        <div className="mt-8 rounded-xl border border-white/10 bg-[#0f0f0f] p-5 max-h-[450px] overflow-scroll">
+        <div className="mt-8 rounded-xl border border-white/10 bg-[#0f0f0f] p-5 max-h-[450px] overflow-y-auto overflow-x-auto">
             <div className="flex items-center justify-between gap-6">
                 <input
                     className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -306,9 +303,9 @@ export default function ServiceTable() {
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-sm text-muted-foreground flex items-center justify-center"
+                                    className="h-24 text-center text-sm text-muted-foreground"
                                 >
-                                    <Spinner /> Loading services...
+                                    Loading services...
                                 </TableCell>
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (
@@ -341,6 +338,27 @@ export default function ServiceTable() {
                 </Table>
             </div>
 
+            {hasHiddenServices && (
+            <div className="mt-3 flex flex-col gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/5 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-cyan-100">
+                    GhostSweep found{" "}
+                    <span className="font-semibold">{totalCount}</span>{" "}
+                    services linked to your email. You’re seeing{" "}
+                    <span className="font-semibold">{visibleCount}</span>{" "}
+                    on the free plan.
+                </p>
+                <Button
+                variant="secondary"
+                    size="sm"
+                    className="shrink-0 text-cyan-200 hover:text-black hover:bg-cyan-400"
+                    onClick={() => {
+                        // open upgrade modal / route to /pricing
+                    }}
+                >
+                    Upgrade to view all
+                </Button>
+            </div>)}
+
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -350,7 +368,11 @@ export default function ServiceTable() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.previousPage()}
+                        onClick={() =>{
+                            if (page === 1) return
+                            setPage((old) => Math.max(old - 1, 1))
+                            table.previousPage()
+                        }}
                         disabled={!table.getCanPreviousPage() || isLoading}
                     >
                         Previous
@@ -358,13 +380,18 @@ export default function ServiceTable() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.nextPage()}
+                        onClick={() => {
+                            if (data && data?.services?.length < 20) return
+                            setPage((old) => old + 1)
+                            table.nextPage()
+                        }}
                         disabled={!table.getCanNextPage() || isLoading}
                     >
                         Next
                     </Button>
                 </div>
             </div>
+            <ServiceDetails open={isDetailsOpen} onOpenChange={setIsDetailsOpen} serviceId={serviceToViewId} />
         </div>
     )
 }

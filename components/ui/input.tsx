@@ -8,6 +8,7 @@ export default function Input({
     type = "text",
     required,
     disableCopyPaste = false,
+    readOnly = false
 }: {
     id: string;
     placeholder?: string;
@@ -16,6 +17,7 @@ export default function Input({
     type?: string;
     required?: boolean;
     disableCopyPaste?: boolean;
+    readOnly?: boolean
 }) {
 
     return (
@@ -30,6 +32,7 @@ export default function Input({
             onCopy={(e) => disableCopyPaste && e.preventDefault()}
             onPaste={(e) => disableCopyPaste && e.preventDefault()}
             onCut={(e) => disableCopyPaste && e.preventDefault()}
+            readOnly={readOnly}
         />
     )
 }

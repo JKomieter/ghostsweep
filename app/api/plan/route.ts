@@ -15,7 +15,7 @@ export async function GET() {
         // check if user subscriptions exist
         const { data, error } = await supabase
             .from('user_subscriptions')
-            .select('current_plan')
+            .select('current_plan, renews_at')
             .eq('user_id', user?.id)
             .order('created_at', { ascending: false })
             .single();
@@ -28,7 +28,7 @@ export async function GET() {
         if (!data) {
             return NextResponse.json({ error: 'No subscription data found' }, { status: 404 });
         }
-        return NextResponse.json({ current_plan: data.current_plan });
+        return NextResponse.json({ current_plan: data.current_plan, renews_at: data.renews_at });
     } catch (error) {
         console.error('Error fetching user data:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

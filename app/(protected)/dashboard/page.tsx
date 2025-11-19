@@ -1,4 +1,6 @@
 "use client"
+import Breaches from "./_components/breaches";
+import News from "./_components/news";
 import ServiceTable from "./_components/service-table";
 import SummaryCards from "./_components/summary-cards";
 import SweepCard from "./_components/sweep-card";
@@ -13,6 +15,10 @@ export default function DashboardPage() {
                 <SweepCard />
             </div>
             <ServiceTable />
+            <div className="grid sm:grid-cols-3 gap-4 grid-cols-1 mt-8">
+                <Breaches />
+                <News />
+            </div>
         </div>
     )
 }
