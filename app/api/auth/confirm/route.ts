@@ -7,32 +7,36 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const token_hash = searchParams.get("token_hash")
     const type = searchParams.get("type") as EmailOtpType | null
-    const next = searchParams.get("next") || "/dashboard"
 
-    // Build safe redirect target
+    // Decide where to send the user based on the link type
+    const targetPath =
+        type === "recovery"
+            ? "/reset-password" // password reset flow
+            : "/dashboard"      // signup verification / email change / default
+
     const redirectTo = request.nextUrl.clone()
-    redirectTo.pathname = next
+    redirectTo.pathname = targetPath
     redirectTo.searchParams.delete("token_hash")
     redirectTo.searchParams.delete("type")
-    redirectTo.searchParams.delete("next")
+    redirectTo.searchParams.delete("next") // just in case
 
     if (token_hash && type) {
         const supabase = await createClient()
 
         const { error } = await supabase.auth.verifyOtp({
-            type,        // "signup" | "recovery" | "email_change"
+            type,      // "signup" | "recovery" | "email_change"
             token_hash,
         })
 
         if (!error) {
-            // 🔐 At this point Supabase has created a session (set cookies)
+            // ✅ Session is now created, send user to the right place
             return NextResponse.redirect(redirectTo)
         }
 
         console.error("verifyOtp error:", error)
     }
 
-    // If anything fails, send to a generic error page
+    // Fallback: error page
     redirectTo.pathname = "/error"
     redirectTo.searchParams.delete("next")
     return NextResponse.redirect(redirectTo)
