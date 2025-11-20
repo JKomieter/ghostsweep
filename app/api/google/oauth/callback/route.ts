@@ -51,15 +51,16 @@ export async function GET(request: NextRequest) {
         const refreshTokenEnc = encryptToken(tokens.refresh_token || "");
 
         // 5. Store the tokens (you’ll probably want to encrypt these)
-        const { error } = await supabase.from("gmail_accounts").upsert({
-            user_id: user.id,
-            gmail_address: gmailEmail,
-            access_token_encrypted: accessTokenEnc,
-            refresh_token_encrypted: refreshTokenEnc,
-            token_expires_at: tokens.expiry_date
-                ? new Date(tokens.expiry_date).toISOString()
-                : new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+        const {  error } = await supabase.functions.invoke('save-gmail-account', {
+            body: {
+                userId: user.id,
+                gmailEmail,
+                accessTokenEnc,
+                refreshTokenEnc,
+                tokenExpiresAt: tokens.expiry_date
+                    ? new Date(tokens.expiry_date).toISOString()
+                    : new Date().toISOString(),
+            }
         });
 
         if (error) {
