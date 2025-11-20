@@ -28,6 +28,7 @@ export default async function BillingPage() {
 
     let stripeCustomerId = subRow?.stripe_customer_id as string | null;
 
+
     // 3) If no Stripe customer yet, create one and store it
     if (!stripeCustomerId) {
         const customer = await stripe.customers.create({
@@ -36,22 +37,16 @@ export default async function BillingPage() {
                 supabase_user_id: user.id,
             },
         });
-
+        
         stripeCustomerId = customer.id;
-
-        if (subRow) {
-            // row exists, just update it
-            await supabase.functions.invoke('update-user-stripeId', {
-                body: { 
-                    userId: user.id, 
-                    stripeCustomerId
-                 },
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-ghostsweep-secret": process.env.UPDATE_STRIPE_CUSTOMER_SECRET!,
-                },
-            })
-        } 
+        
+        await supabase.functions.invoke("update-user-stripeId", {
+            body: {
+                userId: user.id,
+                stripeCustomerId,
+                secret: process.env.FUNCTION_SECRET!
+            },
+        });
     }
 
     // 4) Create PaymentIntent for GhostSweep Pro (monthly)

@@ -17,7 +17,7 @@ function getNextMonthDate() {
 }
 
 export async function POST(req: Request) {
-    let event
+    let event: Stripe.Event
     const supabase = await createClient()
 
     try {
@@ -64,7 +64,8 @@ export async function POST(req: Request) {
                 body: { 
                     userId: supabaseUserId,
                     stripeCustomerId,
-                    renewsAt: getNextMonthDate()
+                    renewsAt: getNextMonthDate(),
+                    secret: process.env.FUNCTION_SECRET!
                  },
             })
 

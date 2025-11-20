@@ -44,7 +44,7 @@ function PaymentForm() {
             elements,
             confirmParams: {
                 // Make sure to change this to your payment completion page
-                return_url: `${baseUrl}/dasboard/billing/success`,
+                return_url: `${baseUrl}/dashboard/billing/success`,
                 receipt_email: email,
             },
         });

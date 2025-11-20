@@ -47,12 +47,9 @@ export async function GET() {
             // Fire-and-forget downgrade (don’t block response if it fails)
             await supabase.functions.invoke('downgrade-user-subscription', {
                 body: { 
-                    userId: user.id
+                    userId: user.id,
+                    secret: process.env.FUNCTION_SECRET!
                  },
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-ghostsweep-secret": process.env.DOWNGRADE_FUNCTION_SECRET!,
-                },
             })
         }
     }
