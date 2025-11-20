@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
 
     // 2. Verify state
     if (!cookieState || !returnedState || cookieState !== returnedState) {
-        return NextResponse.json({ error: "Invalid OAuth state" }, { status: 400 });
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
     }
 
     try {

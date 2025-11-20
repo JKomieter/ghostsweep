@@ -1,16 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-// import { toast } from "sonner";
 
 export default function SweepCard() {
     const [isSweeping, setIsSweeping] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
-    // const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
     const { data } = useQuery({
         queryKey: ['gmailAccount'],
@@ -48,7 +47,12 @@ export default function SweepCard() {
                 }
                 else throw new Error(data.error);
             }
-
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['gmailAccount'] }),
+                queryClient.invalidateQueries({ queryKey: ['services'] }),
+                queryClient.invalidateQueries({ queryKey: ['breaches'] }),
+                queryClient.invalidateQueries({ queryKey: ['metrics'] }),
+            ])
         } catch (error) {
             console.error('Error running sweep:', JSON.stringify(error));
             toast.error('Failed to run sweep. Please try again later.')
