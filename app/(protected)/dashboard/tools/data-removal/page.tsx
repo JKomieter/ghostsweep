@@ -149,7 +149,7 @@ export default function DataRemovalToolPage() {
     };
 
     const handleUpgrade = () => {
-        router.push("/pricing");
+        router.push("/billing");
     };
 
     return (

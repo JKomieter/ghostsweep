@@ -1,36 +1,61 @@
-import { createClient } from '@/utils/supabase/server';
-import { NextResponse } from 'next/server'
+// app/api/plan/route.ts
+import { NextResponse } from "next/server"
+import { createClient } from "@/utils/supabase/server"
 
 export async function GET() {
     const supabase = await createClient()
-    try {
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
-    
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-    
-        // check if user subscriptions exist
-        const { data, error } = await supabase
-            .from('user_subscriptions')
-            .select('current_plan, renews_at')
-            .eq('user_id', user?.id)
-            .order('created_at', { ascending: false })
-            .single();
-    
-        if (error) {
-            console.error('Error fetching user subscription:', error);
-            throw error;
-        }
-    
-        if (!data) {
-            return NextResponse.json({ error: 'No subscription data found' }, { status: 404 });
-        }
-        return NextResponse.json({ current_plan: data.current_plan, renews_at: data.renews_at });
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+        return NextResponse.json(
+            { current_plan: "free" },
+            { status: 200 },
+        )
     }
+
+    const { data: subRow, error } = await supabase
+        .from("user_subscriptions")
+        .select("current_plan, renews_at")
+        .eq("user_id", user.id)
+        .maybeSingle()
+
+    if (error) {
+        console.error("Error fetching subscription row:", error)
+        // Safest default: treat as free
+        return NextResponse.json({ current_plan: "free" }, { status: 200 })
+    }
+
+    if (!subRow) {
+        return NextResponse.json({ current_plan: "free" }, { status: 200 })
+    }
+
+    let effectivePlan: "free" | "pro" = "free"
+
+    if (subRow.current_plan === "pro") {
+        const now = new Date()
+        const renewsAt = subRow.renews_at ? new Date(subRow.renews_at) : null
+
+        if (renewsAt && renewsAt > now) {
+            // ✅ Still within paid period
+            effectivePlan = "pro"
+        } else {
+            // ⛔ Expired – optional: downgrade in DB
+            effectivePlan = "free"
+
+            // Fire-and-forget downgrade (don’t block response if it fails)
+            await supabase.functions.invoke('downgrade-user-subscription', {
+                body: { 
+                    userId: user.id
+                 },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-ghostsweep-secret": process.env.DOWNGRADE_FUNCTION_SECRET!,
+                },
+            })
+        }
+    }
+
+    return NextResponse.json({ current_plan: effectivePlan }, { status: 200 })
 }

@@ -47,7 +47,7 @@ export default function PrivacyToolsModal({
 
     const { data: plan, status } = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro", renews_at: string | null }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -68,7 +68,7 @@ export default function PrivacyToolsModal({
 
     const handleUpgrade = () => {
         // Replace with your real upgrade flow / checkout
-        window.location.href = "/pricing";
+        window.location.href = "/billing";
     };
 
     const handleDeleteSweepData = async () => {

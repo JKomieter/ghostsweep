@@ -28,7 +28,7 @@ export default function SubscriptionModal({
     // Load plan when modal opens
     const {data, status} = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro", renews_at: string | null }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -47,23 +47,16 @@ export default function SubscriptionModal({
     const handleUpgrade = () => {
         // TODO: replace with your Stripe Checkout / upgrade flow
         // e.g. window.location.href = "/api/create-checkout-session"
-        window.location.href = "/pricing";
+        window.location.href = "/dashboard/billing";
     };
 
     const handleManageBilling = async () => {
-        // TODO: manage billing screen
+        window.location.href = "/dashboard/billing/manage"
     };
     const loading = status === "pending"
     const isPro = data?.current_plan === "pro";
 
-    const renewalLabel =
-        isPro && data?.renews_at
-            ? new Date(data.renews_at).toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-            })
-            : null;
+    const renewalLabel = isPro 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChangeAction}>

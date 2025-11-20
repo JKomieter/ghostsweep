@@ -75,7 +75,11 @@ export default function Header() {
                     </div>
 
                     <div className="flex flex-row items-center space-x-4">
-                        <Button variant={"ghost"} size="sm">Upgrade</Button>
+                        {data?.current_plan !== "pro" && (
+                            <Link href="/dashboard/billing">
+                                <Button variant={"ghost"} size="sm">Upgrade</Button>
+                            </Link>
+                        )}
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <Button variant="ghost" size="icon">
