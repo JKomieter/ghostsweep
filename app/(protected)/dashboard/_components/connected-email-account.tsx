@@ -194,9 +194,9 @@ export default function ConnectEmailModal({
                     <AlertDialogHeader>
                         <AlertDialogTitle>Disconnect this email?</AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">
-                            GhostSweep will no longer be able to run sweeps or check for new
-                            breaches for this Gmail account. You can reconnect later at any
-                            time.
+                            GhostSweep will disconnect this Gmail account and delete its sweep results (services found and breach data).
+                            You won’t be able to run new sweeps or check for new breaches until you reconnect.
+                            You can reconnect this email at any time.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

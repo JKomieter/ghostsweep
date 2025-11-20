@@ -287,9 +287,10 @@ export default function PrivacyToolsModal({
                             Delete all GhostSweep data for this account?
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">
-                            GhostSweep will disconnect this Gmail account and delete its sweep results (services found and breach data).
-                            You won’t be able to run new sweeps or check for new breaches until you reconnect.
-                            You can reconnect this email at any time.
+                            This will permanently delete your detected services, breach
+                            history, and scan events from GhostSweep. This cannot be undone.
+                            Your Gmail connection will remain; you can disconnect it separately
+                            from the email settings.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
