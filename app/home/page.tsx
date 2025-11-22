@@ -341,10 +341,10 @@ export default function HomePage() {
                                 <p className="text-xs text-muted-foreground"> / forever</p>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">
-                                <li>• Scan your inbox with read-only access</li>
-                                <li>• See a limited set of detected services</li>
+                                <li>• Secure, read-only inbox scan</li>
+                                <li>• Limited service discovery</li>
                                 <li>• Basic breach awareness</li>
-                                <li>• Disconnect and delete data anytime</li>
+                                <li>• Disconnect and delete your data anytime</li>
                             </ul>
                             <Link
                                 href="/login"
@@ -369,11 +369,12 @@ export default function HomePage() {
                                 <p className="text-xs text-muted-foreground"> / month</p>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">
-                                <li>• Full service discovery from your inbox</li>
-                                <li>• Complete breach history visibility</li>
-                                <li>• Data removal email templates</li>
+                                <li>• Full inbox sweep with deep historical scanning</li>
+                                <li>• Complete service discovery — including older, hidden, and rarely used accounts</li>
+                                <li>• Full breach history visibility across all detected services</li>
+                                <li>• Data removal email templates for fast takedowns</li>
                                 <li>• More generous scan limits</li>
-                                <li>• Priority rescans and updates</li>
+                                <li>• Priority rescans and real-time breach updates</li>
                             </ul>
                             <Link
                                 href="/billing"
