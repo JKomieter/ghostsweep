@@ -91,9 +91,15 @@ function SignInForm({
                 {isLoading ? <Spinner /> : "Sign in"}
             </Button>
 
-            <p className="text-[11px] text-muted-foreground text-center mt-3">
-                By continuing, you agree to our Terms of Service and Privacy Policy.
-            </p>
+            <span className="text-[11px] text-muted-foreground text-center mt-3">
+                By continuing, you agree to our {" "}
+                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                    Terms of Service
+                </Link> and {" "}
+                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                    Privacy Policy
+                </Link>.
+            </span>
         </form>
     );
 }
@@ -205,9 +211,15 @@ function SignUpForm({
                 {isLoading ? <Spinner /> : "Create account"}
             </Button>
 
-            <p className="text-[11px] text-muted-foreground text-center mt-3">
-                By creating an account, you agree to our Terms of Service and Privacy Policy.
-            </p>
+            <span className="text-[11px] text-muted-foreground text-center mt-3">
+                By continuing, you agree to our {" "}
+                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                    Terms of Service
+                </Link> and {" "}
+                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                     Privacy Policy
+                </Link>.
+            </span>
         </form>
     );
 }
