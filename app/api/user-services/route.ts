@@ -48,13 +48,13 @@ export async function GET(request: NextRequest) {
             first_seen_at,
             last_seen_at,
             email_count,
-            is_breached,
             service:services!inner (
-            id,
-            name,
-            domain,
-            default_privacy_email,
-            category
+                id,
+                name,
+                domain,
+                default_privacy_email,
+                category,
+                is_breached
             )
         `
         )

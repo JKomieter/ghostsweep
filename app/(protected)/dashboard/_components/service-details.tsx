@@ -286,7 +286,7 @@ export default function ServiceDetails({
                                                     .writeText(service?.service?.default_privacy_email || "")
                                                     .then(() => {
                                                         toast(() => (
-                                                            <div className="flex fle-row items-center gap-2">
+                                                            <div className="flex flex-row items-center gap-2">
                                                                 <CircleCheck color="green" /> Privacy email copied to clipboard
                                                             </div>
                                                         ));

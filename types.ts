@@ -5,13 +5,13 @@ export interface Service {
     first_seen_at: string | null
     last_seen_at: string | null
     email_count: number | null
-    is_breached: boolean | null
     service: {
         id: string
         name: string | null
         domain: string | null
         default_privacy_email: string | null
         category: string | null
+        is_breached: boolean | null
     }
 }
 

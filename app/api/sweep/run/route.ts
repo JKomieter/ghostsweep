@@ -42,7 +42,7 @@ export async function GET() {
     if (subscriptionData?.current_plan !== "pro" && subscriptionData?.last_sweep_at) {
         const lastSweep = new Date(subscriptionData.last_sweep_at);
         const now = new Date();
-
+        
         const sameMonth =
             lastSweep.getUTCFullYear() === now.getUTCFullYear() &&
             lastSweep.getUTCMonth() === now.getUTCMonth();

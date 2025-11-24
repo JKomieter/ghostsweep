@@ -32,7 +32,13 @@ export async function GET(
     } = await supabase
         .from("user_services")
         .select(
-            "id, user_id, service_id, first_seen_at, last_seen_at, email_count, is_breached"
+            `id, 
+            user_id, 
+            service_id, 
+            first_seen_at, 
+            last_seen_at, 
+            email_count
+            `
         )
         .eq("user_id", user.id)
         .eq("service_id", serviceId)

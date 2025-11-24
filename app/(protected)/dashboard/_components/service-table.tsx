@@ -29,6 +29,7 @@ import {
 import { Category, Service } from "@/types"
 import { formatDate } from "@/utils/format-date"
 import ServiceDetails from "./service-details"
+import { calcPriorityScore, priorityLabel } from "@/utils/priority-score"
 
 
 
@@ -76,10 +77,10 @@ export const columns: ColumnDef<Service>[] = [
         accessorKey: "service",
         header: "Service",
         cell: ({ row }) => {
-            const {name, domain} = row.getValue("service") as {
+            const { name, domain } = row.getValue("service") as {
                 name: string | null
                 domain: string | null
-            } || {name: "Unknown", domain: "Unknown"}
+            } || { name: "Unknown", domain: "Unknown" }
             return (
                 <div className="flex flex-col">
                     <span className="font-medium">{name}</span>
@@ -94,8 +95,8 @@ export const columns: ColumnDef<Service>[] = [
         id: "service_category",
         header: "Category",
         accessorKey: "service",
-        cell: ({row }) => {
-            const {category} = row.getValue("service") as {category: string | null} || {category: null}
+        cell: ({ row }) => {
+            const { category } = row.getValue("service") as { category: string | null } || { category: null }
             return (
                 <span className="capitalize">
                     {category
@@ -121,46 +122,41 @@ export const columns: ColumnDef<Service>[] = [
     },
     {
         accessorKey: "is_breached",
-        header: "Breached",
+        header: "Priority",
         cell: ({ row }) => {
-            const breached = row.original.is_breached
-            if (breached === true) {
-                return (
-                    <span className="inline-flex items-center rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400">
-                        Breached
-                    </span>
-                )
-            }
-            if (breached === false) {
-                return (
-                    <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-400">
-                        Safe
-                    </span>
-                )
-            }
+            const score = calcPriorityScore(row.original);
+            const { label, className } = priorityLabel(score);
+
             return (
-                <span className="inline-flex items-center rounded-full bg-zinc-500/10 px-2 py-1 text-xs font-medium text-zinc-400">
-                    Unknown
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}>
+                        {label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                        {score}
+                    </span>
+                </div>
             )
         },
     },
     {
         id: "actions",
         enableHiding: false,
-        cell: ({row, table}) => {
+        cell: ({ row, table }) => {
             const meta = table.options.meta as TableMeta | undefined
 
             return (
-            <Button variant="link" size="sm" className="px-0" onClick={() => {
-                meta?.onView(row.original)
-            }}>
-                View
-            </Button>
+                <Button variant="link" size="sm" className="px-0" onClick={() => {
+                    meta?.onView(row.original)
+                }}>
+                    View
+                </Button>
             )
         },
     },
 ]
+
+const PAGE_SIZE = 20
 
 export default function ServiceTable() {
     const [query, setQuery] = useState("")
@@ -171,10 +167,10 @@ export default function ServiceTable() {
     const [serviceToViewId, setServiceToViewId] = useState<string>();
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-    
+
     const { data, status } = useQuery({
         queryKey: ["services", query, category, page],
-        queryFn: async (): Promise<{ services: Service[], total: number}> => {
+        queryFn: async (): Promise<{ services: Service[], total: number }> => {
             const res = await fetch(
                 `/api/user-services?query=${encodeURIComponent(
                     query,
@@ -189,7 +185,7 @@ export default function ServiceTable() {
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
     })
-    
+
     const { data: plan } = useQuery({
         queryKey: ['plan'],
         queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
@@ -207,39 +203,52 @@ export default function ServiceTable() {
             return res.json();
         },
     })
-    
+
+    const isLoading = status === "pending";
+    const isFree = plan?.current_plan === "free";
+
+    const visibleCount = data?.services?.length ?? 0;
+    const totalCount = data?.total ?? visibleCount;
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+    // if free plan is capped to first page(s), lock next when hidden exists
+
+    const hasHiddenServices = isFree && totalCount > visibleCount;
+    const canPrev = page > 1;
+    const canNext = !hasHiddenServices && page < totalPages;
+
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data: data?.services || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
+        manualPagination: true,
+        pageCount: totalPages,               // ✅ tell table how many pages exist
         state: {
             columnVisibility,
             rowSelection,
+            pagination: {
+                pageIndex: page - 1,             // ✅ 0-based for TanStack
+                pageSize: PAGE_SIZE,
+            },
         },
-        manualPagination: true, 
+        onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
         meta: {
             onView: (service: Service) => {
-                setServiceToViewId(service.service.id)
-                setIsDetailsOpen(true)
-            }
-        }
-    })
-    
+                setServiceToViewId(service.service.id);
+                setIsDetailsOpen(true);
+            },
+        },
+    });
+
+    // ...
+
     const reset = () => {
         setQuery("")
         setCategory(undefined)
         setPage(1)
     }
-
-    
-    const isLoading = status === "pending"
-    const isFree = plan?.current_plan === "free"
-    const visibleCount = data?.services?.length ?? 0
-    const totalCount = data?.total ?? visibleCount
-    const hasHiddenServices = isFree && totalCount > visibleCount
 
     return (
         <div className="mt-8 rounded-xl border border-white/10 bg-[#050505] p-5 max-h-[450px] overflow-y-auto overflow-x-auto">
@@ -338,53 +347,53 @@ export default function ServiceTable() {
             </div>
 
             {hasHiddenServices && (
-            <div className="mt-3 flex flex-col gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/5 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-cyan-100">
-                    GhostSweep found{" "}
-                    <span className="font-semibold">{totalCount}</span>{" "}
-                    services linked to your email. You’re seeing{" "}
-                    <span className="font-semibold">{visibleCount}</span>{" "}
-                    on the free plan.
-                </p>
-                <Button
-                variant="secondary"
-                    size="sm"
-                    className="shrink-0 text-cyan-200 hover:text-black hover:bg-cyan-400"
-                    onClick={() => {
-                        // open upgrade modal / route to /pricing
-                    }}
-                >
-                    Upgrade to view all
-                </Button>
-            </div>)}
+                <div className="mt-3 flex flex-col gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/5 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-cyan-100">
+                        GhostSweep found{" "}
+                        <span className="font-semibold">{totalCount}</span>{" "}
+                        services linked to your email. You’re seeing{" "}
+                        <span className="font-semibold">{visibleCount}</span>{" "}
+                        on the free plan.
+                    </p>
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        className="shrink-0 text-cyan-200 hover:text-black hover:bg-cyan-400"
+                        onClick={() => {
+                            // open upgrade modal / route to /pricing
+                        }}
+                    >
+                        Upgrade to view all
+                    </Button>
+                </div>)}
 
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
                     {table.getFilteredRowModel().rows.length} row(s) selected.
                 </div>
+
                 <div className="space-x-2">
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() =>{
-                            if (page === 1) return
-                            setPage((old) => Math.max(old - 1, 1))
-                            table.previousPage()
+                        onClick={() => {
+                            if (!canPrev) return;
+                            setPage((p) => p - 1);
                         }}
-                        disabled={!table.getCanPreviousPage() || isLoading}
+                        disabled={!canPrev || isLoading}
                     >
                         Previous
                     </Button>
+
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                            if (data && data?.services?.length < 20) return
-                            setPage((old) => old + 1)
-                            table.nextPage()
+                            if (!canNext) return;
+                            setPage((p) => p + 1);
                         }}
-                        disabled={!table.getCanNextPage() || isLoading}
+                        disabled={!canNext || isLoading}
                     >
                         Next
                     </Button>

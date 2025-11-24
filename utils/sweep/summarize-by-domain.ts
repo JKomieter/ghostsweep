@@ -33,13 +33,13 @@ export async function summarizeByDomain(metadataList: EmailMetadata[]): Promise<
             serviceId = serviceIds.get(domain)!;
         } else {
             // get the service id with the domain
-            const { data: services, error: servicesError } = await supabase
+            const { data: service, error: servicesError } = await supabase
                 .from("services")
                 .select("id")
                 .eq("domain", domain)
                 .single();
     
-            if ((servicesError && servicesError.code === "PGRST116") || !services) {
+            if ((servicesError && servicesError.code === "PGRST116") || !service) {
                 const { data, error } = await supabase.functions.invoke('create-new-service', {
                     body: { 
                         domain,
@@ -56,8 +56,8 @@ export async function summarizeByDomain(metadataList: EmailMetadata[]): Promise<
                 console.error("Error fetching service:", servicesError);
             }
     
-            if (services) {
-                serviceId = services.id;
+            if (service) {
+                serviceId = service.id;
             }
         }
 

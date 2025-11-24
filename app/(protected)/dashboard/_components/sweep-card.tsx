@@ -24,6 +24,16 @@ export default function SweepCard() {
     })
 
     const onSweep = async () => {
+        toast(() => (
+            <div>
+                <span>
+                    Sweeping your inbox… this may take up to 30–60 seconds.
+                </span>
+                <span className="text-sm">
+                    Please keep this page open and don’t refresh.
+                </span>
+            </div>
+        ))
         try {
             setIsSweeping(true);
             const res = await fetch('/api/sweep/run');
