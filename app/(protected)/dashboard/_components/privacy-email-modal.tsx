@@ -166,12 +166,12 @@ export default function PrivacyEmailModal({
                             <Badge
                                 className={cn(
                                     "text-xs",
-                                    service.is_breached
+                                    service.service.is_breached
                                         ? "bg-red-500/20 text-red-300 border-red-500/30"
                                         : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                                 )}
                             >
-                                {service.is_breached ? "Breached" : "No known breach"}
+                                {service.service.is_breached ? "Breached" : "No known breach"}
                             </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">

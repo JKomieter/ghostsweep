@@ -147,7 +147,7 @@ export default function ServiceDetails({
     const lastSeen = service?.last_seen_at ? formatDate(service.last_seen_at) : "Unknown";
     const firstSeen = service?.first_seen_at ? formatDate(service.first_seen_at) : "Unknown";
     const emailCount = service?.email_count ?? 0;
-    const breached = service?.is_breached === true;
+    const breached = service?.service.is_breached === true;
 
     const serviceName = service?.service?.name || "Unknown service";
     const domain = service?.service?.domain || "";
