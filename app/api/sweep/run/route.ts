@@ -184,7 +184,7 @@ export async function GET() {
     const current_plan = subscriptionData?.current_plan || "free";
 
     // list emails
-    const list = await listEmails(accessTokenToUse, current_plan, gmail);
+    const list = await listEmails( current_plan, gmail);
 
     const metadataList: EmailMetadata[] = [];
 
