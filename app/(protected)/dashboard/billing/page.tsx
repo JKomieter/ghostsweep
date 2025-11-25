@@ -6,7 +6,7 @@ import { stripe } from "@/lib/stripe";
 import { createClient } from "@/utils/supabase/server";
 import CheckoutForm from "../_components/checkout";
 
-const PRO_MONTHLY_PRICE_CENTS = 699; // $6.99
+const PRO_MONTHLY_PRICE_CENTS = 799; // $7.99
 
 export default async function BillingPage() {
     // 1) Get Supabase user
@@ -85,7 +85,7 @@ export default async function BillingPage() {
                         <div>
                             <p className="text-sm font-medium text-primary">GhostSweep Pro</p>
                             <p className="mt-1 text-3xl font-semibold">
-                                $6.99
+                                $7.99
                                 <span className="text-sm font-normal text-muted-foreground">
                                     {" "}
                                     / month
@@ -109,7 +109,7 @@ export default async function BillingPage() {
                 <div className="mt-8 max-w-md">
                     <p className="text-sm text-muted-foreground mb-2">
                         You&apos;re upgrading to{" "}
-                        <span className="font-medium text-primary">$6.99 / month</span>.
+                        <span className="font-medium text-primary">$7.99 / month</span>.
                     </p>
                     <CheckoutForm clientSecret={paymentIntent.client_secret} />
                 </div>

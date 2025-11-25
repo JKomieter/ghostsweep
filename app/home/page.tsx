@@ -365,7 +365,7 @@ export default function HomePage() {
                                 </span>
                             </div>
                             <div className="flex items-baseline gap-1">
-                                <p className="text-2xl font-semibold">$6.99</p>
+                                <p className="text-2xl font-semibold">$7.99</p>
                                 <p className="text-xs text-muted-foreground"> / month</p>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">

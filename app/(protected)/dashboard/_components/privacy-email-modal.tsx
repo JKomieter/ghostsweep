@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils"; // or remove if you don't have this
 import type { Service } from "@/types";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type PrivacyAction = "delete" | "reduce";
 
@@ -25,7 +26,7 @@ interface PrivacyEmailModalProps {
     userName?: string | null;
 }
 
-function buildToAddress(service: Service | null): string {
+function buildToAddress(service: Service | null | undefined): string {
     const domain = service?.service.domain || "";
     const defaultPrivacy = service?.service.default_privacy_email || "";
 
@@ -45,59 +46,73 @@ function buildSubject(action: PrivacyAction, serviceName: string): string {
     return `Request to limit use of my personal data on ${serviceName}`;
 }
 
-function buildBody(options: {
-    action: PrivacyAction;
-    serviceName: string;
-    userEmail: string;
-    userName?: string | null;
+function buildBody({
+    action,
+    serviceName,
+    userEmail,
+    userName,
+}: {
+    action: PrivacyAction
+    serviceName: string
+    userEmail: string
+    userName?: string | null
 }) {
-    const { action, serviceName, userEmail, userName } = options;
-    const nameLine = userName ? `${userName}` : "Concerned user";
+    const signoffName = userName?.trim() || "Concerned user"
 
     if (action === "delete") {
-        return `Hello ${serviceName} Support,
+        return `To the ${serviceName} Privacy / Data Protection Team,
 
-I am writing to request the deletion of my account and all associated personal data linked to this email address:
+I am formally exercising my data rights under global privacy laws, including:
 
-Email: ${userEmail}
-Service / Account Name: ${serviceName}
+• GDPR (EU General Data Protection Regulation – Article 17: Right to Erasure)
+• CCPA/CPRA (California Consumer Privacy Act)
+• Any equivalent regional data-protection regulations applicable to your organization
 
-Please:
+I am requesting **complete erasure** of all personal data associated with the following identity:
 
-1. Permanently delete my account and all personal data associated with it.
-2. Remove my email address from marketing and notification lists.
-3. Confirm by reply when this deletion has been completed.
+• Email Address: ${userEmail}
+• Service / Account Name: ${serviceName}
 
-If your company operates under the GDPR, I am exercising my right to erasure under Article 17 of the GDPR. If you operate under other privacy laws (such as the CCPA or similar regulations), please treat this as a request to delete my personal information under the applicable law.
+I am requesting that you:
 
-If you require any additional information to locate my account, please let me know.
+1. Permanently delete my account and **all** personal data associated with it, including backups, analytics identifiers, logs, content, and any data held by third-party processors acting on your behalf.
 
-Thank you,
-${nameLine}
-${userEmail}`;
+2. Immediately remove my email from all marketing, tracking, notification, retention, and re-engagement systems.
+
+3. Cease all further processing of my personal data except where legally required.
+
+4. Provide written confirmation by reply to this email within the legally mandated timeframe (30 days under GDPR) that my data has been erased.
+
+If additional identity verification is required, please specify the exact steps necessary.
+
+Thank you for your cooperation,
+${signoffName}
+${userEmail}`
     }
 
-    // reduce
-    return `Hello ${serviceName} Support,
+    // reduce / limit processing
+    return `To the ${serviceName} Privacy / Data Protection Team,
 
-I’m contacting you regarding my account linked to this email address:
+I am exercising my rights under global privacy regulations (including GDPR Article 18: Restriction of Processing and CCPA/CPRA rights) regarding my account linked to:
 
-Email: ${userEmail}
-Service / Account Name: ${serviceName}
+• Email Address: ${userEmail}
+• Service / Account Name: ${serviceName}
 
-I would like to:
+I request that you:
 
-1. Opt out of marketing and promotional emails.
-2. Disable any unnecessary data sharing with third parties.
-3. Remove any inactive or non-essential data that is no longer needed for providing your core service.
+1. Stop all non-essential processing of my personal data, including profiling, behavioral tracking, analytics enrichment, and marketing-related usage.
 
-If your company is subject to privacy regulations such as the GDPR or CCPA, please treat this as a request to limit processing of my personal data to what is strictly necessary for providing the service.
+2. Remove my email from all direct marketing, promotional communication, and retargeting systems.
 
-If you need any additional information to process this request, please let me know.
+3. Delete any non-essential or outdated personal data not required for delivering your core service.
 
-Best regards,
-${nameLine}
-${userEmail}`;
+4. Confirm by reply that processing of my personal data has been restricted accordingly.
+
+If any verification is required, please outline the steps.
+
+Thank you,
+${signoffName}
+${userEmail}`
 }
 
 export default function PrivacyEmailModal({
@@ -108,10 +123,8 @@ export default function PrivacyEmailModal({
     userEmail,
     userName,
 }: PrivacyEmailModalProps) {
-    
-    
-    
     const [copied, setCopied] = useState(false);
+    const [markingSent, setMarkingSent] = useState(false)
     
     const handleCopy = async () => {
         try {
@@ -124,20 +137,49 @@ export default function PrivacyEmailModal({
             console.error("Failed to copy email template", err);
         }
     };
+
     
-    if (!service) return null;
-    
-    const serviceName = service.service.name || "this service";
-    const domain = service.service.domain || "";
-    const category = service.service.category || "Unknown";
+
+    const serviceName = service?.service.name || "this service";
+    const domain = service?.service.domain || "";
+    const category = service?.service.category || "Unknown";
 
     const toAddress = buildToAddress(service);
     const subject = buildSubject(action, serviceName);
     const body = buildBody({ action, serviceName, userEmail, userName });
 
     const actionLabel =
-    action === "delete" ? "Delete account & data" : "Reduce data usage";
+        action === "delete" ? "Delete account & data" : "Reduce data usage";
 
+    const handleMarkSent = async () => {
+        if (!service) return
+        setMarkingSent(true)
+
+        try {
+            const res = await fetch("/api/privacy-requests", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    service_id: service.service.id,
+                    action,
+                    to_address: toAddress,
+                    subject,
+                }),
+            })
+
+            if (!res.ok) throw new Error("Failed to mark as sent")
+
+            toast.success("Request marked as sent. We’ll track replies for you.")
+            onOpenChange(false)
+        } catch (e) {
+            console.error(e)
+            toast.error("Couldn’t save request. Try again.")
+        } finally {
+            setMarkingSent(false)
+        }
+    }
+    
+    
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg bg-[#050505] border border-white/10">
@@ -166,12 +208,12 @@ export default function PrivacyEmailModal({
                             <Badge
                                 className={cn(
                                     "text-xs",
-                                    service.service.is_breached
+                                    service?.service.is_breached
                                         ? "bg-red-500/20 text-red-300 border-red-500/30"
                                         : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                                 )}
                             >
-                                {service.service.is_breached ? "Breached" : "No known breach"}
+                                {service?.service.is_breached ? "Breached" : "No known breach"}
                             </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -220,13 +262,24 @@ export default function PrivacyEmailModal({
                         GhostSweep does not send this email for you. Copy it and send from
                         your own inbox to complete the request.
                     </p>
-                    <Button
-                        size="sm"
-                        className="shrink-0 bg-primary text-black hover:bg-primary/80"
-                        onClick={handleCopy}
-                    >
-                        {copied ? "Copied ✓" : "Copy Email"}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleMarkSent}
+                            disabled={markingSent}
+                        >
+                            {markingSent ? "Saving..." : "I sent it"}
+                        </Button>
+
+                        <Button
+                            size="sm"
+                            className="shrink-0 bg-primary text-black hover:bg-primary/80"
+                            onClick={handleCopy}
+                        >
+                            {copied ? "Copied ✓" : "Copy Email"}
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>
