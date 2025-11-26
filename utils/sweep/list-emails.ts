@@ -17,21 +17,21 @@ export async function listEmails(
     // --- Configuration (tuned to avoid timeouts) ---
 
     // Time window: keep Pro deep, but not insane
-    const YEARS_PRO = 5;   // was 10
-    const YEARS_FREE = 2;  // was 3
+    const YEARS_PRO = 10;   
+    const YEARS_FREE = 3;  
     const YEARS = current_plan === "pro" ? YEARS_PRO : YEARS_FREE;
 
     // Hard cap on total messages we’ll process
-    const MAX_MESSAGES_PRO = 600;  // was 2000
-    const MAX_MESSAGES_FREE = 200; // was 300
+    const MAX_MESSAGES_PRO = 1200;  // was 2000
+    const MAX_MESSAGES_FREE = 300; // was 300
     const maxMessages =
         current_plan === "pro" ? MAX_MESSAGES_PRO : MAX_MESSAGES_FREE;
 
     const pageSize = 100;
 
     // Extra safety: limit how many pages we fetch per query
-    const MAX_PAGES_PRO = 8; // 8 * 100 = 800 max theoretical
-    const MAX_PAGES_FREE = 4;
+    const MAX_PAGES_PRO = 12; // 8 * 100 = 800 max theoretical
+    const MAX_PAGES_FREE = 5;
     const maxPages =
         current_plan === "pro" ? MAX_PAGES_PRO : MAX_PAGES_FREE;
 

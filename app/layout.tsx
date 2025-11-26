@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { Toaster } from "@/components/ui/sonner"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -72,7 +74,8 @@ export default function RootLayout({
             enableSystem={false}
             disableTransitionOnChange
           >
-
+            <SpeedInsights />
+            <Analytics />
             <main>{children}</main>
             <Toaster position="top-right" />
           </ThemeProvider>
