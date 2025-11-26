@@ -17,7 +17,7 @@ export async function GET(
     if (userError || !user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
+
     if (!serviceId) {
         return NextResponse.json(
             { error: "Service ID is required" },
@@ -26,19 +26,25 @@ export async function GET(
     }
 
     // Get the *user-specific* service record for this serviceId
-    const {
-        data: userService,
-        error: userServiceError,
-    } = await supabase
+    const { data: userService, error: userServiceError } = await supabase
         .from("user_services")
         .select(
-            `id, 
-            user_id, 
-            service_id, 
-            first_seen_at, 
-            last_seen_at, 
-            email_count
             `
+        id,
+        user_id,
+        service_id,
+        first_seen_at,
+        last_seen_at,
+        email_count,
+        service:services!inner (
+          id,
+          name,
+          domain,
+          default_privacy_email,
+          category,
+          is_breached
+        )
+      `
         )
         .eq("user_id", user.id)
         .eq("service_id", serviceId)
@@ -52,7 +58,7 @@ export async function GET(
         );
     }
 
-    // Get the global service definition
+    // Get the global service definition (optional, but you seem to want it)
     const {
         data: service,
         error: serviceError,
@@ -69,10 +75,89 @@ export async function GET(
             { status: 404 }
         );
     }
-    
+
+    // Get user-specific breaches for this service
+    const { data: userBreaches, error: userBreachesError } = await supabase
+        .from("user_breaches")
+        .select(
+            `
+        id,
+        email,
+        breach:breaches!user_breaches_breach_id_fkey (
+          id,
+          domain,
+          breach_date,
+          pwn_count,
+          data_classes,
+          is_sensitive,
+          raw
+        )
+      `
+        )
+        .eq("user_id", user.id)
+        .eq("service_id", serviceId);
+
+    if (userBreachesError && userBreachesError.code !== "PGRST116") {
+        console.error("Error fetching breaches:", userBreachesError);
+        return NextResponse.json(
+            { error: "Breaches not found" },
+            { status: 500 }
+        );
+    }
+
+    // Normalize breaches shape
+    const breaches =
+        userBreaches
+            ?.map((b) => {
+                // Depending on how Supabase returns this, it might be an object or array.
+                const breachRecord = Array.isArray(b.breach)
+                    ? b.breach[0]
+                    : b.breach;
+
+                if (!breachRecord) return null;
+
+                return {
+                    id: b.id, // user_breaches row id
+                    email: b.email,
+                    breach_id: breachRecord.id,
+                    domain: breachRecord.domain,
+                    breach_date: breachRecord.breach_date,
+                    pwn_count: breachRecord.pwn_count,
+                    data_classes: breachRecord.data_classes,
+                    is_sensitive: breachRecord.is_sensitive,
+                    raw: breachRecord.raw,
+                };
+            })
+            .filter(Boolean) ?? [];
+
+    const { data: privacyRequest, error: pivacyRequestError } = await supabase.from("privacy_requests")
+        .select(`
+                    id, 
+                    action,
+                    status,
+                    to_address,
+                    subject,
+                    sent_at,
+                    last_reply_at,
+                    reply_snippet
+                `)
+        .eq("user_id", user.id)
+        .eq("service_id", serviceId)
+        .single()
+
+    if (pivacyRequestError && pivacyRequestError.code !== "PGRST116") {
+        console.error("Error fetching privacy request:", pivacyRequestError);
+        return NextResponse.json(
+            { error: "Privacy Request not found" },
+            { status: 500 }
+        );
+    }
+
     const data = {
         ...(userService || {}),
-        service,
+        service,   // global service info
+        breaches,  // user-specific breaches for this service
+        privacyRequest
     };
 
     return NextResponse.json({ service: data }, { status: 200 });

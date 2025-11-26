@@ -223,7 +223,7 @@ export default function DataRemovalToolPage() {
                                 in your sweeps. Upgrade to Pro to unlock this tool and take back full control of your data.
                             </p>
                         </div>
-                        <Button size="sm" onClick={handleUpgrade}>
+                        <Button size="sm" onClick={handleUpgrade} variant="outline">
                             Upgrade to Pro
                         </Button>
                     </div>

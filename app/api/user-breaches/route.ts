@@ -14,6 +14,7 @@ interface UserBreach {
 
 export async function GET() {
     const supabase = await createClient();
+
     const {
         data: { user },
         error: userError,
@@ -29,7 +30,7 @@ export async function GET() {
         .select("current_plan")
         .eq("user_id", user.id)
         .single();
-        
+
     if (subscriptionError && subscriptionError.code !== "PGRST116") {
         console.error("Error fetching user subscription:", subscriptionError);
         return NextResponse.json(
@@ -38,12 +39,16 @@ export async function GET() {
         );
     }
 
-    const { data, error } = await supabase
+    // 🔴 IMPORTANT: make the relationship explicit + include breach_id
+    const { data: userBreach, error: userBreachError } = await supabase
         .from("user_breaches")
-        .select(`
+        .select(
+            `
             id,
             user_id,
+            breach_id,
             breach:breaches (
+                id,
                 breach_date,
                 domain,
                 pwn_count,
@@ -51,38 +56,47 @@ export async function GET() {
                 is_sensitive,
                 raw
             )
-        `)
+        `
+        )
         .eq("user_id", user.id);
 
-    if (error && error.code !== "PGRST116") {
-        console.error("Error fetching user breaches:", error);
+    if (userBreachError && userBreachError.code !== "PGRST116") {
+        console.error("Error fetching user breaches:", userBreachError);
         return NextResponse.json(
             { error: "Internal Server Error", code: "BREACHES_FETCH_ERROR" },
             { status: 500 }
         );
     }
 
-    const breaches: UserBreach[] =
-        (data ?? []).map((row) => ({
+    
+    const breaches: UserBreach[] = (userBreach ?? []).map((row) => {
+        // For this relationship, breach should be a single object, not array
+        const breach =
+            (Array.isArray(row.breach) ? row.breach[0] : row.breach) ?? {};
+
+        return {
             id: row.id,
             user_id: row.user_id,
-            breach_date: row.breach[0]?.breach_date ?? null,
-            domain: row.breach[0]?.domain ?? null,
-            pwn_count: row.breach[0]?.pwn_count ?? 0,
-            data_classes: row.breach[0]?.data_classes ?? null,
-            is_sensitive: row.breach[0]?.is_sensitive ?? null,
-            raw: (row.breach[0]?.raw as Record<string, unknown>) ?? null,
-        }));
+            breach_date: breach?.breach_date ?? null,
+            domain: breach?.domain ?? null,
+            pwn_count: breach?.pwn_count ?? 0,
+            data_classes: breach?.data_classes ?? null,
+            is_sensitive: breach?.is_sensitive ?? null,
+            raw: (breach?.raw as Record<string, unknown>) ?? null,
+        };
+    });
 
-    // get the total count without pagination
-    const {
-        count: breachCount,
-    } = await supabase
+    // total count
+    const { count: breachCount } = await supabase
         .from("user_breaches")
         .select("*", { count: "exact", head: true })
         .eq("user_id", user.id);
 
-    const breachesToShow = subscriptionData?.current_plan !== "free" ? (breaches || []).slice(0, 2) : breaches || [];
+    const isFree = subscriptionData?.current_plan === "free";
+    const breachesToShow = isFree ? breaches.slice(0, 2) : breaches;
 
-    return NextResponse.json({ breaches: breachesToShow || [], total: breachCount });
+    return NextResponse.json({
+        breaches: breachesToShow,
+        total: breachCount ?? 0,
+    });
 }

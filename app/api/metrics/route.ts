@@ -19,7 +19,7 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // get number of user services
+        // 1) Number of services
         const {
             count: serviceCount,
             error: serviceError,
@@ -32,11 +32,11 @@ export async function GET() {
             console.error("Error counting user_services:", serviceError);
             return NextResponse.json(
                 { error: "Failed to fetch service count" },
-                { status: 500 },
+                { status: 500 }
             );
         }
 
-        // get number of user breaches
+        // 2) Number of breaches
         const {
             count: breachCount,
             error: breachError,
@@ -49,11 +49,11 @@ export async function GET() {
             console.error("Error counting user_breaches:", breachError);
             return NextResponse.json(
                 { error: "Failed to fetch breach count" },
-                { status: 500 },
+                { status: 500 }
             );
         }
 
-        // get the last scan date for the user
+        // 3) Last scan date
         const {
             data: lastScan,
             error: lastScanError,
@@ -68,23 +68,66 @@ export async function GET() {
             console.error("Error fetching last scan:", lastScanError);
             return NextResponse.json(
                 { error: "Failed to fetch last scan date" },
-                { status: 500 },
+                { status: 500 }
             );
         }
 
         const lastScanDate =
             lastScan && lastScan.length > 0 ? lastScan[0].created_at : null;
 
+        // 4) Pending deletion requests (status in sent/received/needs_verification/in_progress)
+        const {
+            count: pendingRequestsCount,
+            error: pendingRequestsError,
+        } = await supabase
+            .from("privacy_requests")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .in("status", [
+                "sent",
+                "received",
+                "needs_verification",
+                "in_progress",
+            ]);
+
+        if (pendingRequestsError) {
+            console.error("Error fetching pending requests:", pendingRequestsError);
+            return NextResponse.json(
+                { error: "Failed to fetch pending requests" },
+                { status: 500 }
+            );
+        }
+
+        // 5) Responded requests (any request where we've seen a reply)
+        const {
+            count: respondedRequestsCount,
+            error: respondedRequestsError,
+        } = await supabase
+            .from("privacy_requests")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .not("last_reply_at", "is", null); // last_reply_at IS NOT NULL
+
+        if (respondedRequestsError) {
+            console.error("Error fetching replied requests:", respondedRequestsError);
+            return NextResponse.json(
+                { error: "Failed to fetch replied requests" },
+                { status: 500 }
+            );
+        }
+
         return NextResponse.json({
             service_count: serviceCount ?? 0,
             breach_count: breachCount ?? 0,
             last_scan_date: lastScanDate,
+            pending_requests: pendingRequestsCount ?? 0,
+            responded_requests: respondedRequestsCount ?? 0,
         });
     } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user metrics:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },
-            { status: 500 },
+            { status: 500 }
         );
     }
 }

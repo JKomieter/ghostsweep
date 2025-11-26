@@ -16,6 +16,8 @@ import PrivacyToolsModal from "./privacy-modal";
 import Link from "next/link";
 import { SupportModal } from "./support-modal";
 import { toast } from "sonner";
+import SlidingSidebar from "./app-sidebar";
+import Notifications from "./notifications";
 
 
 export default function Header() {
@@ -58,13 +60,16 @@ export default function Header() {
     return (
         <div className="h-14 relative flex">
             <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-10 border-border/60 bg-background/80 backdrop-blur-sm">
-                <div className="flex-1 px-4 flex justify-between items-center">
-                    <Link href="/dashboard">
-                    <div className="flex flex-row items-center space-x-2">
-                        <Logo className="h-6 w-auto" />
-                        <span className="font-medium text-lg text-foreground md:block hidden">GhostSweep</span>
+                <div className="flex-1 sm:px-4 p-0 flex justify-between items-center">
+                    <div className="flex flex-row items-center gap-4">
+                        <SlidingSidebar />
+                        <Link href="/dashboard">
+                            <div className="flex flex-row items-center space-x-2">
+                                <Logo className="h-6 w-auto" />
+                                <span className="font-medium text-lg text-foreground md:block hidden">GhostSweep</span>
+                            </div>
+                        </Link>
                     </div>
-                    </Link>
                     {/* Plan Badge */}
                     <div>
                         {status === 'pending' ? (
@@ -75,38 +80,41 @@ export default function Header() {
                     </div>
 
                     <div className="flex flex-row items-center space-x-4">
-                        {data?.current_plan !== "pro" && (
-                            <Link href="/dashboard/billing">
-                                <Button variant={"ghost"} size="sm">Upgrade</Button>
-                            </Link>
-                        )}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                <Button variant="ghost" size="icon">
-                                    <Settings  />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => setOpenProfile(true)}>
-                                    Profile
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setOpenConnectEmail(true)}>
-                                    Connect email accounts
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setOpenSubscription(true)}>
-                                    Subscription & Billing
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setOpenPrivacy(true)}>
-                                    Privacy Tools 
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setOpenSupport(true)}>
-                                    Support
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleLogout()}>
-                                    Logout
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div>
+                            {data?.current_plan !== "pro" && (
+                                <Link href="/dashboard/billing">
+                                    <Button variant={"ghost"} size="sm">Upgrade</Button>
+                                </Link>
+                            )}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Button variant="ghost" size="icon">
+                                        <Settings />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => setOpenProfile(true)}>
+                                        Profile
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setOpenConnectEmail(true)}>
+                                        Connect email accounts
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setOpenSubscription(true)}>
+                                        Subscription & Billing
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setOpenPrivacy(true)}>
+                                        Privacy Tools
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setOpenSupport(true)}>
+                                        Support
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleLogout()}>
+                                        Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                        <Notifications />
                     </div>
                 </div>
             </div>

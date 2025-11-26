@@ -2,6 +2,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Header from "./_components/app-header"
 
+
 const queryClient = new QueryClient()
 
 export default function DashboardLayout({
@@ -11,10 +12,10 @@ export default function DashboardLayout({
 }) {
     return (
         <QueryClientProvider client={queryClient}>
-            <div className="min-h-screen bg-background relative">
-                <Header />
-                {children}
-            </div>
+                <main className="bg-background relative">
+                    <Header />
+                    {children}
+                </main>
         </QueryClientProvider>
     )
 }

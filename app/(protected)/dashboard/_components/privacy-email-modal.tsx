@@ -11,22 +11,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils"; // or remove if you don't have this
-import type { Service } from "@/types";
+import type { PrivacyAction } from "@/types";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ServiceQueryResult } from "./services/service-details";
 
-type PrivacyAction = "delete" | "reduce";
 
 interface PrivacyEmailModalProps {
     open: boolean;
-    onOpenChange: (open: boolean) => void;
+    onOpenChangeAction: (open: boolean) => void;
     action: PrivacyAction;
-    service: Service | undefined;
+    service: ServiceQueryResult | undefined;
     userEmail: string;
     userName?: string | null;
 }
 
-function buildToAddress(service: Service | null | undefined): string {
+function buildToAddress(service: ServiceQueryResult | undefined): string {
     const domain = service?.service.domain || "";
     const defaultPrivacy = service?.service.default_privacy_email || "";
 
@@ -117,7 +117,7 @@ ${userEmail}`
 
 export default function PrivacyEmailModal({
     open,
-    onOpenChange,
+    onOpenChangeAction,
     action,
     service,
     userEmail,
@@ -156,7 +156,7 @@ export default function PrivacyEmailModal({
         setMarkingSent(true)
 
         try {
-            const res = await fetch("/api/privacy-requests", {
+            const res = await fetch("/api/send-privacy-requests", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -170,7 +170,7 @@ export default function PrivacyEmailModal({
             if (!res.ok) throw new Error("Failed to mark as sent")
 
             toast.success("Request marked as sent. We’ll track replies for you.")
-            onOpenChange(false)
+            onOpenChangeAction(false)
         } catch (e) {
             console.error(e)
             toast.error("Couldn’t save request. Try again.")
@@ -181,7 +181,7 @@ export default function PrivacyEmailModal({
     
     
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={onOpenChangeAction}>
             <DialogContent className="sm:max-w-lg bg-[#050505] border border-white/10">
                 <DialogHeader className="space-y-2">
                     <DialogTitle className="flex flex-col gap-1">

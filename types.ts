@@ -1,4 +1,8 @@
 
+export type PrivacyAction = "delete" | "reduce";
+
+export type PrivacyStatus= "drafted" | "sent" | "received" | "needs_verification" | "in_progress" | "completed" | "failed" | "expired"
+
 export interface Service {
     id: string
     user_id: string
@@ -12,7 +16,17 @@ export interface Service {
         default_privacy_email: string | null
         category: string | null
         is_breached: boolean | null
-    }
+    },
+    privacy_requests: {
+        id: string,
+        action: PrivacyAction | null,
+        status: PrivacyStatus | null,
+        sent_at: string | null,
+        last_reply_at: string | null,
+        last_checked_at: string | null
+        last_notified_status: PrivacyAction | null,
+        last_notified_at: string | null
+    }[]
 }
 
 export type Category =
@@ -26,3 +40,17 @@ export type Category =
     | "gaming"
     | "education"
     | "health"
+
+
+export type NotificationType =
+    | "privacy_status_update"
+    | "new_account_detected"
+    | "new_breach_detected"
+    | "sweep_completed"
+    | "sweep_limit_reached"
+    | "gmail_disconnected"
+    | "privacy_request_reply"
+    | "service_priority_change"
+    | "plan_upgraded"
+    | "plan_downgraded"
+    | "general_announcement";

@@ -138,12 +138,7 @@ export default function SubscriptionModal({
                     <div className="space-y-2">
                         {/* Upgrade button for Free users */}
                         {!isPro && (
-                            <Button
-                                className="w-full justify-center"
-                                size="sm"
-                                onClick={handleUpgrade}
-                                disabled={loading}
-                            >
+                            <Button className="w-full justify-center" variant="outline" size="sm" onClick={handleUpgrade} disabled={loading}>
                                 Upgrade to Pro
                             </Button>
                         )}

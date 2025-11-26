@@ -47,7 +47,7 @@ export default function News() {
             )}
 
             {/* Content */}
-            <div className="relative z-10 flex flex-1 flex-col p-5">
+            <div className="relative flex flex-1 flex-col p-5">
                 {/* Header */}
                 <div className="mb-3 flex items-center justify-between gap-2">
                     <div className="flex flex-col gap-1">

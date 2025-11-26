@@ -26,10 +26,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Category, Service } from "@/types"
+import { Category, PrivacyAction, PrivacyStatus, Service } from "@/types"
 import { formatDate } from "@/utils/format-date"
-import ServiceDetails from "./service-details"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority-score"
+import { Spinner } from "@/components/ui/spinner"
+import ServiceDetails from "./service-details"
 
 
 
@@ -137,6 +138,95 @@ export const columns: ColumnDef<Service>[] = [
                     </span>
                 </div>
             )
+        },
+    },
+    {
+        accessorKey: "privacy_requests",
+        header: "Privacy Request",
+        cell: ({ row }) => {
+            const requests = row.getValue("privacy_requests") as
+                | {
+                    id: string;
+                    action: PrivacyAction;
+                    status: PrivacyStatus;
+                    sent_at: string | null;
+                }[]
+                | null;
+
+            // If no request
+            if (!requests || requests.length === 0) {
+                return (
+                    <span className="text-xs text-muted-foreground">
+                        No request
+                    </span>
+                );
+            }
+
+            // You limited nested results to 1, so take the first
+            const pr = requests[0];
+
+            // Map action to readable label
+            const actionLabel =
+                pr.action === "delete"
+                    ? "Delete Data"
+                    : "Reduce Data Use";
+
+            // Map statuses to badge style + label
+            const statusMap: Record<
+                string,
+                { label: string; className: string }
+            > = {
+                drafted: {
+                    label: "Drafted",
+                    className: "bg-zinc-500/10 text-zinc-300",
+                },
+                sent: {
+                    label: "Sent",
+                    className: "bg-blue-500/10 text-blue-300",
+                },
+                received: {
+                    label: "Reply Received",
+                    className: "bg-indigo-500/10 text-indigo-300",
+                },
+                needs_verification: {
+                    label: "Needs Verification",
+                    className: "bg-yellow-500/10 text-yellow-300",
+                },
+                in_progress: {
+                    label: "In Progress",
+                    className: "bg-purple-500/10 text-purple-300",
+                },
+                completed: {
+                    label: "Completed",
+                    className: "bg-emerald-500/10 text-emerald-300",
+                },
+                failed: {
+                    label: "Failed",
+                    className: "bg-red-500/10 text-red-300",
+                },
+                expired: {
+                    label: "Expired",
+                    className: "bg-orange-500/10 text-orange-300",
+                },
+            };
+
+            const statusInfo = statusMap[pr.status];
+
+            return (
+                <div className="flex flex-col gap-1">
+                    {/* Action label */}
+                    <span className="text-xs text-muted-foreground">
+                        {actionLabel}
+                    </span>
+
+                    {/* Status badge */}
+                    <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusInfo.className}`}
+                    >
+                        {statusInfo.label}
+                    </span>
+                </div>
+            );
         },
     },
     {
@@ -311,9 +401,9 @@ export default function ServiceTable() {
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center text-sm text-muted-foreground"
+                                    className="h-24 text-center text-sm text-muted-foreground relative"
                                 >
-                                    Loading services...
+                                    <Spinner className="text-primary absolute top-1/2 left-1/2" />
                                 </TableCell>
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (

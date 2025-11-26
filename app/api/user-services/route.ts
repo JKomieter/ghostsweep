@@ -55,11 +55,29 @@ export async function GET(request: NextRequest) {
                 default_privacy_email,
                 category,
                 is_breached
+            ),
+            privacy_request:privacy_requests!privacy_requests_user_service_fk (
+                id,
+                action,
+                status,
+                sent_at,
+                last_reply_at,
+                last_checked_at,
+                last_notified_status,
+                last_notified_at
             )
-        `
+            `
         )
         .eq("user_id", user.id)
         .order("last_seen_at", { ascending: false })
+        // 👇 only 1 nested privacy_request per parent row
+        .order("sent_at", {
+            referencedTable: "privacy_requests",
+            ascending: false,
+        })
+        .limit(1, {
+            foreignTable: "privacy_requests",
+        });
 
     // filter by service name (and optionally domain) on the related table
     if (searchQuery) {
