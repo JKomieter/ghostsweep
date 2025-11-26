@@ -201,7 +201,7 @@ export default function SecurityPage() {
                                 href="mailto:security@ghostsweep.com"
                                 className="font-medium text-emerald-300 underline underline-offset-2"
                             >
-                                security@ghostsweep.com
+                                support@ghostsweep.com
                             </a>
                             . We’ll review your report and respond as quickly as we can.
                         </p>
