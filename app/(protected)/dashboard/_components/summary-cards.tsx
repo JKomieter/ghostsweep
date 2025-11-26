@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/format-date";
-import SweepCard from "./sweep-card";
 
 interface MetricsData {
     service_count: number;
