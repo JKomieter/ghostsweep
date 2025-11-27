@@ -470,12 +470,12 @@ export default function HomePage() {
                             </div>
                             <div className="flex items-baseline gap-3">
                                 <div>
-                                    <p className="text-2xl font-semibold">$7.99</p>
+                                    <p className="text-2xl font-semibold">$9.99</p>
                                     <p className="text-xs text-muted-foreground"> / month</p>
                                 </div>
                                 <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-[10px]">
-                                    Yearly: <span className="font-semibold">$79.99 / year</span>{" "}
-                                    · Save ~16.5%
+                                    Yearly: <span className="font-semibold">$95.88 / year</span>{" "}
+                                    · Save ~20%
                                 </div>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">

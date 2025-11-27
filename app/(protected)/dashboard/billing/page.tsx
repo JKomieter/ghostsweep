@@ -8,8 +8,8 @@ import CheckoutForm from "../_components/checkout";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const PRO_MONTHLY_PRICE_CENTS = 799;   // $7.99
-const PRO_YEARLY_PRICE_CENTS = 7999;   // $79.99
+const PRO_MONTHLY_PRICE_CENTS = 999;   // $9.99
+const PRO_YEARLY_PRICE_CENTS = 9588;   // $95.88
 
 type BillingInterval = "monthly" | "yearly";
 
@@ -39,16 +39,16 @@ export default async function BillingPage({ searchParams }: PageProps) {
             ? {
                 label: "GhostSweep Professional — Monthly",
                 priceCents: PRO_MONTHLY_PRICE_CENTS,
-                priceLabel: "$7.99 / month",
+                priceLabel: "$9.99 / month",
                 interval: "monthly" as BillingInterval,
                 subline: "Pay month-to-month. Cancel anytime.",
             }
             : {
                 label: "GhostSweep Professional — Yearly",
                 priceCents: PRO_YEARLY_PRICE_CENTS,
-                priceLabel: "$79.99 / year",
+                priceLabel: "$95.88 / year",
                 interval: "yearly" as BillingInterval,
-                subline: "Save ~16.5% vs paying monthly.",
+                subline: "Save ~20% vs paying monthly.",
             };
 
     // Existing subscription row
@@ -131,7 +131,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 : "text-muted-foreground hover:text-white"
                         )}
                     >
-                        Monthly · $7.99
+                        Monthly · $9.99
                     </Link>
                     <Link
                         href="/dashboard/billing?plan=yearly"
@@ -142,7 +142,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 : "text-muted-foreground hover:text-white"
                         )}
                     >
-                        Yearly · $79.99
+                        Yearly · $95.88
                     </Link>
                 </div>
 
