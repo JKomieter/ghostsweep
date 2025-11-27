@@ -52,7 +52,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
 
                     {/* Contact Support */}
                     <a
-                        href="mailto:support@ghostsweep.app?subject=GhostSweep%20Support"
+                        href="mailto:support@ghostsweep.com?subject=GhostSweep%20Support"
                         onClick={() => onOpenChangeAction(false)}
                     >
                         <div className="group flex items-start gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-3 hover:border-primary/60 hover:bg-white/5 transition">
@@ -65,7 +65,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                                     Email our support team if you&apos;re stuck or something doesn&apos;t behave as expected.
                                 </p>
                                 <p className="text-[11px] text-primary/80">
-                                    support@ghostsweep.app
+                                    support@ghostsweep.com
                                 </p>
                             </div>
                         </div>

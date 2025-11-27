@@ -64,7 +64,7 @@ export default function TermsPage() {
                             Subscriptions
                         </div>
                         <p className="text-xs text-muted-foreground/90">
-                            Pro plans renew automatically unless cancelled. Billing is handled
+                            Professional plans renew automatically unless cancelled. Billing is handled
                             securely via our payment provider.
                         </p>
                     </div>
@@ -341,10 +341,10 @@ export default function TermsPage() {
                     </p>
                     <p className="text-sm text-muted-foreground">
                         <a
-                            href="mailto:support@ghostsweep.app"
+                            href="mailto:support@ghostsweep.com"
                             className="text-primary underline"
                         >
-                            support@ghostsweep.app
+                            support@ghostsweep.com
                         </a>
                     </p>
                     <p className="text-[11px] text-muted-foreground">

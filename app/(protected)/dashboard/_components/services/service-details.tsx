@@ -21,6 +21,7 @@ import PrivacyEmailModal from "../privacy-email-modal";
 import BreachesTab from "../service-tabs/breaches-tab";
 import { PrivacyRequest, PrivacyRequestsTab } from "../service-tabs/privacy-requests-tab";
 import SummaryTab from "../service-tabs/summary-tab";
+import Link from "next/link";
 
 
 const formatDate = (dateString: string | null) => {
@@ -126,18 +127,20 @@ export default function ServiceDetails({
             toast(() => (
                 <div>
                     <span className="font-medium">
-                        GhostSweep Pro required
+                        GhostSweep Professional required
                     </span>
                     <p className="text-sm text-muted-foreground">
                         Unlock privacy request templates and direct contacts.
                     </p>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                    >
-                        Upgrade to Pro
-                    </Button>
+                    <Link href="/dashboard/billing?plan=monthly">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                        >
+                            Upgrade to Pro
+                        </Button>
+                    </Link>
                 </div>
             ));
             return;
@@ -151,14 +154,16 @@ export default function ServiceDetails({
             toast(() => (
                 <div>
                     <span className="font-medium">
-                        GhostSweep Pro required
+                        GhostSweep Professional required
                     </span>
                     <p className="text-sm text-muted-foreground">
                         Unlock privacy request templates and direct contacts.
                     </p>
-                    <Button variant="outline" size="sm" className="mt-2">
-                        Upgrade to Pro
-                    </Button>
+                    <Link href="/dashboard/billing?plan=monthly">
+                        <Button variant="outline" size="sm" className="mt-2">
+                            Upgrade to Pro
+                        </Button>
+                    </Link>
                 </div>
             ));
             return;

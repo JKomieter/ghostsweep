@@ -57,6 +57,8 @@ export default function Header() {
         }
     }
 
+    const plan = data?.current_plan === "pro" ? "Professional" : "Free"
+
     return (
         <div className="h-14 relative flex">
             <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-10 border-border/60 bg-background/80 backdrop-blur-sm">
@@ -75,7 +77,7 @@ export default function Header() {
                         {status === 'pending' ? (
                             <span className="h-7 w-11 bg-neutral-quaternary"></span>
                         ) : (
-                            <span className={`px-3 py-1 rounded-full ${data?.current_plan === "free" ? "bg-gray-800" : "bg-primary/10"} text-primary text-sm font-medium uppercase`}>{data?.current_plan}</span>
+                            <span className={`px-3 py-1 rounded-full ${data?.current_plan === "free" ? "bg-gray-800" : "bg-primary/10"} text-primary text-sm font-medium uppercase`}>{plan}</span>
                         )}
                     </div>
 

@@ -6,6 +6,7 @@ import { formatDate } from "@/utils/format-date";
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react";
 import { BreachDetailsSheet } from "./breach-details";
+import Link from "next/link";
 
 type BreachRecord = {
     id: string;
@@ -53,7 +54,7 @@ export default function Breaches() {
             return { breaches, total }
         },
     })
-    
+
     const { data: plan } = useQuery({
         queryKey: ['plan'],
         queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
@@ -89,11 +90,13 @@ export default function Breaches() {
                         <p className="text-sm text-blue-300">
                             We found <strong>{totalCount}</strong> breaches linked to your data.
                             You&apos;re seeing the first <strong>{visibleCount}</strong>.
-                            <button
-                                className="text-blue-400 underline underline-offset-2 ml-1"
-                            >
-                                Upgrade to Pro
-                            </button>{" "}
+                            <Link href="/dashboard/billing?plan=monthly">
+                                <button
+                                    className="text-blue-400 underline underline-offset-2 ml-1"
+                                >
+                                    Upgrade to Pro
+                                </button>{" "}
+                            </Link>
                             to unlock all breach details.
                         </p>
                     </div>
@@ -130,8 +133,8 @@ export default function Breaches() {
                                     <Spinner className="text-primary absolute top-1/2 left-1/2" />
                                 </TableCell>
                             </TableRow>
-                        ):
-                        breaches?.breaches && breaches?.breaches.length > 0 ?
+                        ) :
+                            breaches?.breaches && breaches?.breaches.length > 0 ?
                                 breaches?.breaches.map((breach) => {
                                     const name =
                                         breach.raw?.title ||
@@ -223,7 +226,7 @@ export default function Breaches() {
                                             colSpan={5}
                                             className="h-24 text-center text-sm text-muted-foreground"
                                         >
-                                           No breaches found
+                                            No breaches found
                                         </TableCell>
                                     </TableRow>
                                 )}

@@ -5,15 +5,17 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, Lock, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Input from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { toast } from "sonner";
+import { ServiceCombobox } from "./_components/service-combobox";
 
 
-type Service = {
+export type Service = {
     id: string;
     name: string | null;
     domain: string | null;
@@ -30,7 +32,7 @@ export default function DataRemovalToolPage() {
     const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
     // Load plan info
-    const { data: plan, status: planStatus} = useQuery({
+    const { data: plan, status: planStatus } = useQuery({
         queryKey: ['plan'],
         queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
             const res = await fetch('/api/plan', {
@@ -48,7 +50,7 @@ export default function DataRemovalToolPage() {
         },
     })
 
-    const {data: services, status: servicesStatus} = useQuery({
+    const { data: services, status: servicesStatus } = useQuery({
         queryKey: ["allServices"],
         queryFn: async (): Promise<Service[]> => {
             const res = await fetch("/api/services", {
@@ -64,10 +66,6 @@ export default function DataRemovalToolPage() {
             return json.services
         }
     })
-
-    
-
-
 
     const isPro = plan?.current_plan === "pro";
     const planLoading = planStatus === "pending"
@@ -85,32 +83,40 @@ export default function DataRemovalToolPage() {
     }, [selectedService]);
 
     const emailBody = useMemo(() => {
-        const serviceName = selectedService?.name || "your service";
-        const serviceDomain = selectedService?.domain || "";
-        const email =  "[your email here]";
+        const serviceName = selectedService?.name || "your company";
+        const serviceDomain = selectedService?.domain
+            ? `(${selectedService.domain})`
+            : "";
+        const email = "[your email here]";
 
-        return [
-            `To the ${serviceName} Privacy Team,`,
+        const lines = [
+            `Subject: Request for Complete Account Deletion and Erasure of Personal Data (GDPR / CCPA)`,
             "",
-            `I am writing to formally request the deletion of my ${serviceName} account and all associated personal data.`,
+            `To the Data Protection or Privacy Team at ${serviceName} ${serviceDomain},`,
             "",
-            `Account email: ${email}`,
-            serviceDomain ? `Service domain: ${serviceDomain}` : "",
+            `I am writing to request the permanent deletion of my account and all personal data associated with it. This request is made under applicable data protection laws, including the GDPR (Article 17 — Right to Erasure) and the CCPA/CPRA (Section 1798.105), where relevant.`,
             "",
-            "Please treat this as a request to:",
-            "- Permanently delete my account and all personal data associated with it",
-            "- Stop any further processing of my personal data",
-            "- Remove my data from any third parties where feasible",
+            `Account information for verification:`,
+            `- Email associated with the account: ${email}`,
+            serviceDomain ? `- Service domain: ${serviceDomain}` : "",
             "",
-            "Where applicable, I am exercising my rights under relevant data protection laws (such as GDPR / CCPA or similar frameworks).",
+            `I am requesting that you:`,
+            `1. Permanently delete my account and all personal data associated with it from your systems, backups, archives, and logs.`,
+            `2. Stop processing or using my personal data for any purpose.`,
+            `3. Notify any third parties or processors with whom you have shared my data that they must also delete it.`,
             "",
-            "Please confirm once my account and data have been deleted, and let me know if you require any further information to process this request.",
+            `Response timeframe:`,
+            `Under GDPR, you are expected to respond without undue delay and no later than 30 days from receiving this request. If you require additional information to verify my identity, please let me know as soon as possible.`,
             "",
-            "Kind regards,",
-            email,
-        ]
-            .filter(Boolean)
-            .join("\n");
+            `Please confirm in writing when my account has been fully deleted and provide a brief summary of the actions taken, especially regarding third-party data deletion.`,
+            "",
+            `Thank you for your cooperation.`,
+            "",
+            `Sincerely,`,
+            `${email}`,
+        ];
+
+        return lines.join("\n");
     }, [selectedService]);
 
     const privacyEmail = selectedService?.default_privacy_email || "";
@@ -119,6 +125,7 @@ export default function DataRemovalToolPage() {
         try {
             await navigator.clipboard.writeText(`Subject: ${emailSubject}\n\n${emailBody}`);
             setCopyStatus("Template copied to clipboard");
+            toast.success("Template copied to clipboard")
             setTimeout(() => setCopyStatus(null), 2500);
         } catch (err) {
             console.error("Error copying:", err);
@@ -132,6 +139,7 @@ export default function DataRemovalToolPage() {
         try {
             await navigator.clipboard.writeText(privacyEmail);
             setCopyStatus("Recipient email copied");
+            toast.success("Recipient email copied")
             setTimeout(() => setCopyStatus(null), 2500);
         } catch (err) {
             console.error("Error copying recipient:", err);
@@ -149,7 +157,7 @@ export default function DataRemovalToolPage() {
     };
 
     const handleUpgrade = () => {
-        router.push("/billing");
+        router.push("/dashboard/billing");
     };
 
     return (
@@ -205,7 +213,7 @@ export default function DataRemovalToolPage() {
                                     : "bg-zinc-700/40 text-zinc-100 border border-zinc-500/40"
                             )}
                         >
-                            {isPro ? "Pro" : "Free"}
+                            {isPro ? "Professional" : "Free"}
                         </Badge>
                     )}
                 </div>
@@ -219,16 +227,18 @@ export default function DataRemovalToolPage() {
                                 <span>Unlock data removal templates</span>
                             </div>
                             <p className="text-xs text-muted-foreground max-w-md">
-                                GhostSweep Pro can generate tailored deletion requests for any service we&apos;ve detected
-                                in your sweeps. Upgrade to Pro to unlock this tool and take back full control of your data.
+                                GhostSweep Professional can generate tailored deletion requests for any service we&apos;ve detected
+                                in your sweeps. Upgrade to Professional to unlock this tool and take back full control of your data.
                             </p>
                         </div>
-                        <Button size="sm" onClick={handleUpgrade} variant="outline">
-                            Upgrade to Pro
-                        </Button>
+                        <Link href="/dashboard/billing?plan=monthly">
+                            <Button size="sm" onClick={handleUpgrade} variant="outline">
+                                Upgrade to Professional
+                            </Button>
+                        </Link>
                     </div>
                 ) : (
-                    // Pro view: main tool
+                    // Professional view: main tool
                     <div className="mt-4 space-y-6">
                         {/* Service selection */}
                         <div className="rounded-xl border border-white/10 bg-[#0b0b0b] p-5 space-y-3">
@@ -240,31 +250,12 @@ export default function DataRemovalToolPage() {
 
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                                 <div className="flex-1">
-                                    <Select
-                                        value={selectedServiceId}
-                                        onValueChange={(val) => setSelectedServiceId(val)}
-                                        disabled={servicesLoading || services?.length === 0}
-                                    >
-                                        <SelectTrigger className="w-full bg-[#111111] border-white/15 text-sm">
-                                            <SelectValue
-                                                placeholder={
-                                                    servicesLoading
-                                                        ? "Loading services..."
-                                                        : services?.length === 0
-                                                            ? "No services found from sweeps yet"
-                                                            : "Select a service"
-                                                }
-                                            />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {services?.map((service) => (
-                                                <SelectItem key={service.id} value={service.id}>
-                                                    {service.name || "Unknown service"}
-                                                    {service.domain ? ` (${service.domain})` : ""}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <ServiceCombobox
+                                        services={services}
+                                        servicesLoading={servicesLoading}
+                                        selectedServiceId={selectedServiceId}
+                                        setSelectedServiceId={setSelectedServiceId}
+                                    />
                                 </div>
                             </div>
 
@@ -298,7 +289,7 @@ export default function DataRemovalToolPage() {
                                             placeholder="No dedicated privacy email stored for this service"
                                             id="email"
                                             type="email"
-                                            onChange={() => {}}
+                                            onChange={() => { }}
                                         />
                                     </div>
                                     <Button
@@ -329,7 +320,7 @@ export default function DataRemovalToolPage() {
                                 <Input
                                     value={emailSubject}
                                     readOnly
-                                    onChange={() =>{}}
+                                    onChange={() => { }}
                                     id="subject"
                                 />
                             </div>
@@ -349,7 +340,6 @@ export default function DataRemovalToolPage() {
                                 <Button
                                     size="sm"
                                     onClick={handleCopyTemplate}
-                                    disabled={!selectedService}
                                 >
                                     Copy full template
                                 </Button>

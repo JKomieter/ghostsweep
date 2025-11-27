@@ -171,7 +171,7 @@ export default function HelpPage() {
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
                                 The Free plan gives you a limited view of detected services and
-                                basic breach awareness. Pro unlocks full service discovery, complete
+                                basic breach awareness. Professional unlocks full service discovery, complete
                                 breach history, more generous sweep limits, and access to data
                                 removal email templates.
                             </p>
@@ -181,7 +181,7 @@ export default function HelpPage() {
                                 How do I upgrade or cancel?
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                You can upgrade to Pro or manage your existing subscription from the
+                                You can upgrade to Professional or manage your existing subscription from the
                                 Subscription &amp; Billing section inside the app. Billing is handled
                                 securely via Stripe, and you can cancel anytime from the customer
                                 portal.
@@ -192,7 +192,7 @@ export default function HelpPage() {
                                 What happens to my data if I cancel?
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Cancelling Pro stops future billing but doesn&apos;t automatically
+                                Cancelling Professional stops future billing but doesn&apos;t automatically
                                 delete your sweep history. You can manually delete sweep data and, if
                                 you wish, delete your entire account from the Privacy Tools section.
                             </p>
@@ -262,7 +262,7 @@ export default function HelpPage() {
                     </p>
                     <div className="flex flex-wrap gap-3">
                         <a
-                            href="mailto:support@ghostsweep.app?subject=GhostSweep%20Support"
+                            href="mailto:support@ghostsweep.com?subject=GhostSweep%20Support"
                             className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium hover:bg-white/5 transition"
                         >
                             Contact support

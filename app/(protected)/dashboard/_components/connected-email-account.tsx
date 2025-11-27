@@ -20,12 +20,11 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Mail, RefreshCw, Unplug } from "lucide-react";
+import { Mail, RefreshCw, Unplug, Loader2 } from "lucide-react";
 import Input from "@/components/ui/input";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
-
 
 export default function ConnectEmailModal({
     open,
@@ -34,30 +33,28 @@ export default function ConnectEmailModal({
     open: boolean;
     onOpenChangeAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-
     const [removeOpen, setRemoveOpen] = useState(false);
     const [removing, setRemoving] = useState(false);
     const [removeError, setRemoveError] = useState<string | null>(null);
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
 
     const { data, status } = useQuery({
-        queryKey: ['gmailAccount'],
+        queryKey: ["gmailAccount"],
         queryFn: async (): Promise<{ gmail_address: string | null }> => {
-            const res = await fetch('/api/gmail_account');
+            const res = await fetch("/api/gmail_account");
             if (!res.ok) {
-                throw new Error('Failed to fetch Gmail account');
+                throw new Error("Failed to fetch Gmail account");
             }
             return res.json();
         },
         refetchOnWindowFocus: false,
-    })
+    });
 
     const handleRemoveConnection = async () => {
         setRemoveError(null);
         setRemoving(true);
 
         try {
-            // 🔹 Adjust this DELETE route to match your backend implementation
             const res = await fetch("/api/gmail_account/delete", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
@@ -68,23 +65,24 @@ export default function ConnectEmailModal({
                 throw new Error(body.error || "Failed to remove connection");
             }
 
+            toast.success("Gmail disconnected and sweep data cleared.");
             setRemoveOpen(false);
         } catch (err) {
             console.error("Error removing Gmail connection:", err);
-            toast.error("Couldn’t disconnect this email. Please try again.")
+            toast.error("Couldn’t disconnect this email. Please try again.");
             setRemoveError("Couldn’t disconnect this email. Please try again.");
         } finally {
             setRemoving(false);
             await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ['gmailAccount'] }),
-                queryClient.invalidateQueries({ queryKey: ['services'] }),
-                queryClient.invalidateQueries({ queryKey: ['breaches'] }),
-                queryClient.invalidateQueries({ queryKey: ['metrics'] }),
-            ])
+                queryClient.invalidateQueries({ queryKey: ["gmailAccount"] }),
+                queryClient.invalidateQueries({ queryKey: ["services"] }),
+                queryClient.invalidateQueries({ queryKey: ["breaches"] }),
+                queryClient.invalidateQueries({ queryKey: ["metrics"] }),
+            ]);
         }
     };
 
-    const loading = status === "pending"
+    const loading = status === "pending";
     const isConnected = !!data?.gmail_address;
 
     return (
@@ -130,9 +128,12 @@ export default function ConnectEmailModal({
                                         value={
                                             loading
                                                 ? ""
-                                                : data?.gmail_address || (isConnected ? "" : "No email connected")
+                                                : data?.gmail_address ||
+                                                (isConnected ? "" : "No email connected")
                                         }
-                                        placeholder={loading ? "Loading..." : "No email connected"}
+                                        placeholder={
+                                            loading ? "Loading..." : "No email connected"
+                                        }
                                         onChange={() => { }}
                                     />
                                 </div>
@@ -144,7 +145,7 @@ export default function ConnectEmailModal({
 
                             {status === "error" && (
                                 <p className="text-[11px] text-red-400">
-                                    Problem fetching connected gmail
+                                    Problem fetching connected Gmail.
                                 </p>
                             )}
                         </div>
@@ -152,10 +153,10 @@ export default function ConnectEmailModal({
                         {/* Actions */}
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex gap-2">
-                                <Link href="/api/google/oauth/start" >
+                                <Link href="/api/google/oauth/start">
                                     <Button
                                         size="sm"
-                                        disabled={loading}
+                                        disabled={loading || removing}
                                         className="inline-flex items-center gap-1"
                                     >
                                         <RefreshCw className="h-4 w-4" />
@@ -169,9 +170,19 @@ export default function ConnectEmailModal({
                                         variant="outline"
                                         className="border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 inline-flex items-center gap-1"
                                         onClick={() => setRemoveOpen(true)}
+                                        disabled={removing}
                                     >
-                                        <Unplug className="h-4 w-4" />
-                                        Disconnect
+                                        {removing ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                Disconnecting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Unplug className="h-4 w-4" />
+                                                Disconnect
+                                            </>
+                                        )}
                                     </Button>
                                 )}
                             </div>
@@ -180,6 +191,7 @@ export default function ConnectEmailModal({
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => onOpenChangeAction(false)}
+                                disabled={removing}
                             >
                                 Close
                             </Button>
@@ -194,9 +206,10 @@ export default function ConnectEmailModal({
                     <AlertDialogHeader>
                         <AlertDialogTitle>Disconnect this email?</AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">
-                            GhostSweep will disconnect this Gmail account and delete its sweep results (services found and breach data).
-                            You won’t be able to run new sweeps or check for new breaches until you reconnect.
-                            You can reconnect this email at any time.
+                            GhostSweep will disconnect this Gmail account and delete its sweep
+                            results (services found and breach data). You won’t be able to run
+                            new sweeps or check for new breaches until you reconnect. You can
+                            reconnect this email at any time.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -204,9 +217,16 @@ export default function ConnectEmailModal({
                         <AlertDialogAction
                             onClick={handleRemoveConnection}
                             disabled={removing}
-                            className="bg-red-600 hover:bg-red-700 text-white"
+                            className="bg-red-600 hover:bg-red-700 text-white inline-flex items-center gap-2"
                         >
-                            {removing ? "Disconnecting..." : "Disconnect"}
+                            {removing ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Disconnecting…
+                                </>
+                            ) : (
+                                "Disconnect"
+                            )}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                     {removeError && (

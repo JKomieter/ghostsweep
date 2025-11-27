@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title: "GhostSweep — Protect Your Digital Footprint",
     description:
       "Scan your inbox, uncover hidden services, detect breaches, and take control of your data exposure.",
-    url: "https://ghostsweep.app",
+    url: "https://ghostsweep.com",
     siteName: "GhostSweep",
     images: [
       {

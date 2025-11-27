@@ -23,7 +23,7 @@ export default function SecurityPage() {
 
                 {/* Metadata callout */}
                 <section className="mb-10">
-                    <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5 sm:p-6">
+                    <div className="rounded-2xl border border-emerald-500/30 bg-linear-to-br from-emerald-500/10 via-emerald-500/5 to-transparent p-5 sm:p-6">
                         <h2 className="text-sm font-semibold text-emerald-200">
                             Inbox access at a glance
                         </h2>
@@ -198,7 +198,7 @@ export default function SecurityPage() {
                             If you believe you have found a security vulnerability or privacy
                             issue in GhostSweep, please contact us at{" "}
                             <a
-                                href="mailto:security@ghostsweep.com"
+                                href="mailto:su@ghostsweep.com"
                                 className="font-medium text-emerald-300 underline underline-offset-2"
                             >
                                 support@ghostsweep.com

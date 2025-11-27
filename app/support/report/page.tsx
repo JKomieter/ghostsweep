@@ -228,10 +228,10 @@ export default function ReportIssuePage() {
                         If you&apos;re unable to access your account or have a billing-related
                         problem that needs urgent attention, you can also email us directly at{" "}
                         <a
-                            href="mailto:support@ghostsweep.app?subject=GhostSweep%20Billing%20Issue"
+                            href="mailto:support@ghostsweep.com?subject=GhostSweep%20Billing%20Issue"
                             className="text-primary underline"
                         >
-                            support@ghostsweep.app
+                            support@ghostsweep.com
                         </a>
                         .
                     </p>

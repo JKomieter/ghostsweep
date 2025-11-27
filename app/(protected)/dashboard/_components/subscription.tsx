@@ -91,7 +91,7 @@ export default function SubscriptionModal({
                                             : "bg-zinc-700/40 text-zinc-100 border border-zinc-500/40"
                                     }
                                 >
-                                    {isPro ? "Pro" : "Free"}
+                                    {isPro ? "Professional" : "Free"}
                                 </Badge>
                                 {isPro ? (
                                     <span className="text-xs text-muted-foreground">
@@ -139,7 +139,7 @@ export default function SubscriptionModal({
                         {/* Upgrade button for Free users */}
                         {!isPro && (
                             <Button className="w-full justify-center" variant="outline" size="sm" onClick={handleUpgrade} disabled={loading}>
-                                Upgrade to Pro
+                                Upgrade to Professional
                             </Button>
                         )}
 

@@ -86,7 +86,7 @@ export async function POST(req: Request) {
             type: "plan_upgraded",
             title: "You're now Pro!",
             message:
-              "Your GhostSweep Pro plan is now active. Enjoy unlimited sweeps, deeper scans, and new account detection.",
+              "Your GhostSweep Professional plan is now active. Enjoy unlimited sweeps, deeper scans, and new account detection.",
             read: false,
             created_at: new Date().toISOString(),
           })

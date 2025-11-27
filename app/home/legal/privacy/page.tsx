@@ -75,10 +75,10 @@ export default function PrivacyPolicyPage() {
                     <p className="text-sm text-muted-foreground">
                         If you have questions about this policy, you can contact us at{" "}
                         <a
-                            href="mailto:support@ghostsweep.app"
+                            href="mailto:support@ghostsweep.com"
                             className="text-primary underline"
                         >
-                            support@ghostsweep.app
+                            support@ghostsweep.com
                         </a>
                         .
                     </p>
@@ -141,7 +141,7 @@ export default function PrivacyPolicyPage() {
                             2.4 Payment information
                         </p>
                         <p className="text-sm text-muted-foreground">
-                            When you purchase a Pro subscription, payments are processed by our
+                            When you purchase a Professional subscription, payments are processed by our
                             third-party payment provider (Stripe). We do not store your
                             full payment card details on our own servers. We may store subscription
                             status, plan type, and billing-related metadata.
@@ -297,10 +297,10 @@ export default function PrivacyPolicyPage() {
                     <p className="mt-2 text-sm text-muted-foreground">
                         To exercise these rights, you can contact us at{" "}
                         <a
-                            href="mailto:support@ghostsweep.app"
+                            href="mailto:support@ghostsweep.com"
                             className="text-primary underline"
                         >
-                            support@ghostsweep.app
+                            support@ghostsweep.com
                         </a>
                         . We may need to verify your identity before fulfilling certain requests.
                     </p>
@@ -365,10 +365,10 @@ export default function PrivacyPolicyPage() {
                     <p className="text-sm text-muted-foreground">
                         <Mail className="mr-1 inline h-3 w-3 text-primary" />
                         <a
-                            href="mailto:support@ghostsweep.app"
+                            href="mailto:support@ghostsweep.com"
                             className="text-primary underline"
                         >
-                            support@ghostsweep.app
+                            support@ghostsweep.com
                         </a>
                     </p>
                     <p className="text-[11px] text-muted-foreground">

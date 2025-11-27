@@ -11,6 +11,7 @@ import { Appearance, loadStripe } from '@stripe/stripe-js'
 import { toast } from "sonner";
 import Input from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -26,6 +27,24 @@ function PaymentForm() {
 
     const [email, setEmail] = useState('');
 
+    const { data, status } = useQuery({
+        queryKey: ['plan'],
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+            const res = await fetch('/api/plan', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch plan data');
+            }
+
+            return res.json();
+        },
+    })
+
     const [message, setMessage] = useState<string>();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +55,19 @@ function PaymentForm() {
             // Stripe.js hasn't yet loaded.
             // Make sure to disable form submission until Stripe.js has loaded.
             return;
+        }
+
+        if (data?.current_plan === "pro") {
+            toast(() => (
+                <div>
+                    <p>
+                        You’re already on GhostSweep Professional
+                    </p>
+                    <p className="text-sm">
+                        Your account is already upgraded. You don’t need to purchase this plan again.
+                    </p>
+                </div>
+            ))
         }
 
         setIsLoading(true);

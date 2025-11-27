@@ -129,7 +129,7 @@ export default function PrivacyToolsModal({
                                     <Skeleton className="mt-1 h-4 w-24 bg-white/10" />
                                 ) : plan ? (
                                     <span className="text-sm text-white">
-                                        {isPro ? "Pro – full privacy tools unlocked" : "Free – limited tools"}
+                                        {isPro ? "Professional – full privacy tools unlocked" : "Free – limited tools"}
                                     </span>
                                 ) : (
                                     <span className="text-sm text-red-400">
@@ -145,7 +145,7 @@ export default function PrivacyToolsModal({
                                             : "bg-zinc-700/40 text-zinc-100 border border-zinc-500/40"
                                     }
                                 >
-                                    {isPro ? "Pro" : "Free"}
+                                    {isPro ? "Professional" : "Free"}
                                 </Badge>
                             )}
                         </div>
@@ -167,7 +167,7 @@ export default function PrivacyToolsModal({
                                         </span>
                                         {!isPro && (
                                             <Badge className="bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[10px]">
-                                                Pro
+                                                Professional
                                             </Badge>
                                         )}
                                     </div>

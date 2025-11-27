@@ -33,6 +33,24 @@ export default function DashboardTitle() {
         refetchOnWindowFocus: false,
     });
 
+    const { data: plan } = useQuery({
+        queryKey: ['plan'],
+        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+            const res = await fetch('/api/plan', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch plan data');
+            }
+
+            return res.json();
+        },
+    })
+
     const gmailAddress = data?.gmail_address ?? null;
 
     const onSweep = async () => {
@@ -60,11 +78,13 @@ export default function DashboardTitle() {
                         <div>
                             <span className="font-medium">You’ve hit your monthly sweep limit</span>
                             <p className="text-sm text-muted-foreground">
-                                Stay protected. Go Pro for unlimited sweeps and detailed insights.
+                                Stay protected. Go Professional for unlimited sweeps and detailed insights.
                             </p>
-                            <Button variant="outline" size="sm" className="mt-2">
-                                Upgrade to Pro
-                            </Button>
+                            <Link href="/dashboard/billing?plan=monthly">
+                                <Button variant="outline" size="sm" className="mt-2">
+                                    Upgrade to Professional
+                                </Button>
+                            </Link>
                         </div>
                     ));
                     return;
@@ -72,18 +92,33 @@ export default function DashboardTitle() {
                     throw new Error(json.error || "Sweep failed");
                 }
             }
+            if (plan?.current_plan !== "pro") {
+                toast.success(() => (
+                    <div>
+                        <p className="text-sm">
+                            Sweep complete. Upgrade to unlock full results, deeper scans, account
+                            deletion tracking, and new account detection.
+                        </p>
+                        <Link href="/dashboard/billing?plan=monthly">
+                            <Button size="sm" className="mt-2">
+                                Upgrade to Pro
+                            </Button>
+                        </Link>
+                    </div>
+                ));
+            } else {
+                toast.success(() => (
+                    <div>
+                        <p>
+                            Sweep Complete — Your Dashboard Is Updated
+                        </p>
+                        <p className="text-sm">
+                            We’ve analyzed your inbox and refreshed your services, breaches, and insights.
+                        </p>
+                    </div>
+                ))
+            }
 
-            toast.success(() => (
-                <div>
-                    <p className="text-sm">
-                        Sweep complete. Upgrade to unlock full results, deeper scans, account
-                        deletion tracking, and new account detection.
-                    </p>
-                    <Button size="sm" className="mt-2">
-                        Upgrade to Pro
-                    </Button>
-                </div>
-            ));
 
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["gmailAccount"] }),

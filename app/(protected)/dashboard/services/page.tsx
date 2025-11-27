@@ -21,9 +21,7 @@ export default function ServicePage() {
             </div>
 
             {/* Table container */}
-            <div className="rounded-xl border border-white/10 bg-[#050505] p-4 md:p-5">
-                <ServiceTable />
-            </div>
+            <ServiceTable />
         </div>
     );
 }

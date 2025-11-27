@@ -1,14 +1,55 @@
 import { createClient } from "@/utils/supabase/server";
 import { listEmails } from "@/utils/sweep/list-emails";
 import { decryptToken, encryptToken } from "@/utils/token-crypto";
-import { google } from "googleapis";
+import { gmail_v1, google } from "googleapis";
 import { NextResponse } from "next/server";
 import {
     EmailMetadata,
     getEmailMetadataFromClient,
+    // getEmailMetadataFromClient,
 } from "@/utils/sweep/get-email-metadata";
 import { summarizeByDomain } from "@/utils/sweep/summarize-by-domain";
 import { getBreaches } from "@/utils/sweep/get-breaches";
+
+
+// limit parallel Gmail calls to avoid timeouts / rate limits
+const FREE_CONCURRENCY = 4;
+const PRO_CONCURRENCY = 10;
+
+async function fetchMetadataForMessages(
+    gmail: gmail_v1.Gmail,
+    messages: gmail_v1.Schema$Message[],
+    current_plan: "free" | "pro"
+): Promise<EmailMetadata[]> {
+    const CONCURRENCY =
+        current_plan === "pro" ? PRO_CONCURRENCY : FREE_CONCURRENCY;
+
+    const results: EmailMetadata[] = [];
+    let index = 0;
+
+    async function worker() {
+        // simple work-queue pattern
+        while (index < messages.length) {
+            const i = index++;
+            const msg = messages[i];
+            if (!msg.id) continue;
+
+            try {
+                const meta = await getEmailMetadataFromClient(gmail, msg.id);
+                results.push(meta);
+            } catch (err) {
+                console.error(`Error fetching metadata for ${msg.id}:`, err);
+            }
+        }
+    }
+
+    // spin up N workers in parallel
+    const workers = Array.from({ length: CONCURRENCY }, () => worker());
+    await Promise.all(workers);
+
+    return results;
+}
+
 
 export async function GET() {
     const scanStartedAt = Date.now();
@@ -52,7 +93,7 @@ export async function GET() {
                 {
                     error: "Monthly limit reached",
                     code: "MONTHLY_LIMIT_REACHED",
-                    message: "You've already used your free sweep for this month. Upgrade to Pro to unlock unlimited scans."
+                    message: "You've already used your free sweep for this month. Upgrade to Professional to unlock unlimited scans."
                 },
                 { status: 403 }
             );
@@ -183,33 +224,26 @@ export async function GET() {
 
     const current_plan = subscriptionData?.current_plan || "free";
 
-    // list emails
-    const list = await listEmails( current_plan, gmail);
+    const messages = await listEmails(current_plan, gmail);
+    console.log("Number of messages: ", messages.length)
+    // Optional: cap how many messages we *process* further
+    // const MAX_TO_PROCESS = current_plan === "pro" ? 300 : 120;
+    // const messagesToProcess = messages.slice(0, MAX_TO_PROCESS);
 
-    const metadataList: EmailMetadata[] = [];
+    const metadataList = await fetchMetadataForMessages(
+        gmail,
+        messages,
+        current_plan as "free" | "pro"
+    );
 
-    // fetch metadata for each email
-    for (const message of list) {
-        if (message.id) {
-            try {
-                const metadata = await getEmailMetadataFromClient(gmail, message.id);
-                metadataList.push(metadata);
-            } catch (error) {
-                console.error(
-                    `Error fetching metadata for message ID ${message.id}:`,
-                    error
-                );
-            }
-        }
-    }
 
     // summarize by domain
     const domainSummaries = await summarizeByDomain(metadataList);
 
-    // get breaches associated with the email
+    // get breaches
     const breaches = await getBreaches(gmailAccount.gmail_address);
 
-    // save the sweep data (edge function can use service_role internally)
+    // save via edge function as before
     await supabase.functions.invoke("save-sweep-data", {
         body: {
             userId: user.id,
