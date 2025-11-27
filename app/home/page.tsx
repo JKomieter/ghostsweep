@@ -101,15 +101,14 @@ export default function HomePage() {
                         <div className="space-y-6">
                             <div className="space-y-4">
                                 <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                                    Know who has your data.
+                                    You have 200+ accounts online.
                                     <br />
-                                    Take back control.
+                                    You remember maybe 30.
                                 </h1>
                                 <p className="max-w-xl text-sm text-muted-foreground">
-                                    GhostSweep scans your inbox (metadata only) to uncover every
-                                    account, breach, and hidden service holding your personal
-                                    data. Get a clear map of your digital footprint — then clean
-                                    it up.
+                                    GhostSweep scans your inbox to discover every account you&apos;ve ever created—
+                                    streaming services, old social media, forgotten subscriptions. See which
+                                    ones were breached, then delete what you don&apos;t need.
                                 </p>
                             </div>
 
@@ -118,7 +117,7 @@ export default function HomePage() {
                                     href="/login"
                                     className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
                                 >
-                                    Scan your inbox (Free)
+                                    Start free scan
                                     <ArrowRight className="h-3 w-3" />
                                 </Link>
                                 <Link
@@ -132,11 +131,11 @@ export default function HomePage() {
                             {/* Waitlist */}
                             <div className="mt-4 rounded-xl border border-white/10 bg-black/40 p-3">
                                 <p className="text-[11px] font-medium text-muted-foreground mb-2">
-                                    Not ready to connect yet?
+                                    Not ready yet?
                                 </p>
                                 <p className="text-[11px] text-muted-foreground mb-2">
-                                    Join the GhostSweep update list to hear when new features launch:
-                                    breach checker, CASA certification, and more.
+                                    Get notified when we complete CASA security certification and launch
+                                    new features. No spam, just important updates
                                 </p>
                                 <form
                                     action="/api/waitlist"
@@ -162,15 +161,15 @@ export default function HomePage() {
                             <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
                                 <div className="inline-flex items-center gap-1">
                                     <ShieldCheck className="h-3 w-3 text-primary" />
-                                    100% privacy-first
+                                    Read-only Gmail access
                                 </div>
                                 <div className="inline-flex items-center gap-1">
                                     <EyeOff className="h-3 w-3 text-primary" />
-                                    No email content accessed
+                                    Only metadata, never content
                                 </div>
                                 <div className="inline-flex items-center gap-1">
                                     <Lock className="h-3 w-3 text-primary" />
-                                    Disconnect & delete data anytime
+                                    Revoke access anytime
                                 </div>
                             </div>
                         </div>
@@ -222,7 +221,7 @@ export default function HomePage() {
                     <div className="flex flex-wrap items-baseline justify-between gap-3">
                         <div className="space-y-2">
                             <h2 className="text-xl font-semibold tracking-tight">
-                                A private audit of everywhere your data lives
+                                How it works: 4 steps to map your footprint
                             </h2>
                             <p className="max-w-xl text-sm text-muted-foreground">
                                 GhostSweep connects to your Gmail with read-only access,
@@ -242,38 +241,38 @@ export default function HomePage() {
                     <div className="grid gap-4 text-sm md:grid-cols-4">
                         <div className="space-y-2 rounded-lg border border-white/10 bg-black/40 p-3">
                             <p className="text-[11px] font-semibold text-muted-foreground">
-                                1. Connect (read-only OAuth)
+                                1. Connect your Gmail
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                We use Google OAuth with Gmail read-only permissions. GhostSweep
-                                cannot send, delete, or change emails.
+                                Read-only access via Google OAuth. We can&apos;t send, delete, or
+                                modify any emails. You stay in control.
                             </p>
                         </div>
                         <div className="space-y-2 rounded-lg border border-white/10 bg-black/40 p-3">
                             <p className="text-[11px] font-semibold text-muted-foreground">
-                                2. Analyze metadata only
+                                2. We scan metadata only
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                We only see sender, subject, and timestamps to detect services,
-                                logins, billing, and security alerts.
+                                We analyze sender, subject, and timestamps—never email bodies or
+                                attachments. Find accounts from receipts, confirmations, and alerts.
                             </p>
                         </div>
                         <div className="space-y-2 rounded-lg border border-white/10 bg-black/40 p-3">
                             <p className="text-[11px] font-semibold text-muted-foreground">
-                                3. Map services & breaches
+                                3. See all your accounts
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                View every account tied to your inbox and see which ones appear
-                                in known data breaches.
+                                Every service you&apos;ve signed up for, which ones were breached,
+                                and when. Average user discovers 200+ accounts.
                             </p>
                         </div>
                         <div className="space-y-2 rounded-lg border border-white/10 bg-black/40 p-3">
                             <p className="text-[11px] font-semibold text-muted-foreground">
-                                4. Take action
+                                4. Clean up your footprint
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                Use deletion templates and privacy request tracking (Professional)
-                                to shrink your footprint over time.
+                                Get deletion request templates, track responses, and monitor for
+                                new accounts. (Professional plan)
                             </p>
                         </div>
                     </div>
@@ -296,11 +295,11 @@ export default function HomePage() {
                                 </p>
                             </div>
                             <p className="text-sm font-medium text-foreground">
-                                Check if your email appears in known breaches
+                                Check if your email was breached
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                Quickly test an address against breach databases. GhostSweep
-                                helps you understand where your data may have leaked.
+                                See which data breaches exposed your email, when it happened,
+                                and what information was leaked. Free, no signup required.
                             </p>
                             <span className="inline-flex items-center gap-1 text-[11px] text-primary mt-1">
                                 Try the breach checker
@@ -319,11 +318,11 @@ export default function HomePage() {
                                 </p>
                             </div>
                             <p className="text-sm font-medium text-foreground">
-                                Practical guides on data hygiene
+                                How to delete accounts and reduce your footprint
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                Learn how to reduce your digital footprint, understand breaches,
-                                and use privacy laws in your favor.
+                                Step-by-step guides to delete Facebook, Instagram, Twitter, and
+                                200+ services. Plus: what to do after a breach.
                             </p>
                             <span className="inline-flex items-center gap-1 text-[11px] text-primary mt-1">
                                 Read the blog
@@ -360,13 +359,13 @@ export default function HomePage() {
                 <section id="security" className="space-y-6">
                     <div className="space-y-2">
                         <h2 className="text-xl font-semibold tracking-tight">
-                            Built as a privacy tool first, product second
+                            Security and privacy are non-negotiable
                         </h2>
                         <p className="max-w-xl text-sm text-muted-foreground">
-                            GhostSweep is designed to minimize data access, not maximize it.
-                            We only ask for what we need to answer one question:{" "}
+                            We only access what&lsquo;s absolutely necessary to answer one question:
+                            Where does your data live?{" "}
                             <span className="font-medium text-foreground">
-                                “Where does my data live?”
+                                Nothing more.
                             </span>
                             .
                         </p>
@@ -424,12 +423,11 @@ export default function HomePage() {
                 <section id="pricing" className="space-y-6">
                     <div className="space-y-2">
                         <h2 className="text-xl font-semibold tracking-tight">
-                            Start free. Upgrade to Professional if you need more.
+                            Try free. Upgrade when you&apos;re ready.
                         </h2>
                         <p className="max-w-xl text-sm text-muted-foreground">
-                            The free plan gives you a meaningful snapshot of your digital
-                            footprint. Professional unlocks unlimited sweeps, breach alerts,
-                            new account detection, and deletion tracking.
+                            Free plan shows you what accounts exist. Professional plan helps
+                            you track breaches, monitor new accounts, and clean everything up.
                         </p>
                     </div>
 
@@ -444,11 +442,11 @@ export default function HomePage() {
                                 <p className="text-xs text-muted-foreground"> / forever</p>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">
-                                <li>• 1 inbox sweep per month</li>
-                                <li>• Service discovery from recent email activity</li>
-                                <li>• Basic breach visibility for detected services</li>
-                                <li>• Manual privacy actions</li>
-                                <li>• Disconnect & delete your data anytime</li>
+                                <li>• One inbox scan per month</li>
+                                <li>• See accounts from recent emails</li>
+                                <li>• Basic breach check</li>
+                                <li>• Manual deletion (no tracking)</li>
+                                <li>• Delete all your data anytime</li>
                             </ul>
                             <Link
                                 href="/login"
@@ -465,7 +463,7 @@ export default function HomePage() {
                                     Professional
                                 </p>
                                 <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground/90">
-                                    Best for ongoing protection
+                                    Most popular
                                 </span>
                             </div>
                             <div className="flex items-baseline gap-3">
@@ -479,12 +477,12 @@ export default function HomePage() {
                                 </div>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">
-                                <li>• Unlimited inbox sweeps</li>
-                                <li>• Full service discovery (including older + hidden accounts)</li>
-                                <li>• Full breach history visibility and new breach alerts</li>
-                                <li>• New Account Detection via ongoing scans</li>
-                                <li>• Deletion tracking & privacy request templates</li>
-                                <li>• Privacy request status emails & dashboard tracking</li>
+                                <li>• Unlimited inbox scans</li>
+                                <li>• Find ALL accounts (even old/hidden ones)</li>
+                                <li>• Complete breach history + alerts for new breaches</li>
+                                <li>• Automatic new account detection</li>
+                                <li>• Deletion request templates</li>
+                                <li>• Track responses and completion status</li>
                             </ul>
                             <div className="flex flex-wrap items-center gap-3">
                                 <Link
@@ -511,8 +509,8 @@ export default function HomePage() {
                             Frequently asked questions
                         </h2>
                         <p className="max-w-xl text-sm text-muted-foreground">
-                            Connecting email to a privacy tool is a big deal. These are the
-                            questions we think you should ask any product like GhostSweep.
+                            You&apos;re trusting us with email access. Here are the questions you
+                            should ask before connecting.
                         </p>
                     </div>
                     <div className="space-y-4">
@@ -531,12 +529,12 @@ export default function HomePage() {
                 {/* Final CTA */}
                 <section className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-5">
                     <h2 className="text-lg font-semibold tracking-tight">
-                        See your digital footprint in minutes
+                        Ready to see your digital footprint?
                     </h2>
                     <p className="max-w-xl text-sm text-muted-foreground">
-                        Run a private, read-only scan of your inbox and see which companies
-                        still hold your data. Find forgotten accounts, review breached
-                        services, and start shrinking your digital footprint.
+                        Connect your inbox, scan in minutes, and discover every account
+                        you&apos;ve ever created. See breaches, delete what you don&apos;t need,
+                        and take back control.
                     </p>
                     <div className="flex flex-wrap items-center gap-3">
                         <Link

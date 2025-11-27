@@ -94,9 +94,9 @@ export async function GET(
         .eq("id", userBreach.service_id)
         .single();
 
-    if (serviceError) {
+    if (serviceError && serviceError.code !== "PGRST116") {
         console.error("Error fetching service for breach:", serviceError);
-        const status = serviceError.code === "PGRST116" ? 404 : 500;
+        const status =  500;
         return NextResponse.json(
             { error: "Service for this breach not found" },
             { status }
