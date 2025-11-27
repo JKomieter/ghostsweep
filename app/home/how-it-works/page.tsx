@@ -31,10 +31,9 @@ export default function HowItWorksPage() {
                             A private, read-only audit of your digital footprint.
                         </h1>
                         <p className="max-w-xl text-sm text-muted-foreground">
-                            GhostSweep uses your inbox as a map of everywhere your data lives —
-                            without ever reading email content. It detects accounts, known
-                            breaches, and privacy opportunities so you can clean up old and
-                            risky accounts in minutes.
+                            GhostSweep scans your inbox to discover every account you&apos;ve created—
+                            without reading email content. Find forgotten accounts, see which were
+                            breached, and clean up what you don&apos;t need.
                         </p>
                     </div>
 
@@ -78,13 +77,13 @@ export default function HowItWorksPage() {
                                 Connect Gmail using Google&apos;s official OAuth.
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                GhostSweep requests{" "}
+                                GhostSweep uses Google&lsquo;s official OAuth with{" "}
                                 <span className="font-medium text-foreground">
-                                    Gmail read-only
+                                    read-only Gmail
                                 </span>{" "}
-                                access via Google&apos;s official flow. We can&apos;t send,
-                                delete, or modify any emails. You can revoke access from your
-                                Google account at any time.
+                                access.
+                                We cannot send, delete, or modify emails. Revoke access anytime from
+                                your Google account settings.
                             </p>
                         </div>
 
@@ -185,10 +184,11 @@ export default function HowItWorksPage() {
                                 Free · One scan per month
                             </p>
                             <ul className="space-y-1 text-muted-foreground">
-                                <li>• One secure, read-only Gmail scan per month</li>
-                                <li>• Snapshot of services detected from recent history</li>
-                                <li>• Basic breach awareness for matched services</li>
-                                <li>• Delete sweep history & disconnect at any time</li>
+                                <li>• Scan your inbox once</li>
+                                <li>• See up to 15 accounts</li>
+                                <li>• Basic breach check (yes/no only)</li>
+                                <li>• No ongoing monitoring</li>
+                                <li>• No deletion tracking</li>
                             </ul>
                             <Link
                                 href="/login"
@@ -206,16 +206,17 @@ export default function HowItWorksPage() {
                                     Professional · Ongoing protection
                                 </p>
                                 <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-[10px] font-medium text-primary-foreground/90">
-                                    Best for regular monitoring
+                                    Most popular
                                 </span>
                             </div>
                             <ul className="space-y-1 text-muted-foreground">
-                                <li>• Unlimited inbox sweeps</li>
-                                <li>• Deeper historical scanning for older/hidden accounts</li>
-                                <li>• Full breach history visibility</li>
-                                <li>• New account detection alerts</li>
-                                <li>• Privacy & deletion request tracking</li>
-                                <li>• Data deletion / reduction templates</li>
+                                <li>• Unlimited inbox scans</li>
+                                <li>• See ALL accounts (not just 50)</li>
+                                <li>• Full breach history with details</li>
+                                <li>• Auto-detect new accounts</li>
+                                <li>• Deletion request templates</li>
+                                <li>• Track deletion progress</li>
+                                <li>• Email alerts for new breaches</li>
                             </ul>
                             <Link
                                 href="/dashboard/billing?plan=monthly"
@@ -247,9 +248,8 @@ export default function HowItWorksPage() {
                                 <p className="font-medium">Account & signup emails</p>
                             </div>
                             <p className="text-muted-foreground">
-                                Subjects like &quot;Welcome&quot;, &quot;Account created&quot;,
-                                &quot;Verify your email&quot;, and &quot;Thanks for signing
-                                up&quot; reveal where accounts were created.
+                                Subjects like &quot;Welcome to Netflix&quot;, &quot;Your Spotify account&quot;,
+                                &quot;Verify your email&quot;, reveal where you&apos;ve signed up.
                             </p>
                         </div>
 
