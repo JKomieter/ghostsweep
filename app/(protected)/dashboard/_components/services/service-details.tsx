@@ -18,9 +18,9 @@ import { toast } from "sonner";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PrivacyEmailModal from "../privacy-email-modal";
-import BreachesTab from "../service-tabs/breaches-tab";
-import { PrivacyRequest, PrivacyRequestsTab } from "../service-tabs/privacy-requests-tab";
-import SummaryTab from "../service-tabs/summary-tab";
+import BreachesTab from "./service-tabs/breaches-tab";
+import { PrivacyRequest, PrivacyRequestsTab } from "./service-tabs/privacy-requests-tab";
+import SummaryTab from "./service-tabs/summary-tab";
 import Link from "next/link";
 
 

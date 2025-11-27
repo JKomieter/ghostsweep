@@ -158,7 +158,7 @@ export default function HowItWorksPage() {
                     </div>
 
                     <div className="rounded-xl border border-white/10 bg-[#050505] p-3">
-                        <div className="aspect-video w-full rounded-lg border border-white/10 bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center text-xs text-muted-foreground">
+                        <div className="aspect-video w-full rounded-lg border border-white/10 bg-linear-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center text-xs text-muted-foreground">
                             {/* Replace this with a real <video> or embed once ready */}
                             Demo video coming soon — a real GhostSweep scan from inbox to cleanup.
                         </div>
