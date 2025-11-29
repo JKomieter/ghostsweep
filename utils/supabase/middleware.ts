@@ -9,7 +9,10 @@ const publicRoutes = [
     "/home",
     "/reset-password",
     "/api/reset-password",
-    "/api/webhooks"
+    "/api/webhooks",
+    "/api/waitlist",
+    "/api/unsubscribe",
+    "/api/breach-check"
 ]
 
 export async function updateSession(request: NextRequest) {

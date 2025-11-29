@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
+      {
+        protocol: "https",
+        hostname: "ghostsweep.t3.storage.dev",
+        port: '',
+      }
     ],
   },
 };

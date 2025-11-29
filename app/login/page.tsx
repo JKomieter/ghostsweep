@@ -93,10 +93,10 @@ function SignInForm({
 
             <span className="text-[11px] text-muted-foreground text-center mt-3">
                 By continuing, you agree to our {" "}
-                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                <Link href="/home//privacy" className="text-xs text-primary hover:text-primary/80">
                     Terms of Service
                 </Link> and {" "}
-                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                <Link href="/home//privacy" className="text-xs text-primary hover:text-primary/80">
                     Privacy Policy
                 </Link>.
             </span>
@@ -213,10 +213,10 @@ function SignUpForm({
 
             <span className="text-[11px] text-muted-foreground text-center mt-3">
                 By continuing, you agree to our {" "}
-                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                <Link href="/home//privacy" className="text-xs text-primary hover:text-primary/80">
                     Terms of Service
                 </Link> and {" "}
-                <Link href="/home/legal/privacy" className="text-xs text-primary hover:text-primary/80">
+                <Link href="/home//privacy" className="text-xs text-primary hover:text-primary/80">
                      Privacy Policy
                 </Link>.
             </span>

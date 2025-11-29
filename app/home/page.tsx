@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import {
     ShieldCheck,
@@ -10,6 +11,10 @@ import {
     Activity,
     BookOpenText,
 } from "lucide-react";
+import { FormEvent, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+import Image from "next/image";
 
 const faqs = [
     {
@@ -35,55 +40,39 @@ const faqs = [
 ];
 
 export default function HomePage() {
+    const [email, setEmail] = useState("");
+    const [isLoading, setIsLoading] = useState(false)
+    const [showVideo, setShowVideo] = useState(false);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+
+    const handlePlay = () => {
+        setShowVideo(true);
+        // let the video render, then play
+        setTimeout(() => {
+            videoRef.current?.play().catch(() => {
+                // autoplay might be blocked, user can hit play manually
+            });
+        }, 0);
+    };
+
+    const joinWaitlist = async (e: FormEvent) => {
+        e.preventDefault()
+        setIsLoading(true)
+        try {
+            await fetch("/api/waitlist", {
+                method: "POST",
+                body: JSON.stringify({ email })
+            })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            toast.error("There was a problem joining waitlist. Please try again later")
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <main className="min-h-screen bg-background text-foreground">
-            {/* Top nav */}
-            {/* <header className="border-b border-white/10 bg-black/40 backdrop-blur-sm">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/15">
-                            <span className="text-sm">👻</span>
-                        </div>
-                        <span className="text-sm font-semibold tracking-tight">
-                            GhostSweep
-                        </span>
-                    </Link>
-
-                    <nav className="hidden items-center gap-6 text-xs text-muted-foreground md:flex">
-                        <Link href="/how-it-works" className="hover:text-foreground">
-                            How it works
-                        </Link>
-                        <Link href="/security" className="hover:text-foreground">
-                            Security
-                        </Link>
-                        <Link href="/blogs" className="hover:text-foreground">
-                            Blog
-                        </Link>
-                        <Link href="/breach-check" className="hover:text-foreground">
-                            Breach checker
-                        </Link>
-                        <a href="#pricing" className="hover:text-foreground">
-                            Pricing
-                        </a>
-                    </nav>
-
-                    <div className="flex items-center gap-2">
-                        <Link
-                            href="/login"
-                            className="hidden text-xs text-muted-foreground hover:text-foreground md:inline-flex"
-                        >
-                            Log in
-                        </Link>
-                        <Link
-                            href="/login"
-                            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90"
-                        >
-                            Start free scan
-                            <ArrowRight className="h-3 w-3" />
-                        </Link>
-                    </div>
-                </div>
-            </header> */}
 
             <div className="mx-auto max-w-6xl px-4 pb-16 pt-10 space-y-16">
                 {/* HERO + VIDEO + WAITLIST */}
@@ -138,8 +127,7 @@ export default function HomePage() {
                                     new features. No spam, just important updates
                                 </p>
                                 <form
-                                    action="/api/waitlist"
-                                    method="POST"
+                                    onSubmit={joinWaitlist}
                                     className="flex flex-col gap-2 sm:flex-row"
                                 >
                                     <input
@@ -147,13 +135,15 @@ export default function HomePage() {
                                         type="email"
                                         required
                                         placeholder="you@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         className="flex-1 rounded-full border border-white/15 bg-black/60 px-3 py-1.5 text-xs outline-none focus-visible:ring-1 focus-visible:ring-primary"
                                     />
                                     <button
                                         type="submit"
-                                        className="inline-flex items-center justify-center rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-black hover:bg-zinc-200 transition"
+                                        className="inline-flex items-center justify-center rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-black hover:bg-zinc-200 transition resize-none"
                                     >
-                                        Join waitlist
+                                        {isLoading ? <Spinner className="text-black" /> : "Join waitlist"}
                                     </button>
                                 </form>
                             </div>
@@ -176,41 +166,43 @@ export default function HomePage() {
 
                         {/* Right: video demo / fake player */}
                         <div className="rounded-2xl border border-white/10 bg-[#050505] p-3 shadow-lg">
-                            <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-2">
-                                <span className="inline-flex items-center gap-1">
-                                    <PlayCircle className="h-3 w-3 text-primary" />
-                                    Product demo
-                                </span>
-                                <span>1:42 · Overview</span>
-                            </div>
                             <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-black/60">
-                                {/* Replace this div with an actual <video> or <iframe> when ready */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                                    <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-black shadow-lg">
-                                        <PlayCircle className="h-6 w-6" />
-                                    </button>
-                                    <p className="text-[11px] text-muted-foreground">
-                                        GhostSweep dashboard walkthrough (coming soon)
-                                    </p>
-                                </div>
-                            </div>
+                                {showVideo ? (
+                                    <video
+                                        ref={videoRef}
+                                        src="https://ghostsweep.t3.storage.dev/GhostSweep%20First%20Demo%20Video.mov"
+                                        controls
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={handlePlay}
+                                        className="group relative h-full w-full"
+                                    >
+                                        {/* Thumbnail image */}
+                                        <Image
+                                            src="https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png"
+                                            alt="GhostSweep product demo"
+                                            className="h-full w-full object-cover"
+                                            width={100}
+                                            height={100}
+                                        />
 
-                            {/* Tiny stats row */}
-                            <div className="mt-3 grid gap-2 text-[11px] text-muted-foreground sm:grid-cols-3">
-                                <div className="rounded-lg border border-white/10 bg-black/40 p-2">
-                                    <p>Services found</p>
-                                    <p className="mt-1 text-lg font-semibold text-foreground">86</p>
-                                </div>
-                                <div className="rounded-lg border border-white/10 bg-black/40 p-2">
-                                    <p>Breaches linked</p>
-                                    <p className="mt-1 text-lg font-semibold text-red-400">4</p>
-                                </div>
-                                <div className="rounded-lg border border-white/10 bg-black/40 p-2">
-                                    <p>Security score</p>
-                                    <p className="mt-1 text-lg font-semibold text-emerald-400">
-                                        78 / 100
-                                    </p>
-                                </div>
+                                        {/* Dark overlay */}
+                                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+
+                                        {/* Play button + text */}
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-black shadow-lg group-hover:scale-105 transition-transform">
+                                                <PlayCircle className="h-6 w-6" />
+                                            </div>
+                                            <p className="text-xs text-white/80">
+                                                Watch the GhostSweep dashboard in action
+                                            </p>
+                                        </div>
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -556,13 +548,13 @@ export default function HomePage() {
                     <p>© {new Date().getFullYear()} GhostSweep. All rights reserved.</p>
                     <div className="flex gap-4">
                         <Link
-                            href="/home/legal/privacy"
+                            href="/home//privacy"
                             className="hover:text-foreground transition-colors"
                         >
                             Privacy Policy
                         </Link>
                         <Link
-                            href="/home/legal/terms"
+                            href="/home//terms"
                             className="hover:text-foreground transition-colors"
                         >
                             Terms
