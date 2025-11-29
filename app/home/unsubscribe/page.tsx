@@ -2,13 +2,17 @@
 
 import UnsubscribeClient from "../_components/unsubscribe-client";
 
-export default function UnsubscribePage({
+type PageProps = {
+    searchParams?: Promise<{ email?: string, list?: string  }>
+};
+
+export default async function UnsubscribePage({
   searchParams,
-}: {
-  searchParams?: { email?: string; list?: string };
-}) {
-  const email = searchParams?.email || "";
-  const list = searchParams?.list || "product-updates";
+}: 
+  PageProps) {
+    const params = await searchParams
+  const email =  params?.email || "";
+  const list = params?.list || "product-updates";
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#02040a] px-4">
