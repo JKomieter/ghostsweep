@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import {  ShieldCheck, Loader2 } from "lucide-react";
 import { sendGTMEvent } from '@next/third-parties/google'
-
+import DOMPurify from "dompurify"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -188,9 +188,8 @@ export default function BreachCheckPage() {
                                     breach.Domain ||
                                     "Unknown breach";
 
-                                const description =
-                                    breach.Description ||
-                                    "This service was involved in a known data exposure or incident.";
+                                const safeHtml = DOMPurify.sanitize(breach.Description ?? "This service was involved in a known data exposure or incident.");
+                                    "";
 
                                 const isSensitive = breach.IsSensitive ?? false;
                                 const pwnCount = breach.PwnCount;
@@ -217,9 +216,10 @@ export default function BreachCheckPage() {
                                             </div>
                                         </CardHeader>
                                         <CardContent className="space-y-2">
-                                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                                {description}
-                                            </p>
+                                            <p
+                                                className="text-xs text-muted-foreground leading-relaxed"
+                                                dangerouslySetInnerHTML={{ __html: safeHtml }}
+                                            />
 
                                             {Array.isArray(breach.DataClasses) &&
                                                 breach.DataClasses.length > 0 && (
