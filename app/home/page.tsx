@@ -73,7 +73,6 @@ export default function HomePage() {
 
     return (
         <main className="min-h-screen bg-background text-foreground">
-
             <div className="mx-auto max-w-6xl px-4 pb-16 pt-10 space-y-16">
                 {/* HERO + VIDEO + WAITLIST */}
                 <section className="space-y-8">
@@ -94,10 +93,9 @@ export default function HomePage() {
                                     <br />
                                     You remember maybe 30.
                                 </h1>
+                                {/* CHANGED COPY */}
                                 <p className="max-w-xl text-sm text-muted-foreground">
-                                    GhostSweep scans your inbox to discover every account you&apos;ve ever created—
-                                    streaming services, old social media, forgotten subscriptions. See which
-                                    ones were breached, then delete what you don&apos;t need.
+                                    GhostSweep runs a deep, read-only scan of your inbox to discover every account you&apos;ve ever created—streaming services, old social media, forgotten subscriptions. We do the heavy lifting in the background and notify you when your report is ready so you can see what was breached and delete what you don&apos;t need.
                                 </p>
                             </div>
 
@@ -106,7 +104,7 @@ export default function HomePage() {
                                     href="/login"
                                     className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
                                 >
-                                    Start free scan
+                                    Start your free sweep
                                     <ArrowRight className="h-3 w-3" />
                                 </Link>
                                 <Link
@@ -215,10 +213,9 @@ export default function HomePage() {
                             <h2 className="text-xl font-semibold tracking-tight">
                                 How it works: 4 steps to map your footprint
                             </h2>
+                            {/* CHANGED COPY */}
                             <p className="max-w-xl text-sm text-muted-foreground">
-                                GhostSweep connects to your Gmail with read-only access,
-                                analyzes metadata only, and turns your inbox into a map of your
-                                accounts, breaches, and privacy risk.
+                                GhostSweep connects to your Gmail with read-only access, analyzes metadata only, and turns your inbox into a map of your accounts, breaches, and privacy risk. Scans run securely in the background — we&apos;ll let you know as soon as your report is ready.
                             </p>
                         </div>
                         <Link
@@ -246,7 +243,7 @@ export default function HomePage() {
                             </p>
                             <p className="text-xs text-muted-foreground">
                                 We analyze sender, subject, and timestamps—never email bodies or
-                                attachments. Find accounts from receipts, confirmations, and alerts.
+                                attachments. Scans run in the background so you don&apos;t have to wait.
                             </p>
                         </div>
                         <div className="space-y-2 rounded-lg border border-white/10 bg-black/40 p-3">
@@ -417,9 +414,9 @@ export default function HomePage() {
                         <h2 className="text-xl font-semibold tracking-tight">
                             Try free. Upgrade when you&apos;re ready.
                         </h2>
+                        {/* CHANGED COPY */}
                         <p className="max-w-xl text-sm text-muted-foreground">
-                            Free plan shows you what accounts exist. Professional plan helps
-                            you track breaches, monitor new accounts, and clean everything up.
+                            Free plan gives you a one-off background sweep and a snapshot of your accounts. Professional plan adds ongoing scans, breach alerts, and tools to actually clean everything up.
                         </p>
                     </div>
 
@@ -434,8 +431,8 @@ export default function HomePage() {
                                 <p className="text-xs text-muted-foreground"> / forever</p>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">
-                                <li>• Scan your inbox once</li>
-                                <li>• See up to 15 accounts</li>
+                                <li>• Run one background sweep</li>
+                                <li>• See up to 50 accounts</li>
                                 <li>• Basic breach check (yes/no only)</li>
                                 <li>• No ongoing monitoring</li>
                                 <li>• No deletion tracking</li>
@@ -444,7 +441,7 @@ export default function HomePage() {
                                 href="/login"
                                 className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-medium hover:bg-white/5 transition"
                             >
-                                Start free scan
+                                Start free sweep
                             </Link>
                         </div>
 
@@ -469,10 +466,10 @@ export default function HomePage() {
                                 </div>
                             </div>
                             <ul className="space-y-1 text-xs text-muted-foreground">
-                                <li>• Unlimited inbox scans</li>
+                                <li>• Unlimited background sweeps</li>
                                 <li>• See ALL accounts (not just 50)</li>
                                 <li>• Full breach history with details</li>
-                                <li>• Auto-detect new accounts</li>
+                                <li>• Auto-detect new accounts over time</li>
                                 <li>• Deletion request templates</li>
                                 <li>• Track deletion progress</li>
                                 <li>• Email alerts for new breaches</li>
@@ -524,17 +521,16 @@ export default function HomePage() {
                     <h2 className="text-lg font-semibold tracking-tight">
                         Ready to see your digital footprint?
                     </h2>
+                    {/* CHANGED COPY */}
                     <p className="max-w-xl text-sm text-muted-foreground">
-                        Connect your inbox, scan in minutes, and discover every account
-                        you&apos;ve ever created. See breaches, delete what you don&apos;t need,
-                        and take back control.
+                        Connect your inbox and let GhostSweep run a deep background scan to discover every account you&apos;ve ever created. We&apos;ll notify you when your report is ready so you can see breaches, delete what you don&apos;t need, and take back control.
                     </p>
                     <div className="flex flex-wrap items-center gap-3">
                         <Link
                             href="/login"
                             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
                         >
-                            Start your free scan
+                            Start your free sweep
                             <ArrowRight className="h-3 w-3" />
                         </Link>
                         <span className="text-[11px] text-muted-foreground">

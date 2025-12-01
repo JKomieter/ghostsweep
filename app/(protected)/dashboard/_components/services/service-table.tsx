@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -31,21 +32,7 @@ import { formatDate } from "@/utils/format-date"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority-score"
 import { Spinner } from "@/components/ui/spinner"
 import ServiceDetails from "./service-details"
-
-
-
-const categories: Category[] = [
-    "social",
-    "shopping",
-    "subscriptions",
-    "finance",
-    "developer",
-    "newsletters",
-    "travel",
-    "gaming",
-    "education",
-    "health",
-]
+import Image from "next/image"
 
 type TableMeta = {
     onView: (service: Service) => void
@@ -78,16 +65,32 @@ export const columns: ColumnDef<Service>[] = [
         accessorKey: "service",
         header: "Service",
         cell: ({ row }) => {
-            const { name, domain } = row.getValue("service") as {
-                name: string | null
-                domain: string | null
-            } || { name: "Unknown", domain: "Unknown" }
+            const { name, domain, logo_url } =
+                (row.getValue("service") as {
+                    name: string | null
+                    domain: string | null
+                    logo_url: string | null
+                }) || { name: "Unknown", domain: "Unknown", logo_url: null }
+
             return (
-                <div className="flex flex-col">
-                    <span className="font-medium">{name}</span>
-                    {domain && (
-                        <span className="text-xs text-muted-foreground">{domain}</span>
-                    )}
+                <div className="flex flex-row items-start gap-1">
+                    <div className="relative h-5 w-5 overflow-hidden rounded-full border">
+                        {logo_url ? (
+                            <Image
+                                src={logo_url}
+                                width={100}
+                                height={100}
+                                alt=""
+                                className="h-full w-full object-cover"
+                            />
+                        ) : null}
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-medium">{name}</span>
+                        {domain && (
+                            <span className="text-xs text-muted-foreground">{domain}</span>
+                        )}
+                    </div>
                 </div>
             )
         },
@@ -97,7 +100,10 @@ export const columns: ColumnDef<Service>[] = [
         header: "Category",
         accessorKey: "service",
         cell: ({ row }) => {
-            const { category } = row.getValue("service") as { category: string | null } || { category: null }
+            const { category } =
+                (row.getValue("service") as { category: string | null }) || {
+                    category: null,
+                }
             return (
                 <span className="capitalize">
                     {category
@@ -111,7 +117,6 @@ export const columns: ColumnDef<Service>[] = [
         accessorKey: "email_count",
         header: "Activity",
         cell: ({ row }) => {
-            // use row.original to access other fields like last_seen_at
             const lastSeen = formatDate(row.original.last_seen_at)
             const count = row.original.email_count ?? 0
             return (
@@ -125,17 +130,17 @@ export const columns: ColumnDef<Service>[] = [
         accessorKey: "is_breached",
         header: "Priority",
         cell: ({ row }) => {
-            const score = calcPriorityScore(row.original);
-            const { label, className } = priorityLabel(score);
+            const score = calcPriorityScore(row.original)
+            const { label, className } = priorityLabel(score)
 
             return (
                 <div className="flex items-center gap-2">
-                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}>
+                    <span
+                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}
+                    >
                         {label}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                        {score}
-                    </span>
+                    <span className="text-xs text-muted-foreground">{score}</span>
                 </div>
             )
         },
@@ -146,32 +151,24 @@ export const columns: ColumnDef<Service>[] = [
         cell: ({ row }) => {
             const requests = row.getValue("privacy_requests") as
                 | {
-                    id: string;
-                    action: PrivacyAction;
-                    status: PrivacyStatus;
-                    sent_at: string | null;
+                    id: string
+                    action: PrivacyAction
+                    status: PrivacyStatus
+                    sent_at: string | null
                 }[]
-                | null;
+                | null
 
-            // If no request
             if (!requests || requests.length === 0) {
                 return (
-                    <span className="text-xs text-muted-foreground">
-                        No request
-                    </span>
-                );
+                    <span className="text-xs text-muted-foreground">No request</span>
+                )
             }
 
-            // You limited nested results to 1, so take the first
-            const pr = requests[0];
+            const pr = requests[0]
 
-            // Map action to readable label
             const actionLabel =
-                pr.action === "delete"
-                    ? "Delete Data"
-                    : "Reduce Data Use";
+                pr.action === "delete" ? "Delete Data" : "Reduce Data Use"
 
-            // Map statuses to badge style + label
             const statusMap: Record<
                 string,
                 { label: string; className: string }
@@ -208,25 +205,22 @@ export const columns: ColumnDef<Service>[] = [
                     label: "Expired",
                     className: "bg-orange-500/10 text-orange-300",
                 },
-            };
+            }
 
-            const statusInfo = statusMap[pr.status];
+            const statusInfo = statusMap[pr.status]
 
             return (
                 <div className="flex flex-col gap-1">
-                    {/* Action label */}
                     <span className="text-xs text-muted-foreground">
                         {actionLabel}
                     </span>
-
-                    {/* Status badge */}
                     <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusInfo.className}`}
                     >
                         {statusInfo.label}
                     </span>
                 </div>
-            );
+            )
         },
     },
     {
@@ -236,9 +230,14 @@ export const columns: ColumnDef<Service>[] = [
             const meta = table.options.meta as TableMeta | undefined
 
             return (
-                <Button variant="link" size="sm" className="px-0" onClick={() => {
-                    meta?.onView(row.original)
-                }}>
+                <Button
+                    variant="link"
+                    size="sm"
+                    className="px-0"
+                    onClick={() => {
+                        meta?.onView(row.original)
+                    }}
+                >
                     View
                 </Button>
             )
@@ -248,64 +247,81 @@ export const columns: ColumnDef<Service>[] = [
 
 const PAGE_SIZE = 20
 
+// Optional: if you have a canonical list elsewhere, use that instead
+const categories: Category[] = [
+    "Social Media",
+     "Streaming & Entertainment",
+     "Shopping & E-commerce",
+     "Financial & Payments",
+     "Productivity & Work",
+     "Travel & Transportation",
+     "Food & Delivery",
+     "Gaming",
+     "Health & Fitness",
+     "News & Media",
+     "Email & Communication",
+     "Other"
+] as Category[] 
+
 export default function ServiceTable() {
     const [query, setQuery] = useState("")
-    const [category, setCategory] = useState<Category | undefined>()
+    const [category, setCategory] = useState<Category | undefined>(undefined)
+    const [breachedFilter, setBreachedFilter] = useState<
+        "all" | "breached" | "unbreached"
+    >("all")
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
-    const [page, setPage] = useState(1);
-    const [serviceToViewId, setServiceToViewId] = useState<string>();
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
+    const [page, setPage] = useState(1)
+    const [serviceToViewId, setServiceToViewId] = useState<string>()
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     const { data, status } = useQuery({
-        queryKey: ["services", query, category, page],
-        queryFn: async (): Promise<{ services: Service[], total: number }> => {
-            const res = await fetch(
-                `/api/user-services?query=${encodeURIComponent(
-                    query,
-                )}&category=${encodeURIComponent(category || "")}&page=${page}`,
-            )
+        queryKey: ["services", query, page, category, breachedFilter],
+        queryFn: async (): Promise<{ services: Service[]; total: number }> => {
+            const params = new URLSearchParams()
+            params.set("page", String(page))
+            if (query) params.set("query", query)
+            if (category) params.set("category", category === "All" ? "" : category)
+            if (breachedFilter) params.set("breached", breachedFilter === "all" ? "" : breachedFilter)
+
+            const res = await fetch(`/api/user-services?${params.toString()}`)
             if (!res.ok) {
                 throw new Error("Network response was not ok")
             }
-            const json = await res.json()
-            return json
+            return res.json()
         },
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
     })
 
     const { data: plan } = useQuery({
-        queryKey: ['plan'],
+        queryKey: ["plan"],
         queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
-            const res = await fetch('/api/plan', {
-                method: 'GET',
+            const res = await fetch("/api/plan", {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-            });
+            })
 
             if (!res.ok) {
-                throw new Error('Failed to fetch plan data');
+                throw new Error("Failed to fetch plan data")
             }
 
-            return res.json();
+            return res.json()
         },
     })
 
-    const isLoading = status === "pending";
-    const isFree = plan?.current_plan === "free";
+    const isLoading = status === "pending"
+    const isFree = plan?.current_plan === "free"
 
-    const visibleCount = data?.services?.length ?? 0;
-    const totalCount = data?.total ?? visibleCount;
-    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    const visibleCount = data?.services?.length ?? 0
+    const totalCount = data?.total ?? visibleCount
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
-    // if free plan is capped to first page(s), lock next when hidden exists
-
-    const hasHiddenServices = isFree && totalCount > visibleCount;
-    const canPrev = page > 1;
-    const canNext = !hasHiddenServices && page < totalPages;
+    const hasHiddenServices = isFree && totalCount > visibleCount
+    const canPrev = page > 1
+    const canNext = !hasHiddenServices && page < totalPages
 
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
@@ -313,12 +329,12 @@ export default function ServiceTable() {
         columns,
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
-        pageCount: totalPages,               // ✅ tell table how many pages exist
+        pageCount: totalPages,
         state: {
             columnVisibility,
             rowSelection,
             pagination: {
-                pageIndex: page - 1,             // ✅ 0-based for TanStack
+                pageIndex: page - 1,
                 pageSize: PAGE_SIZE,
             },
         },
@@ -326,23 +342,22 @@ export default function ServiceTable() {
         onRowSelectionChange: setRowSelection,
         meta: {
             onView: (service: Service) => {
-                setServiceToViewId(service.service.id);
-                setIsDetailsOpen(true);
+                setServiceToViewId(service.service.id)
+                setIsDetailsOpen(true)
             },
         },
-    });
+    })
 
-    // ...
-
-    const reset = () => {
+    const resetFilters = () => {
         setQuery("")
         setCategory(undefined)
+        setBreachedFilter("all")
         setPage(1)
     }
 
     return (
-        <div className="mt-8 rounded-xl border border-white/10 bg-[#050505] p-5 max-h-[450px] overflow-y-auto overflow-x-auto">
-            <div className="flex items-center justify-between gap-6">
+        <div className="mt-8 max-h-[450px] overflow-y-auto overflow-x-auto rounded-xl border border-white/10 bg-[#050505] p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <input
                     className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     placeholder="Search services..."
@@ -353,7 +368,9 @@ export default function ServiceTable() {
                         setPage(1)
                     }}
                 />
-                <div className="flex items-center gap-2">
+
+                <div className="flex flex-wrap items-center gap-2">
+                    {/* Category filter */}
                     <Select
                         value={category ?? ""}
                         onValueChange={(value) => {
@@ -361,18 +378,47 @@ export default function ServiceTable() {
                             setPage(1)
                         }}
                     >
-                        <SelectTrigger className="max-w-[120px] sm:max-w-[180px]">
-                            <SelectValue placeholder="Category" />
+                        <SelectTrigger className="h-8 w-[150px] text-xs">
+                            <SelectValue placeholder="All categories" />
                         </SelectTrigger>
                         <SelectContent>
-                            {categories.map((cat) => (
-                                <SelectItem key={cat} value={cat}>
-                                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                </SelectItem>
-                            ))}
+                            <SelectGroup>
+                                <SelectItem value="All">All categories</SelectItem>
+                                {categories.map((cat) => (
+                                    <SelectItem key={cat} value={cat}>
+                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Button variant="ghost" size="icon" onClick={reset}>
+
+                    {/* Breach filter */}
+                    <Select
+                        value={breachedFilter}
+                        onValueChange={(value) => {
+                            setBreachedFilter(value as "all" | "breached" | "unbreached")
+                            setPage(1)
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[170px] text-xs">
+                            <SelectValue placeholder="All services" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                            <SelectItem value="all">All services</SelectItem>
+                            <SelectItem value="breached">Breached only</SelectItem>
+                            <SelectItem value="unbreached">Not breached</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={resetFilters}
+                    >
                         <RefreshCw className="h-4 w-4" />
                     </Button>
                 </div>
@@ -401,9 +447,9 @@ export default function ServiceTable() {
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center text-sm text-muted-foreground relative"
+                                    className="relative h-24 text-center text-sm text-muted-foreground"
                                 >
-                                    <Spinner className="text-primary absolute top-1/2 left-1/2" />
+                                    <Spinner className="absolute left-1/2 top-1/2 text-primary" />
                                 </TableCell>
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (
@@ -440,22 +486,23 @@ export default function ServiceTable() {
                 <div className="mt-3 flex flex-col gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/5 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-cyan-100">
                         GhostSweep found{" "}
-                        <span className="font-semibold">{totalCount}</span>{" "}
-                        services linked to your email. You’re seeing{" "}
-                        <span className="font-semibold">{visibleCount}</span>{" "}
-                        on the free plan.
+                        <span className="font-semibold">{totalCount}</span> services
+                        linked to your email. You’re seeing{" "}
+                        <span className="font-semibold">{visibleCount}</span> on the
+                        free plan.
                     </p>
                     <Button
                         variant="secondary"
                         size="sm"
-                        className="shrink-0 text-cyan-200 hover:text-black hover:bg-cyan-400"
+                        className="shrink-0 text-cyan-200 hover:bg-cyan-400 hover:text-black"
                         onClick={() => {
-                            // open upgrade modal / route to /pricing
+                            // TODO: open upgrade modal / route to /dashboard/billing
                         }}
                     >
                         Upgrade to view all
                     </Button>
-                </div>)}
+                </div>
+            )}
 
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
@@ -468,8 +515,8 @@ export default function ServiceTable() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                            if (!canPrev) return;
-                            setPage((p) => p - 1);
+                            if (!canPrev) return
+                            setPage((p) => p - 1)
                         }}
                         disabled={!canPrev || isLoading}
                     >
@@ -480,8 +527,8 @@ export default function ServiceTable() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                            if (!canNext) return;
-                            setPage((p) => p + 1);
+                            if (!canNext) return
+                            setPage((p) => p + 1)
                         }}
                         disabled={!canNext || isLoading}
                     >
@@ -489,7 +536,12 @@ export default function ServiceTable() {
                     </Button>
                 </div>
             </div>
-            <ServiceDetails open={isDetailsOpen} onOpenChange={setIsDetailsOpen} serviceId={serviceToViewId} />
+
+            <ServiceDetails
+                open={isDetailsOpen}
+                onOpenChange={setIsDetailsOpen}
+                serviceId={serviceToViewId}
+            />
         </div>
     )
 }

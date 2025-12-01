@@ -36,14 +36,14 @@ const NavLinks = ({ className = "", onClick }: { className?: string; onClick?: (
             Breach checker
         </Link>
         <a
-            href="#pricing"
+            href="/home#pricing"
             className="transition-colors hover:text-foreground"
             onClick={onClick}
         >
             Pricing
         </a>
         <a
-            href="#faq"
+            href="/home#faq"
             className="transition-colors hover:text-foreground"
             onClick={onClick}
         >

@@ -7,6 +7,11 @@ interface MetricsData {
     last_scan_date: string | null;
     pending_requests: number;
     responded_requests: number;
+    security_score: {
+        score: number | null;
+        grade: string | null;
+        last_calculated_at: string | null;
+    };
 }
 
 type StatCardProps = {
@@ -62,6 +67,49 @@ export default function SummaryCards() {
         ? formatDate(data.last_scan_date)
         : "Never";
 
+    const score = data?.security_score?.score ?? null;
+    const grade = data?.security_score?.grade ?? null;
+
+    // pick colors based on score
+    const scoreBorderClass =
+        score === null
+            ? "border-white/10 hover:border-white/30"
+            : score >= 90
+                ? "border-emerald-500/40 hover:border-emerald-500/70"
+                : score >= 75
+                    ? "border-lime-500/40 hover:border-lime-500/70"
+                    : score >= 60
+                        ? "border-amber-500/40 hover:border-amber-500/70"
+                        : score >= 40
+                            ? "border-orange-500/40 hover:border-orange-500/70"
+                            : "border-red-500/40 hover:border-red-500/70";
+
+    const scoreTextClass =
+        score === null
+            ? "text-white"
+            : score >= 90
+                ? "text-emerald-400"
+                : score >= 75
+                    ? "text-lime-400"
+                    : score >= 60
+                        ? "text-amber-400"
+                        : score >= 40
+                            ? "text-orange-400"
+                            : "text-red-400";
+
+    const badgeClass =
+        score === null
+            ? "bg-zinc-500/20 border-zinc-500/40 text-zinc-200"
+            : score >= 90
+                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-200"
+                : score >= 75
+                    ? "bg-lime-500/20 border-lime-500/40 text-lime-200"
+                    : score >= 60
+                        ? "bg-amber-500/20 border-amber-500/40 text-amber-200"
+                        : score >= 40
+                            ? "bg-orange-500/20 border-orange-500/40 text-orange-200"
+                            : "bg-red-500/20 border-red-500/40 text-red-200";
+
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {/* Services Found */}
@@ -81,9 +129,6 @@ export default function SummaryCards() {
                     Found via known data leaks
                 </p>
             </div>
-
-            {/* Sweep CTA */}
-            {/* <SweepCard /> */}
 
             {/* Last Sweep */}
             <StatCard
@@ -107,6 +152,33 @@ export default function SummaryCards() {
                 description="Replies received from privacy requests"
                 accent="success"
             />
+
+            {/* Security Score */}
+            <div
+                className={`rounded-xl bg-[#050505] border p-5 transition-all min-h-36 ${scoreBorderClass}`}
+            >
+                <p className="text-sm text-white/60">Security Score</p>
+
+                <div className="mt-1 flex items-baseline gap-2">
+                    <h2
+                        className={`text-3xl font-semibold ${scoreTextClass}`}
+                    >
+                        {isLoading ? "…" : score ?? "—"}
+                    </h2>
+
+                    {!isLoading && grade && (
+                        <span
+                            className={`text-[10px] px-2 py-0.5 rounded-full border ${badgeClass}`}
+                        >
+                            {grade}
+                        </span>
+                    )}
+                </div>
+
+                <p className="mt-2 text-xs text-white/40">
+                    Based on your linked accounts & breaches
+                </p>
+            </div>
         </div>
     );
 }

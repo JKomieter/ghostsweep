@@ -15,7 +15,8 @@ export interface Service {
         domain: string | null
         default_privacy_email: string | null
         category: string | null
-        is_breached: boolean | null
+        is_breached: boolean | null,
+        logo_url: string| null,
     },
     privacy_requests: {
         id: string,
@@ -30,16 +31,7 @@ export interface Service {
 }
 
 export type Category =
-    | "social"
-    | "shopping"
-    | "subscriptions"
-    | "finance"
-    | "developer"
-    | "newsletters"
-    | "travel"
-    | "gaming"
-    | "education"
-    | "health"
+    "Social Media" | "Streaming & Entertainment" | "Shopping & E-commerce" | "Financial & Payments" | "Productivity & Work" | "Travel & Transportation" | "Food & Delivery" | "Gaming" | "Health & Fitness" | "News & Media" | "Email & Communication" | "Other" | "All"
 
 
 export type NotificationType =

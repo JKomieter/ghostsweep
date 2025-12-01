@@ -41,6 +41,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "ghostsweep.t3.storage.dev",
         port: '',
+      },
+      {
+        protocol: "https",
+        hostname: "img.logo.dev",
+        port: '',
+        pathname: "/**"
       }
     ],
   },

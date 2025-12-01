@@ -58,7 +58,7 @@ export async function GET() {
             data: lastScan,
             error: lastScanError,
         } = await supabase
-            .from("scan_events")
+            .from("sweep_events")
             .select("created_at")
             .eq("user_id", user.id)
             .order("created_at", { ascending: false })
@@ -116,12 +116,44 @@ export async function GET() {
             );
         }
 
+        const { data: securityScore, error: securityScoreError } = await supabase
+            .from("user_security_scores")
+            .select("score, last_calculated_at")
+            .eq("user_id", user?.id)
+            .single();
+
+        if (securityScoreError && securityScoreError.code !== "PGRST116") {
+            console.error("Error fetching score:", securityScoreError);
+            return NextResponse.json(
+                { error: "Failed to fetch security score" },
+                { status: 500 }
+            );
+        }
+
+
+        // 3. Convert numeric score → letter grade
+        const grade =
+            securityScore?.score >= 90
+                ? "A"
+                : securityScore?.score >= 75
+                    ? "B"
+                    : securityScore?.score >= 60
+                        ? "C"
+                        : securityScore?.score >= 40
+                            ? "D"
+                            : "F";
+
         return NextResponse.json({
             service_count: serviceCount ?? 0,
             breach_count: breachCount ?? 0,
             last_scan_date: lastScanDate,
             pending_requests: pendingRequestsCount ?? 0,
             responded_requests: respondedRequestsCount ?? 0,
+            security_score: {
+                score: securityScore?.score ?? "100",
+                grade,
+                last_calculated_at: securityScore?.last_calculated_at
+            }
         });
     } catch (error) {
         console.error("Error fetching user metrics:", error);

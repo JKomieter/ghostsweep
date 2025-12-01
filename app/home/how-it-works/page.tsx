@@ -1,3 +1,4 @@
+"use client";
 // app/how-it-works/page.tsx
 import Link from "next/link";
 import {
@@ -10,9 +11,25 @@ import {
     Bell,
     EyeOff,
     Lock,
+    PlayCircle,
 } from "lucide-react";
+import { useState, useRef } from "react";
+import Image from "next/image";
 
 export default function HowItWorksPage() {
+    const [showVideo, setShowVideo] = useState(false);
+        const videoRef = useRef<HTMLVideoElement | null>(null);
+    
+        const handlePlay = () => {
+            setShowVideo(true);
+            // let the video render, then play
+            setTimeout(() => {
+                videoRef.current?.play().catch(() => {
+                    // autoplay might be blocked, user can hit play manually
+                });
+            }, 0);
+        };
+
     return (
         <main className="min-h-screen bg-background text-foreground">
             <div className="mx-auto max-w-5xl px-4 pb-16 pt-10 space-y-16">
@@ -158,10 +175,44 @@ export default function HowItWorksPage() {
                     </div>
 
                     <div className="rounded-xl border border-white/10 bg-[#050505] p-3">
-                        <div className="aspect-video w-full rounded-lg border border-white/10 bg-linear-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center text-xs text-muted-foreground">
-                            {/* Replace this with a real <video> or embed once ready */}
-                            Demo video coming soon — a real GhostSweep scan from inbox to cleanup.
-                        </div>
+                        <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-black/60">
+                                {showVideo ? (
+                                    <video
+                                        ref={videoRef}
+                                        src="https://ghostsweep.t3.storage.dev/GhostSweep%20First%20Demo%20Video.mov"
+                                        controls
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={handlePlay}
+                                        className="group relative h-full w-full"
+                                    >
+                                        {/* Thumbnail image */}
+                                        <Image
+                                            src="https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png"
+                                            alt="GhostSweep product demo"
+                                            className="h-full w-full object-cover"
+                                            width={100}
+                                            height={100}
+                                        />
+
+                                        {/* Dark overlay */}
+                                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+
+                                        {/* Play button + text */}
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-black shadow-lg group-hover:scale-105 transition-transform">
+                                                <PlayCircle className="h-6 w-6" />
+                                            </div>
+                                            <p className="text-xs text-white/80">
+                                                Watch the GhostSweep dashboard in action
+                                            </p>
+                                        </div>
+                                    </button>
+                                )}
+                            </div>
                     </div>
                 </section>
 
@@ -185,7 +236,7 @@ export default function HowItWorksPage() {
                             </p>
                             <ul className="space-y-1 text-muted-foreground">
                                 <li>• Scan your inbox once</li>
-                                <li>• See up to 15 accounts</li>
+                                <li>• See up to 50 accounts</li>
                                 <li>• Basic breach check (yes/no only)</li>
                                 <li>• No ongoing monitoring</li>
                                 <li>• No deletion tracking</li>
