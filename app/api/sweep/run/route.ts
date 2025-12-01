@@ -80,6 +80,7 @@ export async function GET() {
       .single();
 
     if (sweepError || !sweepEvent) {
+      console.error("Failed to create sweep job: ", sweepError)
       return NextResponse.json(
         { error: "Failed to create sweep job" },
         { status: 500 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { ShieldAlert, Loader2 } from "lucide-react";
+import {  ShieldCheck, Loader2 } from "lucide-react";
+import { sendGTMEvent } from '@next/third-parties/google'
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,16 +18,16 @@ import Input from "@/components/ui/input";
 import { toast } from "sonner";
 
 type Breach = {
-    id: string;
-    domain: string | null;
-    breach_date: string | null;
-    pwn_count: number | null;
-    is_sensitive: boolean | null;
-    raw?: {
-        name?: string | null;
-        title?: string | null;
-        description?: string | null;
-    } | null;
+    Id?: string | null;
+    Name: string | null;
+    Title: string | null;
+    Domain: string | null;
+    BreachDate: string | null;
+    PwnCount: number | null;
+    IsSensitive: boolean | null;
+    Description: string | null;
+    DataClasses: string[] | null;
+    LogoPath: string | null;
 };
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -37,6 +39,7 @@ export default function BreachCheckPage() {
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: FormEvent) => {
+        sendGTMEvent({ event: 'breach-check', value: query })
         e.preventDefault();
         if (!query.trim()) return;
 
@@ -59,20 +62,25 @@ export default function BreachCheckPage() {
                     const body = await res.json();
                     if (body?.error) message = body.error;
                 } catch {
-                    // ignore
+                    // ignore JSON parse error
                 }
                 throw new Error(message);
             }
 
             const data = await res.json();
             setBreaches((data?.breaches ?? []) as Breach[]);
-            toast.success("Success")
             setStatus("success");
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+            toast.success(
+                (data?.breaches?.length ?? 0) > 0
+                    ? "We found breach records for this input."
+                    : "No known breaches found for this input."
+            );
         } catch (err) {
-            setError("Something went wrong");
+            console.error("Breach check error:", err);
+            setError("Something went wrong while checking breaches. Please try again.");
             setStatus("error");
-            toast.error("Something went wrong")
+            toast.error("Something went wrong. Please try again.");
         }
     };
 
@@ -109,7 +117,7 @@ export default function BreachCheckPage() {
                         >
                             <Input
                                 id="email"
-                                type="text"
+                                type="email"
                                 placeholder="you@example.com or example.com"
                                 value={query}
                                 onChange={setQuery}
@@ -143,7 +151,7 @@ export default function BreachCheckPage() {
                         {status === "success" && !hasResults && (
                             <Alert className="mt-2 border-emerald-500/40 bg-emerald-500/5">
                                 <AlertTitle className="flex items-center gap-2 text-emerald-300">
-                                    <ShieldAlert className="h-4 w-4" />
+                                    <ShieldCheck className="h-4 w-4" />
                                     No known breaches found
                                 </AlertTitle>
                                 <AlertDescription className="text-xs text-emerald-100/80">
@@ -170,35 +178,41 @@ export default function BreachCheckPage() {
 
                         <div className="space-y-3">
                             {breaches.map((breach) => {
-                                const dateLabel = breach.breach_date
-                                    ? new Date(breach.breach_date).toLocaleDateString()
+                                const dateLabel = breach.BreachDate
+                                    ? new Date(breach.BreachDate).toLocaleDateString()
                                     : "Unknown date";
 
                                 const title =
-                                    breach.raw?.title ||
-                                    breach.raw?.name ||
-                                    breach.domain ||
+                                    breach.Title ||
+                                    breach.Name ||
+                                    breach.Domain ||
                                     "Unknown breach";
 
                                 const description =
-                                    breach.raw?.description ||
+                                    breach.Description ||
                                     "This service was involved in a known data exposure or incident.";
+
+                                const isSensitive = breach.IsSensitive ?? false;
+                                const pwnCount = breach.PwnCount;
 
                                 return (
                                     <Card
-                                        key={breach.id}
+                                        key={breach.Id ?? `${breach.Name}-${breach.Domain}-${breach.BreachDate}`}
                                         className="bg-[#050505] border border-red-500/30"
                                     >
                                         <CardHeader className="pb-2">
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
-                                                    <CardTitle className="text-sm">{title}</CardTitle>
+                                                    <CardTitle className="text-sm">
+                                                        {title}
+                                                    </CardTitle>
                                                     <CardDescription className="text-xs text-red-200/80">
-                                                        {breach.domain || "Unknown domain"} • {dateLabel}
+                                                        {breach.Domain || "Unknown domain"} •{" "}
+                                                        {dateLabel}
                                                     </CardDescription>
                                                 </div>
                                                 <span className="inline-flex items-center rounded-full bg-red-500/15 px-2 py-1 text-[11px] font-medium text-red-300">
-                                                    {breach.is_sensitive ? "Sensitive" : "Breach"}
+                                                    {isSensitive ? "Sensitive" : "Breach"}
                                                 </span>
                                             </div>
                                         </CardHeader>
@@ -206,11 +220,22 @@ export default function BreachCheckPage() {
                                             <p className="text-xs text-muted-foreground leading-relaxed">
                                                 {description}
                                             </p>
-                                            {typeof breach.pwn_count === "number" && (
+
+                                            {Array.isArray(breach.DataClasses) &&
+                                                breach.DataClasses.length > 0 && (
+                                                    <p className="text-[11px] text-muted-foreground">
+                                                        Data types exposed:{" "}
+                                                        <span className="font-medium">
+                                                            {breach.DataClasses.join(", ")}
+                                                        </span>
+                                                    </p>
+                                                )}
+
+                                            {typeof pwnCount === "number" && (
                                                 <p className="text-[11px] text-red-200/80">
                                                     Approx.{" "}
                                                     <span className="font-semibold">
-                                                        {breach.pwn_count.toLocaleString()}
+                                                        {pwnCount.toLocaleString()}
                                                     </span>{" "}
                                                     accounts impacted.
                                                 </p>

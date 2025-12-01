@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { Toaster } from "@/components/ui/sonner"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+import { GoogleTagManager } from '@next/third-parties/google'
+
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -65,6 +67,7 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en" suppressHydrationWarning>
+      <GoogleTagManager gtmId="GTM-N26H7S63" />
         <body
           className={`${interSans.variable} ${inter.variable} antialiased`}
         >

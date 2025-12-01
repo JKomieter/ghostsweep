@@ -20,11 +20,7 @@ export default function PrivacyPolicyPage() {
                         privacy-first and give you control over your data.
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                        Last updated: {new Date().toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "2-digit",
-                        })}
+                        Last updated: Dec 01, 2025
                     </p>
                 </header>
 
