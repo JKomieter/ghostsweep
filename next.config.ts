@@ -47,7 +47,13 @@ const nextConfig: NextConfig = {
         hostname: "img.logo.dev",
         port: '',
         pathname: "/**"
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+        port: '', 
+        pathname: '**', 
+      },
     ],
   },
 };

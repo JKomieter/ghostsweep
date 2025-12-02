@@ -144,7 +144,7 @@ export default async function BlogPostPage(rawParams: PageParams) {
                 {/* Back link */}
                 <div className="flex items-center justify-between">
                     <Link
-                        href="/blog"
+                        href="/home/blogs"
                         className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <ArrowLeft className="h-3 w-3" />
