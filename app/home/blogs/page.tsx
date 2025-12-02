@@ -85,7 +85,7 @@ export default async function BlogIndexPage() {
                             return (
                                 <Link
                                     key={post.id}
-                                    href={`/blog/${post.slug}`}
+                                    href={`/home/blogs/${post.slug}`}
                                     className="group flex h-full flex-col rounded-xl border border-white/10 bg-[#050505] p-4 shadow-sm transition hover:border-primary/60 hover:bg-[#070707]"
                                 >
                                     {/* Optional cover image */}
