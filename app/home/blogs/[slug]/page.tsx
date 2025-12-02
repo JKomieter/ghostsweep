@@ -175,13 +175,13 @@ export default async function BlogPostPage(rawParams: PageParams) {
                     )}
 
                     {post.cover_image_url && (
-                        <div className="mt-3 overflow-hidden rounded-xl border border-white/10">
+                        <div className="mt-3 relative overflow-hidden rounded-xl border border-white/10 h-64 w-full">
                             <Image
                                 src={post.cover_image_url}
                                 alt={post.title}
-                                className="h-64 w-full object-cover"
-                                width={100}
-                                height={100}
+                                fill
+                                className="object-cover"
+                                priority
                             />
                         </div>
                     )}
