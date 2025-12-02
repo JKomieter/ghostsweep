@@ -63,7 +63,7 @@ export default function HowItWorksPage() {
                             <ArrowRight className="h-3 w-3" />
                         </Link>
                         <Link
-                            href="/security"
+                            href="/home/security"
                             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                         >
                             See how we protect your data →

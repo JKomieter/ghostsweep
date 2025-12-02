@@ -173,7 +173,7 @@ export default function TermsPage() {
                         </li>
                         <li>
                             Billing and payment processing are handled by our third-party provider
-                            (for example, Stripe). Their terms may also apply to your use of the
+                            (Stripe). Their terms may also apply to your use of the
                             payment features.
                         </li>
                         <li>
