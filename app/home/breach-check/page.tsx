@@ -189,7 +189,6 @@ export default function BreachCheckPage() {
                                     "Unknown breach";
 
                                 const safeHtml = DOMPurify.sanitize(breach.Description ?? "This service was involved in a known data exposure or incident.");
-                                    "";
 
                                 const isSensitive = breach.IsSensitive ?? false;
                                 const pwnCount = breach.PwnCount;

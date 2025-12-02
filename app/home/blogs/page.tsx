@@ -4,12 +4,14 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { ArrowRight } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type BlogPost = {
     id: string;
     slug: string;
     title: string;
-    excerpt: string | null;
+    excerpt: string | null;       // markdown-safe
     category: string | null;
     cover_image_url: string | null;
     reading_time: number | null;
@@ -116,9 +118,11 @@ export default async function BlogIndexPage() {
                                         </h2>
 
                                         {post.excerpt && (
-                                            <p className="text-xs text-muted-foreground line-clamp-3">
-                                                {post.excerpt}
-                                            </p>
+                                            <div className="text-xs text-muted-foreground line-clamp-3 prose prose-invert prose-[0.78rem] max-w-none">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {post.excerpt}
+                                                </ReactMarkdown>
+                                            </div>
                                         )}
                                     </div>
 
