@@ -169,7 +169,7 @@ export default function HomePage() {
                                         className="group relative h-full w-full"
                                     >
                                         <Image
-                                            src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%204.52.56%E2%80%AFPM.png"
+                                                src="https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png"
                                             alt="GhostSweep dashboard showing discovered accounts"
                                             className="h-full w-full object-cover"
                                             width={1000}
