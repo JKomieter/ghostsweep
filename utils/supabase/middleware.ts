@@ -12,7 +12,8 @@ const publicRoutes = [
     "/api/webhooks",
     "/api/waitlist",
     "/api/unsubscribe",
-    "/api/breach-check"
+    "/api/breach-check",
+    "/sitemap.xml",
 ]
 
 export async function updateSession(request: NextRequest) {
