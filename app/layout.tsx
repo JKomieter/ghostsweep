@@ -5,8 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { Toaster } from "@/components/ui/sonner"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
-import Script from "next/script";
-import AnalyticsProvider from "@/components/analytics-provider";
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -67,20 +65,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-FZ706P051X"
-        strategy="afterInteractive"
-      />
-      <Script id="ga-setup" strategy="afterInteractive">
-        {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-FZ706P051X', {
-              page_path: window.location.pathname,
-            });
-          `}
-      </Script>
       <body
         className={`${interSans.variable} ${inter.variable} antialiased`}
       >
@@ -92,9 +76,7 @@ export default function RootLayout({
         >
           <SpeedInsights />
           <Analytics />
-          <AnalyticsProvider >
             <main>{children}</main>
-          </AnalyticsProvider>
           <Toaster position="top-right" />
         </ThemeProvider>
       </body>
