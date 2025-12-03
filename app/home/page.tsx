@@ -13,6 +13,7 @@ import {
     BookOpenText,
     CheckCircle,
     TrendingUp,
+    X
 } from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -59,6 +60,7 @@ export default function HomePage() {
     const [isLoading, setIsLoading] = useState(false)
     const [showVideo, setShowVideo] = useState(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null); 
 
     const handlePlay = () => {
         setShowVideo(true);
@@ -94,6 +96,36 @@ export default function HomePage() {
     }
 
     return (
+        <>
+            {lightbox && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4"
+                    onClick={() => setLightbox(null)}
+                >
+                    <div
+                        className="relative w-full max-w-5xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            className="absolute -top-10 right-0 text-xs text-muted-foreground hover:text-white flex items-center gap-1"
+                            onClick={() => setLightbox(null)}
+                        >
+                            <X className="h-4 w-4" />
+                            Close
+                        </button>
+
+                        <div className="relative w-full aspect-video rounded-lg border border-white/20 bg-black overflow-hidden">
+                            <Image
+                                src={lightbox.src}
+                                alt={lightbox.alt}
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         <main className="min-h-screen bg-background text-foreground">
             <div className="mx-auto max-w-6xl px-4 pb-16 pt-10 space-y-16">
                 {/* HERO + VIDEO */}
@@ -358,16 +390,25 @@ export default function HomePage() {
                         Show: Red alert icon, breach name, date, what was exposed
                         */}
                         <div className="space-y-3 rounded-lg border border-white/10 bg-black/40 p-4">
-                            <div className="aspect-4/3 rounded-lg border border-red-500/20 bg-linear-to-br from-red-500/10 to-black/40 flex items-center justify-center overflow-hidden">
+                            <button
+                                type="button"
+                                className="aspect-4/3 rounded-lg border border-red-500/20 bg-linear-to-br from-red-500/10 to-black/40 flex items-center justify-center overflow-hidden w-full"
+                                onClick={() =>
+                                    setLightbox({
+                                        src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.10.31%E2%80%AFPM.png",
+                                        alt: "GhostSweep breach detection view",
+                                    })
+                                }
+                            >
                                 <Image
                                     src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.10.31%E2%80%AFPM.png"
-                                    alt="GhostSweep dashboard screenshot"
+                                    alt="GhostSweep breach detection view"
                                     width={1600}
                                     height={1200}
-                                    className="object-cover w-full h-full"
+                                    className="object-cover w-full h-full cursor-zoom-in"
                                     priority
                                 />
-                            </div>
+                            </button>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <AlertTriangle className="h-4 w-4 text-red-400" />
@@ -383,53 +424,71 @@ export default function HomePage() {
                         PLACEHOLDER: Account Timeline Screenshot
                         Show: List of accounts sorted by date, oldest at top
                         */}
-                        <div className="space-y-3 rounded-lg border border-white/10 bg-black/40 p-4">
-                            <div className="aspect-4/3 rounded-lg border border-primary/20 bg-linear-to-br from-primary/10 to-black/40 flex items-center justify-center overflow-hidden">
-                                <Image
-                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%204.57.17%E2%80%AFPM%20(2).png"
-                                    alt="GhostSweep dashboard screenshot"
-                                    width={1600}
-                                    height={1200}
-                                    className="object-cover w-full h-full"
-                                    priority
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <TrendingUp className="h-4 w-4 text-primary" />
-                                    <p className="text-xs font-medium">Account Timeline</p>
+                            <div className="space-y-3 rounded-lg border border-white/10 bg-black/40 p-4">
+                                <button
+                                    type="button"
+                                    className="aspect-4/3 rounded-lg border border-primary/20 bg-linear-to-br from-primary/10 to-black/40 flex items-center justify-center overflow-hidden w-full"
+                                    onClick={() =>
+                                        setLightbox({
+                                            src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%204.57.17%E2%80%AFPM%20(2).png",
+                                            alt: "GhostSweep account timeline view",
+                                        })
+                                    }
+                                >
+                                    <Image
+                                        src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%204.57.17%E2%80%AFPM%20(2).png"
+                                        alt="GhostSweep account timeline view"
+                                        width={1600}
+                                        height={1200}
+                                        className="object-cover w-full h-full cursor-zoom-in"
+                                        priority
+                                    />
+                                </button>
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <TrendingUp className="h-4 w-4 text-primary" />
+                                        <p className="text-xs font-medium">Account Timeline</p>
+                                    </div>
+                                    <p className="text-[11px] text-muted-foreground">
+                                        See when you created each account, from your oldest (2007 MySpace?) to newest
+                                    </p>
                                 </div>
-                                <p className="text-[11px] text-muted-foreground">
-                                    See when you created each account, from your oldest (2007 MySpace?) to newest
-                                </p>
                             </div>
-                        </div>
 
                         {/* 
                         PLACEHOLDER: Deletion Tools Screenshot
                         Show: Template email, track status feature
                         */}
-                        <div className="space-y-3 rounded-lg border border-white/10 bg-black/40 p-4">
-                            <div className="aspect-4/3 rounded-lg border border-emerald-500/20 bg-linear-to-br from-emerald-500/10 to-black/40 flex items-center justify-center">
-                                <Image
-                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.46.57%E2%80%AFPM.png"
-                                    alt="GhostSweep dashboard screenshot"
-                                    width={1600}
-                                    height={1200}
-                                    className="object-cover w-full h-full"
-                                    priority
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <Trash2 className="h-4 w-4 text-emerald-400" />
-                                    <p className="text-xs font-medium">Deletion Tools</p>
+                            <div className="space-y-3 rounded-lg border border-white/10 bg-black/40 p-4">
+                                <button
+                                    type="button"
+                                    className="aspect-4/3 rounded-lg border border-emerald-500/20 bg-linear-to-br from-emerald-500/10 to-black/40 flex items-center justify-center overflow-hidden w-full"
+                                    onClick={() =>
+                                        setLightbox({
+                                            src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.46.57%E2%80%AFPM.png",
+                                            alt: "GhostSweep deletion tools view",
+                                        })
+                                    }
+                                >
+                                    <Image
+                                        src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.46.57%E2%80%AFPM.png"
+                                        alt="GhostSweep deletion tools view"
+                                        width={1600}
+                                        height={1200}
+                                        className="object-cover w-full h-full cursor-zoom-in"
+                                        priority
+                                    />
+                                </button>
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Trash2 className="h-4 w-4 text-emerald-400" />
+                                        <p className="text-xs font-medium">Deletion Tools</p>
+                                    </div>
+                                    <p className="text-[11px] text-muted-foreground">
+                                        GDPR/CCPA compliant templates for each service. Track which companies respond
+                                    </p>
                                 </div>
-                                <p className="text-[11px] text-muted-foreground">
-                                    GDPR/CCPA compliant templates for each service. Track which companies respond
-                                </p>
                             </div>
-                        </div>
                     </div>
                 </section>
 
@@ -957,5 +1016,6 @@ export default function HomePage() {
                 </footer>
             </div >
         </main >
+        </>
     );
 }
