@@ -67,6 +67,7 @@ export default function HomePage() {
         setTimeout(() => {
             videoRef.current?.play().catch(() => {
                 // autoplay might be blocked
+                //
             });
         }, 0);
     };
