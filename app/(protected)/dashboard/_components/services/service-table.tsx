@@ -250,18 +250,18 @@ const PAGE_SIZE = 20
 // Optional: if you have a canonical list elsewhere, use that instead
 const categories: Category[] = [
     "Social Media",
-     "Streaming & Entertainment",
-     "Shopping & E-commerce",
-     "Financial & Payments",
-     "Productivity & Work",
-     "Travel & Transportation",
-     "Food & Delivery",
-     "Gaming",
-     "Health & Fitness",
-     "News & Media",
-     "Email & Communication",
-     "Other"
-] as Category[] 
+    "Streaming & Entertainment",
+    "Shopping & E-commerce",
+    "Financial & Payments",
+    "Productivity & Work",
+    "Travel & Transportation",
+    "Food & Delivery",
+    "Gaming",
+    "Health & Fitness",
+    "News & Media",
+    "Email & Communication",
+    "Other"
+] as Category[]
 
 export default function ServiceTable() {
     const [query, setQuery] = useState("")
@@ -276,7 +276,7 @@ export default function ServiceTable() {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     const { data, status } = useQuery({
-        queryKey: ["services", query, page, category, breachedFilter],
+        queryKey: ["user-services", query, page, category, breachedFilter],
         queryFn: async (): Promise<{ services: Service[]; total: number }> => {
             const params = new URLSearchParams()
             params.set("page", String(page))
@@ -369,58 +369,68 @@ export default function ServiceTable() {
                     }}
                 />
 
-                <div className="flex flex-wrap items-center gap-2">
-                    {/* Category filter */}
-                    <Select
-                        value={category ?? ""}
-                        onValueChange={(value) => {
-                            setCategory(value ? (value as Category) : undefined)
-                            setPage(1)
-                        }}
-                    >
-                        <SelectTrigger className="h-8 w-[150px] text-xs">
-                            <SelectValue placeholder="All categories" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem value="All">All categories</SelectItem>
-                                {categories.map((cat) => (
-                                    <SelectItem key={cat} value={cat}>
-                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                    </SelectItem>
-                                ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                <div className="flex flex-col items-end gap-2 sm:items-stretch">
+                    <span className="text-[11px] text-foreground font-medium">
+                        <span className="text-primary font-semibold">{totalCount}</span> services discovered
+                        {isFree && totalCount > visibleCount && (
+                            <> <span className="text-muted-foreground">• showing {visibleCount} on Free</span></>
+                        )}
+                    </span>
 
-                    {/* Breach filter */}
-                    <Select
-                        value={breachedFilter}
-                        onValueChange={(value) => {
-                            setBreachedFilter(value as "all" | "breached" | "unbreached")
-                            setPage(1)
-                        }}
-                    >
-                        <SelectTrigger className="h-8 w-[170px] text-xs">
-                            <SelectValue placeholder="All services" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                            <SelectItem value="all">All services</SelectItem>
-                            <SelectItem value="breached">Breached only</SelectItem>
-                            <SelectItem value="unbreached">Not breached</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {/* Category filter */}
+                        <Select
+                            value={category ?? ""}
+                            onValueChange={(value) => {
+                                setCategory(value ? (value as Category) : undefined)
+                                setPage(1)
+                            }}
+                        >
+                            <SelectTrigger className="h-8 w-[150px] text-xs">
+                                <SelectValue placeholder="All categories" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="All">All categories</SelectItem>
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat} value={cat}>
+                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={resetFilters}
-                    >
-                        <RefreshCw className="h-4 w-4" />
-                    </Button>
+                        {/* Breach filter */}
+                        <Select
+                            value={breachedFilter}
+                            onValueChange={(value) => {
+                                setBreachedFilter(value as "all" | "breached" | "unbreached")
+                                setPage(1)
+                            }}
+                        >
+                            <SelectTrigger className="h-8 w-[170px] text-xs">
+                                <SelectValue placeholder="All services" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="all">All services</SelectItem>
+                                    <SelectItem value="breached">Breached only</SelectItem>
+                                    <SelectItem value="unbreached">Not breached</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={resetFilters}
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
+                    </div>
+
                 </div>
             </div>
 
