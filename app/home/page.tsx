@@ -144,7 +144,7 @@ export default function HomePage() {
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                                 <Link
-                                    href="#how"
+                                    href="/home/how-it-works"
                                     className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 px-8 py-3.5 text-sm font-semibold hover:bg-white/5 transition"
                                 >
                                     How It Works
