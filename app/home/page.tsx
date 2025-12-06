@@ -1,24 +1,20 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
-import Link from "next/link";
+
 import {
     ShieldCheck,
     EyeOff,
-    AlertTriangle,
-    Trash2,
     Lock,
     ArrowRight,
     PlayCircle,
-    Activity,
     CheckCircle,
     X,
     Github,
-    ExternalLink
-} from "lucide-react";
-import { FormEvent, useRef, useState } from "react";
-import { toast } from "sonner";
-import { Spinner } from "@/components/ui/spinner";
-import Image from "next/image";
+    Check,
+} from "lucide-react"
+import { useRef, useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
 
 const faqs = [
     {
@@ -31,56 +27,71 @@ const faqs = [
     },
     {
         q: "How do I disconnect?",
-        a: "One click in settings. Or revoke directly from your Google account settings.",
+        a: "You can disconnect from GhostSweep settings or directly from your Google account in a few clicks.",
     },
     {
         q: "Do you sell my data?",
-        a: "Never. We don't run ads, track you, or share your data with anyone.",
+        a: "No. We don’t run ads, we don’t track you across the web, and we don’t sell or share your data.",
     },
-];
+]
+
+const trustItems = [
+    {
+        icon: EyeOff,
+        title: "Metadata only",
+        desc: "We only see sender, subject and timestamps. Never email content or attachments.",
+        link: null as string | null,
+    },
+    {
+        icon: ShieldCheck,
+        title: "CASA in progress",
+        desc: "We’re going through Google’s CASA security review to meet their highest standards.",
+        link: null as string | null,
+    },
+    {
+        icon: Github,
+        title: "Open-source core",
+        desc: "Key scanning logic is on GitHub so you can inspect how it works.",
+        link: "https://github.com/JKomieter/ghostsweep-api.git",
+    },
+    {
+        icon: Lock,
+        title: "Easy revoke",
+        desc: "Revoke access at any time. No dark patterns, no lock-in.",
+        link: null as string | null,
+    },
+    {
+        icon: CheckCircle,
+        title: "Read-only access",
+        desc: "We never get permission to send, delete, or modify emails.",
+        link: null as string | null,
+    },
+    {
+        icon: CheckCircle,
+        title: "Built by a real person",
+        desc: "Questions or concerns? Email Joel directly.",
+        link: "mailto:komieterj@gmail.com",
+    },
+]
 
 export default function HomePage() {
-    const [email, setEmail] = useState("");
-    const [isLoading, setIsLoading] = useState(false)
-    const [showVideo, setShowVideo] = useState(false);
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+    const [showVideo, setShowVideo] = useState(false)
+    const videoRef = useRef<HTMLVideoElement | null>(null)
+    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null)
 
     const handlePlay = () => {
-        setShowVideo(true);
+        setShowVideo(true)
         setTimeout(() => {
-            videoRef.current?.play().catch(() => {});
-        }, 0);
-    };
-
-    const joinWaitlist = async (e: FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-        try {
-            const res = await fetch("/api/waitlist", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
-            })
-
-            if (res.ok) {
-                toast.success("You're on the waitlist! We'll notify you about updates.")
-                setEmail("")
-            } else {
-                toast.error("Something went wrong. Please try again.")
-            }
-        } catch (error) {
-            toast.error("There was a problem joining waitlist. Please try again later")
-        } finally {
-            setIsLoading(false)
-        }
+            videoRef.current?.play().catch(() => { })
+        }, 0)
     }
 
     return (
         <>
+            {/* LIGHTBOX */}
             {lightbox && (
                 <div
-                    className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
                     onClick={() => setLightbox(null)}
                 >
                     <div
@@ -89,14 +100,14 @@ export default function HomePage() {
                     >
                         <button
                             type="button"
-                            className="absolute -top-12 right-0 text-sm text-white/80 hover:text-white flex items-center gap-2"
+                            className="absolute -top-10 right-0 flex items-center gap-2 text-xs text-zinc-300 hover:text-white"
                             onClick={() => setLightbox(null)}
                         >
-                            <X className="h-5 w-5" />
-                            Close
+                            <X className="h-4 w-4" />
+                            <span>Close</span>
                         </button>
 
-                        <div className="relative w-full aspect-video rounded-xl border border-white/20 bg-black overflow-hidden shadow-2xl">
+                        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black">
                             <Image
                                 src={lightbox.src}
                                 alt={lightbox.alt}
@@ -107,69 +118,71 @@ export default function HomePage() {
                     </div>
                 </div>
             )}
-            
-        <main className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20 pt-12 space-y-24">
-                
-                {/* HERO */}
-                <section className="space-y-10">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs text-emerald-200">
-                        <span className="relative inline-flex h-2 w-2">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/75" />
-                            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                        </span>
-                        Privacy-first • Read-only • CASA certification in progress
-                    </div>
 
-                    <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-                        {/* Left: Headline + CTA */}
-                        <div className="space-y-8">
-                            <div className="space-y-6">
-                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                                    You have 200+ accounts online.
-                                    <br />
-                                    <span className="text-muted-foreground">You remember maybe 30.</span>
-                                </h1>
-                                <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                                    GhostSweep scans your Gmail to find every forgotten account—then helps you delete what you don't need.
-                                </p>
-                            </div>
+            <main className="min-h-screen bg-gradient-to-b from-[#020308] via-black to-[#050608] text-foreground">
+                <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 space-y-16 md:space-y-20">
 
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <Link
-                                    href="/login"
-                                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg hover:opacity-90 transition"
-                                >
-                                    Start Free Scan
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
-                                <Link
-                                    href="/home/how-it-works"
-                                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 px-8 py-3.5 text-sm font-semibold hover:bg-white/5 transition"
-                                >
-                                    How It Works
-                                </Link>
-                            </div>
-
-                            <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="h-4 w-4 text-primary" />
-                                    <span>Read-only access</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="h-4 w-4 text-primary" />
-                                    <span>Never reads content</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <CheckCircle className="h-4 w-4 text-primary" />
-                                    <span>Disconnect anytime</span>
-                                </div>
+                    {/* HERO */}
+                    <section className="space-y-10">
+                        {/* Badge */}
+                        <div className="flex justify-center">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-zinc-300">
+                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                                <span>Privacy-first · Read-only Gmail · CASA security in progress</span>
                             </div>
                         </div>
 
-                        {/* Right: Video */}
-                        <div className="rounded-2xl border border-white/10 bg-black/40 p-4 shadow-2xl">
-                            <div className="relative aspect-video overflow-hidden rounded-xl border border-white/20 bg-black">
+                        {/* Headline */}
+                        <div className="mx-auto max-w-3xl space-y-4 text-center">
+                            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
+                                You have 200+ accounts online.
+                                <br />
+                                <span className="text-zinc-300">You remember maybe 30.</span>
+                            </h1>
+                            <p className="text-sm text-zinc-400 sm:text-base">
+                                GhostSweep scans your Gmail in read-only mode, finds every account tied to
+                                your inbox, and shows you what can be safely deleted.
+                            </p>
+                        </div>
+
+                        {/* CTAs */}
+                        <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+                            <Link
+                                href="/login"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black shadow-sm hover:bg-zinc-100 transition"
+                            >
+                                Start free scan
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <Link
+                                href="/home/how-it-works"
+                                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm text-zinc-100 hover:bg-white/10 transition"
+                            >
+                                How it works
+                            </Link>
+                        </div>
+
+                        {/* Trust microcopy */}
+                        <div className="flex flex-wrap justify-center gap-4 text-[11px] text-zinc-400">
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                Read-only Gmail access
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                Never reads email content
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                Disconnect any time
+                            </span>
+                        </div>
+                    </section>
+
+                    {/* HERO VIDEO / IMAGE */}
+                    <section>
+                        <div className="rounded-2xl border border-white/10 bg-[#050509] p-3">
+                            <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-black">
                                 {showVideo ? (
                                     <video
                                         ref={videoRef}
@@ -191,511 +204,303 @@ export default function HomePage() {
                                             height={1080}
                                             priority
                                         />
-
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-black shadow-2xl group-hover:scale-110 transition-transform">
-                                                <PlayCircle className="h-8 w-8" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-lg group-hover:scale-105 transition-transform">
+                                                <PlayCircle className="h-7 w-7" />
                                             </div>
-                                            <p className="text-sm text-white font-medium drop-shadow-lg">
-                                                Watch Demo
+                                            <p className="text-xs text-zinc-100">
+                                                Watch the dashboard in action
                                             </p>
                                         </div>
                                     </button>
                                 )}
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {/* TRUST BAR */}
-                <section className="border-y border-white/10 py-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                        <div>
-                            <p className="text-3xl font-bold text-primary">156</p>
-                            <p className="text-sm text-muted-foreground mt-1">Avg accounts found</p>
-                        </div>
-                        <div>
-                            <p className="text-3xl font-bold text-primary">59%</p>
-                            <p className="text-sm text-muted-foreground mt-1">Forgotten accounts</p>
-                        </div>
-                        <div>
-                            <p className="text-3xl font-bold text-red-400">73%</p>
-                            <p className="text-sm text-muted-foreground mt-1">Have been breached</p>
-                        </div>
-                        <div>
-                            <p className="text-3xl font-bold text-primary">5 min</p>
-                            <p className="text-sm text-muted-foreground mt-1">To complete scan</p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* HOW IT WORKS */}
-                <section id="how" className="space-y-12">
-                    <div className="text-center space-y-4 max-w-3xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            How GhostSweep Works
-                        </h2>
-                        <p className="text-lg text-muted-foreground">
-                            Connect Gmail → Scan metadata → See all accounts → Delete what you don't need
-                        </p>
-                    </div>
-
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <span className="text-xl font-bold text-primary">1</span>
+                    {/* STATS */}
+                    <section className="rounded-2xl border border-white/10 bg-[#050509] px-4 py-6 sm:px-6 sm:py-8">
+                        <div className="grid gap-6 sm:grid-cols-4">
+                            <div className="text-center space-y-1">
+                                <p className="text-2xl font-semibold text-white sm:text-3xl">156</p>
+                                <p className="text-[11px] text-zinc-400">Average accounts found</p>
                             </div>
-                            <h3 className="text-lg font-semibold">Connect Gmail</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Read-only OAuth access. We can't send, delete, or modify emails.
+                            <div className="text-center space-y-1">
+                                <p className="text-2xl font-semibold text-white sm:text-3xl">59%</p>
+                                <p className="text-[11px] text-zinc-400">Accounts people forgot about</p>
+                            </div>
+                            <div className="text-center space-y-1">
+                                <p className="text-2xl font-semibold text-red-400 sm:text-3xl">73%</p>
+                                <p className="text-[11px] text-zinc-400">Have been in at least one breach</p>
+                            </div>
+                            <div className="text-center space-y-1">
+                                <p className="text-2xl font-semibold text-white sm:text-3xl">5 min</p>
+                                <p className="text-[11px] text-zinc-400">Typical scan time</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* TRUST / SECURITY */}
+                    <section className="space-y-6">
+                        <div className="space-y-2 text-center">
+                            <h2 className="text-xl font-semibold text-white sm:text-2xl">
+                                Security and trust, explained plainly
+                            </h2>
+                            <p className="mx-auto max-w-2xl text-sm text-zinc-400">
+                                You’re giving us limited access to your inbox. We treat that like production,
+                                not a side project.
                             </p>
                         </div>
 
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <span className="text-xl font-bold text-primary">2</span>
-                            </div>
-                            <h3 className="text-lg font-semibold">Scan Metadata</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                We analyze sender addresses and dates—never email content.
-                            </p>
-                        </div>
-
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <span className="text-xl font-bold text-primary">3</span>
-                            </div>
-                            <h3 className="text-lg font-semibold">View Results</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                See every account, breaches, and which services have your data.
-                            </p>
-                        </div>
-
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <span className="text-xl font-bold text-primary">4</span>
-                            </div>
-                            <h3 className="text-lg font-semibold">Delete Accounts</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Get GDPR templates and track which companies respond.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* LARGE SCREENSHOT */}
-                <section className="space-y-8">
-                    <div className="text-center space-y-4 max-w-3xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            See Your Digital Footprint
-                        </h2>
-                        <p className="text-lg text-muted-foreground">
-                            Real results from actual scans. Click to enlarge.
-                        </p>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={() => setLightbox({
-                            src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png",
-                            alt: "GhostSweep dashboard"
-                        })}
-                        className="group relative w-full rounded-2xl border border-white/10 bg-black/40 p-6 overflow-hidden hover:border-primary/50 transition-all"
-                    >
-                        <div className="relative aspect-video rounded-xl overflow-hidden border border-white/20">
-                            <Image
-                                src="https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png"
-                                alt="GhostSweep dashboard"
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                priority
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="flex items-center gap-2 text-white bg-black/80 px-4 py-2 rounded-lg">
-                                    <ExternalLink className="h-4 w-4" />
-                                    <span className="text-sm font-medium">Click to Enlarge</span>
-                                </div>
-                            </div>
-                        </div>
-                    </button>
-
-                    {/* Feature Grid with Larger Images */}
-                    <div className="grid gap-6 md:grid-cols-3">
-                        <button
-                            type="button"
-                            onClick={() => setLightbox({
-                                src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.10.31%E2%80%AFPM.png",
-                                alt: "Breach detection"
-                            })}
-                            className="group space-y-4 text-left"
-                        >
-                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40">
-                                <Image
-                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.10.31%E2%80%AFPM.png"
-                                    alt="Breach detection"
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="flex items-center gap-2 text-white bg-black/80 px-4 py-2 rounded-lg">
-                                            <ExternalLink className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Click to Enlarge</span>
-                                        </div>
+                        <div className="grid gap-4 md:grid-cols-3">
+                            {trustItems.map((item) => (
+                                <div
+                                    key={item.title}
+                                    className="space-y-3 rounded-xl border border-white/10 bg-[#050509] p-4"
+                                >
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10">
+                                        <item.icon className="h-4 w-4 text-emerald-400" />
                                     </div>
-                            </div>
-                            <div className="space-y-2 px-2">
-                                <div className="flex items-center gap-2">
-                                    <AlertTriangle className="h-5 w-5 text-red-400" />
-                                    <h3 className="font-semibold">Breach Detection</h3>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    See which services leaked your data and what was exposed
-                                </p>
-                            </div>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setLightbox({
-                                src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%204.57.17%E2%80%AFPM%20(2).png",
-                                alt: "Account timeline"
-                            })}
-                            className="group space-y-4 text-left"
-                        >
-                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40">
-                                <Image
-                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%204.57.17%E2%80%AFPM%20(2).png"
-                                    alt="Account timeline"
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="flex items-center gap-2 text-white bg-black/80 px-4 py-2 rounded-lg">
-                                            <ExternalLink className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Click to Enlarge</span>
-                                        </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-white">{item.title}</p>
+                                        <p className="text-xs text-zinc-400">{item.desc}</p>
+                                        {item.link && (
+                                            <Link
+                                                href={item.link}
+                                                target="_blank"
+                                                className="inline-flex items-center gap-1 text-[11px] text-emerald-300 hover:text-emerald-200"
+                                            >
+                                                {item.icon === Github ? "View on GitHub" : "Email Joel"}
+                                                <ArrowRight className="h-3 w-3" />
+                                            </Link>
+                                        )}
                                     </div>
-                            </div>
-                            <div className="space-y-2 px-2">
-                                <div className="flex items-center gap-2">
-                                    <Activity className="h-5 w-5 text-primary" />
-                                    <h3 className="font-semibold">Account Timeline</h3>
                                 </div>
-                                <p className="text-sm text-muted-foreground">
-                                    View accounts by creation date, from oldest to newest
-                                </p>
-                            </div>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setLightbox({
-                                src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.46.57%E2%80%AFPM.png",
-                                alt: "Deletion tools"
-                            })}
-                            className="group space-y-4 text-left"
-                        >
-                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40">
-                                <Image
-                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-02%20at%205.46.57%E2%80%AFPM.png"
-                                    alt="Deletion tools"
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="flex items-center gap-2 text-white bg-black/80 px-4 py-2 rounded-lg">
-                                            <ExternalLink className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Click to Enlarge</span>
-                                        </div>
-                                    </div>
-                            </div>
-                            <div className="space-y-2 px-2">
-                                <div className="flex items-center gap-2">
-                                    <Trash2 className="h-5 w-5 text-emerald-400" />
-                                    <h3 className="font-semibold">Deletion Tools</h3>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    GDPR/CCPA templates and progress tracking
-                                </p>
-                            </div>
-                        </button>
-                    </div>
-                </section>
-
-                {/* WHY TRUST US */}
-                <section className="space-y-12">
-                    <div className="text-center space-y-4 max-w-3xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            Why Trust GhostSweep?
-                        </h2>
-                        <p className="text-lg text-muted-foreground">
-                            We're not Google. We're not Atlassian. We earn trust through transparency.
-                        </p>
-                    </div>
-
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <EyeOff className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-semibold">Metadata Only</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                We only see sender addresses and dates. Never email content or attachments. Ever.
-                            </p>
+                            ))}
                         </div>
 
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <Github className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-semibold">Open Source Core</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Our scanning logic is on GitHub. Don't trust us? Audit the code yourself.
-                            </p>
-                                <Link href="https://github.com/JKomieter/ghostsweep-api.git" target="_blank" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                                View on GitHub
-                                <ExternalLink className="h-3 w-3" />
-                            </Link>
-                        </div>
-
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <ShieldCheck className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-semibold">Verify Everything</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Check our OAuth permissions yourself at myaccount.google.com/permissions
-                            </p>
-                        </div>
-
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <Lock className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-semibold">Instant Disconnect</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Revoke access anytime with one click. No dark patterns or retention.
-                            </p>
-                        </div>
-
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500/20">
-                                <Activity className="h-6 w-6 text-emerald-400" />
-                            </div>
-                            <h3 className="text-lg font-semibold">CASA Certified</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Security certification in progress. Independent audit by Google-approved assessors.
-                            </p>
-                        </div>
-
-                        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-6">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
-                                <CheckCircle className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-semibold">Built by Real Person</h3>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Hi, I'm Joel. I use GhostSweep on my own Gmail. Email me: komieterj@gmail.com
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="text-center">
-                        <Link
-                            href="/home/security"
-                            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-                        >
-                            Read Full Security Documentation
-                            <ArrowRight className="h-4 w-4" />
-                        </Link>
-                    </div>
-                </section>
-
-                {/* PRICING (SIMPLIFIED) */}
-                <section id="pricing" className="space-y-12">
-                    <div className="text-center space-y-4 max-w-3xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            Simple Pricing
-                        </h2>
-                        <p className="text-lg text-muted-foreground">
-                            Try free. Upgrade when you're ready.
-                        </p>
-                    </div>
-
-                    <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-                        {/* Free */}
-                        <div className="space-y-6 rounded-2xl border border-white/10 bg-black/40 p-8">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Free
-                                </h3>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-4xl font-bold">$0</p>
-                                    <p className="text-muted-foreground">forever</p>
-                                </div>
-                            </div>
-
-                            <ul className="space-y-3 text-sm">
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>One background scan</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>See first 50 accounts</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>Basic breach detection</span>
-                                </li>
-                            </ul>
-
+                        <div className="text-center">
                             <Link
-                                href="/login"
-                                className="block w-full text-center rounded-lg border border-white/20 px-6 py-3 text-sm font-semibold hover:bg-white/5 transition"
+                                href="/home/security"
+                                className="inline-flex items-center gap-1 text-xs text-zinc-300 hover:text-white"
                             >
-                                Start Free
+                                Read the full security overview
+                                <ArrowRight className="h-3 w-3" />
                             </Link>
                         </div>
+                    </section>
 
-                        {/* Pro */}
-                        <div className="relative space-y-6 rounded-2xl border-2 border-primary/60 bg-primary/5 p-8">
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground shadow-lg">
-                                    Beta Pricing
-                                </span>
-                            </div>
+                    {/* LARGE PREVIEW */}
+                    <section className="space-y-4">
+                        <div className="space-y-1 text-center">
+                            <h2 className="text-xl font-semibold text-white sm:text-2xl">
+                                See your accounts in one place
+                            </h2>
+                            <p className="text-sm text-zinc-400">
+                                Real screenshots from the GhostSweep dashboard.
+                            </p>
+                        </div>
 
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-semibold uppercase tracking-wide text-primary">
-                                    Professional
-                                </h3>
-                                <div className="flex items-baseline gap-3">
-                                    <p className="text-4xl font-bold">$9.99</p>
-                                    <span className="text-sm text-muted-foreground line-through">$12.99</span>
-                                    <p className="text-muted-foreground">/month</p>
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setLightbox({
+                                    src: "https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png",
+                                    alt: "GhostSweep dashboard",
+                                })
+                            }
+                            className="group block w-full rounded-2xl border border-white/10 bg-[#050509] p-3 text-left"
+                        >
+                            <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-black">
+                                <Image
+                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png"
+                                    alt="GhostSweep dashboard"
+                                    fill
+                                    className="object-cover group-hover:scale-[1.02] transition-transform"
+                                    priority
+                                />
+                                <div className="pointer-events-none absolute inset-0 flex items-end justify-end p-3">
+                                    <div className="rounded-full bg-black/70 px-3 py-1 text-[11px] text-zinc-100 border border-white/10">
+                                        Click to enlarge
+                                    </div>
                                 </div>
-                                <p className="text-xs text-emerald-200">
-                                    Lock in beta pricing forever
-                                </p>
                             </div>
+                        </button>
+                    </section>
 
-                            <ul className="space-y-3 text-sm">
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>Unlimited scans</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>See all accounts</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>Full breach history</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>Deletion templates</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>Ongoing monitoring</span>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                                    <span>Priority support</span>
-                                </li>
-                            </ul>
-
-                            <Link
-                                href="/dashboard/billing?plan=monthly"
-                                className="block w-full text-center rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg hover:opacity-90 transition"
-                            >
-                                Upgrade to Pro
-                            </Link>
+                    {/* PRICING */}
+                    <section className="space-y-6">
+                        <div className="space-y-2 text-center">
+                            <h2 className="text-xl font-semibold text-white sm:text-2xl">
+                                Simple, transparent pricing
+                            </h2>
+                            <p className="text-sm text-zinc-400">
+                                Start free. Upgrade only if you need ongoing monitoring and deletion tools.
+                            </p>
                         </div>
-                    </div>
-                </section>
 
-                {/* FAQ (CONDENSED) */}
-                <section className="space-y-12">
-                    <div className="text-center space-y-4 max-w-3xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                            Common Questions
-                        </h2>
-                    </div>
-
-                    <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
-                        {faqs.map((item) => (
-                            <div
-                                key={item.q}
-                                className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-6"
-                            >
-                                <h3 className="font-semibold">{item.q}</h3>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    {item.a}
-                                </p>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            {/* Free */}
+                            <div className="space-y-5 rounded-xl border border-white/10 bg-[#050509] p-6">
+                                <div className="space-y-2">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                                        Free
+                                    </p>
+                                    <div className="flex items-baseline gap-1">
+                                        <p className="text-3xl font-semibold text-white">$0</p>
+                                        <span className="text-xs text-zinc-400">forever</span>
+                                    </div>
+                                </div>
+                                <ul className="space-y-2 text-sm text-zinc-300">
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>One background scan</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>See first 50 accounts</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>Basic breach detection</span>
+                                    </li>
+                                </ul>
+                                <Link
+                                    href="/login"
+                                    className="mt-2 inline-flex w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-50 hover:bg-white/10 transition"
+                                >
+                                    Start free
+                                </Link>
                             </div>
-                        ))}
-                    </div>
-                </section>
 
-                {/* FINAL CTA */}
-                <section className="space-y-8 rounded-2xl border border-primary/60 bg-primary/5 p-12 text-center">
-                    <div className="space-y-4 max-w-2xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                            {/* Pro */}
+                            <div className="space-y-5 rounded-xl border border-emerald-500/40 bg-emerald-500/5 p-6">
+                                <div className="space-y-2">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                                        Professional · Beta
+                                    </p>
+                                    <div className="flex flex-wrap items-baseline gap-2">
+                                        <p className="text-3xl font-semibold text-white">$9.99</p>
+                                        <span className="text-xs text-zinc-400 line-through">$12.99</span>
+                                        <span className="text-xs text-zinc-300">/month</span>
+                                    </div>
+                                    <p className="text-xs text-emerald-300">
+                                        Lock in beta pricing. Your rate doesn’t increase later.
+                                    </p>
+                                </div>
+                                <ul className="space-y-2 text-sm text-zinc-200">
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>Unlimited scans</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>See all accounts</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>Full breach history</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>GDPR/CCPA deletion templates</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>Ongoing monitoring & alerts</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                        <span>Priority support</span>
+                                    </li>
+                                </ul>
+                                <Link
+                                    href="/dashboard/billing?plan=monthly"
+                                    className="mt-2 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                                >
+                                    Upgrade to Pro
+                                </Link>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* FAQ */}
+                    <section className="space-y-6">
+                        <div className="space-y-2 text-center">
+                            <h2 className="text-xl font-semibold text-white sm:text-2xl">
+                                Frequently asked questions
+                            </h2>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                            {faqs.map((item) => (
+                                <div
+                                    key={item.q}
+                                    className="space-y-2 rounded-xl border border-white/10 bg-[#050509] p-4"
+                                >
+                                    <p className="text-sm font-medium text-white">{item.q}</p>
+                                    <p className="text-xs text-zinc-400">{item.a}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* FINAL CTA */}
+                    <section className="space-y-4 rounded-xl border border-white/15 bg-[#050509] p-6 text-center">
+                        <h2 className="text-lg font-semibold text-white sm:text-xl">
                             Ready to see your digital footprint?
                         </h2>
-                        <p className="text-lg text-muted-foreground">
-                            Find every forgotten account in 5 minutes.
+                        <p className="mx-auto max-w-xl text-sm text-zinc-400">
+                            Connect your inbox and let GhostSweep map every account tied to your email in
+                            a few minutes.
                         </p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <Link
-                            href="/login"
-                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground shadow-lg hover:opacity-90 transition"
-                        >
-                            Start Free Scan
-                            <ArrowRight className="h-4 w-4" />
-                        </Link>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle className="h-4 w-4 text-primary" />
-                                No credit card
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle className="h-4 w-4 text-primary" />
-                                5 min setup
-                            </span>
+                        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                            <Link
+                                href="/login"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                            >
+                                Start free scan
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-zinc-400">
+                                <span className="inline-flex items-center gap-1">
+                                    <Check className="h-3 w-3 text-emerald-400" />
+                                    No credit card required
+                                </span>
+                                <span className="inline-flex items-center gap-1">
+                                    <Check className="h-3 w-3 text-emerald-400" />
+                                    5-minute setup
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                {/* FOOTER */}
-                <footer className="border-t border-white/10 pt-8 text-sm text-muted-foreground">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                        <p>© {new Date().getFullYear()} GhostSweep. Built with privacy in mind.</p>
-                        <div className="flex flex-wrap gap-6 justify-center">
-                            <Link href="/home/privacy" className="hover:text-foreground transition">
-                                Privacy
-                            </Link>
-                            <Link href="/home/terms" className="hover:text-foreground transition">
-                                Terms
-                            </Link>
-                            <Link href="/home/security" className="hover:text-foreground transition">
-                                Security
-                            </Link>
-                            <Link href="mailto:support@ghostsweep.com" className="hover:text-foreground transition">
-                                Contact
-                            </Link>
+                    {/* FOOTER */}
+                    <footer className="border-t border-white/10 pt-6 text-[11px] text-zinc-500">
+                        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                            <p>© {new Date().getFullYear()} GhostSweep. Built with privacy in mind.</p>
+                            <div className="flex flex-wrap justify-center gap-4">
+                                <Link href="/home/privacy" className="hover:text-zinc-300 transition">
+                                    Privacy
+                                </Link>
+                                <Link href="/home/terms" className="hover:text-zinc-300 transition">
+                                    Terms
+                                </Link>
+                                <Link href="/home/security" className="hover:text-zinc-300 transition">
+                                    Security
+                                </Link>
+                                <Link
+                                    href="mailto:support@ghostsweep.com"
+                                    className="hover:text-zinc-300 transition"
+                                >
+                                    Contact
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                </footer>
-            </div>
-        </main>
+                    </footer>
+                </div>
+            </main>
         </>
-    );
+    )
 }

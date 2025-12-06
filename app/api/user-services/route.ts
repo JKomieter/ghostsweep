@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { type NextRequest, NextResponse } from "next/server";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 export async function GET(request: NextRequest) {
     try {

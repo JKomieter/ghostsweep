@@ -8,7 +8,7 @@ import { useState } from "react";
 import { BreachDetailsSheet } from "./breach-details";
 import Link from "next/link";
 
-type BreachRecord = {
+export type BreachRecord = {
     id: string;
     domain: string | null;
     breach_date: string | null;

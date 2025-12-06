@@ -33,6 +33,8 @@ import { calcPriorityScore, priorityLabel } from "@/utils/priority-score"
 import { Spinner } from "@/components/ui/spinner"
 import ServiceDetails from "./service-details"
 import Image from "next/image"
+import Link from "next/link"
+import { BreachRecord } from "../breaches-table"
 
 type TableMeta = {
     onView: (service: Service) => void
@@ -312,12 +314,25 @@ export default function ServiceTable() {
         },
     })
 
+    const { data: breaches, } = useQuery({
+            queryKey: ['breaches'],
+            queryFn: async (): Promise<{ breaches: BreachRecord[], total: number }> => {
+                const res = await fetch('/api/user-breaches')
+                if (!res.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                const { breaches, total } = await res.json()
+                return { breaches, total }
+            },
+        })
+
     const isLoading = status === "pending"
     const isFree = plan?.current_plan === "free"
 
     const visibleCount = data?.services?.length ?? 0
     const totalCount = data?.total ?? visibleCount
     const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
+    const totalBreaches = breaches?.total
 
     const hasHiddenServices = isFree && totalCount > visibleCount
     const canPrev = page > 1
@@ -356,8 +371,26 @@ export default function ServiceTable() {
     }
 
     return (
-        <div className="mt-8 max-h-[450px] overflow-y-auto overflow-x-auto rounded-xl border border-white/10 bg-[#050505] p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-6">
+            {/* Page header */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="text-xl font-semibold text-white">Services</h1>
+                    <p className="text-sm text-white/60">
+                        GhostSweep found <span className="font-semibold text-white">{totalCount}</span> services linked to your email{totalBreaches ? (
+                            <> and <span className="font-semibold text-white">{totalBreaches}</span> breaches</>
+                        ) : null}.
+                        {hasHiddenServices && (
+                            <> Showing your first {visibleCount} services on the free plan.</>
+                        )}
+                    </p>
+                </div>
+
+                <div className="text-xs text-white/40 sm:text-right">
+                    View details, check risk, and take action.
+                </div>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-white/10 bg-[#050505] p-4">
                 <input
                     className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     placeholder="Search services..."
@@ -369,72 +402,62 @@ export default function ServiceTable() {
                     }}
                 />
 
-                <div className="flex flex-col items-end gap-2 sm:items-stretch">
-                    <span className="text-[11px] text-foreground font-medium">
-                        <span className="text-primary font-semibold">{totalCount}</span> services discovered
-                        {isFree && totalCount > visibleCount && (
-                            <> <span className="text-muted-foreground">• showing {visibleCount} on Free</span></>
-                        )}
-                    </span>
+                <div className="flex flex-wrap items-center gap-2">
+                    {/* Category filter */}
+                    <Select
+                        value={category ?? ""}
+                        onValueChange={(value) => {
+                            setCategory(value ? (value as Category) : undefined)
+                            setPage(1)
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[150px] text-xs">
+                            <SelectValue placeholder="All categories" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="All">All categories</SelectItem>
+                                {categories.map((cat) => (
+                                    <SelectItem key={cat} value={cat}>
+                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
 
-                    <div className="flex flex-wrap items-center gap-2">
-                        {/* Category filter */}
-                        <Select
-                            value={category ?? ""}
-                            onValueChange={(value) => {
-                                setCategory(value ? (value as Category) : undefined)
-                                setPage(1)
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[150px] text-xs">
-                                <SelectValue placeholder="All categories" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="All">All categories</SelectItem>
-                                    {categories.map((cat) => (
-                                        <SelectItem key={cat} value={cat}>
-                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                    {/* Breach filter */}
+                    <Select
+                        value={breachedFilter}
+                        onValueChange={(value) => {
+                            setBreachedFilter(value as "all" | "breached" | "unbreached")
+                            setPage(1)
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[170px] text-xs">
+                            <SelectValue placeholder="All services" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="all">All services</SelectItem>
+                                <SelectItem value="breached">Breached only</SelectItem>
+                                <SelectItem value="unbreached">Not breached</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
 
-                        {/* Breach filter */}
-                        <Select
-                            value={breachedFilter}
-                            onValueChange={(value) => {
-                                setBreachedFilter(value as "all" | "breached" | "unbreached")
-                                setPage(1)
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[170px] text-xs">
-                                <SelectValue placeholder="All services" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="all">All services</SelectItem>
-                                    <SelectItem value="breached">Breached only</SelectItem>
-                                    <SelectItem value="unbreached">Not breached</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={resetFilters}
-                        >
-                            <RefreshCw className="h-4 w-4" />
-                        </Button>
-                    </div>
-
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={resetFilters}
+                    >
+                        <RefreshCw className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
 
-            <div className="mt-4 overflow-hidden rounded-md border border-border">
+            <div className="overflow-hidden rounded-md border border-border bg-[#050505] max-h-[400px] overflow-y-auto">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -501,16 +524,15 @@ export default function ServiceTable() {
                         <span className="font-semibold">{visibleCount}</span> on the
                         free plan.
                     </p>
+                    <Link href="/dashboard/billing">
                     <Button
                         variant="secondary"
                         size="sm"
                         className="shrink-0 text-cyan-200 hover:bg-cyan-400 hover:text-black"
-                        onClick={() => {
-                            // TODO: open upgrade modal / route to /dashboard/billing
-                        }}
                     >
                         Upgrade to view all
                     </Button>
+                    </Link>
                 </div>
             )}
 

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import {
@@ -6,7 +7,7 @@ import {
     type Dispatch,
     type SetStateAction,
 } from "react";
-import { Eye, EyeOff, MailIcon } from "lucide-react";
+import { Eye, EyeOff, MailIcon, Shield, Lock, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
@@ -57,9 +58,9 @@ function SignInForm({
     };
 
     return (
-        <form className="space-y-4" onSubmit={handleLogin}>
+        <form className="space-y-5" onSubmit={handleLogin}>
             <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="email">
+                <label className="text-sm font-medium text-white/90" htmlFor="email">
                     Email
                 </label>
                 <Input
@@ -69,17 +70,18 @@ function SignInForm({
                     value={email}
                     onChange={setEmail}
                     required
+                    className="h-12 rounded-lg border-white/10 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                 />
             </div>
 
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium" htmlFor="password">
+                    <label className="text-sm font-medium text-white/90" htmlFor="password">
                         Password
                     </label>
                     <Link
                         href="/forgot-password"
-                        className="text-xs text-primary hover:text-primary/80"
+                        className="text-xs text-primary hover:text-primary/80 transition"
                     >
                         Forgot password?
                     </Link>
@@ -88,47 +90,52 @@ function SignInForm({
                     <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder=""
+                        placeholder="Enter your password"
                         value={password}
                         onChange={setPassword}
                         required
                         disableCopyPaste
+                        className="h-12 rounded-lg border-white/10 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
                     />
                     <button
                         className="absolute inset-y-0 right-0 flex items-center pr-3"
                         type="button"
                         onClick={() => setShowPassword((prev) => !prev)}
                     >
-                        {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                        {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                        ) : (
+                            <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                        )}
                     </button>
                 </div>
             </div>
 
             <Button
                 type="submit"
-                className="mt-2 w-full text-sm font-medium"
+                className="h-12 w-full rounded-lg bg-white text-black font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-white/20"
                 disabled={isLoading}
             >
                 {isLoading ? <Spinner /> : "Sign in"}
             </Button>
 
-            <span className="mt-3 block text-center text-[11px] text-muted-foreground">
+            <p className="text-center text-xs text-white/40 leading-relaxed">
                 By continuing, you agree to our{" "}
                 <Link
                     href="/home/terms"
-                    className="text-xs text-primary hover:text-primary/80"
+                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
                 >
                     Terms of Service
                 </Link>{" "}
                 and{" "}
                 <Link
                     href="/home/privacy"
-                    className="text-xs text-primary hover:text-primary/80"
+                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
                 >
                     Privacy Policy
                 </Link>
                 .
-            </span>
+            </p>
         </form>
     );
 }
@@ -181,9 +188,9 @@ function SignUpForm({
     };
 
     return (
-        <form className="space-y-4" onSubmit={handleSignup}>
+        <form className="space-y-5" onSubmit={handleSignup}>
             <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="email">
+                <label className="text-sm font-medium text-white/90" htmlFor="email">
                     Email
                 </label>
                 <Input
@@ -193,11 +200,12 @@ function SignUpForm({
                     value={email}
                     onChange={setEmail}
                     required
+                    className="h-12 rounded-lg border-white/10 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                 />
             </div>
 
             <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="password">
+                <label className="text-sm font-medium text-white/90" htmlFor="password">
                     Password
                 </label>
                 <div className="relative">
@@ -209,19 +217,24 @@ function SignUpForm({
                         onChange={setPassword}
                         required
                         disableCopyPaste
+                        className="h-12 rounded-lg border-white/10 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
                     />
                     <button
                         className="absolute inset-y-0 right-0 flex items-center pr-3"
                         type="button"
                         onClick={() => setShowPassword((prev) => !prev)}
                     >
-                        {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                        {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                        ) : (
+                            <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                        )}
                     </button>
                 </div>
             </div>
 
             <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="confirmPassword">
+                <label className="text-sm font-medium text-white/90" htmlFor="confirmPassword">
                     Confirm password
                 </label>
                 <Input
@@ -232,6 +245,7 @@ function SignUpForm({
                     onChange={setConfirmPassword}
                     required
                     disableCopyPaste
+                    className="h-12 rounded-lg border-white/10 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                 />
             </div>
 
@@ -239,55 +253,68 @@ function SignUpForm({
 
             <Button
                 type="submit"
-                className="mt-2 w-full text-sm font-medium"
+                className="h-12 w-full rounded-lg bg-white text-black font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-white/20"
                 disabled={isLoading}
             >
                 {isLoading ? <Spinner /> : "Create account"}
             </Button>
 
-            <span className="mt-3 block text-center text-[11px] text-muted-foreground">
+            <p className="text-center text-xs text-white/40 leading-relaxed">
                 By continuing, you agree to our{" "}
                 <Link
                     href="/home/terms"
-                    className="text-xs text-primary hover:text-primary/80"
+                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
                 >
                     Terms of Service
                 </Link>{" "}
                 and{" "}
                 <Link
                     href="/home/privacy"
-                    className="text-xs text-primary hover:text-primary/80"
+                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
                 >
                     Privacy Policy
                 </Link>
                 .
-            </span>
+            </p>
         </form>
     );
 }
 
 function PasswordWarning({ feedback }: { feedback: string[] }) {
     return (
-        <ul className="mt-1 space-y-1">
-            {feedback.map((msg, index) => (
-                <li key={index} className="text-xs text-destructive">
-                    {msg}
-                </li>
-            ))}
-        </ul>
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+            <ul className="space-y-1">
+                {feedback.map((msg, index) => (
+                    <li key={index} className="flex items-start gap-2 text-xs text-red-400">
+                        <span className="mt-0.5">•</span>
+                        <span>{msg}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 
 function ConfirmEmail({ email = "email address" }: { email?: string }) {
     return (
-        <div className="flex flex-col items-center justify-center">
-            <MailIcon className="mb-4 h-12 w-12 text-primary" />
-            <div className="text-center">
-                <h2 className="mb-2 text-xl font-semibold">Confirm your email</h2>
-                <p className="text-sm text-muted-foreground">
-                    A confirmation link has been sent to{" "}
-                    <strong>{email}</strong>. Please check your inbox and click the
-                    link to verify your account.
+        <div className="flex flex-col items-center justify-center text-center space-y-6">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 backdrop-blur-sm">
+                <MailIcon className="h-10 w-10 text-primary" />
+            </div>
+            <div className="space-y-3">
+                <h2 className="text-2xl font-bold text-white">Check your email</h2>
+                <p className="text-sm text-white/60 max-w-md leading-relaxed">
+                    We've sent a confirmation link to{" "}
+                    <span className="font-semibold text-white">{email}</span>.
+                    Click the link to verify your account and get started.
+                </p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm p-4 max-w-md">
+                <p className="text-xs text-white/50">
+                    Didn't receive the email? Check your spam folder or{" "}
+                    <button className="text-primary hover:text-primary/80 transition underline">
+                        resend confirmation
+                    </button>
                 </p>
             </div>
         </div>
@@ -299,54 +326,89 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
 
     return (
-        <div className="fixed flex min-h-screen w-full overflow-hidden bg-background">
+        <div className="fixed flex min-h-screen w-full overflow-hidden bg-gradient-to-b from-black via-black to-zinc-950">
             <div className="grid flex-1 grid-cols-1 lg:grid-cols-2">
-                {/* Branding */}
-                <div
-                    className="hidden bg-neutral-700 lg:block"
-                    style={{
-                        background:
-                            "linear-gradient(to bottom, rgba(0,242,222,0.15), rgba(0,0,0,0.6)),url('security.png')",
-                    }}
-                >
-                    <div className="flex h-full flex-col items-start p-12 lg:p-24">
-                        <h1 className="text-4xl font-bold">
-                            Sweep your{" "}
-                            <span className="text-primary">digital footprint</span>.
-                        </h1>
-                        <p className="mt-4 text-muted-foreground">
-                            Connect your inbox, see every company that has your data, and
-                            clean up old accounts in minutes.
-                        </p>
-                        <div className="mt-6 space-y-1 text-xs text-muted-foreground/80">
-                            <p>• Read-only access to your inbox.</p>
-                            <p>• You can disconnect and delete your data at any time.</p>
+                {/* Left Side - Branding */}
+                <div className="hidden lg:flex relative overflow-hidden">
+                    {/* Background with gradient overlay */}
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background:
+                                "linear-gradient(to bottom, rgba(0,242,222,0.1), rgba(0,0,0,0.8)),url('security.png')",
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                        }}
+                    />
+
+                    {/* Radial gradient accent */}
+                    <div className="absolute inset-0 bg-gradient-radial from-emerald-500/20 via-transparent to-transparent blur-3xl" />
+
+                    {/* Content */}
+                    <div className="relative flex flex-col justify-between p-12 xl:p-16 2xl:p-24 z-10">
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-3">
+                                <Logo className="h-12 w-12" />
+                                <h2 className="text-2xl font-bold text-white">GhostSweep</h2>
+                            </div>
+
+                            <div className="space-y-6 max-w-lg">
+                                <h1 className="text-4xl xl:text-5xl font-bold leading-tight bg-gradient-to-b from-white to-white/80 bg-clip-text text-transparent">
+                                    Sweep your digital footprint
+                                </h1>
+                                <p className="text-lg text-white/60 leading-relaxed">
+                                    Connect your inbox, see every company that has your data, and clean up old accounts in minutes.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Trust signals */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 text-white/70">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
+                                    <Shield className="h-5 w-5 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-white">Read-only access</p>
+                                    <p className="text-xs text-white/50">We never modify your emails</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 text-white/70">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
+                                    <Lock className="h-5 w-5 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-white">Your data, your control</p>
+                                    <p className="text-xs text-white/50">Disconnect anytime</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Login Form */}
-                <div className="relative col-span-1 flex items-center justify-center overflow-y-auto p-6 sm:p-12">
-                    {/* Logo */}
-                    <div className="absolute left-6 top-6">
-                        <div className="flex flex-row items-center">
-                            <Logo className="h-10 w-10 md:h-13 md:w-14" />
-                            <h4 className="ml-0 text-2xl font-bold">GhostSweep</h4>
+                {/* Right Side - Login Form */}
+                <div className="relative col-span-1 flex items-center justify-center overflow-y-auto p-6 sm:p-8 lg:p-12">
+                    {/* Mobile Logo */}
+                    <div className="absolute left-6 top-6 lg:hidden">
+                        <div className="flex items-center gap-2">
+                            <Logo className="h-8 w-8" />
+                            <h4 className="text-xl font-bold text-white">GhostSweep</h4>
                         </div>
                     </div>
 
-                    <div className="mt-48 flex h-full w-full max-w-md flex-col">
+                    {/* Form Container */}
+                    <div className="w-full max-w-md space-y-8 mt-20 sm:mt-0">
                         {mode === "confirm" ? (
                             <ConfirmEmail email={email} />
                         ) : (
                             <>
                                 {/* Tabs */}
-                                <div className="mb-6 flex border-b border-border">
+                                <div className="flex rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm p-1">
                                     <button
                                         type="button"
-                                        className={`flex-1 cursor-pointer border-b-2 pb-2 text-sm font-medium transition ${mode === "signin"
-                                                ? "border-primary text-foreground"
-                                                : "border-transparent text-muted-foreground hover:text-foreground"
+                                        className={`flex-1 rounded-md py-2.5 text-sm font-medium transition-all duration-200 ${mode === "signin"
+                                                ? "bg-white text-black shadow-lg"
+                                                : "text-white/60 hover:text-white"
                                             }`}
                                         onClick={() => setMode("signin")}
                                     >
@@ -354,9 +416,9 @@ export default function LoginPage() {
                                     </button>
                                     <button
                                         type="button"
-                                        className={`flex-1 cursor-pointer border-b-2 pb-2 text-sm font-medium transition ${mode === "signup"
-                                                ? "border-primary text-foreground"
-                                                : "border-transparent text-muted-foreground hover:text-foreground"
+                                        className={`flex-1 rounded-md py-2.5 text-sm font-medium transition-all duration-200 ${mode === "signup"
+                                                ? "bg-white text-black shadow-lg"
+                                                : "text-white/60 hover:text-white"
                                             }`}
                                         onClick={() => setMode("signup")}
                                     >
@@ -365,16 +427,14 @@ export default function LoginPage() {
                                 </div>
 
                                 {/* Heading */}
-                                <div className="mb-6 space-y-1">
-                                    <h2 className="text-xl font-semibold">
-                                        {mode === "signin"
-                                            ? "Welcome back"
-                                            : "Get started with GhostSweep"}
+                                <div className="space-y-2">
+                                    <h2 className="text-2xl sm:text-3xl font-bold text-white">
+                                        {mode === "signin" ? "Welcome back" : "Get started"}
                                     </h2>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-sm text-white/60">
                                         {mode === "signin"
-                                            ? "Sign in to run sweeps and manage your digital footprint."
-                                            : "Create an account to scan your inbox and see who has your data."}
+                                            ? "Sign in to manage your digital footprint"
+                                            : "Create an account to see who has your data"}
                                     </p>
                                 </div>
 
