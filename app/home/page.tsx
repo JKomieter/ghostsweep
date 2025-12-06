@@ -314,7 +314,7 @@ export default function HomePage() {
                         >
                             <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-black">
                                 <Image
-                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png"
+                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-06%20at%202.47.39%E2%80%AFAM.png"
                                     alt="GhostSweep dashboard"
                                     fill
                                     className="object-cover group-hover:scale-[1.02] transition-transform"
