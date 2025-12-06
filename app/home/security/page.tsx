@@ -18,7 +18,7 @@ import {
 
 export default function SecurityPage() {
     return (
-        <main className="min-h-screen bg-background text-foreground">
+        <main className="min-h-screen text-foreground bg-gradient-to-b from-[#020308] via-black to-[#050608]">
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 pt-12 space-y-16">
                 {/* HERO */}
                 <section className="space-y-8">
@@ -49,7 +49,7 @@ export default function SecurityPage() {
                             </Link>
 
                             <a
-                                href="https://github.com/ghostsweep"
+                                href="https://github.com/JKomieter/ghostsweep-api.git"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-7 py-2.5 text-xs sm:text-sm font-medium hover:bg-white/5 transition"
@@ -576,7 +576,7 @@ export default function SecurityPage() {
                                 <ExternalLink className="h-3.5 w-3.5" />
                             </a>
                             <a
-                                href="https://github.com/ghostsweep"
+                                href="https://github.com/JKomieter/ghostsweep-api.git"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-2.5 text-xs sm:text-sm font-medium hover:bg-white/5 transition"
@@ -609,10 +609,10 @@ export default function SecurityPage() {
                                 </p>
                                 <div className="flex flex-wrap gap-3 text-xs sm:text-sm">
                                     <a
-                                        href="mailto:security@ghostsweep.com"
+                                        href="mailto:support@ghostsweep.com"
                                         className="inline-flex items-center gap-1.5 font-medium text-red-300 hover:text-red-200 transition"
                                     >
-                                        security@ghostsweep.com
+                                        support@ghostsweep.com
                                         <ExternalLink className="h-3.5 w-3.5" />
                                     </a>
                                     <a
