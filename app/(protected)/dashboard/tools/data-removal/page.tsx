@@ -19,7 +19,7 @@ export type Service = {
     id: string;
     name: string | null;
     domain: string | null;
-    default_privacy_email: string | null;
+    contact: string | null;
     category: string | null;
 };
 
@@ -119,7 +119,7 @@ export default function DataRemovalToolPage() {
         return lines.join("\n");
     }, [selectedService]);
 
-    const privacyEmail = selectedService?.default_privacy_email || "";
+    const privacyEmail = selectedService?.contact || "";
 
     const handleCopyTemplate = async () => {
         try {

@@ -20,6 +20,9 @@ export async function POST() {
 
     const { error } = await supabase.functions.invoke('delete-sweep-data', {
         body: { userId: user.id },
+        headers: {
+            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+        }
     })
 
     if (error) {

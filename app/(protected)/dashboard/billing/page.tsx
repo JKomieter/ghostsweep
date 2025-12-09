@@ -75,8 +75,10 @@ export default async function BillingPage({ searchParams }: PageProps) {
             body: {
                 userId: user.id,
                 stripeCustomerId,
-                secret: process.env.FUNCTION_SECRET!,
             },
+            headers: {
+                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+            }
         });
 
         if (error) {

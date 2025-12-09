@@ -86,7 +86,7 @@ export async function GET(
                 id,
                 name,
                 domain,
-                default_privacy_email,
+                contact,
                 category,
                 is_breached
             `
@@ -108,8 +108,8 @@ export async function GET(
         data: privacyRequest,
         error: privacyError,
     } = await supabase
-        .from("privacy_requests")
-        .select("id, action, status, sent_at, last_reply_at, last_notified_status")
+            .from("deletion_requests")
+        .select("id, status, sent_at, last_reply_at, last_notified_status")
         .eq("user_id", user.id)
         .eq("service_id", userBreach.service_id)
         .order("created_at", { ascending: false })
@@ -134,7 +134,7 @@ export async function GET(
                 details: breach,
             },
             service,
-            privacy_request: privacyRequest ?? null,
+            deletion_request: privacyRequest ?? null,
         },
         { status: 200 }
     );

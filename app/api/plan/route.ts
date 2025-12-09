@@ -48,8 +48,10 @@ export async function GET() {
             await supabase.functions.invoke('downgrade-user-subscription', {
                 body: { 
                     userId: user.id,
-                    secret: process.env.FUNCTION_SECRET!
                  },
+                headers: {
+                    "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+                }
             })
         }
     }

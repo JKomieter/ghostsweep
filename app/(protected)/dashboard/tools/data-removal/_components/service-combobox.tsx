@@ -57,7 +57,7 @@ export function ServiceCombobox({
                 </button>
             </PopoverTrigger>
 
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-[#111111] border-white/10">
+            <PopoverContent className="w-(--radix-popover-trigger-width) p-0 bg-[#111111] border-white/10">
                 <Command>
                     <CommandInput placeholder="Search services..." />
 

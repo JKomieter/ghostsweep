@@ -40,7 +40,7 @@ export async function GET(
           id,
           name,
           domain,
-          default_privacy_email,
+          contact,
           category,
           is_breached
         )
@@ -90,6 +90,7 @@ export async function GET(
           pwn_count,
           data_classes,
           is_sensitive,
+          description,
           raw
         )
       `
@@ -101,7 +102,7 @@ export async function GET(
         console.error("Error fetching breaches:", userBreachesError);
         return NextResponse.json(
             { error: "Breaches not found" },
-            { status: 500 }
+            { status: 404 }
         );
     }
 
@@ -125,15 +126,15 @@ export async function GET(
                     pwn_count: breachRecord.pwn_count,
                     data_classes: breachRecord.data_classes,
                     is_sensitive: breachRecord.is_sensitive,
+                    description: breachRecord.description,
                     raw: breachRecord.raw,
                 };
             })
             .filter(Boolean) ?? [];
 
-    const { data: privacyRequest, error: pivacyRequestError } = await supabase.from("privacy_requests")
+    const { data: deletionRequest, error: deletionRequestError } = await supabase.from("deletion_requests")
         .select(`
                     id, 
-                    action,
                     status,
                     to_address,
                     subject,
@@ -142,11 +143,11 @@ export async function GET(
                     reply_snippet
                 `)
         .eq("user_id", user.id)
-        .eq("service_id", serviceId)
+        .eq("user_service_id", userService?.id)
         .single()
 
-    if (pivacyRequestError && pivacyRequestError.code !== "PGRST116") {
-        console.error("Error fetching privacy request:", pivacyRequestError);
+    if (deletionRequestError && deletionRequestError.code !== "PGRST116") {
+        console.error("Error fetching deletion request:", deletionRequestError);
         return NextResponse.json(
             { error: "Privacy Request not found" },
             { status: 500 }
@@ -157,7 +158,7 @@ export async function GET(
         ...(userService || {}),
         service,   // global service info
         breaches,  // user-specific breaches for this service
-        privacyRequest
+        deletionRequest
     };
 
     return NextResponse.json({ service: data }, { status: 200 });

@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-// app/security/page.tsx
 import Link from "next/link";
 import {
     Shield,
@@ -18,7 +16,7 @@ import {
 
 export default function SecurityPage() {
     return (
-        <main className="min-h-screen text-foreground bg-gradient-to-b from-[#020308] via-black to-[#050608]">
+        <main className="min-h-screen text-foreground bg-linear-to-b from-[#020308] via-black to-[#050608]">
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 pt-12 space-y-16">
                 {/* HERO */}
                 <section className="space-y-8">

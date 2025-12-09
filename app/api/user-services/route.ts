@@ -89,14 +89,13 @@ export async function GET(request: NextRequest) {
                     id,
                     name,
                     domain,
-                    default_privacy_email,
+                    contact,
                     category,
                     is_breached,
                     logo_url
                 ),
-                privacy_request:privacy_requests!privacy_requests_user_service_fk (
+                deletion_requests:deletion_requests!deletion_requests_user_service_id_fkey (
                     id,
-                    action,
                     status,
                     sent_at,
                     last_reply_at,
@@ -108,13 +107,13 @@ export async function GET(request: NextRequest) {
             )
             .eq("user_id", user.id)
             .order("last_seen_at", { ascending: false })
-            // 👇 only 1 nested privacy_request per parent row
+            // 👇 only 1 nested deletion_requests per parent row
             .order("sent_at", {
-                referencedTable: "privacy_requests",
+                referencedTable: "deletion_requests",
                 ascending: false,
             })
             .limit(1, {
-                foreignTable: "privacy_requests",
+                foreignTable: "deletion_requests",
             });
 
         // 🔍 Text search on service name/domain
@@ -140,7 +139,7 @@ export async function GET(request: NextRequest) {
         query = query.range(from, to);
 
         const { data, error } = await query;
-
+        
         if (error) {
             console.error("Error fetching user services:", error);
             return NextResponse.json(

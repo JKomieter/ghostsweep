@@ -12,21 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/format-date";
 import { cn } from "@/lib/utils";
-import PrivacyEmailModal from "./privacy-email-modal";
+import DeletionRequestModal from "./services/deletion-request-modal";
 import { useState } from "react";
-import { ServiceQueryResult } from "./services/service-details";
-
-type PrivacyStatus =
-    | "drafted"
-    | "sent"
-    | "received"
-    | "needs_verification"
-    | "in_progress"
-    | "completed"
-    | "failed"
-    | "expired";
-
-type PrivacyAction = "delete" | "reduce";
+import { UserServiceQueryResult } from "./services/service-details";
+import { DeletionStatus } from "@/types";
 
 type BreachDetails = {
     id: string;
@@ -35,10 +24,10 @@ type BreachDetails = {
     pwn_count: number | null;
     data_classes: string[] | null;
     is_sensitive: boolean | null;
+    description: string| null;
     raw: {
         name?: string | null;
         title?: string | null;
-        description?: string | null;
         logo_path?: string | null;
     } | null;
 };
@@ -47,18 +36,17 @@ type ServiceInfo = {
     id: string;
     name: string | null;
     domain: string | null;
-    default_privacy_email: string | null;
+    contact: string | null;
     category: string | null;
     is_breached: boolean | null;
 };
 
-type PrivacyRequest = {
+type DeletionRequest = {
     id: string;
-    action: PrivacyAction;
-    status: PrivacyStatus;
+    status: DeletionStatus;
     sent_at: string | null;
     last_reply_at: string | null;
-    last_notified_status: PrivacyStatus | null;
+    last_notified_status: DeletionStatus | null;
 } | null;
 
 type BreachDetailsResponse = {
@@ -71,7 +59,7 @@ type BreachDetailsResponse = {
         details: BreachDetails;
     };
     service: ServiceInfo | null;
-    privacy_request: PrivacyRequest | null;
+    deletion_request: DeletionRequest | null;
 };
 
 interface BreachDetailsSheetProps {
@@ -80,7 +68,6 @@ interface BreachDetailsSheetProps {
     breachId: string | null;
     onStartPrivacyAction?: (opts: {
         serviceId: string;
-        action: PrivacyAction;
     }) => void;
 }
 
@@ -108,7 +95,7 @@ function severityBadge(breach: BreachDetails) {
     };
 }
 
-function privacyStatusLabel(status: PrivacyStatus) {
+function deletionStatusLabel(status: DeletionStatus) {
     switch (status) {
         case "completed":
             return { label: "Completed", className: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30" };
@@ -135,7 +122,6 @@ export function BreachDetailsSheet({
     onOpenChangeAction,
     breachId,
 }: BreachDetailsSheetProps) {
-    const [privacyAction, setPrivacyAction] = useState<"delete" | "reduce">("delete");
     const [openModal, setOpenModal] = useState(false)
 
     const { data, isLoading, error } = useQuery<BreachDetailsResponse>({
@@ -152,7 +138,7 @@ export function BreachDetailsSheet({
 
     const { data: serviceDetails } = useQuery({
         queryKey: ['serviceDetails', data?.service?.id],
-        queryFn: async (): Promise<ServiceQueryResult> => {
+        queryFn: async (): Promise<UserServiceQueryResult> => {
 
             const res = await fetch(`/api/user-services/${data?.service?.id}`);
             if (!res.ok) {
@@ -178,7 +164,7 @@ export function BreachDetailsSheet({
 
     const breach = data?.breach?.details;
     const service = data?.service;
-    const privacyRequest = data?.privacy_request;
+    const deletionRequest = data?.deletion_request;
 
     const severity = breach ? severityBadge(breach) : null;
 
@@ -257,13 +243,13 @@ export function BreachDetailsSheet({
                                 </div>
 
                                 {/* Privacy request status badge */}
-                                {privacyRequest && (
+                                {deletionRequest && (
                                     <div className="flex flex-col items-end gap-1">
                                         <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
                                             Deletion / data request
                                         </span>
                                         {(() => {
-                                            const ps = privacyStatusLabel(privacyRequest.status);
+                                            const ps = deletionStatusLabel(deletionRequest.status);
                                             return (
                                                 <Badge
                                                     variant="outline"
@@ -277,8 +263,8 @@ export function BreachDetailsSheet({
                                             );
                                         })()}
                                         <span className="text-[11px] text-muted-foreground">
-                                            {privacyRequest.sent_at
-                                                ? `Started ${formatDate(privacyRequest.sent_at)}`
+                                            {deletionRequest.sent_at
+                                                ? `Started ${formatDate(deletionRequest.sent_at)}`
                                                 : "Not yet sent"}
                                         </span>
                                     </div>
@@ -316,8 +302,8 @@ export function BreachDetailsSheet({
                                 </h3>
                                 <div className="rounded-md border border-white/10 bg-black/50 p-3 max-h-48 overflow-auto">
                                     <p className="text-xs leading-relaxed text-white/80 whitespace-pre-wrap">
-                                        {breach.raw?.description
-                                            ? String(breach.raw.description)
+                                        {breach?.description
+                                            ? String(breach?.description)
                                             : "No public incident description was provided for this breach."}
                                     </p>
                                 </div>
@@ -360,7 +346,6 @@ export function BreachDetailsSheet({
                                         variant="outline"
                                         className="border-white/20 text-xs"
                                         onClick={() => {
-                                            setPrivacyAction("reduce")
                                             setOpenModal(true)
                                         }}
                                     >
@@ -370,7 +355,6 @@ export function BreachDetailsSheet({
                                         size="sm"
                                         className="bg-primary text-black hover:bg-primary/80 text-xs"
                                         onClick={() => {
-                                            setPrivacyAction("delete")
                                             setOpenModal(true)
                                         }}
                                     >
@@ -382,12 +366,11 @@ export function BreachDetailsSheet({
                     )}
                 </SheetContent>
             </Sheet>
-            <PrivacyEmailModal
+            <DeletionRequestModal
                 open={openModal}
                 onOpenChangeAction={setOpenModal}
-                action={privacyAction}
-                service={serviceDetails}
-                userEmail={user?.gmail_address || ""}
+                userService={serviceDetails}
+                gmailAddress={user?.gmail_address || ""}
             />
         </>
     );

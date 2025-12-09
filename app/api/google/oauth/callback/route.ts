@@ -62,6 +62,9 @@ export async function GET(request: NextRequest) {
                 tokenExpiresAt: tokens.expiry_date
                     ? new Date(tokens.expiry_date).toISOString()
                     : new Date().toISOString(),
+            },
+            headers: {
+                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
             }
         });
 

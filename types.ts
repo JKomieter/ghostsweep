@@ -1,9 +1,8 @@
 
-export type PrivacyAction = "delete" | "reduce";
 
-export type PrivacyStatus= "drafted" | "sent" | "received" | "needs_verification" | "in_progress" | "completed" | "failed" | "expired"
+export type DeletionStatus = "drafted" | "sent" | "received" | "needs_verification" | "in_progress" | "completed" | "failed" | "expired"
 
-export interface Service {
+export interface UserService {
     id: string
     user_id: string
     first_seen_at: string | null
@@ -13,19 +12,18 @@ export interface Service {
         id: string
         name: string | null
         domain: string | null
-        default_privacy_email: string | null
+        contact: string | null
         category: string | null
         is_breached: boolean | null,
         logo_url: string| null,
     },
-    privacy_requests: {
+    deletion_requests: {
         id: string,
-        action: PrivacyAction | null,
-        status: PrivacyStatus | null,
+        status: DeletionStatus  | null,
         sent_at: string | null,
         last_reply_at: string | null,
         last_checked_at: string | null
-        last_notified_status: PrivacyAction | null,
+        last_notified_status: DeletionStatus | null,
         last_notified_at: string | null
     }[]
 }
@@ -35,13 +33,13 @@ export type Category =
 
 
 export type NotificationType =
-    | "privacy_status_update"
+    | "deletion_status_update"
     | "new_account_detected"
     | "new_breach_detected"
     | "sweep_completed"
     | "sweep_limit_reached"
     | "gmail_disconnected"
-    | "privacy_request_reply"
+    | "deletion_request_reply"
     | "service_priority_change"
     | "plan_upgraded"
     | "plan_downgraded"

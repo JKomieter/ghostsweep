@@ -17,11 +17,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PrivacyEmailModal from "../privacy-email-modal";
-import BreachesTab from "./service-tabs/breaches-tab";
-import { PrivacyRequest, PrivacyRequestsTab } from "./service-tabs/privacy-requests-tab";
-import SummaryTab from "./service-tabs/summary-tab";
 import Link from "next/link";
+import { DeletionRequest, DeletionTab } from "./service-tabs/deletion-tab";
+import DeletionEmailModal from "./deletion-request-modal";
+import SummaryTab from "./service-tabs/summary-tab";
+import BreachesTab from "./service-tabs/breaches-tab";
+import { DeletionProfileModal } from "./deletion-profile-modal";
 
 
 const formatDate = (dateString: string | null) => {
@@ -34,7 +35,12 @@ const formatDate = (dateString: string | null) => {
     });
 };
 
-export interface ServiceQueryResult {
+type DeletionProfileQueryResult = {
+    full_name: string | null;
+    country: string | null
+}
+
+export interface UserServiceQueryResult {
     id: string;
     user_id: string;
     service_id: string;
@@ -45,7 +51,7 @@ export interface ServiceQueryResult {
         id: string;
         name: string | null;
         domain: string | null;
-        default_privacy_email: string | null;
+        contact: string | null;
         category: Category | null;
         is_breached: boolean | null;
     };
@@ -57,11 +63,12 @@ export interface ServiceQueryResult {
         breach_date: string | null;
         data_classes: string[] | null;
         is_sensitive: boolean | null;
+        description: string | null;
         raw: {
             [key: string]: unknown;
         } | null;
     }[];
-    privacyRequest: PrivacyRequest | null
+    deletionRequest: DeletionRequest | null
 }
 
 interface ServiceDetailsSheetProps {
@@ -75,12 +82,12 @@ export default function ServiceDetails({
     onOpenChange,
     serviceId,
 }: ServiceDetailsSheetProps) {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [privacyAction, setPrivacyAction] = useState<"delete" | "reduce">("delete");
+    const [isDeletionEmailModalOpen, setIsDeletionEmailModalOpen] = useState(false);
+    const [isDeletionProfileModalOpen, setIsDeletionProfileModalOpen] = useState(false);
 
-    const { data: service, status } = useQuery({
+    const { data: userService, status } = useQuery({
         queryKey: ['serviceDetails', serviceId],
-        queryFn: async (): Promise<ServiceQueryResult> => {
+        queryFn: async (): Promise<UserServiceQueryResult> => {
 
             const res = await fetch(`/api/user-services/${serviceId}`);
             if (!res.ok) {
@@ -122,7 +129,19 @@ export default function ServiceDetails({
         refetchOnWindowFocus: false,
     })
 
-    const deleteMyDataAndAccount = () => {
+    const { data: deletionProfile } = useQuery({
+        queryKey: ["deletion-profile"],
+        queryFn: async (): Promise<DeletionProfileQueryResult> => {
+            const res = await fetch("/api/get-deletion-profile")
+            if (!res.ok) {
+                throw new Error("Failed to fetch deletion email template");
+            }
+
+            return res.json();
+        }
+    })
+
+    const openModal = () => {
         if (plan?.current_plan !== "pro") {
             toast(() => (
                 <div>
@@ -145,44 +164,28 @@ export default function ServiceDetails({
             ));
             return;
         }
-        setPrivacyAction("delete");
-        setModalOpen(true);
-    }
 
-    const reduceMyData = () => {
-        if (plan?.current_plan !== "pro") {
-            toast(() => (
-                <div>
-                    <span className="font-medium">
-                        GhostSweep Professional required
-                    </span>
-                    <p className="text-sm text-muted-foreground">
-                        Unlock privacy request templates and direct contacts.
-                    </p>
-                    <Link href="/dashboard/billing?plan=monthly">
-                        <Button variant="outline" size="sm" className="mt-2">
-                            Upgrade to Pro
-                        </Button>
-                    </Link>
-                </div>
-            ));
+        if (!deletionProfile?.full_name || !deletionProfile?.country) {
+            // open to create deletion profile
+            setIsDeletionProfileModalOpen(true)
             return;
         }
-        setPrivacyAction("reduce");
-        setModalOpen(true);
+
+        setIsDeletionEmailModalOpen(true);
     }
+
 
     if (!serviceId) return null;
 
 
-    const lastSeen = service?.last_seen_at ? formatDate(service.last_seen_at) : "Unknown";
-    const firstSeen = service?.first_seen_at ? formatDate(service.first_seen_at) : "Unknown";
-    const emailCount = service?.email_count ?? 0;
-    const breached = service?.service.is_breached === true;
+    const lastSeen = userService?.last_seen_at ? formatDate(userService.last_seen_at) : "Unknown";
+    const firstSeen = userService?.first_seen_at ? formatDate(userService.first_seen_at) : "Unknown";
+    const emailCount = userService?.email_count ?? 0;
+    const breached = userService?.service.is_breached === true;
 
-    const serviceName = service?.service?.name || "Unknown service";
-    const domain = service?.service?.domain || "";
-    const category = service?.service?.category || "Unknown";
+    const serviceName = userService?.service?.name || "Unknown service";
+    const domain = userService?.service?.domain || "";
+    const category = userService?.service?.category || "Unknown";
 
     const websiteUrl = domain ? `https://${domain}` : null;
 
@@ -249,10 +252,10 @@ export default function ServiceDetails({
                                     </TabsTrigger>
 
                                     <TabsTrigger
-                                        value="privacy"
+                                        value="deletion_requests"
                                         className="data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-white rounded-none px-3 pb-2 text-sm"
                                     >
-                                        Privacy Requests
+                                        Deletion
                                     </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="summary">
@@ -262,25 +265,21 @@ export default function ServiceDetails({
                                         emailCount={emailCount}
                                         breached={breached}
                                         websiteUrl={websiteUrl}
-                                        default_privacy_email={service?.service.default_privacy_email}
+                                        contact={userService?.service.contact}
                                         current_plan={plan?.current_plan}
-                                        deleteMyDataAndAccount={deleteMyDataAndAccount}
-                                        reduceMyData={reduceMyData}
                                     />
                                 </TabsContent>
                                 <TabsContent value="breaches">
                                     <BreachesTab
-                                        breaches={service.breaches}
-                                        deleteMyDataAndAccount={deleteMyDataAndAccount}
-                                        reduceMyData={reduceMyData}
+                                        breaches={userService.breaches}
                                     />
                                 </TabsContent>
-                                <TabsContent value="privacy">
-                                    <PrivacyRequestsTab
-                                        serviceName={service.service.name}
-                                        request={service.privacyRequest}
-                                        deleteMyDataAndAccount={deleteMyDataAndAccount}
-                                        reduceMyData={reduceMyData}
+                                <TabsContent value="deletion_requests">
+                                    <DeletionTab
+                                        serviceName={userService.service.name}
+                                        request={userService.deletionRequest}
+                                        openModal={openModal}
+                                            setIsDeletionProfileModalOpen={setIsDeletionProfileModalOpen}
                                     />
                                 </TabsContent>
                             </Tabs>
@@ -288,12 +287,18 @@ export default function ServiceDetails({
                         </>)}
                 </SheetContent>
             </Sheet>
-            <PrivacyEmailModal
-                open={modalOpen}
-                onOpenChangeAction={setModalOpen}
-                action={privacyAction}
-                service={service}
-                userEmail={user?.gmail_address || ""}
+            <DeletionEmailModal
+                open={isDeletionEmailModalOpen}
+                onOpenChangeAction={setIsDeletionEmailModalOpen}
+                userService={userService}
+                gmailAddress={user?.gmail_address || ""}
+            />
+            <DeletionProfileModal
+                open={isDeletionProfileModalOpen}
+                onOpenChangeAction={setIsDeletionProfileModalOpen}
+                initialCountry={deletionProfile?.country}
+                initialFullName={deletionProfile?.full_name}
+                setIsDeletionEmailModalOpen={setIsDeletionEmailModalOpen}
             />
         </>
     );

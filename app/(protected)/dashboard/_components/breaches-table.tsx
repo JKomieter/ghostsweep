@@ -15,10 +15,10 @@ export type BreachRecord = {
     pwn_count: number | null;
     data_classes: string[] | null;
     is_sensitive: boolean | null;
+    description: string| null;
     raw?: {
         name?: string | null;
         title?: string | null;
-        description?: string | null;
         logo_path?: string | null;
     } | null;
 };

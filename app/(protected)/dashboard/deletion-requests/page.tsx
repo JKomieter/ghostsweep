@@ -27,15 +27,14 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { formatDate } from "@/utils/format-date";
-import { PrivacyAction, PrivacyStatus, Category } from "@/types";
+import {  Category, DeletionStatus } from "@/types";
 import { Spinner } from "@/components/ui/spinner";
 
-type PrivacyRequest = {
+export type DeletionRequest = {
     id: string;
     user_id: string;
     service_id: string;
-    action: PrivacyAction;
-    status: PrivacyStatus;
+    status: DeletionStatus;
     to_address: string | null;
     subject: string | null;
     sent_at: string | null;
@@ -43,20 +42,23 @@ type PrivacyRequest = {
     last_reply_at: string | null;
     reply_message_id: string | null;
     reply_snippet: string | null;
-    last_notified_status: PrivacyStatus | null;
+    last_notified_status: DeletionStatus | null;
     last_notified_at: string | null;
-    service: {
-        id: string;
-        name: string | null;
-        domain: string | null;
-        category: Category | null;
-        default_privacy_email: string | null;
-        is_breached: boolean | null;
+    user_service: {
+        id: string | null;
+        service: {
+            id: string;
+            name: string | null;
+            domain: string | null;
+            category: Category | null;
+            contact: string | null;
+            is_breached: boolean | null;
+        } | null
     } | null;
 };
 
 type ApiResponse = {
-    requests: PrivacyRequest[];
+    requests: DeletionRequest[];
     total: number;
     page: number;
     pageSize: number;
@@ -65,7 +67,7 @@ type ApiResponse = {
 const PAGE_SIZE = 20;
 
 const statusMap: Record<
-    PrivacyStatus,
+    DeletionStatus,
     { label: string; className: string }
 > = {
     drafted: {
@@ -102,18 +104,14 @@ const statusMap: Record<
     },
 };
 
-function actionLabel(action: PrivacyAction) {
-    return action === "delete" ? "Delete account & data" : "Reduce data usage";
-}
-
 export default function PrivacyRequestsPage() {
     const [page, setPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState<string>("open");
-    const [selected, setSelected] = useState<PrivacyRequest | null>(null);
+    const [selected, setSelected] = useState<DeletionRequest | null>(null);
     const [sheetOpen, setSheetOpen] = useState(false);
 
     const { data, status } = useQuery<ApiResponse>({
-        queryKey: ["privacy-requests", page, statusFilter],
+        queryKey: ["deletion-requests", page, statusFilter],
         queryFn: async () => {
             const params = new URLSearchParams();
             params.set("page", String(page));
@@ -122,7 +120,7 @@ export default function PrivacyRequestsPage() {
                 params.set("status", statusFilter);
             }
 
-            const res = await fetch(`/api/privacy-requests?${params.toString()}`);
+            const res = await fetch(`/api/deletion-requests?${params.toString()}`);
             if (!res.ok) {
                 throw new Error("Failed to fetch privacy requests");
             }
@@ -140,7 +138,7 @@ export default function PrivacyRequestsPage() {
     const canPrev = page > 1;
     const canNext = page < totalPages;
 
-    const handleView = (req: PrivacyRequest) => {
+    const handleView = (req: DeletionRequest) => {
         setSelected(req);
         setSheetOpen(true);
     };
@@ -151,7 +149,7 @@ export default function PrivacyRequestsPage() {
             <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h1 className="text-xl md:text-2xl font-semibold text-white">
-                        Privacy Requests
+                        Deletion Requests
                     </h1>
                     <p className="text-sm text-white/50 mt-1">
                         Track your deletion and data reduction requests across services.
@@ -192,7 +190,6 @@ export default function PrivacyRequestsPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Service</TableHead>
-                                <TableHead>Action</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Sent</TableHead>
                                 <TableHead>Last update</TableHead>
@@ -215,12 +212,12 @@ export default function PrivacyRequestsPage() {
                                         colSpan={6}
                                         className="h-24 text-center text-sm text-muted-foreground"
                                     >
-                                        No privacy requests yet.
+                                        No deletion requests yet.
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 requests.map((req) => {
-                                    const svc = req.service;
+                                    const svc = req?.user_service?.service;
                                     const statusInfo = statusMap[req.status];
 
                                     return (
@@ -236,11 +233,6 @@ export default function PrivacyRequestsPage() {
                                                         </span>
                                                     )}
                                                 </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {actionLabel(req.action)}
-                                                </span>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge
@@ -323,18 +315,18 @@ export default function PrivacyRequestsPage() {
                                         Privacy Request
                                     </span>
                                     <span className="text-lg font-semibold">
-                                        {selected.service?.name || "Unknown service"}
+                                        {selected?.user_service?.service?.name || "Unknown service"}
                                     </span>
                                 </SheetTitle>
                                 <SheetDescription className="text-xs text-white/50">
-                                    {selected.service?.domain}
+                                    {selected?.user_service?.service?.domain}
                                 </SheetDescription>
                             </SheetHeader>
 
                             <div className="mt-4 space-y-4 text-sm px-4">
                                 <div className="flex flex-wrap gap-2">
                                     <Badge variant="outline" className="text-xs capitalize">
-                                        {selected.service?.category || "Uncategorized"}
+                                        {selected?.user_service?.service?.category || "Uncategorized"}
                                     </Badge>
                                     <Badge
                                         className={`text-xs border-0 ${statusMap[selected.status].className
@@ -342,7 +334,7 @@ export default function PrivacyRequestsPage() {
                                     >
                                         {statusMap[selected.status].label}
                                     </Badge>
-                                    {selected.service?.is_breached && (
+                                    {selected?.user_service?.service?.is_breached && (
                                         <Badge className="text-xs bg-red-500/15 text-red-200 border-red-500/40">
                                             Breached service
                                         </Badge>
@@ -352,7 +344,6 @@ export default function PrivacyRequestsPage() {
                                 <div className="space-y-2 text-xs">
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground">Action</span>
-                                        <span>{actionLabel(selected.action)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-muted-foreground">To</span>

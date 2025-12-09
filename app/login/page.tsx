@@ -7,7 +7,7 @@ import {
     type Dispatch,
     type SetStateAction,
 } from "react";
-import { Eye, EyeOff, MailIcon, Shield, Lock, Check } from "lucide-react";
+import { Eye, EyeOff, MailIcon, Shield, Lock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";

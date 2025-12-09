@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { CircleCheck, ExternalLink, Lock } from "lucide-react";
+import { CircleCheck, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface SummaryTabProps {
@@ -14,10 +8,8 @@ interface SummaryTabProps {
     emailCount: number
     breached: boolean,
     websiteUrl: string | null
-    default_privacy_email: string | null | undefined
+    contact: string | null | undefined
     current_plan: "free" | "pro"| undefined
-    deleteMyDataAndAccount: () => void
-    reduceMyData: () => void
 }
 
 export default function SummaryTab({
@@ -26,10 +18,8 @@ export default function SummaryTab({
     emailCount,
     breached,
     websiteUrl,
-    default_privacy_email,
+    contact,
     current_plan,
-    deleteMyDataAndAccount,
-    reduceMyData
 }: SummaryTabProps) {
     return (
         <>
@@ -107,7 +97,7 @@ export default function SummaryTab({
                     </Button>
                 )}
 
-                {default_privacy_email && (
+                {contact && (
                     <>
                         <Button
                             variant="outline"
@@ -115,7 +105,7 @@ export default function SummaryTab({
                             className="justify-between border-white/20 bg-white/5"
                             onClick={() => {
                                 navigator.clipboard
-                                    .writeText(default_privacy_email || "")
+                                    .writeText(contact || "")
                                     .then(() => {
                                         toast(() => (
                                             <div className="flex flex-row items-center gap-2">
@@ -128,31 +118,13 @@ export default function SummaryTab({
                         >
                             Copy privacy email
                             <span className="text-xs text-muted-foreground">
-                                {default_privacy_email}
+                                {contact}
                             </span>
                         </Button>
                     </>
                 )}
             </div>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full">Send Privacy Request Email</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="max-w-sm min-w-72 w-full" align="start">
-                    <DropdownMenuItem className="focus:bg-red-600/10 focus:text-red-400" onClick={deleteMyDataAndAccount}>
-                        <div className="flex items-center justify-between w-full">
-                            <span>Delete my data & account</span>
-                            {current_plan !== "pro" && <Lock color="yellow" />}
-                        </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="focus:bg-red-600/10 focus:text-red-400" onClick={reduceMyData}>
-                        <div className="flex items-center justify-between w-full">
-                            <span>Reduce my data usage</span>
-                            {current_plan !== "pro" && <Lock color="yellow" />}
-                        </div>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+            
 
             <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground border-t border-white/5 pt-4">
                 GhostSweep analyses your email metadata (From, Subject, Date) to

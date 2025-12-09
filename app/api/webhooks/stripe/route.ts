@@ -63,6 +63,9 @@ export async function POST(req: Request) {
               renewsAt: getNextMonthDate(),
               secret: process.env.FUNCTION_SECRET!,
             },
+            headers: {
+              "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+            }
           }
         )
 

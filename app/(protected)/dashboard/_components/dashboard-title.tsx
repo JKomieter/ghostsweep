@@ -215,7 +215,7 @@ export default function DashboardTitle() {
                         GhostSweep Dashboard
                     </h1>
                     <p className="text-xs text-white/60 md:text-sm">
-                        Map your accounts, breaches, and privacy requests in one place.
+                        Map your accounts, breaches, and deletion requests in one place.
                     </p>
                 </div>
 

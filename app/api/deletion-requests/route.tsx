@@ -1,4 +1,4 @@
-// app/api/privacy-requests/route.ts
+// app/api/deletion-requests/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
@@ -29,32 +29,34 @@ export async function GET(request: NextRequest) {
 
     // Base query
     let query = supabase
-        .from("privacy_requests")
+        .from("deletion_requests")
         .select(
             `
+      id,
+      user_id,
+      user_service_id,
+      status,
+      to_address,
+      subject,
+      sent_at,
+      last_checked_at,
+      last_reply_at,
+      reply_message_id,
+      reply_snippet,
+      last_notified_status,
+      last_notified_at,
+      user_service:user_services (
         id,
-        user_id,
-        service_id,
-        action,
-        status,
-        to_address,
-        subject,
-        sent_at,
-        last_checked_at,
-        last_reply_at,
-        reply_message_id,
-        reply_snippet,
-        last_notified_status,
-        last_notified_at,
         service:services (
           id,
           name,
           domain,
           category,
-          default_privacy_email,
+          contact,
           is_breached
         )
-      `,
+      )
+    `,
             { count: "exact" }
         )
         .eq("user_id", user.id)

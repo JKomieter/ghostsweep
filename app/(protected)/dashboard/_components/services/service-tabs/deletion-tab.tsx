@@ -1,18 +1,15 @@
 "use client";
-
+import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { PrivacyAction, PrivacyStatus } from "@/types";
-import * as React from "react";
+import { DeletionStatus } from "@/types";
+import Link from "next/link";
 
-
-
-export interface PrivacyRequest {
+export interface DeletionRequest {
     id: string;
-    action: PrivacyAction;
-    status: PrivacyStatus;
+    status: DeletionStatus;
     to_address: string | null;
     subject: string | null;
     sent_at: string | null;
@@ -20,32 +17,35 @@ export interface PrivacyRequest {
     reply_snippet: string | null;
 }
 
-interface PrivacyRequestsTabProps {
+interface DeletionRequestsTabProps {
     serviceName: string | null;
-    request?: PrivacyRequest | null;
-    deleteMyDataAndAccount: () => void;
-    reduceMyData: () => void
+    request?: DeletionRequest | null;
+    openModal: () => void;
+    setIsDeletionProfileModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function statusConfig(status: PrivacyStatus) {
+function statusConfig(status: DeletionStatus) {
     switch (status) {
         case "drafted":
             return {
                 label: "Draft (not sent)",
                 className: "bg-zinc-500/10 text-zinc-200 border-zinc-500/30",
-                description: "You copied a template but haven’t marked this as sent yet.",
+                description:
+                    "You copied a template but haven’t marked this as sent yet.",
             };
         case "sent":
             return {
                 label: "Sent – awaiting reply",
                 className: "bg-blue-500/15 text-blue-200 border-blue-500/30",
-                description: "Your email appears sent. GhostSweep is watching for replies.",
+                description:
+                    "Your email appears sent. GhostSweep is watching for replies.",
             };
         case "received":
             return {
                 label: "Reply received",
                 className: "bg-indigo-500/15 text-indigo-200 border-indigo-500/30",
-                description: "We found a reply from this company. Review it below.",
+                description:
+                    "We found a reply from this company. Review it below.",
             };
         case "needs_verification":
             return {
@@ -65,7 +65,8 @@ function statusConfig(status: PrivacyStatus) {
             return {
                 label: "Completed – data removed",
                 className: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30",
-                description: "They claim your data/account has been deleted or fulfilled.",
+                description:
+                    "They claim your data/account has been deleted or fulfilled.",
             };
         case "failed":
             return {
@@ -101,56 +102,85 @@ function formatDateSafe(value: string | null) {
     });
 }
 
-export function PrivacyRequestsTab({
+export function DeletionTab({
     serviceName,
     request,
-    deleteMyDataAndAccount,
-    reduceMyData
-}: PrivacyRequestsTabProps) {
+    openModal,
+    setIsDeletionProfileModalOpen,
+}: DeletionRequestsTabProps) {
     const hasRequest = !!request;
 
-    const onStartRequest = (status: string) => {
-        if (status === "delete") deleteMyDataAndAccount()
-        else reduceMyData()
-    }
+    // 🔗 Constant for Google’s connected-apps page
+    const googlePermissionsUrl =
+        "https://myaccount.google.com/permissions";
 
     if (!hasRequest) {
-        // No existing privacy request for this service
         return (
             <div className="space-y-4 text-sm">
                 <div className="rounded-lg border border-white/10 bg-black/40 p-4">
                     <h3 className="text-sm font-semibold text-white">
-                        No privacy requests yet
+                        No deletion requests yet
                     </h3>
                     <p className="mt-1 text-xs text-muted-foreground">
                         GhostSweep can help you exercise your{" "}
                         <span className="font-medium">Right to be Forgotten</span> and
-                        reduce how much of your data {serviceName || "this service"} keeps.
-                        Start by generating a ready-to-send email.
+                        reduce how much of your data{" "}
+                        {serviceName || "this service"} keeps. Start by generating a
+                        ready-to-send email.
                     </p>
 
                     <div className="mt-4 flex flex-wrap gap-2">
                         <Button
                             size="sm"
+                            onClick={openModal}
                             className="bg-red-500/80 text-black hover:bg-red-500"
-                            onClick={() => onStartRequest("delete")}
                         >
                             Request deletion of my data
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-cyan-500/40 text-cyan-200 hover:bg-cyan-500/10"
-                            onClick={() => onStartRequest("reduce")}
-                        >
-                            Ask to reduce data usage
                         </Button>
                     </div>
 
                     <p className="mt-3 text-[11px] text-muted-foreground">
-                        GhostSweep will track replies to your request and update the status
-                        automatically so you don’t have to dig through your inbox.
+                        GhostSweep will track replies to your request and update the
+                        status automatically so you don’t have to dig through your inbox.
                     </p>
+
+                    {/* Extra controls: Google access + deletion profile */}
+                    <Separator className="my-4 bg-white/10" />
+
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-[11px] text-muted-foreground max-w-xs">
+                            If you think this might be a third-party app connected to your
+                            Google account, you can review your Google connections. You can
+                            also set up a deletion profile so future templates auto-fill
+                            your preferences.
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-[11px]"
+                                asChild
+                            >
+                                <Link
+                                    href={googlePermissionsUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Review Google connections
+                                </Link>
+                            </Button>
+
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-[11px]"
+                                onClick={() => setIsDeletionProfileModalOpen(true)}
+                            >
+                                Set up deletion profile
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -165,26 +195,26 @@ export function PrivacyRequestsTab({
                 <div className="flex items-start justify-between gap-3">
                     <div>
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Current privacy request
+                            Current deletion request
                         </p>
                         <h3 className="mt-1 text-sm font-semibold text-white">
-                            {request.action === "delete"
-                                ? "Delete my account & personal data"
-                                : "Reduce how my data is used"}
+                            Delete my account & personal data
                         </h3>
                     </div>
 
                     <Badge
                         className={cn(
                             "text-[11px] border px-2 py-1 rounded-full",
-                            cfg.className
+                            cfg.className,
                         )}
                     >
                         {cfg.label}
                     </Badge>
                 </div>
 
-                <p className="mt-2 text-xs text-muted-foreground">{cfg.description}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                    {cfg.description}
+                </p>
 
                 <Separator className="my-3 bg-white/10" />
 
@@ -236,43 +266,62 @@ export function PrivacyRequestsTab({
                     </div>
                 )}
 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-[11px] text-muted-foreground max-w-xs">
-                        GhostSweep checks your inbox regularly for updates and will move
-                        this request through the lifecycle as companies reply.
-                    </p>
+                <div className="mt-4 space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-[11px] text-muted-foreground max-w-xs">
+                            GhostSweep checks your inbox regularly for updates and will move
+                            this request through the lifecycle as companies reply.
+                        </p>
 
-                    <div className="flex flex-wrap gap-2">
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-primary/50 text-primary hover:bg-primary/10"
-                            onClick={() => onStartRequest(request.action)}
-                        >
-                            View email template
-                        </Button>
+                        <div className="flex flex-wrap gap-2">
+                            {request.status === "drafted" && (
+                                <Button
+                                    size="sm"
+                                    className="bg-blue-500/80 text-black hover:bg-blue-500"
+                                >
+                                    I’ve sent this email
+                                </Button>
+                            )}
+                        </div>
+                    </div>
 
-                        {request.status === "drafted" && (
+                    {/* Extra controls: Google access + deletion profile */}
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-[11px] text-muted-foreground max-w-xs">
+                            If you suspect this service might be connected via “Sign in with
+                            Google”, you can review which apps currently have access to your
+                            Google account. You can also set up a deletion profile so future
+                            requests use the same preferences automatically.
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
                             <Button
                                 size="sm"
-                                className="bg-blue-500/80 text-black hover:bg-blue-500"
-                                // you can wire this to an API to mark as `sent`
-                                onClick={() => onStartRequest(request.action)}
+                                variant="outline"
+                                className="text-[11px]"
+                                asChild
                             >
-                                I’ve sent this email
+                                <Link
+                                    href={googlePermissionsUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Review Google connections
+                                </Link>
                             </Button>
-                        )}
+
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-[11px]"
+                                onClick={() => setIsDeletionProfileModalOpen(true)}
+                            >
+                                    Set up deletion profile
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {/* Optional: hint for creating a second request type later */}
-            {/* 
-      <div className="rounded-lg border border-dashed border-white/10 bg-black/30 p-3 text-[11px] text-muted-foreground">
-        Want to make a different request (e.g., data minimization instead of deletion)? 
-        You’ll soon be able to add another tracked request here.
-      </div>
-      */}
         </div>
     );
 }

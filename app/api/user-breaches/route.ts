@@ -54,6 +54,7 @@ export async function GET() {
                 pwn_count,
                 data_classes,
                 is_sensitive,
+                description,
                 raw
             )
         `

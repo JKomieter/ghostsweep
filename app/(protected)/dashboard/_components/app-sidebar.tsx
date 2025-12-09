@@ -28,6 +28,8 @@ export default function SlidingSidebar() {
         }
     }
 
+    
+
     return (
         <>
             {/* Trigger Button (put this in your header/nav) */}
@@ -105,16 +107,16 @@ export default function SlidingSidebar() {
                     </Link> */}
 
                     <Link
-                        href="/dashboard/privacy-requests"
+                        href="/dashboard/deletion-requests"
                         onClick={() => setOpen(false)}
                         className={cn(
                             "rounded-md px-3 py-2 text-sm transition-colors",
-                            isSelected("/dashboard/privacy-requests")
+                            isSelected("/dashboard/deletion-requests")
                                 ? "bg-white/10 text-white border-l-2 border-primary"
                                 : "text-white/70 hover:bg-white/10 hover:text-white"
                         )}
                     >
-                        Privacy Requests
+                        Deletion Requests
                     </Link>
 
                     <Link

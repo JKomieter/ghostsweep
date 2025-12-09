@@ -6,10 +6,10 @@ import SummaryCards from "./_components/summary-cards";
 
 export default function DashboardPage() {
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 space-y-6">
             <DashboardTitle />
             <SummaryCards />
-            <div className="grid sm:grid-cols-3 gap-4 grid-cols-1 mt-8">
+            <div className="grid sm:grid-cols-3 gap-4 grid-cols-1">
                 <Breaches />
                 <News />
             </div>

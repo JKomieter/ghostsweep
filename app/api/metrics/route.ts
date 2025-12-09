@@ -80,7 +80,7 @@ export async function GET() {
             count: pendingRequestsCount,
             error: pendingRequestsError,
         } = await supabase
-            .from("privacy_requests")
+            .from("deletion_requests")
             .select("*", { count: "exact", head: true })
             .eq("user_id", user.id)
             .in("status", [
@@ -103,7 +103,7 @@ export async function GET() {
             count: respondedRequestsCount,
             error: respondedRequestsError,
         } = await supabase
-            .from("privacy_requests")
+                .from("deletion_requests")
             .select("*", { count: "exact", head: true })
             .eq("user_id", user.id)
             .not("last_reply_at", "is", null); // last_reply_at IS NOT NULL

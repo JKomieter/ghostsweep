@@ -16,6 +16,9 @@ export async function DELETE() {
 
     const { error } = await supabase.functions.invoke('delete-gmail', {
         body: { userId: user.id },
+        headers: {
+            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+        }
     })
 
     if (error) {

@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/format-date";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info, SquareArrowOutUpRight } from "lucide-react";
+import Link from "next/link";
 
 interface MetricsData {
     service_count: number;
@@ -19,6 +22,7 @@ type StatCardProps = {
     value: string | number;
     description: string;
     accent?: "default" | "danger" | "warning" | "success";
+    action?: React.ReactElement
 };
 
 function StatCard({
@@ -26,6 +30,7 @@ function StatCard({
     value,
     description,
     accent = "default",
+    action
 }: StatCardProps) {
     const baseClasses =
         "rounded-xl bg-[#050505] border p-5 transition-all min-h-36";
@@ -39,7 +44,10 @@ function StatCard({
 
     return (
         <div className={`${baseClasses} ${accentClasses} w-full`}>
-            <p className="text-sm text-white/60">{label}</p>
+            <div className="flex flex-row items-center justify-between">
+                <p className="text-sm text-white/60">{label}</p>
+                {action}
+            </div>
             <h2 className="mt-1 text-3xl font-semibold text-white">{value}</h2>
             <p className="mt-2 text-xs text-white/40">{description}</p>
         </div>
@@ -117,6 +125,11 @@ export default function SummaryCards() {
                 label="Services Found"
                 value={isLoading ? "…" : serviceCount}
                 description="Companies holding your personal data"
+                action={(
+                    <Link href="/dashboard/services">
+                        <SquareArrowOutUpRight color="gray" size={16} />
+                    </Link>
+                )}
             />
 
             {/* Breaches Detected */}
@@ -143,6 +156,11 @@ export default function SummaryCards() {
                 value={isLoading ? "…" : pending}
                 description="Companies you’re waiting to hear back from"
                 accent="warning"
+                action={(
+                    <Link href="/dashboard/deletion-requests">
+                        <SquareArrowOutUpRight color="gray" size={16} />
+                    </Link>
+                )}
             />
 
             {/* Companies Responded */}
@@ -157,7 +175,28 @@ export default function SummaryCards() {
             <div
                 className={`rounded-xl bg-[#050505] border p-5 transition-all min-h-36 ${scoreBorderClass}`}
             >
-                <p className="text-sm text-white/60">Security Score</p>
+                <div className="flex flex-row items-center justify-between">
+                    <p className="text-sm text-white/60">Security Score</p>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button>
+                                <Info color="gray" size={16} />
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-[#0A0A0A] border border-white/10">
+                            <p className="mb-2 font-semibold text-white">
+                                Security Score Factors:
+                            </p>
+
+                            <ul className="space-y-1 list-disc px-2 text-white/80">
+                                <li>Secured accounts</li>
+                                <li>Active breaches</li>
+                                <li>Unresolved deletion requests</li>
+                                <li>Completed privacy cleanups</li>
+                            </ul>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
 
                 <div className="mt-1 flex items-baseline gap-2">
                     <h2

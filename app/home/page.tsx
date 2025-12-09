@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client"
 
 import {
@@ -119,7 +118,7 @@ export default function HomePage() {
                 </div>
             )}
 
-            <main className="min-h-screen bg-gradient-to-b from-[#020308] via-black to-[#050608] text-foreground">
+            <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608] text-foreground">
                 <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 space-y-16 md:space-y-20">
 
                     {/* HERO */}

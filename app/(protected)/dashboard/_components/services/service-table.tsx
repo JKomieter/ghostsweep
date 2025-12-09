@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { Dispatch, SetStateAction, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import {
     ColumnDef,
     flexRender,
@@ -27,7 +27,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Category, PrivacyAction, PrivacyStatus, Service } from "@/types"
+import { Category, DeletionStatus, UserService } from "@/types"
 import { formatDate } from "@/utils/format-date"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority-score"
 import { Spinner } from "@/components/ui/spinner"
@@ -36,11 +36,26 @@ import Image from "next/image"
 import Link from "next/link"
 import { BreachRecord } from "../breaches-table"
 
+const categories: Category[] = [
+    "Social Media",
+    "Streaming & Entertainment",
+    "Shopping & E-commerce",
+    "Financial & Payments",
+    "Productivity & Work",
+    "Travel & Transportation",
+    "Food & Delivery",
+    "Gaming",
+    "Health & Fitness",
+    "News & Media",
+    "Email & Communication",
+    "Other"
+]
+
 type TableMeta = {
-    onView: (service: Service) => void
+    onView: (service: UserService) => void
 }
 
-export const columns: ColumnDef<Service>[] = [
+export const columns: ColumnDef<UserService>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -148,28 +163,24 @@ export const columns: ColumnDef<Service>[] = [
         },
     },
     {
-        accessorKey: "privacy_requests",
-        header: "Privacy Request",
+        accessorKey: "deletion_requests",
+        header: "Deletion Request",
         cell: ({ row }) => {
-            const requests = row.getValue("privacy_requests") as
+            const requests = row.getValue("deletion_requests") as
                 | {
                     id: string
-                    action: PrivacyAction
-                    status: PrivacyStatus
+                    status: DeletionStatus,
                     sent_at: string | null
                 }[]
                 | null
 
             if (!requests || requests.length === 0) {
                 return (
-                    <span className="text-xs text-muted-foreground">No request</span>
+                    <span className="text-xs text-muted-foreground">None</span>
                 )
             }
 
             const pr = requests[0]
-
-            const actionLabel =
-                pr.action === "delete" ? "Delete Data" : "Reduce Data Use"
 
             const statusMap: Record<
                 string,
@@ -212,16 +223,11 @@ export const columns: ColumnDef<Service>[] = [
             const statusInfo = statusMap[pr.status]
 
             return (
-                <div className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">
-                        {actionLabel}
-                    </span>
                     <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusInfo.className}`}
                     >
                         {statusInfo.label}
                     </span>
-                </div>
             )
         },
     },
@@ -247,54 +253,45 @@ export const columns: ColumnDef<Service>[] = [
     },
 ]
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 20;
 
-// Optional: if you have a canonical list elsewhere, use that instead
-const categories: Category[] = [
-    "Social Media",
-    "Streaming & Entertainment",
-    "Shopping & E-commerce",
-    "Financial & Payments",
-    "Productivity & Work",
-    "Travel & Transportation",
-    "Food & Delivery",
-    "Gaming",
-    "Health & Fitness",
-    "News & Media",
-    "Email & Communication",
-    "Other"
-] as Category[]
+type BreachFilter = "all" | "breached" | "unbreached"
 
-export default function ServiceTable() {
-    const [query, setQuery] = useState("")
-    const [category, setCategory] = useState<Category | undefined>(undefined)
-    const [breachedFilter, setBreachedFilter] = useState<
-        "all" | "breached" | "unbreached"
-    >("all")
+interface ServiceTableProps {
+    userService: { services: UserService[]; total: number } | undefined;
+    userServiceStatus: "pending" | "error" | "success";
+    query: string;
+    setQuery: Dispatch<SetStateAction<string>>;
+    category: Category | undefined;
+    setCategory: Dispatch<SetStateAction<Category | undefined>>;
+    page: number;
+    setPage: Dispatch<SetStateAction<number>>;
+    breachedFilter: BreachFilter;
+    setBreachedFilter: Dispatch<SetStateAction<BreachFilter>>;
+    breaches: { breaches: BreachRecord[], total: number } | undefined
+}
+
+export default function ServiceTable({
+    userService,
+    userServiceStatus,
+    query,
+    setQuery,
+    category,
+    setCategory,
+    page,
+    setPage,
+    breachedFilter,
+    setBreachedFilter,
+
+}: ServiceTableProps) {
+    
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
-    const [page, setPage] = useState(1)
+    
     const [serviceToViewId, setServiceToViewId] = useState<string>()
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
-    const { data, status } = useQuery({
-        queryKey: ["user-services", query, page, category, breachedFilter],
-        queryFn: async (): Promise<{ services: Service[]; total: number }> => {
-            const params = new URLSearchParams()
-            params.set("page", String(page))
-            if (query) params.set("query", query)
-            if (category) params.set("category", category === "All" ? "" : category)
-            if (breachedFilter) params.set("breached", breachedFilter === "all" ? "" : breachedFilter)
-
-            const res = await fetch(`/api/user-services?${params.toString()}`)
-            if (!res.ok) {
-                throw new Error("Network response was not ok")
-            }
-            return res.json()
-        },
-        refetchOnWindowFocus: false,
-        placeholderData: keepPreviousData,
-    })
+    
 
     const { data: plan } = useQuery({
         queryKey: ["plan"],
@@ -314,25 +311,14 @@ export default function ServiceTable() {
         },
     })
 
-    const { data: breaches, } = useQuery({
-            queryKey: ['breaches'],
-            queryFn: async (): Promise<{ breaches: BreachRecord[], total: number }> => {
-                const res = await fetch('/api/user-breaches')
-                if (!res.ok) {
-                    throw new Error('Network response was not ok')
-                }
-                const { breaches, total } = await res.json()
-                return { breaches, total }
-            },
-        })
+    
 
-    const isLoading = status === "pending"
+    const isLoading = userServiceStatus === "pending"
     const isFree = plan?.current_plan === "free"
 
-    const visibleCount = data?.services?.length ?? 0
-    const totalCount = data?.total ?? visibleCount
+    const visibleCount = userService?.services?.length ?? 0
+    const totalCount = userService?.total ?? visibleCount
     const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
-    const totalBreaches = breaches?.total
 
     const hasHiddenServices = isFree && totalCount > visibleCount
     const canPrev = page > 1
@@ -340,7 +326,7 @@ export default function ServiceTable() {
 
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
-        data: data?.services || [],
+        data: userService?.services || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
@@ -356,7 +342,7 @@ export default function ServiceTable() {
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
         meta: {
-            onView: (service: Service) => {
+            onView: (service: UserService) => {
                 setServiceToViewId(service.service.id)
                 setIsDetailsOpen(true)
             },
@@ -371,25 +357,7 @@ export default function ServiceTable() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Page header */}
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-xl font-semibold text-white">Services</h1>
-                    <p className="text-sm text-white/60">
-                        GhostSweep found <span className="font-semibold text-white">{totalCount}</span> services linked to your email{totalBreaches ? (
-                            <> and <span className="font-semibold text-white">{totalBreaches}</span> breaches</>
-                        ) : null}.
-                        {hasHiddenServices && (
-                            <> Showing your first {visibleCount} services on the free plan.</>
-                        )}
-                    </p>
-                </div>
-
-                <div className="text-xs text-white/40 sm:text-right">
-                    View details, check risk, and take action.
-                </div>
-            </div>
+        <div className="space-y-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-white/10 bg-[#050505] p-4">
                 <input
                     className="w-full max-w-md rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -434,7 +402,7 @@ export default function ServiceTable() {
                             setPage(1)
                         }}
                     >
-                        <SelectTrigger className="h-8 w-[170px] text-xs">
+                        <SelectTrigger className="h-8 w-[150px] text-xs">
                             <SelectValue placeholder="All services" />
                         </SelectTrigger>
                         <SelectContent>
@@ -449,7 +417,6 @@ export default function ServiceTable() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
                         onClick={resetFilters}
                     >
                         <RefreshCw className="h-4 w-4" />

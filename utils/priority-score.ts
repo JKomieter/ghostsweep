@@ -1,7 +1,7 @@
-import { Service } from "@/types";
+import { UserService } from "@/types";
 
 // utils/priority-score.ts
-export function calcPriorityScore(service: Service) {
+export function calcPriorityScore(service: UserService) {
     const now = Date.now();
 
     // --- Activity score (0–40)
