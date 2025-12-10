@@ -17,6 +17,8 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
+// TODO: Toast should show only once
+
 type LatestSweepResponse = {
     sweepId: string | null;
     status: "pending" | "processing" | "completed" | "failed" | null;

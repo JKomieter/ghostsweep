@@ -53,13 +53,10 @@ export default function DeletionEmailModal({
         queryKey: ["deletion-template", serviceName, domain],
         enabled: open && !!userService, // only fetch when modal is open and service exists
         queryFn: async () => {
-            const params = new URLSearchParams({
-                serviceName,
-                domain,
-            });
+            
 
             const res = await fetch(
-                `/api/generate-deletion-request-email-template?${params.toString()}`
+                `/api/generate-template/${userService?.id}`
             );
 
             if (!res.ok) {
@@ -92,7 +89,7 @@ export default function DeletionEmailModal({
         onSuccess: () => {
             toast.success("Request marked as sent. We’ll track replies for you.");
             onOpenChangeAction(false);
-            queryClient.invalidateQueries({ queryKey: ["serviceDetails", userService?.service_id] })
+            queryClient.invalidateQueries({ queryKey: ["serviceDetails", userService?.service_id, "deletion-requests-count", "user-services"] })
         },
         onError: (error) => {
             console.error(error);

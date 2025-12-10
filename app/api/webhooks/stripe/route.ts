@@ -16,6 +16,9 @@ function getNextMonthDate() {
   ).toISOString()
 }
 
+// TODO: Account for yearly subs
+// TODO: Add deletion profile to settings
+
 export async function POST(req: Request) {
   let event: Stripe.Event
   const supabase = await createClient()
