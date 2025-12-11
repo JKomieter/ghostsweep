@@ -15,7 +15,7 @@ const ratelimit = new Ratelimit({
     limiter: Ratelimit.fixedWindow(5, "5 s"),
 });
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     // Get IP address for rate limiting
     const ip =  request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
