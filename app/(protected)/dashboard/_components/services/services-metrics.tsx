@@ -41,8 +41,12 @@ function MiniMetricCard({
             {tooltip && (
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button>
-                                <Info color="gray" size={16} />
+                            <button
+                                type="button"
+                                className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/20 text-[10px] text-white/60 hover:border-white/40 hover:text-white"
+                                aria-label={tooltip}
+                            >
+                                <Info className="h-3 w-3" />
                             </button>
                         </TooltipTrigger>
                         <TooltipContent className="bg-[#0A0A0A] border border-white/10">

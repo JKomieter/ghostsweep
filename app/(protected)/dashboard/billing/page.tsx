@@ -100,6 +100,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
             billing_interval: planConfig.interval,
             supabase_user_id: user.id,
             type: "one_time_checkout",
+            plan: selectedPlan
         },
     });
 

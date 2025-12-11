@@ -16,6 +16,15 @@ function getNextMonthDate() {
   ).toISOString()
 }
 
+function getNextYearDate(): string {
+  const now = new Date();
+  return new Date(
+    now.getFullYear() + 1,
+    now.getMonth(),
+    now.getDate()
+  ).toISOString();
+}
+
 // TODO: Account for yearly subs
 // TODO: Add deletion profile to settings
 
@@ -47,15 +56,18 @@ export async function POST(req: Request) {
         const paymentIntent = event.data.object as Stripe.PaymentIntent
 
         const supabaseUserId = paymentIntent.metadata?.supabase_user_id
-        const stripeCustomerId = paymentIntent.customer as string | null
-
+        
         if (!supabaseUserId) {
           console.warn(
             "⚠️ payment_intent.succeeded missing supabase_user_id"
           )
           break
         }
-
+        const stripeCustomerId = paymentIntent.customer as string | null
+        const plan = paymentIntent.metadata?.plan
+        
+        const renewsAt = plan === "monthly" ? getNextMonthDate() : getNextYearDate()
+ 
         // 1) Update subscription in Supabase
         const { error } = await supabase.functions.invoke(
           "renew-user-subscription",
@@ -63,8 +75,7 @@ export async function POST(req: Request) {
             body: {
               userId: supabaseUserId,
               stripeCustomerId,
-              renewsAt: getNextMonthDate(),
-              secret: process.env.FUNCTION_SECRET!,
+              renewsAt,
             },
             headers: {
               "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
@@ -90,7 +101,7 @@ export async function POST(req: Request) {
           .insert({
             user_id: supabaseUserId,
             type: "plan_upgraded",
-            title: "You're now Pro!",
+            title: "You're now Professional!",
             message:
               "Your GhostSweep Professional plan is now active. Enjoy unlimited sweeps, deeper scans, and new account detection.",
             read: false,

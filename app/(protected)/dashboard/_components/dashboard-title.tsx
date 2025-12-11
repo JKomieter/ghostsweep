@@ -17,12 +17,18 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-// TODO: Toast should show only once
-
 type LatestSweepResponse = {
     sweepId: string | null;
     status: "pending" | "processing" | "completed" | "failed" | null;
     progress?: number | null;
+
+    // 🔥 new bits
+    phase?: string | null;            // raw DB status (e.g. "listing_messages")
+    phaseLabel?: string | null;       // nice label (e.g. "Listing account-related emails")
+    phaseStep?: number | null;        // 1–5
+    phaseCount?: number | null;       // always 5
+    messagesProcessed?: number | null;
+
     servicesFound?: number | null;
     breachesFound?: number | null;
     errorMessage?: string | null;
@@ -102,8 +108,8 @@ export default function DashboardTitle() {
 
             toast.success("Sweep complete — dashboard updated", {
                 description: `Found ${latestSweep.servicesFound || 0} services${latestSweep.breachesFound
-                        ? ` and ${latestSweep.breachesFound} breaches`
-                        : ""
+                    ? ` and ${latestSweep.breachesFound} breaches`
+                    : ""
                     }.`,
             });
         }
@@ -264,27 +270,46 @@ export default function DashboardTitle() {
             </div>
 
             {/* ✅ Background sweep banner */}
-            {isInProgress && (
-                <div className="mb-4 flex items-center justify-between gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
-                    <div className="flex items-center gap-2">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        <span>
-                            Your GhostSweep is{" "}
-                            {latestSweep?.status === "pending"
-                                ? "in the queue…"
-                                : "processing your inbox…"}
-                            {getElapsedMinutes() > 0 && (
-                                <span className="text-cyan-200/80">
-                                    {" "}
-                                    ({getElapsedMinutes()}m elapsed)
-                                </span>
+            {isInProgress && latestSweep && (
+                <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <span className="font-medium">
+                                {latestSweep.phaseLabel ?? "Scanning your inbox…"}
+                            </span>
+                        </div>
+                        <div className="text-[11px] text-cyan-200/80">
+                            {latestSweep.phaseStep && latestSweep.phaseCount ? (
+                                <>
+                                    Phase {latestSweep.phaseStep} of {latestSweep.phaseCount}
+                                    {" • "}
+                                </>
+                            ) : null}
+                            {typeof latestSweep.messagesProcessed === "number" && (
+                                <>
+                                    {latestSweep.messagesProcessed.toLocaleString()} messages processed
+                                    {" • "}
+                                </>
                             )}
-                        </span>
+                            {getElapsedMinutes() > 0 && (
+                                <>Running {getElapsedMinutes()} min</>
+                            )}
+                        </div>
                     </div>
-                    {typeof latestSweep?.progress === "number" && (
-                        <span className="text-[11px] text-cyan-200 font-medium">
-                            {latestSweep.progress}%
-                        </span>
+
+                    {typeof latestSweep.progress === "number" && (
+                        <div className="flex items-center gap-2">
+                            <div className="hidden h-1.5 w-32 overflow-hidden rounded-full bg-cyan-900/50 sm:block">
+                                <div
+                                    className="h-full bg-cyan-400 transition-all duration-300"
+                                    style={{ width: `${latestSweep.progress}%` }}
+                                />
+                            </div>
+                            <span className="text-[11px] font-semibold text-cyan-200">
+                                {latestSweep.progress}%
+                            </span>
+                        </div>
                     )}
                 </div>
             )}
@@ -317,43 +342,51 @@ export default function DashboardTitle() {
 
                     <div className="mt-3 space-y-3 text-xs md:text-sm">
                         {isInProgress ? (
-                            <>
-                                {/* ✅ Show in-progress status */}
-                                <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Loader2 className="h-4 w-4 animate-spin text-cyan-300" />
-                                        <span className="font-medium text-cyan-100">
-                                            {latestSweep?.status === "pending"
-                                                ? "Queued"
-                                                : "Processing"}
-                                        </span>
-                                    </div>
-                                    <p className="text-cyan-200/80 text-xs">
-                                        {latestSweep?.status === "pending"
-                                            ? "Your sweep is in the queue and will start shortly."
-                                            : `Processing your inbox… This usually takes 3-5 minutes.`}
-                                    </p>
-                                    {typeof latestSweep?.progress === "number" && (
-                                        <div className="mt-2">
-                                            <div className="h-1.5 bg-cyan-900/50 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-cyan-400 transition-all duration-300"
-                                                    style={{ width: `${latestSweep.progress}%` }}
-                                                />
-                                            </div>
-                                            <p className="text-cyan-300 text-xs mt-1">
-                                                {latestSweep.progress}% complete
-                                            </p>
-                                        </div>
-                                    )}
-                                    {getElapsedMinutes() > 0 && (
-                                        <p className="text-cyan-300/60 text-xs mt-2">
-                                            Running for {getElapsedMinutes()} minute
-                                            {getElapsedMinutes() !== 1 ? "s" : ""}
-                                        </p>
-                                    )}
+                            <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3 space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin text-cyan-300" />
+                                    <span className="font-medium text-cyan-100">
+                                        {latestSweep.phaseLabel ?? "Running GhostSweep…"}
+                                    </span>
                                 </div>
-                            </>
+
+                                <p className="text-[11px] text-cyan-200/80">
+                                    {latestSweep.phaseStep && latestSweep.phaseCount
+                                        ? `Phase ${latestSweep.phaseStep} of ${latestSweep.phaseCount}.`
+                                        : "Processing your inbox in multiple phases."}{" "}
+                                    This usually takes a few minutes.
+                                </p>
+
+                                {typeof latestSweep.messagesProcessed === "number" && (
+                                    <p className="text-[11px] text-cyan-200/80">
+                                        Messages processed:{" "}
+                                        <span className="font-semibold">
+                                            {latestSweep.messagesProcessed.toLocaleString()}
+                                        </span>
+                                    </p>
+                                )}
+
+                                {typeof latestSweep.progress === "number" && (
+                                    <div className="mt-1">
+                                        <div className="h-1.5 bg-cyan-900/50 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-cyan-400 transition-all duration-300"
+                                                style={{ width: `${latestSweep.progress}%` }}
+                                            />
+                                        </div>
+                                        <p className="mt-1 text-[11px] text-cyan-200">
+                                            {latestSweep.progress}% complete
+                                        </p>
+                                    </div>
+                                )}
+
+                                {getElapsedMinutes() > 0 && (
+                                    <p className="text-[11px] text-cyan-200/70">
+                                        Running for {getElapsedMinutes()} minute
+                                        {getElapsedMinutes() !== 1 ? "s" : ""}
+                                    </p>
+                                )}
+                            </div>
                         ) : gmailAddress ? (
                             <>
                                 <p className="text-white/60">

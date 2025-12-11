@@ -181,8 +181,6 @@ export default function PrivacyToolsModal({
                                         size="sm"
                                         className="shrink-0"
                                         onClick={() => {
-                                            // TODO: open your template UI / navigate e.g. /tools/data-removal
-                                            // For now maybe show a toast or navigate to a placeholder page.
                                             window.location.href = "/dashboard/tools/data-removal";
                                         }}
                                     >
