@@ -2,32 +2,43 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
+// Map worker statuses -> nice labels + steps
 const PHASE_META: Record<
     string,
-    { label: string; step: number; totalSteps: number }
+    { label: string; step: number; count: number }
 > = {
-    listing_messages: { label: "Listing account-related emails", step: 1, totalSteps: 5 },
-    processing_metadata: { label: "Processing email metadata", step: 2, totalSteps: 5 },
-    service_normalisation: { label: "Grouping services by domain", step: 3, totalSteps: 5 },
-    account_classification: { label: "Classifying accounts", step: 4, totalSteps: 5 },
-    data_ingestion: { label: "Saving results", step: 5, totalSteps: 5 },
+    account_discovery: {
+        label: "Discovering account-related emails",
+        step: 1,
+        count: 5,
+    },
+    metadata_extraction: {
+        label: "Extracting email metadata",
+        step: 2,
+        count: 5,
+    },
+    service_normalisation: {
+        label: "Analyzing services & domains",
+        step: 3,
+        count: 5,
+    },
+    account_classification: {
+        label: "Classifying accounts & spam",
+        step: 4,
+        count: 5,
+    },
+    data_ingestion: {
+        label: "Saving accounts, breaches & metrics",
+        step: 5,
+        count: 5,
+    },
 };
-
-type NormalizedStatus = "pending" | "processing" | "completed" | "failed";
-
-function normalizeStatus(raw: string | null): NormalizedStatus | null {
-    if (!raw) return null;
-    if (raw === "pending") return "pending";
-    if (raw === "completed") return "completed";
-    if (raw === "failed") return "failed";
-    // any phase status counts as "processing"
-    return "processing";
-}
 
 export async function GET() {
     try {
         const supabase = await createClient();
 
+        // ✅ Get user from session
         const {
             data: { user },
             error: userError,
@@ -37,6 +48,7 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        // ✅ Fetch latest unread sweep for this user
         const { data: sweep, error: sweepError } = await supabase
             .from("sweep_events")
             .select(
@@ -49,11 +61,11 @@ export async function GET() {
         error_message,
         started_at,
         completed_at,
-        messages_processed,
-        is_read
+        messages_processed
       `,
             )
             .eq("user_id", user.id)
+            .eq("is_read", false)
             .order("created_at", { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -66,6 +78,7 @@ export async function GET() {
             );
         }
 
+        // If nothing unread, return "no sweep"
         if (!sweep) {
             return NextResponse.json({
                 sweepId: null,
@@ -85,27 +98,46 @@ export async function GET() {
             });
         }
 
-        const rawStatus: string | null = sweep.status;
-        const normalizedStatus = normalizeStatus(rawStatus);
-        const phaseMeta = PHASE_META[rawStatus ?? ""] ?? null;
+        // Mark as read (fire-and-forget, but we still await here)
+        await supabase
+            .from("sweep_events")
+            .update({ is_read: true })
+            .eq("id", sweep.id);
 
-        // (Optional) mark as read only when not processing
-        if (!sweep.is_read && normalizedStatus !== "processing") {
-            await supabase
-                .from("sweep_events")
-                .update({ is_read: true })
-                .eq("id", sweep.id);
+        const rawStatus = sweep.status as string;
+
+        // Map DB status -> high-level status + phase fields
+        let status: "pending" | "processing" | "completed" | "failed" | null = null;
+        let phase: string | null = null;
+        let phaseLabel: string | null = null;
+        let phaseStep: number | null = null;
+        let phaseCount: number | null = null;
+
+        if (rawStatus === "pending") {
+            status = "pending";
+        } else if (rawStatus === "completed" || rawStatus === "failed") {
+            status = rawStatus;
+        } else if (PHASE_META[rawStatus]) {
+            // Any of the phase statuses => treat as processing
+            status = "processing";
+            phase = rawStatus;
+            phaseLabel = PHASE_META[rawStatus].label;
+            phaseStep = PHASE_META[rawStatus].step;
+            phaseCount = PHASE_META[rawStatus].count;
+        } else {
+            // Fallback: unknown non-terminal status = processing
+            status = "processing";
         }
 
         return NextResponse.json({
             sweepId: sweep.id as string,
-            status: normalizedStatus,
-            progress: sweep.progress ?? 0,
-            phase: rawStatus, // e.g. "listing_messages"
-            phaseLabel: phaseMeta?.label ?? null,
-            phaseStep: phaseMeta?.step ?? null,
-            phaseCount: phaseMeta?.totalSteps ?? null,
-            messagesProcessed: sweep.messages_processed ?? 0,
+            status,                       // "pending" | "processing" | "completed" | "failed"
+            progress: sweep.progress ?? null,
+            phase,
+            phaseLabel,
+            phaseStep,
+            phaseCount,
+            messagesProcessed: sweep.messages_processed ?? null,
             servicesFound: sweep.services_found ?? null,
             breachesFound: sweep.breaches_found ?? null,
             errorMessage: sweep.error_message ?? null,

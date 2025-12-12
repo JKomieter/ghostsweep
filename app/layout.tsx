@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "GhostSweep",
     images: [
       {
-        url: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png", // Replace with your actual OG image
+        url: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
         width: 1200,
         height: 630,
         alt: "GhostSweep — Privacy Dashboard",
@@ -57,7 +57,28 @@ export const metadata: Metadata = {
   },
 };
 
-
+/**
+ * Security Note: Subresource Integrity (SRI)
+ * 
+ * This application does not use traditional SRI attributes because:
+ * 
+ * 1. Next.js Scripts (_next/static/):
+ *    - Use content-addressed filenames (e.g., main-abc123.js)
+ *    - Hash in filename serves as integrity check
+ *    - More reliable than SRI attributes
+ * 
+ * 2. External Resources:
+ *    - Vercel Analytics: Self-hosted (same-origin)
+ *    - Vercel Speed Insights: Self-hosted (same-origin)
+ *    - Google Fonts: Optimized and self-hosted by Next.js
+ * 
+ * 3. Additional Security:
+ *    - Content Security Policy (see next.config.ts)
+ *    - Strict-Transport-Security (HTTPS only)
+ *    - X-Content-Type-Options: nosniff
+ * 
+ * See: https://nextjs.org/docs/architecture/nextjs-compiler
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -74,9 +95,12 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          {/* Analytics - Self-hosted by Vercel (same-origin, no SRI needed) */}
           <SpeedInsights />
           <Analytics />
-            <main>{children}</main>
+
+          <main>{children}</main>
+
           <Toaster position="top-right" />
         </ThemeProvider>
       </body>

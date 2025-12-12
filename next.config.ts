@@ -1,27 +1,14 @@
-import {withSentryConfig} from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   experimental: {
     globalNotFound: true,
   },
   reactStrictMode: true,
-  // turbopack: {
-  //   rules: {
-  //     '*.svg': {
-  //       loaders: [
-  //         {
-  //           loader: '@svgr/webpack',
-  //           options: {
-  //             icon: true,
-  //           },
-  //         },
-  //       ],
-  //       as: '*.js',
-  //     },
-  //   }
-  // }
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
+
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
@@ -30,6 +17,7 @@ const nextConfig: NextConfig = {
 
     return config
   },
+
   images: {
     remotePatterns: [
       {
@@ -52,42 +40,234 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '**',
-        port: '', 
-        pathname: '**', 
+        port: '',
+        pathname: '**',
       },
     ],
+  },
+
+  async headers() {
+    const securityHeaders = [
+      {
+        key: 'X-Content-Type-Options',
+        value: 'nosniff',
+      },
+      {
+        key: 'X-Frame-Options',
+        value: 'DENY',
+      },
+      {
+        key: 'X-XSS-Protection',
+        value: '1; mode=block',
+      },
+      {
+        key: 'Referrer-Policy',
+        value: 'strict-origin-when-cross-origin',
+      },
+      {
+        key: 'Permissions-Policy',
+        value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+      },
+      {
+        key: 'Strict-Transport-Security',
+        value: 'max-age=31536000; includeSubDomains; preload',
+      },
+      {
+        key: 'Content-Security-Policy',
+        value: [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com",
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: https: blob:",
+          "font-src 'self' data:",
+          "connect-src 'self' https://accounts.google.com https://www.googleapis.com https://api.anthropic.com https://*.supabase.co wss://*.supabase.co https://img.logo.dev https://ghostsweep.t3.storage.dev",
+          "frame-src 'self' https://accounts.google.com",
+          "frame-ancestors 'none'",
+          "media-src 'self' https://ghostsweep.t3.storage.dev",
+          "object-src 'none'",
+          "base-uri 'self'",
+          "form-action 'self'",
+          "upgrade-insecure-requests",
+        ].join('; '),
+      },
+      {
+        key: 'Server',
+        value: '',
+      },
+    ];
+
+    return [
+      // Public marketing pages - can be cached
+      {
+        source: '/home/:path((?!breach-check).*)*',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // Authentication pages - NEVER cache
+      {
+        source: '/login',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, private',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      {
+        source: '/forgot-password',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, private',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      {
+        source: '/reset-password',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, private',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Dashboard - NEVER cache (user-specific)
+      {
+        source: '/dashboard/:path*',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, private',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // API routes - NEVER cache
+      {
+        source: '/api/:path*',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, private',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Breach check page - NEVER cache (user input)
+      {
+        source: '/home/breach-check',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, private',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      // Static assets - can cache aggressively
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+      {
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+      // Default - private cache for everything else
+      {
+        source: '/:path*',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'private, max-age=0, must-revalidate',
+          },
+        ],
+      },
+    ];
   },
 };
 
 export default withSentryConfig(nextConfig, {
-  // For all available options, see:
-  // https://www.npmjs.com/package/@sentry/webpack-plugin#options
-
   org: "joel-adjetey-komieter",
-
   project: "ghostsweep",
-
-  // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
-
-  // For all available options, see:
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-  // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
-
-  // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
   tunnelRoute: "/monitoring",
-
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
-
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 });

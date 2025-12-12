@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /_next/
+Disallow: /monitoring/
+
+# Prevent crawling of potential sensitive content
+Disallow: /*.sql$
+Disallow: /*.db$
+Disallow: /*.env$
+Disallow: /*.config$
+
+Sitemap: https://www.ghostsweep.com/sitemap.xml

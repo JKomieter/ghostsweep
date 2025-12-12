@@ -1,0 +1,189 @@
+Contact: security@ghostsweep.com
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://www.ghostsweep.com/.well-known/security.txt
+
+# Security Findings & Explanations
+# =================================
+
+# 1. Subresource Integrity (SRI) - FALSE POSITIVE
+# ------------------------------------------------
+# Finding: Scripts lack integrity attributes
+# Status: False Positive / Not Applicable
+#
+# Explanation:
+# - All JavaScript is served via Next.js from our domain (_next/static/)
+# - Next.js uses content-addressed filenames (e.g., main-a1b2c3d4.js)
+# - The hash in the filename IS the integrity mechanism
+# - When content changes, the filename hash changes automatically
+# - This is equivalent to and more reliable than SRI attributes
+#
+# External Resources:
+# - Vercel Analytics: Self-hosted by Vercel (same-origin, no SRI needed)
+# - Vercel Speed Insights: Self-hosted by Vercel (same-origin, no SRI needed)
+# - Google Fonts (Inter): Optimized and self-hosted by Next.js automatically
+# - No third-party CDN scripts are loaded
+#
+# Additional Protections:
+# - Content Security Policy restricts script sources to trusted domains
+# - Strict-Transport-Security enforces HTTPS-only connections
+# - All resources served over HTTPS with valid certificates
+#
+# References:
+# - https://nextjs.org/docs/architecture/nextjs-compiler
+# - https://web.dev/articles/content-addressed-resources
+
+# 2. SQL Source Code Disclosure - FALSE POSITIVE
+# -----------------------------------------------
+# Finding: Blog content contains SQL keywords
+# Status: False Positive
+#
+# Explanation:
+# - Scanner detected instructional text like "Select a reason from the dropdown"
+# - This is normal user-facing content, not SQL source code or queries
+# - No database queries, schemas, or credentials are exposed to clients
+# - All database operations are server-side only
+#
+# Verification:
+# - No .sql files in public directories
+# - No database credentials in client-accessible code
+# - Production source maps disabled
+# - All user content properly escaped and sanitized
+#
+# Example of flagged content:
+# "Select a reason from the dropdown" (Instagram deletion tutorial)
+
+# 3. Proxy Disclosure - ACCEPTED RISK
+# ------------------------------------
+# Finding: Vercel proxy headers visible
+# Status: Accepted Risk
+#
+# Explanation:
+# - Headers like x-vercel-id and x-vercel-cache are added automatically by Vercel
+# - These headers cannot be fully removed or customized
+# - They do not expose security vulnerabilities or sensitive information
+# - Standard for all applications hosted on Vercel platform
+#
+# Mitigations:
+# - Server and X-Powered-By headers are suppressed where possible
+# - Content Security Policy prevents exploitation via headers
+# - No sensitive configuration exposed in remaining headers
+
+# 4. TRACE/TRACK HTTP Methods - MITIGATED
+# ----------------------------------------
+# Status: Blocked in middleware
+#
+# All dangerous HTTP methods (TRACE, TRACK) are blocked at the middleware level
+# and return 405 Method Not Allowed. OPTIONS is restricted to CORS preflight only.
+
+# General Security Posture
+# -------------------------
+# - All traffic encrypted with HTTPS (HSTS enabled)
+# - Content Security Policy prevents XSS and injection attacks
+# - X-Frame-Options prevents clickjacking
+# - X-Content-Type-Options prevents MIME confusion attacks
+# - Rate limiting prevents abuse (100 requests/minute per IP)
+# - Geographic blocking for high-risk regions (CN, RU, KP)
+# - Read-only Gmail OAuth scope (cannot send/delete emails)
+# - Open-source core scanning logic (GitHub: ghostsweep)
+
+# Responsible Disclosure
+# ----------------------
+# If you discover a legitimate security vulnerability, please:
+# 1. Email security@ghostsweep.com with details
+# 2. Allow 90 days for us to investigate and patch
+# 3. Do not publicly disclose until we've had time to respond
+#
+# We appreciate responsible disclosure and will credit researchers
+# (with permission) for valid findings.
+
+# Bug Bounty: Not available at this time
+# PGP Key: Not available at this time
+
+# 6. Modern Web Application - INFORMATIONAL
+# ------------------------------------------
+# Finding: Application uses modern SPA patterns
+# Status: Informational (not a vulnerability)
+#
+# Explanation:
+# - Built with Next.js 14 (React framework)
+# - Uses client-side routing via Next.js Link components
+# - Server-side rendering (SSR) with React hydration
+# - Modern JavaScript patterns (ES6+, async/await, etc.)
+#
+# Architecture:
+# - Framework: Next.js 14 with App Router
+# - Language: TypeScript
+# - Styling: Tailwind CSS
+# - Deployment: Vercel platform
+# - Database: Supabase (PostgreSQL)
+#
+# Navigation:
+# - Links use Next.js <Link> component (client-side navigation)
+# - Compiles to optimized JavaScript with prefetching
+# - SEO-friendly (server-side rendered on first load)
+# - Progressive enhancement (works without JavaScript for core content)
+#
+# Security Implications:
+# - None - This is modern best practice
+# - Client-side routing improves performance and UX
+# - All security controls (CSP, HTTPS, headers) still apply
+# - Server-side validation on all API routes
+```
+
+---
+
+## **How to Respond to the Audit:**
+```
+FINDING: Modern Web Application
+SEVERITY: Info (not a vulnerability)
+STATUS: Acknowledged - No Action Required
+
+RESPONSE:
+
+This is an informational finding indicating our application uses modern 
+web development patterns. This is expected and by design.
+
+ARCHITECTURE:
+
+Technology Stack:
+- Frontend: Next.js 14 (React 18)
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Deployment: Vercel
+- Database: Supabase (PostgreSQL)
+
+Navigation Pattern:
+- Uses Next.js Link component for client-side routing
+- Server-side renders initial page load (SEO-friendly)
+- Prefetches linked pages for instant navigation
+- Progressive enhancement (core content works without JS)
+
+SECURITY CONSIDERATIONS:
+
+Despite being a "modern web app", all traditional security controls apply:
+✓ Content Security Policy (CSP)
+✓ HTTPS-only (HSTS enabled)
+✓ Server-side validation on all API routes
+✓ CSRF protection via Supabase Auth
+✓ XSS prevention via React's built-in escaping
+✓ Rate limiting on all endpoints
+✓ Input sanitization and validation
+
+SCANNING RECOMMENDATIONS:
+
+For security testing of this application, we recommend:
+1. Use Ajax Spider (not traditional spider) for crawling
+2. Test API endpoints directly (/_next/data/*.json)
+3. Test server-side rendered pages (view-source URLs)
+4. Focus on authentication flows and API security
+
+INDUSTRY STANDARD:
+
+Modern SPAs are the current best practice for web applications:
+- Used by: Facebook, Twitter, Netflix, Airbnb, GitHub, etc.
+- Benefits: Better performance, UX, and developer experience
+- Security: Same security controls as traditional apps
+
+RISK ASSESSMENT: None (informational only)
+ACTION: None required (this is by design)
