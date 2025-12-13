@@ -3,8 +3,8 @@ export function checkPasswordStrength(password: string) {
     const feedback = [];
 
     // Check for length
-    if (password.length < 8) {
-        feedback.push("Password should be at least 8 characters long.");
+    if (password.length < 12) {
+        feedback.push("Password should be at least 12 characters long.");
     } else {
         strength += 1;
     }

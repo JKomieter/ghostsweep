@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ serviceId: string }> }
+    { params }: { params: Promise<{ userServiceId: string }> }
 ) {
-    const { serviceId } = await params;
+    const { userServiceId } = await params;
 
     const supabase = await createClient();
 
@@ -18,7 +18,7 @@ export async function GET(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!serviceId) {
+    if (!userServiceId) {
         return NextResponse.json(
             { error: "Service ID is required" },
             { status: 400 }
@@ -46,8 +46,7 @@ export async function GET(
         )
       `
         )
-        .eq("user_id", user.id)
-        .eq("service_id", serviceId)
+        .eq("id", userServiceId)
         .single();
 
     if (userServiceError && userServiceError.code !== "PGRST116") {
@@ -65,7 +64,7 @@ export async function GET(
     } = await supabase
         .from("services")
         .select("*")
-        .eq("id", serviceId)
+        .eq("id", userService?.service_id)
         .single();
 
     if (serviceError && serviceError.code !== "PGRST116") {
@@ -96,7 +95,7 @@ export async function GET(
       `
         )
         .eq("user_id", user.id)
-        .eq("service_id", serviceId);
+        .eq("service_id", userService?.service_id);
 
     if (userBreachesError && userBreachesError.code !== "PGRST116") {
         console.error("Error fetching breaches:", userBreachesError);
@@ -131,7 +130,7 @@ export async function GET(
                 };
             })
             .filter(Boolean) ?? [];
-
+            console.log("User service", userService)
     const { data: deletionRequest, error: deletionRequestError } = await supabase.from("deletion_requests")
         .select(`
                     id, 

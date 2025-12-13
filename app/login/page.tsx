@@ -20,6 +20,8 @@ import Link from "next/link";
 
 type Mode = "signin" | "signup" | "confirm";
 
+// TODOD: Fix error code UX
+
 function SignInForm({
     email,
     setEmail,
@@ -183,7 +185,6 @@ function SignUpForm({
             await signup({ email, password });
             setMode("confirm");
         } catch (error) {
-            console.error("Signup error:", error);
             toast.error("An error occurred during signup. Please try again.");
         } finally {
             setIsLoading(false);

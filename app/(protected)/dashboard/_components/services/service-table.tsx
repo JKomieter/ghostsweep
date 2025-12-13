@@ -31,10 +31,10 @@ import { Category, DeletionStatus, UserService } from "@/types"
 import { formatDate } from "@/utils/format-date"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority-score"
 import { Spinner } from "@/components/ui/spinner"
-import ServiceDetails from "./service-details"
 import Image from "next/image"
 import Link from "next/link"
 import { BreachRecord } from "../breaches-table"
+import { useRouter } from "next/navigation"
 
 const categories: Category[] = [
     "Social Media",
@@ -287,9 +287,10 @@ export default function ServiceTable({
     
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
+    const router = useRouter()
     
-    const [serviceToViewId, setServiceToViewId] = useState<string>()
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+    // const [serviceToViewId, setServiceToViewId] = useState<string>()
+    // const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     
 
@@ -343,8 +344,9 @@ export default function ServiceTable({
         onRowSelectionChange: setRowSelection,
         meta: {
             onView: (service: UserService) => {
-                setServiceToViewId(service.service.id)
-                setIsDetailsOpen(true)
+                // setServiceToViewId(service.service.id)
+                // setIsDetailsOpen(true)
+                router.push(`/dashboard/services/${service.id}/details`)
             },
         },
     })
@@ -536,11 +538,11 @@ export default function ServiceTable({
                 </div>
             </div>
 
-            <ServiceDetails
+            {/* <ServiceDetails
                 open={isDetailsOpen}
                 onOpenChange={setIsDetailsOpen}
                 serviceId={serviceToViewId}
-            />
+            /> */}
         </div>
     )
 }
