@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { encryptToken } from "@/utils/token-crypto";
+import { encryptToken } from "@/utils/token_crypto";
 import { google } from "googleapis";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         const accessTokenEnc = encryptToken(tokens.access_token || "");
         const refreshTokenEnc = encryptToken(tokens.refresh_token || "");
 
-        // 5. Store the tokens (you’ll probably want to encrypt these)
+        // 5. Store the tokens (encrypt these)
         const {  error } = await supabase.functions.invoke('save-gmail-account', {
             body: {
                 userId: user.id,

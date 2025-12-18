@@ -31,10 +31,15 @@ export async function GET() {
             access_type: "offline",
             prompt: "consent",
             scope: [
-                "https://www.googleapis.com/auth/gmail.readonly",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile",
                 "openid",
+                "https://www.googleapis.com/auth/userinfo.email",
+
+                // Gmail permissions
+                "https://www.googleapis.com/auth/gmail.send",
+                "https://www.googleapis.com/auth/gmail.readonly",
+
+                // Optional (only if you use name/photo in UI)
+                // "https://www.googleapis.com/auth/userinfo.profile",
             ],
             include_granted_scopes: true,
             state,

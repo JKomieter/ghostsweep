@@ -13,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils"; // remove if you don't have this
-import { formatDate } from "@/utils/format-date"; // or your own formatter
+import { formatDate } from "@/utils/format_date"; // or your own formatter
 
 type NotificationType =
     | "new_breach_detected"
@@ -53,7 +53,7 @@ export default function NotificationDropdown() {
 
     const handleOpen = async () => {
         console.log("Marking read")
-        await fetch("/api/notifications/mark-read", { method: "POST" });
+        await fetch("/api/notifications/mark_read", { method: "POST" });
         queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] });
     };
 

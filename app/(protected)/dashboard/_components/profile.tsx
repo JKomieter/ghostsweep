@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/utils/supabase/client";
 import Input from "@/components/ui/input";
-import { checkPasswordStrength } from "@/utils/password-strength-meter";
+import { checkPasswordStrength } from "@/utils/password_strength_meter";
 import { toast } from "sonner";
 import { CircleCheck } from "lucide-react";
 
@@ -130,7 +130,7 @@ export default function Profile({
 
         try {
             // You must implement this API route on the server using a service role key.
-            const res = await fetch("/api/delete-account", {
+            const res = await fetch("/api/account/delete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
             });

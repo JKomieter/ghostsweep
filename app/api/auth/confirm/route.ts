@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     // Decide where to send the user based on the link type
     const targetPath =
         type === "recovery"
-            ? "/reset-password" // password reset flow
+            ? "/reset_password" // password reset flow
             : "/dashboard"      // signup verification / email change / default
 
     const redirectTo = request.nextUrl.clone()

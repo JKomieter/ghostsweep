@@ -1,6 +1,6 @@
 "use client"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import Header from "./_components/app-header"
+import Header from "./_components/app_header"
 
 
 const queryClient = new QueryClient()

@@ -53,7 +53,7 @@ export default function DataRemovalToolPage() {
     const { data: services, status: servicesStatus } = useQuery({
         queryKey: ["allServices"],
         queryFn: async (): Promise<Service[]> => {
-            const res = await fetch("/api/services", {
+            const res = await fetch("/api/user_services", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });

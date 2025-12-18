@@ -1,4 +1,3 @@
- 
 "use client";
 
 import Link from "next/link";
@@ -16,6 +15,8 @@ import {
     CheckCircle,
     ExternalLink,
     X,
+    ListChecks,
+    Wand2,
 } from "lucide-react";
 import { useState, useRef } from "react";
 import Image from "next/image";
@@ -24,25 +25,15 @@ export default function HowItWorksPage() {
     const [showVideo, setShowVideo] = useState(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
-    const [lightboxImage, setLightboxImage] = useState<{
-        src: string;
-        alt: string;
-    } | null>(null);
+    const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
 
     const handlePlay = () => {
         setShowVideo(true);
-        setTimeout(() => {
-            videoRef.current?.play().catch(() => { });
-        }, 0);
+        setTimeout(() => videoRef.current?.play().catch(() => { }), 0);
     };
 
-    const openLightbox = (src: string, alt: string) => {
-        setLightboxImage({ src, alt });
-    };
-
-    const closeLightbox = () => {
-        setLightboxImage(null);
-    };
+    const openLightbox = (src: string, alt: string) => setLightboxImage({ src, alt });
+    const closeLightbox = () => setLightboxImage(null);
 
     const demoThumbnailSrc =
         "https://ghostsweep.t3.storage.dev/Screenshot%202025-11-29%20at%202.34.51%E2%80%AFAM.png";
@@ -52,7 +43,7 @@ export default function HowItWorksPage() {
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-12 space-y-20">
                 {/* HERO */}
                 <section className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:items-center">
-                    {/* Left: copy */}
+                    {/* Copy */}
                     <div className="space-y-6">
                         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] text-emerald-200">
                             <span className="relative inline-flex h-2 w-2">
@@ -64,12 +55,11 @@ export default function HowItWorksPage() {
 
                         <div className="space-y-4">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
-                                A private, read-only audit of your digital footprint
+                                Find accounts tied to your email. Flag risk. Clean up faster.
                             </h1>
                             <p className="text-sm sm:text-base text-muted-foreground max-w-xl">
-                                GhostSweep scans your inbox to discover every account you&apos;ve
-                                created—without ever reading email content. See forgotten
-                                accounts, find breaches, and clean up what you don&apos;t need.
+                                GhostSweep turns your inbox into a living map of where your data exists. You get a clear
+                                list of services, signals that indicate risk, and workflows to close what you don’t need.
                             </p>
                         </div>
 
@@ -93,20 +83,38 @@ export default function HowItWorksPage() {
                         <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground">
                             <div className="inline-flex items-center gap-1">
                                 <ShieldCheck className="h-3 w-3 text-primary" />
-                                Read-only Gmail access
+                                Google OAuth
                             </div>
                             <div className="inline-flex items-center gap-1">
                                 <EyeOff className="h-3 w-3 text-primary" />
-                                Metadata only, never content
+                                Privacy-first approach
                             </div>
                             <div className="inline-flex items-center gap-1">
                                 <Lock className="h-3 w-3 text-primary" />
-                                Disconnect any time
+                                Disconnect anytime
                             </div>
+                        </div>
+
+                        {/* Quick value chips */}
+                        <div className="flex flex-wrap gap-2 pt-1">
+                            {[
+                                { icon: <MailSearch className="h-3.5 w-3.5" />, text: "Account discovery" },
+                                { icon: <AlertTriangle className="h-3.5 w-3.5" />, text: "Breach signals" },
+                                { icon: <Trash2 className="h-3.5 w-3.5" />, text: "Bulk clean-up" },
+                                { icon: <ListChecks className="h-3.5 w-3.5" />, text: "Deletion tracking" },
+                            ].map((c) => (
+                                <div
+                                    key={c.text}
+                                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-white/70"
+                                >
+                                    <span className="text-primary">{c.icon}</span>
+                                    {c.text}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Right: video */}
+                    {/* Video */}
                     <div className="rounded-2xl border border-white/10 bg-black/40 p-3 shadow-lg">
                         <div className="relative aspect-video overflow-hidden rounded-xl border border-white/15 bg-black">
                             {showVideo ? (
@@ -117,11 +125,7 @@ export default function HowItWorksPage() {
                                     className="h-full w-full object-cover"
                                 />
                             ) : (
-                                <button
-                                    type="button"
-                                    onClick={handlePlay}
-                                    className="group relative h-full w-full"
-                                >
+                                <button type="button" onClick={handlePlay} className="group relative h-full w-full">
                                     <Image
                                         src={demoThumbnailSrc}
                                         alt="GhostSweep dashboard demo"
@@ -131,10 +135,7 @@ export default function HowItWorksPage() {
                                         priority
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            openLightbox(
-                                                demoThumbnailSrc,
-                                                "GhostSweep dashboard screenshot"
-                                            );
+                                            openLightbox(demoThumbnailSrc, "GhostSweep dashboard screenshot");
                                         }}
                                     />
 
@@ -144,9 +145,7 @@ export default function HowItWorksPage() {
                                         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-xl group-hover:scale-110 transition-transform">
                                             <PlayCircle className="h-8 w-8" />
                                         </div>
-                                        <p className="text-xs text-white font-medium drop-shadow">
-                                            Watch a 90-second walkthrough
-                                        </p>
+                                        <p className="text-xs text-white font-medium drop-shadow">Watch a quick walkthrough</p>
                                     </div>
                                 </button>
                             )}
@@ -154,78 +153,70 @@ export default function HowItWorksPage() {
                     </div>
                 </section>
 
-                {/* 4-STEP FLOW */}
+                {/* CORE FLOW (non-literal) */}
                 <section className="space-y-8 border-t border-white/10 pt-10">
                     <div className="space-y-2">
                         <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            From inbox to clear map in 4 steps
+                            A simple loop: discover → prioritize → clean up → stay organized
                         </h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            Connect → Scan → Review → Clean up. You stay in control the entire
-                            time.
+                            GhostSweep is built for real life: your inbox is messy, accounts pile up, and closing them is
+                            annoying. This turns it into a repeatable workflow.
                         </p>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-4 text-sm">
-                        {/* Step cards */}
+                    <div className="grid gap-4 md:grid-cols-4">
                         {[
                             {
-                                step: "Step 1",
                                 icon: <ShieldCheck className="h-5 w-5 text-primary" />,
-                                title: "Connect Gmail securely",
-                                body: "Use Google OAuth with read-only access. We cannot send, delete, or modify emails. You can revoke access any time from your Google account.",
+                                title: "Connect securely",
+                                body:
+                                    "Connect Gmail using Google OAuth. You stay in control and can revoke access any time.",
                             },
                             {
-                                step: "Step 2",
-                                icon: <MailSearch className="h-5 w-5 text-primary" />,
-                                title: "Scan metadata only",
-                                body: "We analyze sender, subject, and dates—never email content or attachments. The scan runs in the background; no need to sit and wait.",
-                            },
-                            {
-                                step: "Step 3",
                                 icon: <Database className="h-5 w-5 text-primary" />,
-                                title: "Build your account map",
-                                body: "We group signals by domain and service to show every company with your data—from major platforms to forgotten trials.",
+                                title: "Build your footprint map",
+                                body:
+                                    "GhostSweep groups inbox signals into services so you can see where your email has been used.",
                             },
                             {
-                                step: "Step 4",
                                 icon: <AlertTriangle className="h-5 w-5 text-red-400" />,
-                                title: "Flag risk and clean up",
-                                body: "See which accounts were breached and get GDPR/CCPA deletion templates to help you close what you no longer need.",
+                                title: "Highlight risk",
+                                body:
+                                    "We surface things that matter: breach exposure, security alerts, and high-priority accounts to review.",
+                            },
+                            {
+                                icon: <Trash2 className="h-5 w-5 text-primary" />,
+                                title: "Clean up fast",
+                                body:
+                                    "Use bulk actions to open deletion links, generate deletion emails, and track progress until done.",
                             },
                         ].map((card) => (
-                            <div
-                                key={card.title}
-                                className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
-                                        {card.icon}
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                                            {card.step}
-                                        </p>
-                                        <h3 className="text-sm font-semibold">{card.title}</h3>
-                                    </div>
+                            <div key={card.title} className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
+                                    {card.icon}
                                 </div>
-                                <p className="text-xs text-muted-foreground leading-relaxed">
-                                    {card.body}
-                                </p>
+                                <h3 className="text-sm font-semibold">{card.title}</h3>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{card.body}</p>
                             </div>
                         ))}
+                    </div>
+
+                    <div className="rounded-xl border border-white/10 bg-black/40 p-4">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                            <span className="font-medium text-white/80">Note:</span> GhostSweep helps you take action faster,
+                            but <span className="text-white/80">you</span> decide what happens. We don’t delete accounts silently
+                            or automatically.
+                        </p>
                     </div>
                 </section>
 
                 {/* WHAT WE LOOK FOR */}
                 <section className="space-y-8 border-t border-white/10 pt-10">
                     <div className="space-y-2">
-                        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            What GhostSweep looks for
-                        </h2>
+                        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">What GhostSweep looks for</h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            We use patterns in your inbox to infer where your data lives—no
-                            scraping, no content reading.
+                            We use inbox patterns to infer services and risk — then turn it into next steps you can act on.
                         </p>
                     </div>
 
@@ -234,33 +225,30 @@ export default function HowItWorksPage() {
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
                                 <MailSearch className="h-5 w-5 text-primary" />
                             </div>
-                            <h3 className="text-sm font-semibold">Account creation emails</h3>
+                            <h3 className="text-sm font-semibold">Account signals</h3>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                                &quot;Welcome to…&quot;, &quot;Verify your email&quot;, and
-                                &quot;Account created&quot; subjects reveal which services
-                                you&apos;ve signed up for over the years.
+                                “Welcome”, verification, receipts, password resets, and other transactional patterns help identify
+                                real accounts vs noise.
+                            </p>
+                        </div>
+
+                        <div className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/20">
+                                <AlertTriangle className="h-5 w-5 text-red-400" />
+                            </div>
+                            <h3 className="text-sm font-semibold">Risk indicators</h3>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                                We flag breached services, suspicious security emails, and high-activity accounts that deserve attention.
                             </p>
                         </div>
 
                         <div className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
-                                <ShieldCheck className="h-5 w-5 text-primary" />
+                                <Wand2 className="h-5 w-5 text-primary" />
                             </div>
-                            <h3 className="text-sm font-semibold">Security & login alerts</h3>
+                            <h3 className="text-sm font-semibold">Next-step readiness</h3>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                                Password resets, new device logins, and unusual activity emails
-                                highlight active accounts that deserve stronger protection.
-                            </p>
-                        </div>
-
-                        <div className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
-                                <Trash2 className="h-5 w-5 text-primary" />
-                            </div>
-                            <h3 className="text-sm font-semibold">Closure & deletion emails</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                Messages about closing accounts help distinguish services that
-                                still hold your data from those that already removed it.
+                                GhostSweep suggests a “best next action” — open a deletion page, email a privacy contact, or tighten security.
                             </p>
                         </div>
                     </div>
@@ -270,11 +258,10 @@ export default function HowItWorksPage() {
                 <section className="space-y-8 border-t border-white/10 pt-10">
                     <div className="space-y-2">
                         <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            Free snapshot vs ongoing protection
+                            Free snapshot vs full clean-up (Professional)
                         </h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            Both plans respect your privacy. Professional adds monitoring and
-                            tools to actually clean everything up.
+                            Free is for quick clarity. Professional is for doing the work: full visibility, bulk actions, and tracking.
                         </p>
                     </div>
 
@@ -282,12 +269,8 @@ export default function HowItWorksPage() {
                         {/* Free */}
                         <div className="space-y-5 rounded-xl border border-white/10 bg-black/40 p-5">
                             <div className="space-y-1">
-                                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Free
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    One-off snapshot of your footprint
-                                </p>
+                                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Free</p>
+                                <p className="text-xs text-muted-foreground">A quick snapshot</p>
                             </div>
                             <ul className="space-y-2 text-xs text-muted-foreground">
                                 <li className="flex items-start gap-2">
@@ -296,11 +279,11 @@ export default function HowItWorksPage() {
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>See your first 50 accounts</span>
+                                    <span>Limited account visibility</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Basic breach check</span>
+                                    <span>Basic breach snapshot</span>
                                 </li>
                             </ul>
                             <Link
@@ -317,29 +300,23 @@ export default function HowItWorksPage() {
                                 Professional
                             </div>
                             <div className="space-y-1 pt-2">
-                                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
-                                    Ongoing protection
-                                </p>
+                                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Clean-up mode</p>
                                 <p className="text-xs text-muted-foreground">
-                                    Monitoring, breach alerts, and deletion workflows
+                                    Full account list, detailed breach info, bulk deletion workflows, and tracking.
                                 </p>
                             </div>
                             <ul className="space-y-2 text-xs text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Unlimited scans and full account list</span>
+                                    <span>Unlimited scans + full list</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Detailed breach information</span>
+                                    <span>Detailed breach view</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>GDPR/CCPA deletion email templates</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>New account detection and alerts</span>
+                                    <span>Bulk actions + templates</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
@@ -356,54 +333,6 @@ export default function HowItWorksPage() {
                     </div>
                 </section>
 
-                {/* ONGOING MONITORING */}
-                <section className="space-y-8 border-t border-white/10 pt-10">
-                    <div className="space-y-2">
-                        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            Ongoing monitoring (Professional)
-                        </h2>
-                        <p className="text-sm text-muted-foreground max-w-2xl">
-                            Quiet, useful alerts instead of yet another noisy dashboard.
-                        </p>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-3 text-sm">
-                        <div className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
-                                <Bell className="h-5 w-5 text-primary" />
-                            </div>
-                            <h3 className="text-sm font-semibold">New accounts</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                Get notified when &quot;Welcome&quot; or &quot;Account
-                                created&quot; emails show up from services you&apos;ve never seen
-                                in your dashboard before.
-                            </p>
-                        </div>
-
-                        <div className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/20">
-                                <AlertTriangle className="h-5 w-5 text-red-400" />
-                            </div>
-                            <h3 className="text-sm font-semibold">New breaches</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                If a service you use appears in a new breach, we&apos;ll flag it so
-                                you can reset passwords or close the account quickly.
-                            </p>
-                        </div>
-
-                        <div className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15">
-                                <Trash2 className="h-5 w-5 text-emerald-400" />
-                            </div>
-                            <h3 className="text-sm font-semibold">Deletion tracking</h3>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                Track which services you&apos;ve asked to delete data and see when
-                                they reply or confirm completion.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
                 {/* PRIVACY GUARANTEE */}
                 <section className="space-y-6 border-t border-primary/40 pt-10">
                     <div className="rounded-2xl border border-primary/40 bg-primary/5 p-6 md:p-8">
@@ -411,22 +340,20 @@ export default function HowItWorksPage() {
                             <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
                                 <span className="inline-flex items-center gap-2">
                                     <EyeOff className="h-4 w-4 text-primary" />
-                                    Metadata only—never email content
+                                    Privacy-first scanning
                                 </span>
                                 <span className="inline-flex items-center gap-2">
                                     <Lock className="h-4 w-4 text-primary" />
-                                    OAuth tokens encrypted at rest
+                                    Disconnect anytime
                                 </span>
                             </div>
+
                             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                                GhostSweep uses Google&apos;s official OAuth2 flow and only reads
-                                metadata (from, subject, date). Tokens are encrypted at rest, and
-                                you can disconnect and wipe your scan history at any time.
+                                GhostSweep uses Google&apos;s OAuth2 flow. Scans are designed to minimize what’s accessed.
+                                When deletion emails are available, they’re generated and sent only when you explicitly choose to.
                             </p>
-                            <Link
-                                href="/home/security"
-                                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                            >
+
+                            <Link href="/home/security" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
                                 Read the full security overview
                                 <ArrowRight className="h-3 w-3" />
                             </Link>
@@ -437,12 +364,9 @@ export default function HowItWorksPage() {
                 {/* FINAL CTA */}
                 <section className="space-y-4 border-t border-white/10 pt-10 text-center">
                     <div className="space-y-2 max-w-xl mx-auto">
-                        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            Ready to see who has your data?
-                        </h2>
+                        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Ready to see who has your data?</h2>
                         <p className="text-sm text-muted-foreground">
-                            Run a private, read-only scan and get a clear map of your accounts,
-                            breaches, and where to start cleaning up.
+                            Run a scan, surface risk, and start cleaning up with a workflow you can actually stick to.
                         </p>
                     </div>
 
@@ -467,10 +391,7 @@ export default function HowItWorksPage() {
 
             {/* LIGHTBOX */}
             {lightboxImage && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4"
-                    onClick={closeLightbox}
-                >
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4" onClick={closeLightbox}>
                     <button
                         type="button"
                         className="absolute right-4 top-4 rounded-full bg-black/80 p-2 text-white hover:bg-black"
@@ -481,10 +402,8 @@ export default function HowItWorksPage() {
                     >
                         <X className="h-4 w-4" />
                     </button>
-                    <div
-                        className="relative max-h-[90vh] w-full max-w-4xl"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+
+                    <div className="relative max-h-[90vh] w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
                         <Image
                             src={lightboxImage.src}
                             alt={lightboxImage.alt}

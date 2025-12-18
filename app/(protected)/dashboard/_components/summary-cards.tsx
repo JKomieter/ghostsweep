@@ -1,21 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { formatDate } from "@/utils/format-date";
+import { formatDate } from "@/utils/format_date";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
-
-interface MetricsData {
-    service_count: number;
-    breach_count: number;
-    last_scan_date: string | null;
-    pending_requests: number;
-    responded_requests: number;
-    security_score: {
-        score: number | null;
-        grade: string | null;
-        last_calculated_at: string | null;
-    };
-}
+import { DashboardMetricsQueryResult } from "@/queryTypes";
 
 type StatCardProps = {
     label: string;
@@ -57,10 +45,11 @@ function StatCard({
 export default function SummaryCards() {
     const { data, status } = useQuery({
         queryKey: ["metrics"],
-        queryFn: async (): Promise<MetricsData> => {
+        queryFn: async (): Promise<DashboardMetricsQueryResult> => {
             const res = await fetch("/api/metrics");
             if (!res.ok) throw new Error("Network response was not ok");
-            return res.json();
+            const data = await res.json();
+            return data
         },
         staleTime: 5 * 60 * 1000,
     });
@@ -157,7 +146,7 @@ export default function SummaryCards() {
                 description="Companies you’re waiting to hear back from"
                 accent="warning"
                 action={(
-                    <Link href="/dashboard/deletion-requests">
+                    <Link href="/dashboard/deletion_requests">
                         <SquareArrowOutUpRight color="gray" size={16} />
                     </Link>
                 )}

@@ -12,7 +12,7 @@ import { Eye, EyeOff, MailIcon, Shield, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { Logo } from "@/svgs";
-import { checkPasswordStrength } from "@/utils/password-strength-meter";
+import { checkPasswordStrength } from "@/utils/password_strength_meter";
 import { toast } from "sonner";
 import { login, signup } from "./action";
 import { Spinner } from "@/components/ui/spinner";
