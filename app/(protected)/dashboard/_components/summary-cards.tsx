@@ -115,7 +115,7 @@ export default function SummaryCards() {
                 value={isLoading ? "…" : serviceCount}
                 description="Companies holding your personal data"
                 action={(
-                    <Link href="/dashboard/services">
+                    <Link href="/dashboard/user_services">
                         <SquareArrowOutUpRight color="gray" size={16} />
                     </Link>
                 )}

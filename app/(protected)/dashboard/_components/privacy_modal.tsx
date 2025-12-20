@@ -181,7 +181,7 @@ export default function PrivacyToolsModal({
                                         size="sm"
                                         className="shrink-0"
                                         onClick={() => {
-                                            window.location.href = "/dashboard/tools/data-removal";
+                                            window.location.href = "/dashboard/tools/data_removal";
                                         }}
                                     >
                                         Open

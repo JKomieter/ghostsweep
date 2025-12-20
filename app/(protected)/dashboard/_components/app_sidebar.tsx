@@ -120,11 +120,24 @@ export default function SlidingSidebar() {
                     </Link>
 
                     <Link
-                        href="/dashboard/tools/data-removal"
+                        href="/dashboard/footprint_map"
                         onClick={() => setOpen(false)}
                         className={cn(
                             "rounded-md px-3 py-2 text-sm transition-colors",
-                            isSelected("/dashboard/tools/data-removal")
+                            isSelected("/dashboard/footprint_map")
+                                ? "bg-white/10 text-white border-l-2 border-primary"
+                                : "text-white/70 hover:bg-white/10 hover:text-white"
+                        )}
+                    >
+                        Footprint Map
+                    </Link>
+
+                    <Link
+                        href="/dashboard/tools/data_removal"
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                            "rounded-md px-3 py-2 text-sm transition-colors",
+                            isSelected("/dashboard/tools/data_removal")
                                 ? "bg-white/10 text-white border-l-2 border-primary"
                                 : "text-white/70 hover:bg-white/10 hover:text-white"
                         )}

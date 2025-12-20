@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
 import {
     ColumnDef,
     flexRender,
@@ -331,6 +331,13 @@ export default function ServiceTable(props: ServiceTableProps) {
 
     const data = (gated ? [] : (userServicesQueryResult?.userServices || [])) as RowType[]
 
+    // Add this after your existing state declarations
+    useEffect(() => {
+        if (gated && Object.keys(rowSelection).length > 0) {
+            setRowSelection({})
+        }
+    }, [gated, rowSelection])
+
     const table = useReactTable({
         data,
         columns,
@@ -340,11 +347,11 @@ export default function ServiceTable(props: ServiceTableProps) {
         enableRowSelection: !gated,
         state: {
             columnVisibility,
-            rowSelection: gated ? {} : rowSelection,
+            rowSelection,  // ← FIXED: Always use rowSelection state
             pagination: { pageIndex: page - 1, pageSize: PAGE_SIZE },
         },
         onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: gated ? undefined : setRowSelection,
+        onRowSelectionChange: setRowSelection,  // ← FIXED: Always allow updates (table will block if disabled)
         meta: {
             gated,
             onView: (userServiceId: string) => router.push(`/dashboard/user_services/${userServiceId}/details`),
@@ -353,11 +360,15 @@ export default function ServiceTable(props: ServiceTableProps) {
 
     const selectedIds = useMemo(() => {
         if (gated) return []
-        return table
-            .getSelectedRowModel()
-            .rows.map((r) => r.original.id)
-            .filter(Boolean) as string[]
-    }, [gated, table])
+
+        const rows = table.getSelectedRowModel().rows
+        if (!rows || rows.length === 0) return []
+
+        return rows
+            .map((r) => r.original.id)
+            .filter((id): id is string => typeof id === "string" && id.length > 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gated, table, rowSelection])
 
     const selectedCount = selectedIds.length
 
