@@ -5,7 +5,7 @@ import ServiceTable from "../_components/user_services/service_table";
 import ServicePageTitle from "../_components/user_services/service_page_title";
 import { useMemo, useState } from "react";
 import { Category } from "@/types";
-import ServicesMetrics from "../_components/user_services/services-metrics";
+import ServicesMetrics from "../_components/user_services/services_metrics";
 import { isForgottenService } from "@/utils/is_forgotten_service";
 import { DeletionRequestsQueryResult, UserBreachesQueryResult, UserServicesQueryResult } from "@/queryTypes";
 

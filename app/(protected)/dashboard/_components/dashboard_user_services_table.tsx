@@ -83,13 +83,13 @@ export default function DashboardUserServicesTable() {
                         accounts linked to your email.
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                        Upgrade to Pro to view the account list and details.
+                        Upgrade to Professional to view the account list and details.
                     </p>
 
                     <div className="mt-3 flex flex-wrap gap-2">
                         <Link href="/dashboard/billing?plan=monthly">
                             <Button size="sm" className="bg-primary text-black hover:bg-primary/80">
-                                Upgrade to Pro
+                                Upgrade to Professional
                             </Button>
                         </Link>
                         <Link href="/dashboard/user_services">
@@ -101,7 +101,7 @@ export default function DashboardUserServicesTable() {
                 </div>
             ) : (
                 <>
-                        <div className="overflow-scroll rounded-lg border border-white/10 max-h-[300px]">
+                        <div className="overflow-auto rounded-lg border border-white/10 max-h-[300px]">
                         <Table>
                             <TableHeader>
                                 <TableRow>

@@ -1,4 +1,4 @@
-import { UserService, Service, DeletionRequest, UserBreach, Breach, ServiceDeletionPlaybook, Plan } from "./types";
+import { UserService, Service, DeletionRequest, UserBreach, Breach, ServiceDeletionPlaybook, Plan, DeletionMethod } from "./types";
 
 
 export interface UserServicesQueryResult {
@@ -75,4 +75,33 @@ export interface UserBreachDetailsQueryResult {
 
 export interface ServiceDeletionPlaybookQueryResult {
     playbook: ServiceDeletionPlaybook | null
+}
+
+export type Grouped = {
+    playbook: Pick<ServiceDeletionPlaybook, "deletion_method" | "deletion_url" | "steps" | "deletion_email">;
+    resolved_method: DeletionMethod;
+    id: string;
+    user_id: string;
+    service_id: string;
+    first_seen_at: string;
+    last_seen_at: string;
+    email_count: number;
+    service: Pick<Service, "id" | "name" | "domain" | "category" | "logo_url">
+}[]
+
+export interface BulkUserServicesQueryResult {
+    inputCount: number;
+    foundCount: number;
+    grouped: {
+        email: Grouped;
+        link: Grouped;
+        manual: Grouped
+    },
+    counts: {
+        email: number,
+        link: number,
+        manual: number,
+        total: number,
+    },
+    missingIds: string[]
 }

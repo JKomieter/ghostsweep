@@ -65,7 +65,7 @@ export default function Breaches() {
                             We found <strong>{totalCount}</strong> breaches linked to your data.
                             <Link href="/dashboard/billing?plan=monthly">
                                 <button className="text-blue-400 underline underline-offset-2 ml-1">
-                                    Upgrade to Pro
+                                    Upgrade to Professional
                                 </button>
                             </Link>{" "}
                             to unlock the breach list and details.

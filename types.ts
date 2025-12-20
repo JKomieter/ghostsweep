@@ -93,7 +93,7 @@ export interface ServiceDeletionPlaybook {
     service_id: string
 
     // ===== Deletion Info =====
-    deletion_method: 'email' | 'link' | 'manual'
+    deletion_method: DeletionMethod
     deletion_url: string | null        // URL to deletion page
     deletion_email: string | null      // Contact email for deletion
     steps: string[]                    // Step-by-step instructions
@@ -156,3 +156,5 @@ export interface BulkDeletionItems {
     error: string | null;
     updated_at: string;
 }
+
+export type DeletionMethod = 'email' | 'link' | 'manual'

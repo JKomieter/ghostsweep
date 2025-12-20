@@ -1,16 +1,19 @@
 "use client"
 
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
+import React, { Dispatch, SetStateAction, useMemo, useState } from "react"
 import {
     ColumnDef,
     flexRender,
     getCoreRowModel,
     useReactTable,
     VisibilityState,
+    RowSelectionState,
 } from "@tanstack/react-table"
 import { RefreshCw, Lock, SlidersHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -40,12 +43,10 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-import Image from "next/image"
 import { Category, DeletionRequest, DeletionStatus, Service, UserService } from "@/types"
 import { formatDate } from "@/utils/format_date"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority_score"
 import { UserServicesQueryResult } from "@/queryTypes"
-import { toast } from "sonner"
 
 const categories: Category[] = [
     "Social Media",
@@ -71,182 +72,198 @@ type BreachFilter = "all" | "breached" | "unbreached"
 type ActivityFilter = "all" | "active" | "inactive"
 type HasDeletionFilter = "all" | "yes" | "no"
 
-export const columns: ColumnDef<
-    Partial<UserService> & { service: Service; deletion_request: DeletionRequest | null }
->[] = [
-        {
-            id: "select",
-            header: ({ table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                if (gated) return null
-                return (
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-                        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                        aria-label="Select all"
-                    />
-                )
-            },
-            cell: ({ row, table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                if (gated) return null
-                return (
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
-                    />
-                )
-            },
-            enableSorting: false,
-            enableHiding: false,
-        },
-        {
-            accessorKey: "service",
-            header: "Service",
-            cell: ({ row, table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                const { name, domain, logo_url } =
-                    (row.getValue("service") as { name: string | null; domain: string | null; logo_url: string | null }) || {
-                        name: "Unknown",
-                        domain: "Unknown",
-                        logo_url: null,
-                    }
-
-                return (
-                    <div className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
-                        <div className="flex flex-row items-start gap-2">
-                            <div className="relative h-6 w-6 overflow-hidden rounded-full border border-white/10 bg-white/5">
-                                {logo_url ? (
-                                    <Image src={logo_url} width={64} height={64} alt="" className="h-full w-full object-cover" />
-                                ) : null}
-                            </div>
-                            <div className="flex flex-col leading-tight">
-                                <span className="font-medium">{name}</span>
-                                {domain ? <span className="text-xs text-muted-foreground">{domain}</span> : null}
-                            </div>
-                        </div>
-                    </div>
-                )
-            },
-        },
-        {
-            id: "service_category",
-            header: "Category",
-            accessorKey: "service",
-            cell: ({ row, table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                const { category } = (row.getValue("service") as { category: string | null }) || { category: null }
-
-                return (
-                    <span className={gated ? "blur-[6px] select-none pointer-events-none" : "capitalize"}>
-                        {category ? category : "Unknown"}
-                    </span>
-                )
-            },
-        },
-        {
-            accessorKey: "email_count",
-            header: "Activity",
-            cell: ({ row, table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                const lastSeen = row.original.last_seen_at ? formatDate(row.original.last_seen_at) : "—"
-                const count = row.original.email_count ?? 0
-                return (
-                    <div className={gated ? "blur-[6px] select-none pointer-events-none text-left text-sm" : "text-left text-sm"}>
-                        {lastSeen} · {count} emails
-                    </div>
-                )
-            },
-        },
-        {
-            accessorKey: "is_breached",
-            header: "Priority",
-            cell: ({ row, table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                const score = calcPriorityScore({
-                    email_count: row.original.email_count,
-                    last_seen_at: row.original.last_seen_at,
-                    first_seen_at: row.original.first_seen_at,
-                    is_breached: row.original.service.is_breached,
-                })
-                const { label, className } = priorityLabel(score)
-
-                return (
-                    <div className={gated ? "blur-[6px] select-none pointer-events-none flex items-center gap-2" : "flex items-center gap-2"}>
-                        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}>
-                            {label}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{score}</span>
-                    </div>
-                )
-            },
-        },
-        {
-            accessorKey: "deletion_requests",
-            header: "Deletion Request",
-            cell: ({ row, table }) => {
-                const gated = (table.options.meta as TableMeta | undefined)?.gated
-                if (gated) return <span className="text-xs text-muted-foreground blur-[6px] select-none pointer-events-none">—</span>
-
-                const requests = row.getValue("deletion_requests") as
-                    | { id: string; status: DeletionStatus; sent_at: string | null }[]
-                    | null
-
-                if (!requests || requests.length === 0) {
-                    return <span className="text-xs text-muted-foreground">None</span>
-                }
-
-                const pr = requests[0]
-
-                const statusMap: Record<string, { label: string; className: string }> = {
-                    drafted: { label: "Drafted", className: "bg-zinc-500/10 text-zinc-300" },
-                    sent: { label: "Sent", className: "bg-blue-500/10 text-blue-300" },
-                    received: { label: "Reply Received", className: "bg-indigo-500/10 text-indigo-300" },
-                    needs_verification: { label: "Needs Verification", className: "bg-yellow-500/10 text-yellow-300" },
-                    in_progress: { label: "In Progress", className: "bg-purple-500/10 text-purple-300" },
-                    completed: { label: "Completed", className: "bg-emerald-500/10 text-emerald-300" },
-                    failed: { label: "Failed", className: "bg-red-500/10 text-red-300" },
-                    expired: { label: "Expired", className: "bg-orange-500/10 text-orange-300" },
-                }
-
-                const statusInfo = statusMap[pr.status] ?? statusMap.drafted
-
-                return (
-                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusInfo.className}`}>
-                        {statusInfo.label}
-                    </span>
-                )
-            },
-        },
-        {
-            id: "actions",
-            enableHiding: false,
-            cell: ({ row, table }) => {
-                const meta = table.options.meta as TableMeta | undefined
-                const gated = meta?.gated
-
-                if (gated) {
-                    return (
-                        <Link href="/dashboard/billing">
-                            <Button variant="link" size="sm" className="px-0 text-muted-foreground">
-                                <Lock className="h-3 w-3 mr-1" />
-                                Upgrade
-                            </Button>
-                        </Link>
-                    )
-                }
-
-                return (
-                    <Button variant="link" size="sm" className="px-0" onClick={() => meta?.onView(row.original.id)}>
-                        View
-                    </Button>
-                )
-            },
-        },
-    ]
+type RowType = Partial<UserService> & {
+    service: Service
+    deletion_requests?: DeletionRequest[] | null // ✅ FIX: array (or null/undefined)
+}
 
 const PAGE_SIZE = 20
+
+export const columns: ColumnDef<RowType>[] = [
+    {
+        id: "select",
+        header: ({ table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            if (gated) return null
+            return (
+                <Checkbox
+                    checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    aria-label="Select all"
+                />
+            )
+        },
+        cell: ({ row, table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            if (gated) return null
+            return (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                />
+            )
+        },
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "service",
+        header: "Service",
+        cell: ({ row, table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            const svc = row.original.service
+
+            const name = svc?.name ?? "Unknown"
+            const domain = svc?.domain ?? null
+            const logoUrl = svc?.logo_url ?? null
+
+            return (
+                <div className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
+                    <div className="flex items-start gap-2">
+                        <div className="relative h-6 w-6 overflow-hidden rounded-full border border-white/10 bg-white/5 shrink-0">
+                            {logoUrl ? (
+                                <Image
+                                    src={logoUrl}
+                                    width={64}
+                                    height={64}
+                                    alt=""
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : null}
+                        </div>
+                        <div className="flex flex-col leading-tight min-w-0">
+                            <span className="font-medium truncate">{name}</span>
+                            {domain ? <span className="text-xs text-muted-foreground truncate">{domain}</span> : null}
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+    },
+    {
+        id: "service_category",
+        header: "Category",
+        accessorFn: (row) => row.service?.category,
+        cell: ({ row, table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            const category = row.original.service?.category
+
+            return (
+                <span className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
+                    {category || "Unknown"}
+                </span>
+            )
+        },
+    },
+    {
+        accessorKey: "email_count",
+        header: "Activity",
+        cell: ({ row, table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            const lastSeen = row.original.last_seen_at ? formatDate(row.original.last_seen_at) : "—"
+            const count = row.original.email_count ?? 0
+
+            return (
+                <div className={gated ? "blur-[6px] select-none pointer-events-none text-left text-sm" : "text-left text-sm"}>
+                    {lastSeen} · {count} emails
+                </div>
+            )
+        },
+    },
+    {
+        id: "priority",
+        header: "Priority",
+        cell: ({ row, table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            const score = calcPriorityScore({
+                email_count: row.original.email_count,
+                last_seen_at: row.original.last_seen_at,
+                first_seen_at: row.original.first_seen_at,
+                is_breached: row.original.service?.is_breached,
+            })
+            const { label, className } = priorityLabel(score)
+
+            return (
+                <div className={gated ? "blur-[6px] select-none pointer-events-none flex items-center gap-2" : "flex items-center gap-2"}>
+                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}>
+                        {label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{score}</span>
+                </div>
+            )
+        },
+    },
+    {
+        accessorKey: "deletion_requests",
+        header: "Deletion Request",
+        cell: ({ row, table }) => {
+            const gated = (table.options.meta as TableMeta | undefined)?.gated
+            if (gated) {
+                return <span className="text-xs text-muted-foreground blur-[6px] select-none pointer-events-none">—</span>
+            }
+
+            const requests = (row.original.deletion_requests ?? null) as
+                | { id: string; status: DeletionStatus; sent_at: string | null }[]
+                | null
+
+            if (!requests || requests.length === 0) {
+                return <span className="text-xs text-muted-foreground">None</span>
+            }
+
+            const pr = requests[0]
+
+            const statusMap: Record<string, { label: string; className: string }> = {
+                drafted: { label: "Drafted", className: "bg-zinc-500/10 text-zinc-300" },
+                sent: { label: "Sent", className: "bg-blue-500/10 text-blue-300" },
+                received: { label: "Reply Received", className: "bg-indigo-500/10 text-indigo-300" },
+                needs_verification: { label: "Needs Verification", className: "bg-yellow-500/10 text-yellow-300" },
+                in_progress: { label: "In Progress", className: "bg-purple-500/10 text-purple-300" },
+                completed: { label: "Completed", className: "bg-emerald-500/10 text-emerald-300" },
+                failed: { label: "Failed", className: "bg-red-500/10 text-red-300" },
+                expired: { label: "Expired", className: "bg-orange-500/10 text-orange-300" },
+            }
+
+            const statusInfo = statusMap[pr.status] ?? statusMap.drafted
+
+            return (
+                <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusInfo.className}`}>
+                    {statusInfo.label}
+                </span>
+            )
+        },
+    },
+    {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row, table }) => {
+            const meta = table.options.meta as TableMeta | undefined
+            const gated = meta?.gated
+
+            if (gated) {
+                return (
+                    <Link href="/dashboard/billing">
+                        <Button variant="link" size="sm" className="px-0 text-muted-foreground">
+                            <Lock className="h-3 w-3 mr-1" />
+                            Upgrade
+                        </Button>
+                    </Link>
+                )
+            }
+
+            return (
+                <Button
+                    variant="link"
+                    size="sm"
+                    className="px-0"
+                    onClick={() => meta?.onView(row.original.id)}
+                >
+                    View
+                </Button>
+            )
+        },
+    },
+]
 
 interface ServiceTableProps {
     userServicesQueryResult: UserServicesQueryResult | undefined
@@ -274,28 +291,30 @@ interface ServiceTableProps {
     setHasDeletionRequest: Dispatch<SetStateAction<HasDeletionFilter>>
 }
 
-export default function ServiceTable({
-    userServicesQueryResult,
-    userServicesQueryResultStatus,
-    query,
-    setQuery,
-    category,
-    setCategory,
-    page,
-    setPage,
-    breachedFilter,
-    setBreachedFilter,
-    activityFilter,
-    setActivityFilter,
-    minEmails,
-    setMinEmails,
-    hasDeletionRequest,
-    setHasDeletionRequest,
-}: ServiceTableProps) {
+export default function ServiceTable(props: ServiceTableProps) {
+    const {
+        userServicesQueryResult,
+        userServicesQueryResultStatus,
+        query,
+        setQuery,
+        category,
+        setCategory,
+        page,
+        setPage,
+        breachedFilter,
+        setBreachedFilter,
+        activityFilter,
+        setActivityFilter,
+        minEmails,
+        setMinEmails,
+        hasDeletionRequest,
+        setHasDeletionRequest,
+    } = props
+
     const router = useRouter()
 
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-    const [rowSelection, setRowSelection] = useState({})
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
     const [filtersOpen, setFiltersOpen] = useState(false)
     const [bulkLoading, setBulkLoading] = useState(false)
 
@@ -310,7 +329,7 @@ export default function ServiceTable({
 
     const gated = userServicesQueryResult?.gated === true || userServicesQueryResult?.currentPlan === "free"
 
-    const data = gated ? [] : (userServicesQueryResult?.userServices || [])
+    const data = (gated ? [] : (userServicesQueryResult?.userServices || [])) as RowType[]
 
     const table = useReactTable({
         data,
@@ -346,30 +365,26 @@ export default function ServiceTable({
         const chips: { key: string; label: string; onClear: () => void }[] = []
 
         if (category && category !== "all") chips.push({ key: "cat", label: `Category: ${category}`, onClear: () => setCategory("all") })
-        if (breachedFilter !== "all")
-            chips.push({
-                key: "breach",
-                label: breachedFilter === "breached" ? "Breached only" : "Not breached",
-                onClear: () => setBreachedFilter("all"),
-            })
-        if (activityFilter !== "all")
-            chips.push({
-                key: "act",
-                label: activityFilter === "active" ? "Active" : "Inactive",
-                onClear: () => setActivityFilter("all"),
-            })
-        if (typeof minEmails === "number")
-            chips.push({
-                key: "min",
-                label: `Min emails: ${minEmails}+`,
-                onClear: () => setMinEmails(undefined),
-            })
-        if (hasDeletionRequest !== "all")
-            chips.push({
-                key: "hdr",
-                label: hasDeletionRequest === "yes" ? "Has deletion request" : "No deletion request",
-                onClear: () => setHasDeletionRequest("all"),
-            })
+        if (breachedFilter !== "all") chips.push({
+            key: "breach",
+            label: breachedFilter === "breached" ? "Breached only" : "Not breached",
+            onClear: () => setBreachedFilter("all"),
+        })
+        if (activityFilter !== "all") chips.push({
+            key: "act",
+            label: activityFilter === "active" ? "Active" : "Inactive",
+            onClear: () => setActivityFilter("all"),
+        })
+        if (typeof minEmails === "number") chips.push({
+            key: "min",
+            label: `Min emails: ${minEmails}+`,
+            onClear: () => setMinEmails(undefined),
+        })
+        if (hasDeletionRequest !== "all") chips.push({
+            key: "hdr",
+            label: hasDeletionRequest === "yes" ? "Has deletion request" : "No deletion request",
+            onClear: () => setHasDeletionRequest("all"),
+        })
 
         return chips
     }, [category, breachedFilter, activityFilter, minEmails, hasDeletionRequest, setCategory, setBreachedFilter, setActivityFilter, setMinEmails, setHasDeletionRequest])
@@ -386,45 +401,28 @@ export default function ServiceTable({
 
     const startBulkDeletion = async () => {
         if (gated) {
-            router.push("/dashboard/billing")
+            toast(() => (
+                <div className="space-y-2">
+                    <p className="text-sm font-medium">Upgrade to Professional to bulk delete.</p>
+                    <Link href="/dashboard/billing">
+                        <Button variant="secondary" size="sm">Upgrade</Button>
+                    </Link>
+                </div>
+            ))
             return
         }
+
         if (selectedIds.length === 0) return
 
-        setBulkLoading(true)
         try {
-            // ✅ create a bulk deletion run and redirect user to the run page
-            // expected response: { run_id: string }
-            const res = await fetch("/api/bulk_deletions/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_service_ids: selectedIds,
-                    // optional: could send filters snapshot, source page, etc.
-                    source: "user_services_table",
-                }),
-            })
-
-            const j = await res.json().catch(() => ({}))
-            if (!res.ok) {
-                throw new Error(j?.error || "Failed to create bulk deletion run")
-            }
-
-            const runId = j?.run_id as string | undefined
-            if (!runId) throw new Error("Missing run_id from server response")
-
-            // clear selection after starting run
-            setRowSelection({})
-            router.push(`/dashboard/bulk_delete/${runId}`)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
-            console.error(e)
-            toast.error(e?.message ?? "Failed to start bulk deletion")
+            setBulkLoading(true)
+            const idsJoin = encodeURIComponent(selectedIds.join(","))
+            router.push(`/dashboard/bulk_deletion?ids=${idsJoin}`)
         } finally {
             setBulkLoading(false)
         }
     }
-
+    console.log(gated || selectedCount === 0 || bulkLoading)
     return (
         <div className="space-y-3">
             {/* Header controls */}
@@ -489,6 +487,7 @@ export default function ServiceTable({
                         <Badge key={c.key} variant="outline" className="text-xs border-white/10 bg-white/5">
                             {c.label}
                             <button
+                                type="button"
                                 className="ml-2 text-white/60 hover:text-white"
                                 onClick={c.onClear}
                                 aria-label={`Clear ${c.label}`}
@@ -544,11 +543,11 @@ export default function ServiceTable({
 
                 <Table>
                     <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {table.getHeaderGroups().map((hg) => (
+                            <TableRow key={hg.id}>
+                                {hg.headers.map((h) => (
+                                    <TableHead key={h.id}>
+                                        {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                                     </TableHead>
                                 ))}
                             </TableRow>
@@ -570,7 +569,11 @@ export default function ServiceTable({
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                    className="hover:bg-white/5 data-[state=selected]:bg-white/10"
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -596,7 +599,7 @@ export default function ServiceTable({
                         <>0 of 0 row(s) selected.</>
                     ) : (
                         <>
-                            {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+                            {table.getSelectedRowModel().rows.length} of {table.getRowModel().rows.length} row(s) selected.
                         </>
                     )}
                 </div>
@@ -605,9 +608,7 @@ export default function ServiceTable({
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                            if (canPrev) setPage((p) => p - 1)
-                        }}
+                        onClick={() => canPrev && setPage((p) => p - 1)}
                         disabled={!canPrev || isLoading}
                     >
                         Previous
@@ -616,9 +617,7 @@ export default function ServiceTable({
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                            if (canNext) setPage((p) => p + 1)
-                        }}
+                        onClick={() => canNext && setPage((p) => p + 1)}
                         disabled={!canNext || isLoading}
                     >
                         Next
@@ -641,10 +640,9 @@ export default function ServiceTable({
                         <div className="space-y-2">
                             <div className="text-xs text-white/70">Category</div>
                             <Select
-                                value={category ?? "all"}
+                                value={(category ?? "all") as string}
                                 onValueChange={(v) => {
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    setCategory((v as any) || "all")
+                                    setCategory((v === "all" ? "all" : (v as Category)))
                                     setPage(1)
                                 }}
                             >

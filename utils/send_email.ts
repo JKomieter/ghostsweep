@@ -44,5 +44,6 @@ export default async function sendEmail({
         body: JSON.stringify({ raw }),
     });
 
-    return sendRes
+    const data = await sendRes.json();
+    return data
 }
