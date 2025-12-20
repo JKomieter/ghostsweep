@@ -73,7 +73,7 @@ export default function TermsPage() {
                     <p className="text-sm text-muted-foreground">
                         By accessing or using GhostSweep, you agree to be bound by these Terms
                         and our{" "}
-                        <Link href="/privacy" className="text-primary underline">
+                        <Link href="/home/privacy" className="text-primary underline">
                             Privacy Policy
                         </Link>
                         . If you do not agree, you may not use the service.

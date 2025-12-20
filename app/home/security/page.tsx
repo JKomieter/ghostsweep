@@ -25,7 +25,7 @@ export default function SecurityPage() {
                     <div className="text-center space-y-5 max-w-3xl mx-auto">
                         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-[11px] text-emerald-200">
                             <Shield className="h-3 w-3" />
-                            Security & Privacy Overview
+                            Google OAuth · Metadata-only scanning · You control all actions
                         </div>
 
                         <div className="space-y-3">
@@ -49,7 +49,7 @@ export default function SecurityPage() {
                             </Link>
 
                             <Link
-                                href="/privacy"
+                                href="/home/privacy"
                                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-7 py-2.5 text-xs sm:text-sm font-medium hover:bg-white/5 transition"
                             >
                                 Read privacy policy
@@ -120,7 +120,7 @@ export default function SecurityPage() {
                                 </div>
                                 <div className="inline-flex items-start gap-2">
                                     <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 shrink-0" />
-                                    <span>Actions only when you click “Start Deletion”.</span>
+                                    <span>Deletion emails sent only after you preview and approve.</span>
                                 </div>
                                 <div className="inline-flex items-start gap-2">
                                     <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 shrink-0" />
@@ -193,7 +193,7 @@ export default function SecurityPage() {
                                         <li className="flex items-start gap-2">
                                             <Mail className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                                             <span>
-                                                Store minimal delivery metadata (e.g., which service was contacted and when) for tracking
+                                                Track deletion request status (which services were contacted, when, and reply status)
                                             </span>
                                         </li>
                                     </ul>
@@ -235,9 +235,9 @@ export default function SecurityPage() {
                                 <li className="flex items-start gap-3 rounded-lg bg-black/40 p-3">
                                     <span className="text-red-400 text-base shrink-0">✕</span>
                                     <div>
-                                        <p className="font-medium">Silent deletions</p>
+                                        <p className="font-medium">Automatic deletions</p>
                                         <p className="text-[11px] text-muted-foreground mt-1">
-                                            We don’t delete accounts for you automatically or without your action.
+                                            We never delete accounts or send emails without your explicit approval. You preview every action first.
                                         </p>
                                     </div>
                                 </li>
@@ -312,7 +312,7 @@ export default function SecurityPage() {
                                     <div>
                                         <p className="font-medium text-foreground">Breach matches</p>
                                         <p className="text-[11px] mt-1">
-                                            Which services appear in known breach datasets and relevant dates/labels.
+                                            Which services appear in public breach datasets (sourced from Have I Been Pwned and similar databases).
                                         </p>
                                     </div>
                                 </li>
@@ -355,8 +355,8 @@ export default function SecurityPage() {
                                 <li className="flex items-start gap-3">
                                     <span className="text-emerald-300 text-base shrink-0">✓</span>
                                     <div>
-                                        <p className="font-medium text-foreground">Your Google password</p>
-                                        <p className="text-[11px] mt-1">OAuth only.</p>
+                                        <p className="font-medium text-foreground">Passwords or credentials</p>
+                                        <p className="text-[11px] mt-1">We never see your Google password or any passwords from emails. OAuth only.</p>
                                     </div>
                                 </li>
                             </ul>
@@ -535,7 +535,7 @@ export default function SecurityPage() {
                             </a>
 
                             <Link
-                                href="/privacy"
+                                href="/home/privacy"
                                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-2.5 text-xs sm:text-sm font-medium hover:bg-white/5 transition"
                             >
                                 Read privacy policy
