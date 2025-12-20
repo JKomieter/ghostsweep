@@ -96,8 +96,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* Analytics - Self-hosted by Vercel (same-origin, no SRI needed) */}
-          <SpeedInsights />
-          <Analytics />
+          {process.env.NODE_ENV === "production" && (
+            <>
+              <SpeedInsights />
+              <Analytics />
+            </>
+          )}
 
           <main>{children}</main>
 

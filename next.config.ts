@@ -74,21 +74,29 @@ const nextConfig: NextConfig = {
       },
       {
         key: 'Content-Security-Policy',
-        value: [
-          "default-src 'self'",
-          "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com",
-          "style-src 'self' 'unsafe-inline'",
-          "img-src 'self' data: https: blob:",
-          "font-src 'self' data:",
-          "connect-src 'self' https://accounts.google.com https://www.googleapis.com https://api.anthropic.com https://*.supabase.co wss://*.supabase.co https://img.logo.dev https://ghostsweep.t3.storage.dev",
-          "frame-src 'self' https://accounts.google.com",
-          "frame-ancestors 'none'",
-          "media-src 'self' https://ghostsweep.t3.storage.dev",
-          "object-src 'none'",
-          "base-uri 'self'",
-          "form-action 'self'",
-          "upgrade-insecure-requests",
-        ].join('; '),
+        value: process.env.NODE_ENV === "development"
+          ? // DEVELOPMENT CSP (permissive)
+          [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://va.vercel-scripts.com",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob: https:",
+            "font-src 'self' data:",
+            "connect-src 'self' ws: wss: https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co",
+            "worker-src 'self' blob:",
+            "frame-src 'self' https://accounts.google.com",
+          ].join("; ")
+          : // PRODUCTION CSP (strict)
+          [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://va.vercel-scripts.com",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: https:",
+            "font-src 'self' data:",
+            "connect-src 'self' https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co",
+            "worker-src 'self' blob:",
+            "frame-src 'self' https://accounts.google.com",
+          ].join("; "),
       },
       {
         key: 'Server',

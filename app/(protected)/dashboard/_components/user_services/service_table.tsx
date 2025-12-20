@@ -422,7 +422,7 @@ export default function ServiceTable(props: ServiceTableProps) {
             setBulkLoading(false)
         }
     }
-    console.log(gated || selectedCount === 0 || bulkLoading)
+    
     return (
         <div className="space-y-3">
             {/* Header controls */}
