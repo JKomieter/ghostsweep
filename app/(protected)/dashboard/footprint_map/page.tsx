@@ -13,8 +13,11 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // ---- Types ----
+type Plan = "free" | "pro";
+
 type ApiUserService = {
     id: string;
     email_count: number | null;
@@ -31,9 +34,7 @@ type ApiUserService = {
     };
 };
 
-type AllUserServicesResponse =
-    | { userServices: ApiUserService[] }
-    | ApiUserService[];
+type AllUserServicesResponse = { userServices: ApiUserService[] } | ApiUserService[];
 
 type CategoryKey =
     | "social"
@@ -60,7 +61,6 @@ type ServiceNode = {
 
 function categoryToKey(category: string | null | undefined): CategoryKey {
     const c = (category ?? "").toLowerCase();
-
     if (c.includes("social")) return "social";
     if (c.includes("shopping") || c.includes("e-commerce")) return "shopping";
     if (c.includes("streaming") || c.includes("entertainment")) return "entertainment";
@@ -89,19 +89,32 @@ function riskFromSignals(emailCount: number, breached: boolean): ServiceNode["ri
     return "low";
 }
 
+// --- Fetchers ---
+async function fetchPlan(): Promise<Plan> {
+    const res = await fetch("/api/me/subscription", { cache: "no-store" });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(j?.error ?? "Failed to load subscription");
+    return (j?.plan as Plan) ?? "free";
+}
+
 async function fetchAllUserServices(): Promise<ApiUserService[]> {
     const res = await fetch("/api/user_services/all", { cache: "no-store" });
     const j = (await res.json().catch(() => ({}))) as AllUserServicesResponse;
 
     if (!res.ok) {
-        const msg =
-            typeof (j as any)?.error === "string" ? (j as any).error : "Failed to load user services";
+        const msg = typeof (j as any)?.error === "string" ? (j as any).error : "Failed to load user services";
         throw new Error(msg);
     }
-
     if (Array.isArray(j)) return j;
     if (Array.isArray((j as any)?.userServices)) return (j as any).userServices;
     return [];
+}
+
+async function fetchUserServicesCount(): Promise<number> {
+    const res = await fetch("/api/user_services/count", { cache: "no-store" });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(j?.error ?? "Failed to load count");
+    return Number(j?.count ?? 0);
 }
 
 export default function FootprintPage() {
@@ -109,6 +122,33 @@ export default function FootprintPage() {
     const [hoveredNode, setHoveredNode] = useState<ServiceNode | null>(null);
     const [zoomTransform, setZoomTransform] = useState<d3.ZoomTransform | null>(null);
 
+    // 1) plan first
+    const {
+        data: plan,
+        isPending: planPending,
+        isError: planIsError,
+        error: planError,
+        refetch: refetchPlan,
+    } = useQuery({
+        queryKey: ["me", "subscription"],
+        queryFn: fetchPlan,
+        staleTime: 60_000,
+    });
+
+    const isPro = plan === "pro";
+
+    // 2) count for everyone (safe)
+    const {
+        data: serviceCount = 0,
+        isPending: countPending,
+    } = useQuery({
+        queryKey: ["user_services", "count"],
+        queryFn: fetchUserServicesCount,
+        staleTime: 60_000,
+        enabled: !planPending && !planIsError, // don’t spam if plan is failing hard
+    });
+
+    // 3) full list ONLY for pro
     const {
         data: rows = [],
         isPending,
@@ -119,6 +159,7 @@ export default function FootprintPage() {
         queryKey: ["user_services", "all"],
         queryFn: fetchAllUserServices,
         staleTime: 60_000,
+        enabled: Boolean(isPro), // 🔒 gate
     });
 
     const services: ServiceNode[] = useMemo(() => {
@@ -142,6 +183,7 @@ export default function FootprintPage() {
     }, [rows]);
 
     useEffect(() => {
+        if (!isPro) return; // 🔒 don’t render d3 graph for free
         if (!svgRef.current || isPending || services.length === 0) return;
 
         const width = 900;
@@ -192,10 +234,8 @@ export default function FootprintPage() {
             }
         });
 
-        // Zoom container
         const g = svg.append("g");
 
-        // Glow filter for breached accounts
         const defs = svg.append("defs");
         const filter = defs.append("filter").attr("id", "glow");
         filter.append("feGaussianBlur").attr("stdDeviation", "3.5").attr("result", "coloredBlur");
@@ -203,7 +243,6 @@ export default function FootprintPage() {
         feMerge.append("feMergeNode").attr("in", "coloredBlur");
         feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
-        // Force simulation
         const simulation = d3
             .forceSimulation(nodes)
             .force(
@@ -218,7 +257,6 @@ export default function FootprintPage() {
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collision", d3.forceCollide().radius(36));
 
-        // Draw links
         const link = g
             .append("g")
             .attr("stroke", "#374151")
@@ -228,7 +266,6 @@ export default function FootprintPage() {
             .join("line")
             .attr("stroke-width", 1);
 
-        // Draw nodes
         const node = g
             .append("g")
             .selectAll<SVGGElement, SimNode>("g")
@@ -238,30 +275,28 @@ export default function FootprintPage() {
             .call(
                 d3
                     .drag<SVGGElement, SimNode>()
-                    .on("start", (event: d3.D3DragEvent<SVGGElement, SimNode, SimNode>, d: SimNode) => {
+                    .on("start", (event, d) => {
                         if (!event.active) simulation.alphaTarget(0.25).restart();
                         d.fx = d.x;
                         d.fy = d.y;
                     })
-                    .on("drag", (event: d3.D3DragEvent<SVGGElement, SimNode, SimNode>, d: SimNode) => {
+                    .on("drag", (event, d) => {
                         d.fx = event.x;
                         d.fy = event.y;
                     })
-                    .on("end", (event: d3.D3DragEvent<SVGGElement, SimNode, SimNode>, d: SimNode) => {
+                    .on("end", (event, d) => {
                         if (!event.active) simulation.alphaTarget(0);
                         d.fx = null;
                         d.fy = null;
                     })
             );
 
-        // Outer circle (category color)
         node
             .append("circle")
             .attr("r", 25)
             .attr("fill", (d) => categoryColors[d.categoryKey] ?? categoryColors.other)
             .attr("opacity", 0.18);
 
-        // Inner circle (risk color)
         node
             .append("circle")
             .attr("class", "inner")
@@ -272,7 +307,6 @@ export default function FootprintPage() {
             .attr("filter", (d) => (d.breached ? "url(#glow)" : "none"))
             .attr("opacity", (d) => (d.status === "deleted" ? 0.28 : 1));
 
-        // Pending indicator (yellow dot)
         node
             .filter((d) => d.status === "pending")
             .append("circle")
@@ -281,7 +315,6 @@ export default function FootprintPage() {
             .attr("cx", 12)
             .attr("cy", -12);
 
-        // Labels
         node
             .append("text")
             .text((d) => (d.name.length > 10 ? d.name.slice(0, 10) + "…" : d.name))
@@ -291,7 +324,6 @@ export default function FootprintPage() {
             .attr("fill", "#9ca3af")
             .attr("pointer-events", "none");
 
-        // Hover effects
         node
             .on("mouseenter", function (_event, d) {
                 setHoveredNode(d);
@@ -302,8 +334,8 @@ export default function FootprintPage() {
                 d3.select(this).select<SVGCircleElement>("circle.inner").attr("r", 18);
             });
 
-        // Zoom behavior
-        const zoom = d3.zoom<SVGSVGElement, unknown>()
+        const zoom = d3
+            .zoom<SVGSVGElement, unknown>()
             .scaleExtent([0.3, 3])
             .on("zoom", (event) => {
                 g.attr("transform", event.transform);
@@ -312,14 +344,10 @@ export default function FootprintPage() {
 
         svg.call(zoom);
 
-        // Double-click to reset zoom
         svg.on("dblclick.zoom", () => {
-            svg.transition()
-                .duration(750)
-                .call(zoom.transform, d3.zoomIdentity);
+            svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
         });
 
-        // Update positions on tick
         simulation.on("tick", () => {
             link
                 .attr("x1", (d) => (d.source as SimNode).x!)
@@ -333,7 +361,12 @@ export default function FootprintPage() {
         return () => {
             simulation.stop();
         };
-    }, [services, isPending]);
+    }, [isPro, services, isPending]);
+
+    const headerCountLabel =
+        planPending || countPending
+            ? "Loading…"
+            : `${serviceCount.toLocaleString()} services found`;
 
     return (
         <div className="p-4">
@@ -341,208 +374,126 @@ export default function FootprintPage() {
                 <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <CardTitle>Digital Footprint Map</CardTitle>
-                        <CardDescription>Interactive visualization of your online presence</CardDescription>
+                        <CardDescription>
+                            {isPro
+                                ? "Interactive visualization of your online presence"
+                                : "Preview — upgrade to see your full footprint map"}
+                        </CardDescription>
                     </div>
-                    <div className="text-xs text-white/60">
-                        {isPending ? "Loading…" : `${services.length.toLocaleString()} services`}
-                    </div>
+                    <div className="text-xs text-white/60">{headerCountLabel}</div>
                 </CardHeader>
 
                 <CardContent>
-                    {isPending ? (
+                    {/* Plan loading / error */}
+                    {planPending ? (
                         <div className="flex items-center justify-center py-16">
                             <Spinner className="text-primary" />
                         </div>
-                    ) : isError ? (
+                    ) : planIsError ? (
                         <div className="rounded-lg border border-white/10 bg-[#050505] p-4">
-                            <div className="text-sm text-white">Couldn&apos;t load footprint</div>
-                            <div className="mt-1 text-xs text-white/60">{(error as any)?.message ?? "Unknown error"}</div>
-                            <div className="mt-3">
-                                <Button size="sm" variant="outline" onClick={() => refetch()}>
+                            <div className="text-sm text-white">Couldn&apos;t load subscription</div>
+                            <div className="mt-1 text-xs text-white/60">{(planError as any)?.message ?? "Unknown error"}</div>
+                            <div className="mt-3 flex gap-2">
+                                <Button size="sm" variant="outline" onClick={() => refetchPlan()}>
                                     Retry
                                 </Button>
                             </div>
                         </div>
-                    ) : services.length === 0 ? (
-                        <div className="text-sm text-white/60 text-center py-16">
-                            No services found yet. Connect Gmail and run a scan.
+                    ) : !isPro ? (
+                        // 🔒 FREE GATE VIEW
+                        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+                            <div className="p-4 text-sm text-white">
+                                <div className="font-semibold">This is a Pro feature</div>
+                                <div className="mt-1 text-white/60">
+                                    Free users can scan and see the <strong>number</strong> of accounts found, but not the map or the list.
+                                </div>
+
+                                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                                    <Link href="/dashboard/billing?plan=monthly" className="inline-flex">
+                                        <Button>Upgrade to Pro</Button>
+                                    </Link>
+                                    <Link href="/dashboard" className="inline-flex">
+                                        <Button variant="outline">Back to dashboard</Button>
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* blurred placeholder map */}
+                            <div className="relative h-[420px] w-full border-t border-slate-800">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.18),transparent_45%),radial-gradient(circle_at_70%_60%,rgba(59,130,246,0.16),transparent_45%)]" />
+                                <div className="absolute inset-0 backdrop-blur-sm opacity-80" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2 text-xs text-slate-200">
+                                        Locked preview — upgrade to unlock your footprint map
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     ) : (
+                        // ✅ PRO VIEW (your original logic)
                         <>
-                            {/* Instructions */}
-                            <div className="mb-4 p-3 bg-slate-900/50 border border-slate-800 rounded-lg text-xs text-slate-400">
-                                <div className="flex items-start gap-2">
-                                    <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <div className="space-y-1">
-                                        <p><strong>Controls:</strong></p>
-                                        <ul className="space-y-0.5 ml-4 list-disc">
-                                            <li>Scroll to zoom in/out</li>
-                                            <li>Drag background to pan</li>
-                                            <li>Drag nodes to reposition</li>
-                                            <li>Double-click to reset view</li>
-                                            <li>Hover nodes for details</li>
-                                        </ul>
+                            {isPending ? (
+                                <div className="flex items-center justify-center py-16">
+                                    <Spinner className="text-primary" />
+                                </div>
+                            ) : isError ? (
+                                <div className="rounded-lg border border-white/10 bg-[#050505] p-4">
+                                    <div className="text-sm text-white">Couldn&apos;t load footprint</div>
+                                    <div className="mt-1 text-xs text-white/60">{(error as any)?.message ?? "Unknown error"}</div>
+                                    <div className="mt-3">
+                                        <Button size="sm" variant="outline" onClick={() => refetch()}>
+                                            Retry
+                                        </Button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="relative">
-                                <svg
-                                    ref={svgRef}
-                                    className="w-full h-auto bg-slate-950 rounded-lg border border-slate-800"
-                                    style={{ maxHeight: "620px" }}
-                                />
-
-                                {/* Zoom Controls */}
-                                <div className="absolute bottom-4 left-4 flex flex-col gap-2">
-                                    <button
-                                        onClick={() => {
-                                            if (!svgRef.current) return;
-                                            const svg = d3.select(svgRef.current);
-                                            svg.transition().duration(300).call(
-                                                d3.zoom<SVGSVGElement, unknown>().scaleBy as any,
-                                                1.3
-                                            );
-                                        }}
-                                        className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-white transition-colors"
-                                        title="Zoom In"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            if (!svgRef.current) return;
-                                            const svg = d3.select(svgRef.current);
-                                            svg.transition().duration(300).call(
-                                                d3.zoom<SVGSVGElement, unknown>().scaleBy as any,
-                                                0.7
-                                            );
-                                        }}
-                                        className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-white transition-colors"
-                                        title="Zoom Out"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                        </svg>
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            if (!svgRef.current) return;
-                                            const svg = d3.select(svgRef.current);
-                                            svg.transition().duration(750).call(
-                                                d3.zoom<SVGSVGElement, unknown>().transform as any,
-                                                d3.zoomIdentity
-                                            );
-                                        }}
-                                        className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-white transition-colors"
-                                        title="Reset View"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                    </button>
+                            ) : services.length === 0 ? (
+                                <div className="text-sm text-white/60 text-center py-16">
+                                    No services found yet. Connect Gmail and run a scan.
                                 </div>
+                            ) : (
+                                <div className="relative">
+                                    <svg
+                                        ref={svgRef}
+                                        className="w-full h-auto bg-slate-950 rounded-lg border border-slate-800"
+                                        style={{ maxHeight: "620px" }}
+                                    />
 
-                                {/* Zoom Level Indicator */}
-                                {zoomTransform && (
-                                    <div className="absolute bottom-4 right-4 bg-slate-800/90 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-300">
-                                        Zoom: {Math.round(zoomTransform.k * 100)}%
-                                    </div>
-                                )}
-
-                                {/* Hover Tooltip */}
-                                {hoveredNode && (
-                                    <div className="absolute top-4 right-4 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl w-[260px] z-10">
-                                        <h4 className="font-semibold text-white truncate">{hoveredNode.name}</h4>
-
-                                        <div className="mt-3 space-y-2 text-sm">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-slate-400">Category:</span>
-                                                <span className="text-white font-medium">{hoveredNode.categoryLabel}</span>
-                                            </div>
-
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-slate-400">Risk:</span>
-                                                <span
-                                                    className={`font-semibold ${hoveredNode.risk === "high"
-                                                            ? "text-red-400"
-                                                            : hoveredNode.risk === "medium"
-                                                                ? "text-amber-400"
-                                                                : "text-green-400"
-                                                        }`}
-                                                >
-                                                    {hoveredNode.risk.toUpperCase()}
-                                                </span>
-                                            </div>
-
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-slate-400">Status:</span>
-                                                <span
-                                                    className={`font-semibold ${hoveredNode.status === "deleted"
-                                                            ? "text-slate-500"
-                                                            : hoveredNode.status === "pending"
-                                                                ? "text-amber-400"
-                                                                : "text-green-400"
-                                                        }`}
-                                                >
-                                                    {hoveredNode.status.toUpperCase()}
-                                                </span>
-                                            </div>
-
-                                            {hoveredNode.breached && (
-                                                <div className="pt-2 border-t border-slate-700">
-                                                    <div className="flex items-center gap-2 text-red-400">
-                                                        <svg
-                                                            className="w-4 h-4"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth={2}
-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                                            />
-                                                        </svg>
-                                                        <span className="text-xs font-medium">Breach detected</span>
-                                                    </div>
-                                                </div>
-                                            )}
+                                    {zoomTransform && (
+                                        <div className="absolute bottom-4 right-4 bg-slate-800/90 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-300">
+                                            Zoom: {Math.round(zoomTransform.k * 100)}%
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
-                                {/* Legend */}
-                                <div className="mt-6 pt-4 border-t border-slate-800">
-                                    <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
-                                        <LegendDot label="High Risk" className="bg-red-500" />
-                                        <LegendDot label="Medium Risk" className="bg-amber-500" />
-                                        <LegendDot label="Low Risk" className="bg-green-500" />
-                                        <LegendDot label="Breached" className="bg-red-500 ring-2 ring-red-300/50" />
-                                        <LegendDot label="Pending" className="bg-amber-400" />
-                                    </div>
+                                    {hoveredNode && (
+                                        <div className="absolute top-4 right-4 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl w-[260px] z-10">
+                                            <h4 className="font-semibold text-white truncate">{hoveredNode.name}</h4>
+                                            <div className="mt-3 space-y-2 text-sm">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-slate-400">Category:</span>
+                                                    <span className="text-white font-medium">{hoveredNode.categoryLabel}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-slate-400">Risk:</span>
+                                                    <span
+                                                        className={`font-semibold ${hoveredNode.risk === "high"
+                                                                ? "text-red-400"
+                                                                : hoveredNode.risk === "medium"
+                                                                    ? "text-amber-400"
+                                                                    : "text-green-400"
+                                                            }`}
+                                                    >
+                                                        {hoveredNode.risk.toUpperCase()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
+                            )}
                         </>
                     )}
                 </CardContent>
             </Card>
-        </div>
-    );
-}
-
-function LegendDot({ label, className }: { label: string; className: string }) {
-    return (
-        <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${className}`} />
-            <span className="text-slate-400">{label}</span>
         </div>
     );
 }
