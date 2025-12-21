@@ -12,7 +12,26 @@ export async function GET() {
 
     if (authError || !user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        
     }
+
+    // ✅ Get plan
+    const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from("user_subscriptions")
+        .select("current_plan")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (subscriptionError) {
+        console.error("Error fetching user subscription:", subscriptionError);
+        return NextResponse.json(
+            { error: "Internal Server Error", code: "SUBSCRIPTION_FETCH_ERROR" },
+            { status: 500 }
+        );
+    }
+
+    const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "pro";
+    const isPro = currentPlan === "pro";
 
     // 2) Fetch all user services for this user
     const { data, error } = await supabase
@@ -35,7 +54,7 @@ export async function GET() {
         is_breached
       ),
 
-      deletion_requests (
+      deletion_request:deletion_requests (
         id,
         status,
         sent_at,
@@ -61,6 +80,7 @@ export async function GET() {
     // 3) Normalize shape (important for frontend stability)
     const userServices = (data ?? []).map((row) => {
         const service = Array.isArray(row.service) ? row.service[0] : row.service
+        const deletion_request = Array.isArray(row.deletion_request) ? row.deletion_request[0] : row.deletion_request
         return {
             id: row.id,
             user_id: row.user_id,
@@ -82,23 +102,13 @@ export async function GET() {
                 : null,
 
             // only keep the most recent deletion request (if any)
-            deletion_requests:
-                row.deletion_requests && row.deletion_requests.length > 0
-                    ? [
-                        {
-                            id: row.deletion_requests[0].id,
-                            status: row.deletion_requests[0].status,
-                            sent_at: row.deletion_requests[0].sent_at,
-                            updated_at: row.deletion_requests[0].updated_at,
-                        },
-                    ]
-                    : [],
+            deletion_request
         }
     });
 
     return NextResponse.json(
         {
-            userServices,
+            userServices: !isPro ? [] : userServices,
             total: userServices.length,
         },
         { status: 200 }
