@@ -178,7 +178,7 @@ export default function ResetPasswordPage() {
 
                     <p className="mt-3 text-center text-[11px] text-muted-foreground">
                         If this link doesn&apos;t work, request a new reset email from the{" "}
-                        <a href="/forgot-password" className="text-primary underline">
+                        <a href="/forgot_password" className="text-primary underline">
                             Forgot password
                         </a>{" "}
                         page.

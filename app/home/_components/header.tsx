@@ -29,7 +29,7 @@ const NavLinks = ({ className = "", onClick }: { className?: string; onClick?: (
             Blog
         </Link>
         <Link
-            href="/home/breach-check"
+            href="/home/breach_check"
             className="transition-colors hover:text-foreground"
             onClick={onClick}
         >

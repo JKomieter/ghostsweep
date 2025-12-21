@@ -107,7 +107,7 @@ const nextConfig: NextConfig = {
     return [
       // Public marketing pages - can be cached
       {
-        source: '/home/:path((?!breach-check).*)*',
+        source: '/home/:path((?!breach_check).*)*',
         headers: [
           ...securityHeaders,
           {
@@ -136,7 +136,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/forgot-password',
+        source: '/forgot_password',
         headers: [
           ...securityHeaders,
           {
@@ -154,7 +154,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/reset-password',
+        source: '/reset_password',
         headers: [
           ...securityHeaders,
           {
@@ -211,7 +211,7 @@ const nextConfig: NextConfig = {
       },
       // Breach check page - NEVER cache (user input)
       {
-        source: '/home/breach-check',
+        source: '/home/breach_check',
         headers: [
           ...securityHeaders,
           {

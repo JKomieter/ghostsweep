@@ -11,8 +11,8 @@ export async function POST() {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     console.error("User not found", userError);
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // 2. Update notifications (mark all unread as read)

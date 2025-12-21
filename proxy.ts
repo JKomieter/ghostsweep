@@ -74,10 +74,10 @@ function addSecurityHeaders(response: NextResponse, pathname: string): NextRespo
     response.headers.set('Server', '')
 
     // Set appropriate Cache-Control based on path
-    const isAuthPage = ['/login', '/forgot-password', '/reset-password', '/signup'].some(p => pathname.startsWith(p))
+    const isAuthPage = ['/login', '/forgot_password', '/reset_password', '/signup'].some(p => pathname.startsWith(p))
     const isDashboard = pathname.startsWith('/dashboard')
     const isAPI = pathname.startsWith('/api')
-    const isBreachCheck = pathname === '/home/breach-check'
+    const isBreachCheck = pathname === '/home/breach_check'
 
     if (isAuthPage || isDashboard || isAPI || isBreachCheck) {
         // Never cache sensitive pages - FIX FOR CACHE VULNERABILITY

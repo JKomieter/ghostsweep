@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from "react";
 import {  ShieldCheck, Loader2 } from "lucide-react";
-import { sendGTMEvent } from '@next/third-parties/google'
 import DOMPurify from "dompurify"
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,6 @@ export default function BreachCheckPage() {
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: FormEvent) => {
-        sendGTMEvent({ event: 'breach-check', value: query })
         e.preventDefault();
         if (!query.trim()) return;
 
@@ -48,7 +46,7 @@ export default function BreachCheckPage() {
         setBreaches([]);
 
         try {
-            const res = await fetch("/api/breach-check", {
+            const res = await fetch("/api/breach_check", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

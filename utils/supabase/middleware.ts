@@ -3,16 +3,16 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const publicRoutes = [
     "/login",
-    "/forgot-password",
+    "/forgot_password",
     "/api/auth/confirm",
     "/help",
     "/home",
-    "/reset-password",
-    "/api/reset-password",
+    "/reset_password",
+    "/api/reset_password",
     "/api/webhooks",
     "/api/waitlist",
     "/api/unsubscribe",
-    "/api/breach-check",
+    "/api/breach_check",
     "/sitemap.xml",
 ]
 
@@ -60,7 +60,7 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
-    if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/forgot-password")) {
+    if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/forgot_password")) {
         const url = request.nextUrl.clone()
         url.pathname = "/dashboard"
         return NextResponse.redirect(url)

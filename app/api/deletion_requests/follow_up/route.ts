@@ -198,13 +198,6 @@ export async function POST(req: NextRequest) {
     // 8) Update deletion request
     const now = new Date().toISOString();
 
-    console.log({
-        follow_up_count: followUpNumber,
-        status: "sent",
-        updated_at: now,
-        next_follow_up_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    });
-
     const { error: updErr } = await supabase
         .from("deletion_requests")
         .update({

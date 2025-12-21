@@ -14,7 +14,7 @@ export default function ForgotPassword() {
     const handleForgotPassword = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const response = await fetch("/api/reset-password", {
+        const response = await fetch("/api/reset_password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),

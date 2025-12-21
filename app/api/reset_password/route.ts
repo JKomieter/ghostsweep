@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     // Generate a password reset link using Supabase and email it to the user
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://www.ghostsweep.com/api/auth/confirm?next=/reset-password",
+        redirectTo: "https://www.ghostsweep.com/api/auth/confirm?next=/reset_password",
     })
     if (error) {
         console.error("Error sending reset email:", error)
