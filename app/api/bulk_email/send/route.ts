@@ -249,7 +249,7 @@ export async function POST(req: NextRequest) {
                         }
 
                         // Send email
-                        const { gmailMessageId, threadId } = await sendEmail({
+                        const { id: gmailMessageId, threadId } = await sendEmail({
                             accessToken: gmailAccount.access_token_encrypted,
                             receiver_email: item.deletion_email!,
                             gmailAddress: gmailAccount.gmail_address,
