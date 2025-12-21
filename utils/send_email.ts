@@ -22,18 +22,20 @@ function makeRawEmail(opts: { from: string; to: string; subject: string; body: s
 
 export default async function sendEmail({
     accessToken,
-    gmailAddress,
-    receiver_email,
+    from,
+    to,
     subject,
-    template_used,
+    body,
+    threadId, // Add threadId as an optional parameter
 }: {
-        accessToken: string,
-    gmailAddress: string,
-    receiver_email: string,
-    subject: string,
-    template_used: string,
+    accessToken: string;
+    from: string;
+    to: string;
+    subject: string;
+    body: string;
+    threadId?: string; // Optional threadId for threading
 }) {
-    const raw = makeRawEmail({ from: gmailAddress, to: receiver_email, subject, body: template_used });
+    const raw = makeRawEmail({ from, to, subject, body });
 
     const sendRes = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
         method: "POST",
@@ -41,9 +43,18 @@ export default async function sendEmail({
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ raw }),
+        body: JSON.stringify({
+            raw,
+            ...(threadId ? { threadId } : {}), // Include threadId if provided
+        }),
     });
 
+    if (!sendRes.ok) {
+        console.error("Failed to send email:", await sendRes.text());
+        throw new Error(`Failed to send email: ${sendRes.status} ${sendRes.statusText}`);
+    }
+
     const data = await sendRes.json();
-    return data
+    console.log("Email sent successfully:", data);
+    return data;
 }

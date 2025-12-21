@@ -76,21 +76,24 @@ export async function POST(req: NextRequest) {
         // (If you also store access_token_encrypted updated, do it here—but not required if you refresh often.)
     }
 
-    // Send via Gmail
-    const sendRes = await sendEmail({
-        accessToken,
-        gmailAddress,
-        receiver_email,
-        subject,
-        template_used
-    })
 
-    if (!sendRes.ok) {
-        const errText = await sendRes.text();
-        return NextResponse.json({ error: `Gmail send failed: ${sendRes.status} ${errText}` }, { status: 502 });
+    // Send via Gmail
+    let sent;
+    try {
+        sent = await sendEmail({
+            accessToken,
+            from: gmailAddress,
+            to: receiver_email,
+            subject,
+            body: template_used,
+        });
+    } catch (error) {
+        console.error("Gmail send error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        return NextResponse.json({ error: `Gmail send failed: ${errorMessage}` }, { status: 502 });
     }
 
-    const sent = await sendRes.json(); // { id, threadId, labelIds, ... }
+    // `sent` already contains the parsed response from Gmail API
     const now = new Date().toISOString();
 
     // Upsert deletion request as SENT

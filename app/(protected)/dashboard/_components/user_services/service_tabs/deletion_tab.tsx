@@ -10,7 +10,19 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+
 import type { DeletionRequest, DeletionStatus, ServiceDeletionPlaybook } from "@/types";
+
+// TODO: Finish follow up and also add the data deletion info
 
 interface DeletionRequestsTabProps {
     userServiceId: string | undefined; // ✅ REQUIRED so we can create a request row on link/manual actions
@@ -122,6 +134,66 @@ function addDaysISO(iso: string, days: number) {
     return d.toISOString();
 }
 
+// -------------------------------
+// New info helpers
+// -------------------------------
+type DataDeletionInfo = "deletes_data" | "archives_data" | "unclear" | null | undefined;
+
+function deletionInfoLabel(v: DataDeletionInfo) {
+    if (v === "deletes_data")
+        return { label: "Deletes data", cls: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30" };
+    if (v === "archives_data")
+        return { label: "Archives data", cls: "bg-amber-500/15 text-amber-200 border-amber-500/30" };
+    return { label: "Unclear", cls: "bg-zinc-500/10 text-zinc-200 border-zinc-500/30" };
+}
+
+function difficultyBadge(d: string | null | undefined) {
+    const v = (d ?? "").toLowerCase();
+    if (v.includes("easy"))
+        return { label: "Easy", cls: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30" };
+    if (v.includes("medium") || v.includes("moderate"))
+        return { label: "Medium", cls: "bg-amber-500/15 text-amber-200 border-amber-500/30" };
+    if (v.includes("hard") || v.includes("difficult"))
+        return { label: "Hard", cls: "bg-red-500/15 text-red-200 border-red-500/30" };
+    return { label: d ? d : "—", cls: "bg-zinc-500/10 text-zinc-200 border-zinc-500/30" };
+}
+
+function InfoColumns({
+    dataDeletionInfo,
+    deletionDifficulty,
+    retentionNotes,
+}: {
+    dataDeletionInfo: DataDeletionInfo;
+    deletionDifficulty: string | null | undefined;
+    retentionNotes: string | null | undefined;
+}) {
+    const info = deletionInfoLabel(dataDeletionInfo);
+    const diff = difficultyBadge(deletionDifficulty);
+
+    return (
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-md border border-white/10 bg-black/60 p-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Data deletion info</p>
+                <div className="mt-2">
+                    <Badge className={cn("text-[11px] border px-2 py-1 rounded-full", info.cls)}>{info.label}</Badge>
+                </div>
+            </div>
+
+            <div className="rounded-md border border-white/10 bg-black/60 p-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Deletion difficulty</p>
+                <div className="mt-2">
+                    <Badge className={cn("text-[11px] border px-2 py-1 rounded-full", diff.cls)}>{diff.label}</Badge>
+                </div>
+            </div>
+
+            <div className="rounded-md border border-white/10 bg-black/60 p-3">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Retention notes</p>
+                <p className="mt-2 text-[11px] text-white/70 leading-relaxed">{retentionNotes?.trim() ? retentionNotes : "—"}</p>
+            </div>
+        </div>
+    );
+}
+
 export default function DeletionTab({
     userServiceId,
     serviceName,
@@ -144,15 +216,19 @@ export default function DeletionTab({
     const hasLink = Boolean(playbook?.deletion_url);
     const steps = playbook?.steps ?? null;
 
+    // new: info columns pulled from playbook
+    const retentionNotes = (playbook as any)?.data_retention_notes as string | null | undefined;
+    const deletionDifficulty = (playbook as any)?.deletion_difficulty as string | null | undefined;
+    const dataDeletionInfo = (playbook as any)?.data_deletion_info as DataDeletionInfo;
+
     const hasRequest = Boolean(request);
     const canAutomateEmail = currentPlan === "pro" && gmailConnected;
 
     const isEmailRequest = request?.deletion_method === "email";
     const isLinkRequest = request?.deletion_method === "link";
-    
+
     const followUpText = `We recommend following up in ${followUpDays} days if there’s no reply.`;
-    const nextFollowAt =
-        request?.next_follow_up_at ?? (request?.sent_at ? addDaysISO(request.sent_at, followUpDays) : null);
+    const nextFollowAt = request?.next_follow_up_at ?? (request?.sent_at ? addDaysISO(request.sent_at, followUpDays) : null);
 
     // ---------------------------
     // API helpers
@@ -183,6 +259,7 @@ export default function DeletionTab({
      */
     const ensureRequestExists = async (method: "link" | "manual") => {
         if (request?.id) return; // already exists
+        if (!userServiceId) throw new Error("Missing userServiceId");
 
         const res = await fetch(`/api/deletion_requests/post`, {
             method: "POST",
@@ -190,7 +267,7 @@ export default function DeletionTab({
             body: JSON.stringify({
                 user_service_id: userServiceId,
                 deletion_method: method,
-                // optional snapshots (nice for debugging)
+                // optional snapshots
                 deletion_url: playbook?.deletion_url ?? null,
                 receiver_email: playbook?.deletion_email ?? null,
                 sender_email: null,
@@ -216,7 +293,6 @@ export default function DeletionTab({
         }
 
         try {
-            // ✅ create request row if none (link-based attempt)
             await ensureRequestExists("link");
             window.open(playbook.deletion_url, "_blank", "noopener,noreferrer");
         } catch (e: any) {
@@ -226,7 +302,6 @@ export default function DeletionTab({
 
     const viewManualGuide = async () => {
         try {
-            // ✅ create request row if none (manual-based attempt)
             await ensureRequestExists("manual");
             const el = document.getElementById("gs-quick-steps");
             el?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -236,7 +311,6 @@ export default function DeletionTab({
     };
 
     const handlePrimaryAction = () => {
-        // If no request yet, use playbook method as truth.
         const method = request?.deletion_method ?? playbookMethod;
 
         if (method === "link") {
@@ -256,17 +330,14 @@ export default function DeletionTab({
     const runSetStatus = async (status: DeletionStatus) => {
         try {
             if (request?.id) {
-                // ✅ backend PATCH route should set timestamps for completed/failed etc.
                 await patchRequest({ status });
                 toast.success("Status updated");
                 return;
             }
 
-            // No request row yet: for MVP, create manual attempt then update status.
             await ensureRequestExists("manual");
             toast.message("Started tracking", { description: "Now update the status again." });
 
-            // fallback legacy
             if (onSetStatus) await onSetStatus(status);
         } catch (e: any) {
             toast.error("Could not update status", { description: e?.message ?? "Try again." });
@@ -310,26 +381,87 @@ export default function DeletionTab({
     };
 
     // ---------------------------
-    // Follow-up (email-only placeholder)
+    // Follow-up (Dialog + gating)
     // ---------------------------
+    const [followUpOpen, setFollowUpOpen] = React.useState(false);
+    const [followUpDraft, setFollowUpDraft] = React.useState("");
     const [sendingFollowUp, setSendingFollowUp] = React.useState(false);
 
-    const sendFollowUp = async () => {
+    const followUpAllowedStatuses: DeletionStatus[] = ["sent", "received", "needs_verification", "in_progress"];
+
+    const canSendFollowUpNow =
+        Boolean(request?.id) &&
+        request?.deletion_method === "email" &&
+        canAutomateEmail &&
+        followUpAllowedStatuses.includes(request!.status) &&
+        (request!.follow_up_count ?? 0) < 3;
+
+    const buildFollowUpMessage = () => {
+        const svc = serviceName || "this service";
+        return `
+Hello,
+
+I'm following up on my previous data deletion request for ${svc} sent earlier.
+
+Please confirm receipt and let me know the current status of my request.
+
+Thank you,
+${request?.sender_email ?? ""}
+`.trim();
+    };
+
+    const openFollowUpDialog = () => {
         if (!request?.id) return;
 
         if (!canAutomateEmail) {
-            toast.message("Follow-ups are Pro + Gmail", { description: "Keep this as a Pro feature for MVP." });
+            toast.message("Follow-ups are Pro + Gmail", {
+                description: "Upgrade to Pro and connect Gmail to send follow-ups.",
+            });
             return;
         }
+
+        const count = request.follow_up_count ?? 0;
+
+        if (request.deletion_method !== "email") {
+            toast.error("Follow-ups only apply to email deletion requests.");
+            return;
+        }
+
+        if (!followUpAllowedStatuses.includes(request.status)) {
+            toast.error("Follow-up not allowed for this status.");
+            return;
+        }
+
+        if (count >= 3) {
+            toast.error("Maximum number of follow-ups reached (3).");
+            return;
+        }
+
+        setFollowUpDraft(buildFollowUpMessage());
+        setFollowUpOpen(true);
+    };
+
+    const sendFollowUpNow = async () => {
+        if (!request?.id) return;
 
         try {
             setSendingFollowUp(true);
 
+            const message = followUpDraft.trim();
+            if (!message) {
+                toast.error("Message is empty.");
+                return;
+            }
+
             if (onSendFollowUp) {
                 await onSendFollowUp();
             } else {
-                // Placeholder endpoint you can implement later
-                const res = await fetch(`/api/deletion_requests/${request.id}/follow_up`, { method: "POST" });
+                const res = await fetch(`/api/deletion_requests/follow_up`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ body: message, deletion_request_id: request.id }),
+                });
+
                 if (!res.ok) {
                     const j = await res.json().catch(() => ({}));
                     throw new Error(j?.error || "Failed to send follow-up");
@@ -337,6 +469,7 @@ export default function DeletionTab({
             }
 
             toast.success("Follow-up sent");
+            setFollowUpOpen(false);
         } catch (e: any) {
             toast.error("Could not send follow-up", { description: e?.message ?? "Try again." });
         } finally {
@@ -357,66 +490,113 @@ export default function DeletionTab({
     // ---------------------------
     if (!hasRequest) {
         return (
-            <div className="space-y-4 text-sm">
-                <div className="rounded-lg border border-white/10 bg-black/40 p-4">
-                    <h3 className="text-sm font-semibold text-white">Deletion</h3>
+            <>
+                <div className="space-y-4 text-sm">
+                    <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+                        <h3 className="text-sm font-semibold text-white">Deletion</h3>
 
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        {playbookMethod === "link" && "This service supports deletion via a link."}
-                        {playbookMethod === "email" && "This service supports deletion via an email request."}
-                        {playbookMethod === "manual" && "This service requires manual deletion steps."}
-                        {!playbookMethod && "Start deletion with our guide, link, or email template (if available)."}
-                    </p>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                        <Button size="sm" onClick={handlePrimaryAction} className="bg-red-500/80 text-black hover:bg-red-500">
-                            {resolvedPrimaryLabel}
-                        </Button>
-
-                        {hasLink && (
-                            <Button size="sm" variant="outline" onClick={() => void openDeletionPage()}>
-                                Open deletion page
-                            </Button>
-                        )}
-                    </div>
-
-                    {!!steps?.length && (
-                        <div id="gs-quick-steps" className="mt-4 rounded-md border border-white/10 bg-black/60 p-3">
-                            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Quick steps</p>
-                            <ol className="mt-2 list-decimal space-y-1 pl-4 text-[11px] text-white/80">
-                                {steps.slice(0, 10).map((s, i) => (
-                                    <li key={`${s}-${i}`}>{s}</li>
-                                ))}
-                            </ol>
-                        </div>
-                    )}
-
-                    <p className="mt-3 text-[11px] text-muted-foreground">
-                        MVP: you’ll manually set statuses (completed/failed/etc). If you send an email through GhostSweep, we’ll record it and
-                        (optionally) notify you when a reply is detected.
-                    </p>
-
-                    <Separator className="my-4 bg-white/10" />
-
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="text-[11px] text-muted-foreground max-w-xs">
-                            You can revoke Google access anytime, and set up a deletion profile to auto-fill future requests.
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            {playbookMethod === "link" && "This service supports deletion via a link."}
+                            {playbookMethod === "email" && "This service supports deletion via an email request."}
+                            {playbookMethod === "manual" && "This service requires manual deletion steps."}
+                            {!playbookMethod && "Start deletion with our guide, link, or email template (if available)."}
                         </p>
 
-                        <div className="flex flex-wrap gap-2">
-                            <Button size="sm" variant="outline" className="text-[11px]" asChild>
-                                <Link href={googlePermissionsUrl} target="_blank" rel="noreferrer">
-                                    Review Google connections
-                                </Link>
+                        <InfoColumns
+                            dataDeletionInfo={dataDeletionInfo}
+                            deletionDifficulty={deletionDifficulty}
+                            retentionNotes={retentionNotes}
+                        />
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            <Button
+                                size="sm"
+                                onClick={handlePrimaryAction}
+                                className="bg-red-500/80 text-black hover:bg-red-500"
+                            >
+                                {resolvedPrimaryLabel}
                             </Button>
 
-                            <Button size="sm" variant="ghost" className="text-[11px]" onClick={() => setIsDeletionProfileModalOpen(true)}>
-                                Set up deletion profile
-                            </Button>
+                            {hasLink && (
+                                <Button size="sm" variant="outline" onClick={() => void openDeletionPage()}>
+                                    Open deletion page
+                                </Button>
+                            )}
+                        </div>
+
+                        {!!steps?.length && (
+                            <div id="gs-quick-steps" className="mt-4 rounded-md border border-white/10 bg-black/60 p-3">
+                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Quick steps</p>
+                                <ol className="mt-2 list-decimal space-y-1 pl-4 text-[11px] text-white/80">
+                                    {steps.slice(0, 10).map((s, i) => (
+                                        <li key={`${s}-${i}`}>{s}</li>
+                                    ))}
+                                </ol>
+                            </div>
+                        )}
+
+                        <p className="mt-3 text-[11px] text-muted-foreground">
+                            MVP: you’ll manually set statuses (completed/failed/etc). If you send an email through GhostSweep, we’ll
+                            record it and (optionally) notify you when a reply is detected.
+                        </p>
+
+                        <Separator className="my-4 bg-white/10" />
+
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="text-[11px] text-muted-foreground max-w-xs">
+                                You can revoke Google access anytime, and set up a deletion profile to auto-fill future requests.
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                                <Button size="sm" variant="outline" className="text-[11px]" asChild>
+                                    <Link href={googlePermissionsUrl} target="_blank" rel="noreferrer">
+                                        Review Google connections
+                                    </Link>
+                                </Button>
+
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="text-[11px]"
+                                    onClick={() => setIsDeletionProfileModalOpen(true)}
+                                >
+                                    Set up deletion profile
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                {/* Follow-up dialog (won't open without request) */}
+                <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
+                    <DialogContent className="sm:max-w-[640px]">
+                        <DialogHeader>
+                            <DialogTitle>Preview follow-up email</DialogTitle>
+                            <DialogDescription>Review the message GhostSweep will send. You can edit it before sending.</DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-2">
+                            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Message</p>
+                            <Textarea
+                                value={followUpDraft}
+                                onChange={(e) => setFollowUpDraft(e.target.value)}
+                                className="min-h-[220px] bg-black/60 border-white/10 text-sm"
+                                placeholder="Type your follow-up message…"
+                            />
+                            <p className="text-[11px] text-white/50">Tip: Keep it short. Don’t attach ID unless they asked for it.</p>
+                        </div>
+
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setFollowUpOpen(false)} disabled={sendingFollowUp}>
+                                Cancel
+                            </Button>
+                            <Button onClick={sendFollowUpNow} disabled={sendingFollowUp}>
+                                {sendingFollowUp ? "Sending…" : "Send follow-up"}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </>
         );
     }
 
@@ -433,182 +613,223 @@ export default function DeletionTab({
                 : request!.deletion_method === "manual"
                     ? "Manual"
                     : "—";
+    
 
     return (
-        <div className="space-y-4 text-sm">
-            <div className="rounded-lg border border-white/10 bg-black/40 p-4">
-                <div className="flex items-start justify-between gap-3">
-                    <div>
-                        <p className="text-xs uppercase tracking-wide text-muted-foreground">Deletion request</p>
-                        <h3 className="mt-1 text-sm font-semibold text-white">
-                            {serviceName || "This service"} — delete my account & personal data
-                        </h3>
-                    </div>
-
-                    <Badge className={cn("text-[11px] border px-2 py-1 rounded-full", cfg.className)}>{cfg.label}</Badge>
-                </div>
-
-                <p className="mt-2 text-xs text-muted-foreground">{cfg.description}</p>
-
-                <Separator className="my-3 bg-white/10" />
-
-                {/* Action row */}
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="text-[11px] text-muted-foreground">
-                        Method: <span className="text-white/80">{methodLabel}</span>
-                        {isEmailRequest && <span className="ml-2 text-white/60">• {followUpText}</span>}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                        <Button
-                            size="sm"
-                            onClick={handlePrimaryAction}
-                            className="bg-red-500/80 text-black hover:bg-red-500"
-                            disabled={isLinkRequest && !hasLink}
-                        >
-                            {resolvedPrimaryLabel}
-                        </Button>
-
-                        {isEmailRequest && (
-                            <Button size="sm" variant="outline" onClick={sendFollowUp} disabled={!canAutomateEmail || sendingFollowUp}>
-                                {sendingFollowUp ? "Sending…" : "Send follow-up"}
-                            </Button>
-                        )}
-
-                        {hasLink && !isLinkRequest && (
-                            <Button size="sm" variant="outline" onClick={() => void openDeletionPage()}>
-                                Open deletion page
-                            </Button>
-                        )}
-                    </div>
-                </div>
-
-                {!!steps?.length && (
-                    <div id="gs-quick-steps" className="mt-4 rounded-md border border-white/10 bg-black/60 p-3">
-                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Quick steps</p>
-                        <ol className="mt-2 list-decimal space-y-1 pl-4 text-[11px] text-white/80">
-                            {steps.slice(0, 10).map((s, i) => (
-                                <li key={`${s}-${i}`}>{s}</li>
-                            ))}
-                        </ol>
-                    </div>
-                )}
-
-                {/* Email details (ONLY for email requests) */}
-                {isEmailRequest && (
-                    <>
-                        <div className="mt-4 grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
-                            <div className="space-y-1">
-                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Receiver</p>
-                                <p className="font-mono text-[11px] text-emerald-200 break-all">{request!.receiver_email || "—"}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sender</p>
-                                <p className="font-mono text-[11px] text-slate-100 break-all">{request!.sender_email || "—"}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sent at</p>
-                                <p className="text-[11px] text-slate-100">{formatDateSafe(request!.sent_at)}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Next follow-up (recommended)</p>
-                                <p className="text-[11px] text-slate-100">{formatDateSafe(nextFollowAt)}</p>
-                            </div>
+        <>
+            <div className="space-y-4 text-sm">
+                <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                        <div>
+                            <p className="text-xs uppercase tracking-wide text-muted-foreground">Deletion request</p>
+                            <h3 className="mt-1 text-sm font-semibold text-white">
+                                {serviceName || "This service"} — delete my account & personal data
+                            </h3>
                         </div>
 
-                        <div className="mt-4 rounded-md border border-white/10 bg-black/60 p-3">
-                            <p className="text-[11px] text-muted-foreground">
-                                Tracking:
-                                <span className="ml-2 text-white/80">
-                                    {request!.gmail_message_id ? "✓ email linked" : "— no gmail message id yet"}
-                                </span>
-                            </p>
+                        <Badge className={cn("text-[11px] border px-2 py-1 rounded-full", cfg.className)}>{cfg.label}</Badge>
+                    </div>
 
-                            {!canAutomateEmail && (
-                                <p className="mt-2 text-[11px] text-muted-foreground">
-                                    For auto-follow-ups and reply tracking, connect Gmail and upgrade to Pro.
-                                </p>
+                    <p className="mt-2 text-xs text-muted-foreground">{cfg.description}</p>
+
+                    <Separator className="my-3 bg-white/10" />
+
+                    {/* Action row */}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="text-[11px] text-muted-foreground">
+                            Method: <span className="text-white/80">{methodLabel}</span>
+                            {isEmailRequest && <span className="ml-2 text-white/60">• {followUpText}</span>}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                            <Button
+                                size="sm"
+                                onClick={handlePrimaryAction}
+                                className="bg-red-500/80 text-black hover:bg-red-500"
+                                disabled={isLinkRequest && !hasLink}
+                            >
+                                {resolvedPrimaryLabel}
+                            </Button>
+
+                            {isEmailRequest && (
+                                <Button size="sm" variant="outline" onClick={openFollowUpDialog} disabled={!canSendFollowUpNow}>
+                                    Send follow-up
+                                </Button>
+                            )}
+
+                            {hasLink && !isLinkRequest && (
+                                <Button size="sm" variant="outline" onClick={() => void openDeletionPage()}>
+                                    Open deletion page
+                                </Button>
                             )}
                         </div>
-                    </>
-                )}
-
-                {/* Manual status controls */}
-                <Separator className="my-4 bg-white/10" />
-                <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Manual status</p>
-                    <p className="text-[11px] text-muted-foreground">
-                        MVP: you confirm the final status. If we detect a reply, we notify you — you update status here.
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                        <Button size="sm" variant="outline" onClick={() => void runSetStatus("completed")}>
-                            Mark completed
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => void runSetStatus("failed")}>
-                            Mark failed
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => void runSetStatus("in_progress")}>
-                            Mark in progress
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => void runSetStatus("needs_verification")}>
-                            Needs verification
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => void runSetStatus("received")}>
-                            Reply received
-                        </Button>
                     </div>
-                </div>
 
-                {/* User notes */}
-                <Separator className="my-4 bg-white/10" />
-                <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Your notes</p>
-                    <p className="text-[11px] text-muted-foreground">
-                        Optional. Track what happened (support response, verification requested, confirmation received, etc).
-                    </p>
-
-                    <textarea
-                        className="w-full min-h-[90px] rounded-md border border-white/10 bg-black/60 p-2 text-xs text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-primary"
-                        placeholder="Example: Got a response asking for ID verification."
-                        value={userNotes}
-                        onChange={(e) => setUserNotes(e.target.value)}
-                        onBlur={() => void saveNotes()}
-                        disabled={savingNotes}
+                    <InfoColumns
+                        dataDeletionInfo={dataDeletionInfo}
+                        deletionDifficulty={deletionDifficulty}
+                        retentionNotes={retentionNotes}
                     />
 
-                    <div className="flex items-center justify-between">
-                        <p className="text-[11px] text-white/40">{savingNotes ? "Saving…" : "Auto-saves when you click away."}</p>
+                    {!!steps?.length && (
+                        <div id="gs-quick-steps" className="mt-4 rounded-md border border-white/10 bg-black/60 p-3">
+                            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Quick steps</p>
+                            <ol className="mt-2 list-decimal space-y-1 pl-4 text-[11px] text-white/80">
+                                {steps.slice(0, 10).map((s, i) => (
+                                    <li key={`${s}-${i}`}>{s}</li>
+                                ))}
+                            </ol>
+                        </div>
+                    )}
 
-                        <Button size="sm" variant="outline" className="text-[11px]" onClick={() => void saveNotes()} disabled={savingNotes}>
-                            Save notes
-                        </Button>
+                    {/* Email details (ONLY for email requests) */}
+                    {isEmailRequest && (
+                        <>
+                            <div className="mt-4 grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
+                                <div className="space-y-1">
+                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Receiver</p>
+                                    <p className="font-mono text-[11px] text-emerald-200 break-all">{request!.receiver_email || "—"}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sender</p>
+                                    <p className="font-mono text-[11px] text-slate-100 break-all">{request!.sender_email || "—"}</p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sent at</p>
+                                    <p className="text-[11px] text-slate-100">{formatDateSafe(request!.sent_at)}</p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Next follow-up (recommended)</p>
+                                    <p className="text-[11px] text-slate-100">{formatDateSafe(nextFollowAt)}</p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-md border border-white/10 bg-black/60 p-3">
+                                <p className="text-[11px] text-muted-foreground">
+                                    Tracking:
+                                    <span className="ml-2 text-white/80">{request!.gmail_message_id ? "✓ email linked" : "— no gmail message id yet"}</span>
+                                </p>
+
+                                {!canAutomateEmail && (
+                                    <p className="mt-2 text-[11px] text-muted-foreground">
+                                        For auto-follow-ups and reply tracking, connect Gmail and upgrade to Pro.
+                                    </p>
+                                )}
+
+                                <p className="mt-2 text-[11px] text-white/40">
+                                    Follow-ups: {Math.min(request!.follow_up_count ?? 0, 3)}/3
+                                </p>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Manual status controls */}
+                    <Separator className="my-4 bg-white/10" />
+                    <div className="space-y-2">
+                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Manual status</p>
+                        <p className="text-[11px] text-muted-foreground">
+                            MVP: you confirm the final status. If we detect a reply, we notify you — you update status here.
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="outline" onClick={() => void runSetStatus("completed")}>
+                                Mark completed
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => void runSetStatus("failed")}>
+                                Mark failed
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => void runSetStatus("in_progress")}>
+                                Mark in progress
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => void runSetStatus("needs_verification")}>
+                                Needs verification
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => void runSetStatus("received")}>
+                                Reply received
+                            </Button>
+                        </div>
                     </div>
-                </div>
 
-                {/* Gmail revoke + profile */}
-                <Separator className="my-4 bg-white/10" />
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-[11px] text-muted-foreground max-w-xs">
-                        You can revoke Google access anytime. If this service uses “Sign in with Google”, removing access there can also help cut off
-                        data sharing.
-                    </p>
+                    {/* User notes */}
+                    <Separator className="my-4 bg-white/10" />
+                    <div className="space-y-2">
+                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Your notes</p>
+                        <p className="text-[11px] text-muted-foreground">
+                            Optional. Track what happened (support response, verification requested, confirmation received, etc).
+                        </p>
 
-                    <div className="flex flex-wrap gap-2">
-                        <Button size="sm" variant="outline" className="text-[11px]" asChild>
-                            <Link href={googlePermissionsUrl} target="_blank" rel="noreferrer">
-                                Revoke Google connection
-                            </Link>
-                        </Button>
+                        <textarea
+                            className="w-full min-h-[90px] rounded-md border border-white/10 bg-black/60 p-2 text-xs text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                            placeholder="Example: Got a response asking for ID verification."
+                            value={userNotes}
+                            onChange={(e) => setUserNotes(e.target.value)}
+                            onBlur={() => void saveNotes()}
+                            disabled={savingNotes}
+                        />
 
-                        <Button size="sm" variant="ghost" className="text-[11px]" onClick={() => setIsDeletionProfileModalOpen(true)}>
-                            Update deletion profile
-                        </Button>
+                        <div className="flex items-center justify-between">
+                            <p className="text-[11px] text-white/40">{savingNotes ? "Saving…" : "Auto-saves when you click away."}</p>
+
+                            <Button size="sm" variant="outline" className="text-[11px]" onClick={() => void saveNotes()} disabled={savingNotes}>
+                                Save notes
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Gmail revoke + profile */}
+                    <Separator className="my-4 bg-white/10" />
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-[11px] text-muted-foreground max-w-xs">
+                            You can revoke Google access anytime. If this service uses “Sign in with Google”, removing access there can also help cut off data
+                            sharing.
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="outline" className="text-[11px]" asChild>
+                                <Link href={googlePermissionsUrl} target="_blank" rel="noreferrer">
+                                    Revoke Google connection
+                                </Link>
+                            </Button>
+
+                            <Button size="sm" variant="ghost" className="text-[11px]" onClick={() => setIsDeletionProfileModalOpen(true)}>
+                                Update deletion profile
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* FOLLOW-UP DIALOG */}
+            <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
+                <DialogContent className="sm:max-w-[640px]">
+                    <DialogHeader>
+                        <DialogTitle>Preview follow-up email</DialogTitle>
+                        <DialogDescription>Review the message GhostSweep will send. You can edit it before sending.</DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-2">
+                        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Message</p>
+                        <Textarea
+                            value={followUpDraft}
+                            onChange={(e) => setFollowUpDraft(e.target.value)}
+                            className="min-h-[220px] bg-black/60 border-white/10 text-sm"
+                            placeholder="Type your follow-up message…"
+                        />
+                        <p className="text-[11px] text-white/50">Tip: Keep it short. Don’t attach ID unless they asked for it.</p>
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setFollowUpOpen(false)} disabled={sendingFollowUp}>
+                            Cancel
+                        </Button>
+                        <Button onClick={sendFollowUpNow} disabled={sendingFollowUp}>
+                            {sendingFollowUp ? "Sending…" : "Send follow-up"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

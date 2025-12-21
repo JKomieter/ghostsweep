@@ -251,10 +251,10 @@ export async function POST(req: NextRequest) {
                         // Send email
                         const { id: gmailMessageId, threadId } = await sendEmail({
                             accessToken: gmailAccount.access_token_encrypted,
-                            receiver_email: item.deletion_email!,
-                            gmailAddress: gmailAccount.gmail_address,
+                            to: item.deletion_email!,
+                            from: gmailAccount.gmail_address,
                             subject: renderedSubject,
-                            template_used: renderedBody,
+                            body: renderedBody,
                         });
 
                         // Create deletion_request AFTER email is sent
