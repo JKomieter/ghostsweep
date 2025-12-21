@@ -97,9 +97,10 @@ export default function PrivacyToolsModal({
         } finally {
             setDeleteLoading(false);
             await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ['services'] }),
-                queryClient.invalidateQueries({ queryKey: ['breaches'] }),
+                queryClient.invalidateQueries({ queryKey: ['user_services'] }),
+                queryClient.invalidateQueries({ queryKey: ['user_breaches'] }),
                 queryClient.invalidateQueries({ queryKey: ['metrics'] }),
+                queryClient.invalidateQueries({ queryKey: ['deletion_requests'] }),
             ])
         }
     };
