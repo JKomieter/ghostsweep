@@ -18,7 +18,6 @@ import { useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 
-const CASA_URL: string | null = null
 
 const faqs = [
     {
@@ -127,13 +126,12 @@ export default function HomePage() {
 
                         <div className="mx-auto max-w-3xl space-y-4 text-center">
                             <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
-                                See your digital footprint.
+                                The accounts you forgot about?
                                 <br />
-                                <span className="text-zinc-300">Then delete what you don&apos;t want.</span>
+                                <span className="text-zinc-300">They haven&apos;t forgotten you.</span>
                             </h1>
                             <p className="text-sm text-zinc-400 sm:text-base">
-                                GhostSweep scans Gmail in a privacy-aware way to detect the services you&apos;ve signed up for. On Pro, it
-                                helps you send deletion requests, track replies, and follow up automatically.
+                                Old accounts get breached. Data gets sold. GhostSweep finds every service tied to your email and helps you delete the ones putting you at risk.
                             </p>
                         </div>
 
