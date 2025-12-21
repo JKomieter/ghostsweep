@@ -260,10 +260,10 @@ export default function HomePage() {
                                     fill
                                     className="object-cover opacity-90"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+                                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
                                 <div className="absolute bottom-3 left-3 rounded-full border border-white/10 bg-black/60 px-3 py-1 text-[11px] text-zinc-200">
                                     Placeholder — real map shows on dashboard
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </section>
