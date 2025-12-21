@@ -65,7 +65,7 @@ export default function ConnectEmailModal({
                 throw new Error(body.error || "Failed to remove connection");
             }
 
-            toast.success("Gmail disconnected and sweep data cleared.");
+            toast.success("Gmail disconnected. GhostSweep can no longer access your Gmail.");
             setRemoveOpen(false);
         } catch (err) {
             console.error("Error removing Gmail connection:", err);
