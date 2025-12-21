@@ -255,7 +255,7 @@ export default function HomePage() {
                         <div className="rounded-2xl border border-white/10 bg-[#050509] p-3">
                             <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-white/10 bg-black">
                                 <Image
-                                    src="https://ghostsweep.t3.storage.dev/footprint-map-placeholder.png"
+                                    src="https://ghostsweep.t3.storage.dev/Screenshot%202025-12-20%20at%208.20.43%E2%80%AFPM.png"
                                     alt="Footprint map placeholder"
                                     fill
                                     className="object-cover opacity-90"
