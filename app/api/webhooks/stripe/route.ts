@@ -1,12 +1,10 @@
 // app/api/webhooks/stripe/route.ts
 import { NextResponse } from "next/server"
-import { headers } from "next/headers"
 import Stripe from "stripe"
 import { createClient } from "@/utils/supabase/server"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 const MONTHLY_PRICE_ID = "price_1SVNdMK2SUgcYUhjVOPOghzk"
 

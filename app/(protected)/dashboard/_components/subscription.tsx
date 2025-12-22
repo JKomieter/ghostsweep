@@ -51,7 +51,23 @@ export default function SubscriptionModal({
     };
 
     const handleManageBilling = async () => {
-        window.location.href = "/dashboard/billing/manage"
+        try {
+            const res = await fetch('/api/stripe/customer_portal_session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to create billing portal session');
+            }
+
+            const data = await res.json();
+            window.location.href = data.url;
+        } catch (error) {
+            console.error('Error managing billing:', error);
+        }
     };
     const loading = status === "pending"
     const isPro = data?.current_plan === "pro";

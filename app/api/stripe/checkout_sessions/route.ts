@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe';
+import Stripe from "stripe"
 import { createClient } from '@/utils/supabase/server';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
     try {
