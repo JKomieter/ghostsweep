@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   const supabase = await createClient()
 
   try {
-    const body = await req.text()
+    const body = Buffer.from(await req.arrayBuffer())
     const signature = (await headers()).get("stripe-signature")
 
     if (!signature) {
@@ -277,3 +277,9 @@ export async function POST(req: Request) {
     )
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
