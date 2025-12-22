@@ -8,7 +8,6 @@ import {
     Database,
     AlertTriangle,
     Trash2,
-    Bell,
     EyeOff,
     Lock,
     PlayCircle,
@@ -17,6 +16,7 @@ import {
     X,
     ListChecks,
     Wand2,
+    Bell,
 } from "lucide-react";
 import { useState, useRef } from "react";
 import Image from "next/image";
@@ -45,7 +45,7 @@ export default function HowItWorksPage() {
                 <section className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:items-center">
                     {/* Copy */}
                     <div className="space-y-6">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] text-emerald-200">
+                        <div className="inline-flex items-center gap-2 rounded-full border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] text-emerald-200">
                             <span className="relative inline-flex h-2 w-2">
                                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
                                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -55,12 +55,15 @@ export default function HowItWorksPage() {
 
                         <div className="space-y-4">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
-                                Find accounts tied to your email. Flag risk. Clean up faster.
+                                Your inbox is a trail of accounts.
+                                <br />
+                                <span className="text-white/80">GhostSweep turns it into control.</span>
                             </h1>
                             <p className="text-sm sm:text-base text-muted-foreground max-w-xl">
-                                GhostSweep scans Gmail in a privacy-aware way to estimate where your email is used.
-                                On Free, you’ll see your total account count. On Professional, you unlock the full account
-                                list, breach visibility, and clean-up workflows.
+                                Most people have hundreds of logins scattered across the internet — forgotten signups, old subscriptions,
+                                apps, and services that still hold their data. GhostSweep scans Gmail in a privacy-aware way to estimate
+                                where your email is used. <span className="text-white/80">Free shows the total count.</span>{" "}
+                                <span className="text-white/80">Professional unlocks the full list</span> plus breach visibility and clean-up workflows.
                             </p>
                         </div>
 
@@ -84,11 +87,11 @@ export default function HowItWorksPage() {
                         <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground">
                             <div className="inline-flex items-center gap-1">
                                 <ShieldCheck className="h-3 w-3 text-primary" />
-                                Google OAuth
+                                Google OAuth (permissioned access)
                             </div>
                             <div className="inline-flex items-center gap-1">
                                 <EyeOff className="h-3 w-3 text-primary" />
-                                Privacy-first approach
+                                Metadata-first scanning
                             </div>
                             <div className="inline-flex items-center gap-1">
                                 <Lock className="h-3 w-3 text-primary" />
@@ -100,9 +103,9 @@ export default function HowItWorksPage() {
                         <div className="flex flex-wrap gap-2 pt-1">
                             {[
                                 { icon: <MailSearch className="h-3.5 w-3.5" />, text: "Account discovery" },
-                                { icon: <AlertTriangle className="h-3.5 w-3.5" />, text: "Breach signals" },
-                                { icon: <Trash2 className="h-3.5 w-3.5" />, text: "Bulk clean-up" },
-                                { icon: <ListChecks className="h-3.5 w-3.5" />, text: "Deletion tracking" },
+                                { icon: <AlertTriangle className="h-3.5 w-3.5" />, text: "Breach signals (Pro)" },
+                                { icon: <Trash2 className="h-3.5 w-3.5" />, text: "Deletion workflows (Pro)" },
+                                { icon: <ListChecks className="h-3.5 w-3.5" />, text: "Tracking + follow-ups (Pro)" },
                             ].map((c) => (
                                 <div
                                     key={c.text}
@@ -140,7 +143,7 @@ export default function HowItWorksPage() {
                                         }}
                                     />
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
 
                                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none">
                                         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-xl group-hover:scale-110 transition-transform">
@@ -154,15 +157,14 @@ export default function HowItWorksPage() {
                     </div>
                 </section>
 
-                {/* CORE FLOW (non-literal) */}
+                {/* CORE FLOW */}
                 <section className="space-y-8 border-t border-white/10 pt-10">
                     <div className="space-y-2">
                         <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            A simple loop: discover → prioritize → clean up → stay organized
+                            A simple loop: discover → prioritize → clean up → stay protected
                         </h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            GhostSweep is built for real life: your inbox is messy, accounts pile up, and closing them is
-                            annoying. This turns it into a repeatable workflow.
+                            Your inbox is messy. Accounts pile up. Closing them is painful. GhostSweep turns it into a repeatable workflow.
                         </p>
                     </div>
 
@@ -171,26 +173,22 @@ export default function HowItWorksPage() {
                             {
                                 icon: <ShieldCheck className="h-5 w-5 text-primary" />,
                                 title: "Connect securely",
-                                body:
-                                    "Connect Gmail using Google OAuth. You stay in control and can revoke access any time.",
+                                body: "Connect Gmail using Google OAuth. You stay in control and can revoke access any time.",
                             },
                             {
                                 icon: <Database className="h-5 w-5 text-primary" />,
-                                title: "Build your footprint map",
-                                body:
-                                    "GhostSweep groups inbox signals into services. Free shows the total count; Professional shows the full list and map views.",
+                                title: "Build your footprint",
+                                body: "GhostSweep groups inbox signals into services. Free shows your total count; Professional shows the full list and details.",
                             },
                             {
                                 icon: <AlertTriangle className="h-5 w-5 text-red-400" />,
-                                title: "Highlight risk (Pro)",
-                                body:
-                                    "Professional surfaces breach visibility and security alerts so you know what to prioritize first.",
+                                title: "See what’s risky (Pro)",
+                                body: "Professional surfaces breach exposure and security signals so you know what to prioritize first.",
                             },
                             {
                                 icon: <Trash2 className="h-5 w-5 text-primary" />,
-                                title: "Clean up fast (Pro)",
-                                body:
-                                    "Professional enables bulk actions (links/email/manual) and tracking until your requests are done.",
+                                title: "Clean up + track (Pro)",
+                                body: "Send deletion requests, track replies, and follow up — without losing your place.",
                             },
                         ].map((card) => (
                             <div key={card.title} className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
@@ -205,9 +203,8 @@ export default function HowItWorksPage() {
 
                     <div className="rounded-xl border border-white/10 bg-black/40 p-4">
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                            <span className="font-medium text-white/80">Note:</span> GhostSweep helps you take action faster,
-                            but <span className="text-white/80">you</span> decide what happens. We don’t delete accounts silently
-                            or automatically.
+                            <span className="font-medium text-white/80">Important:</span> GhostSweep never deletes accounts silently.
+                            You review and choose what gets sent or opened.
                         </p>
                     </div>
                 </section>
@@ -228,8 +225,7 @@ export default function HowItWorksPage() {
                             </div>
                             <h3 className="text-sm font-semibold">Account signals</h3>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                                “Welcome”, verification, receipts, password resets, and other transactional patterns help identify
-                                real accounts vs noise.
+                                “Welcome”, verification, receipts, password resets, and other transactional patterns help identify real accounts vs noise.
                             </p>
                         </div>
 
@@ -262,7 +258,7 @@ export default function HowItWorksPage() {
                             Free snapshot vs full clean-up (Professional)
                         </h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            Free is for quick clarity. Professional is for doing the work: full visibility, bulk actions, and tracking.
+                            Free is for awareness. Professional is for control: visibility, breach detection, deletion workflows, and follow-ups.
                         </p>
                     </div>
 
@@ -271,7 +267,7 @@ export default function HowItWorksPage() {
                         <div className="space-y-5 rounded-xl border border-white/10 bg-black/40 p-5">
                             <div className="space-y-1">
                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Free</p>
-                                <p className="text-xs text-muted-foreground">A quick snapshot</p>
+                                <p className="text-xs text-muted-foreground">A count-only snapshot</p>
                             </div>
                             <ul className="space-y-2 text-xs text-muted-foreground">
                                 <li className="flex items-start gap-2">
@@ -288,19 +284,19 @@ export default function HowItWorksPage() {
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No breach visibility</span>
+                                    <span>No breach visibility or breach detection</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No deletion tools (including bulk)</span>
+                                    <span>No deletion tools (including bulk deletion)</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No new-account detection or monitoring</span>
+                                    <span>No new-account detection</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No auto follow-ups or reply/status checking</span>
+                                    <span>No auto follow-ups or status checking</span>
                                 </li>
                             </ul>
                             <Link
@@ -317,27 +313,35 @@ export default function HowItWorksPage() {
                                 Professional
                             </div>
                             <div className="space-y-1 pt-2">
-                                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Clean-up mode</p>
+                                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Clean-up + monitoring</p>
                                 <p className="text-xs text-muted-foreground">
-                                    Full account list, detailed breach info, bulk deletion workflows, and tracking.
+                                    Full visibility + ongoing detection + workflows to delete accounts and stay on top of replies.
                                 </p>
                             </div>
                             <ul className="space-y-2 text-xs text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Unlimited scans + full list</span>
+                                    <span>Full account list + breach visibility</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Detailed breach view</span>
+                                    <span>New-account detection (alerts)</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Bulk actions + templates</span>
+                                    <span>Breach detection + risk prioritization</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Deletion request tracking</span>
+                                    <span>Deletion workflows (link / email / manual)</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Bulk deletion actions</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Auto follow-ups + reply/status checking</span>
                                 </li>
                             </ul>
                             <Link
@@ -357,18 +361,21 @@ export default function HowItWorksPage() {
                             <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
                                 <span className="inline-flex items-center gap-2">
                                     <EyeOff className="h-4 w-4 text-primary" />
-                                    Privacy-first scanning
+                                    Metadata-only scanning
                                 </span>
                                 <span className="inline-flex items-center gap-2">
                                     <Lock className="h-4 w-4 text-primary" />
-                                    Disconnect anytime
+                                    Revoke access anytime
+                                </span>
+                                <span className="inline-flex items-center gap-2">
+                                    <Bell className="h-4 w-4 text-primary" />
+                                    Monitoring is Pro-only
                                 </span>
                             </div>
 
                             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                                GhostSweep uses Google&apos;s OAuth2 flow. Scans are designed to minimize what’s accessed.
+                                GhostSweep uses Google&apos;s OAuth2 flow. We scan using Gmail metadata (sender, subject, date) — not email bodies or attachments.
                                 When deletion emails are available, they’re generated and sent only when you explicitly choose to.
-                                We use Gmail metadata (sender, subject, date). We don’t read email bodies or attachments.
                             </p>
 
                             <Link href="/home/security" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
@@ -384,7 +391,7 @@ export default function HowItWorksPage() {
                     <div className="space-y-2 max-w-xl mx-auto">
                         <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Ready to see who has your data?</h2>
                         <p className="text-sm text-muted-foreground">
-                            Run a scan, surface risk, and start cleaning up with a workflow you can actually stick to.
+                            Run a scan, get clarity, and upgrade only if you want the full list + clean-up and follow-ups.
                         </p>
                     </div>
 
