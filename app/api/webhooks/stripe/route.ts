@@ -2,8 +2,9 @@
 import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 import Stripe from "stripe"
-import { stripe } from "@/lib/stripe"
 import { createClient } from "@/utils/supabase/server"
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -32,38 +33,34 @@ function getRenewalDate(priceId: string): string {
 }
 
 export async function POST(req: Request) {
-  let event: Stripe.Event
-  const supabase = await createClient()
-
+  let event: Stripe.Event;
+  
   try {
-    // 🔥 FIX: Get raw body as text (not JSON)
-    const body = await req.text()
-
-    // 🔥 FIX: Get signature from headers (await the headers call)
-    const headersList = await headers()
-    const signature = headersList.get("stripe-signature")
+    const signature = req.headers.get("stripe-signature");
 
     if (!signature) {
-      console.error("❌ No Stripe signature found")
-      return NextResponse.json(
-        { error: "No signature" },
-        { status: 400 }
-      )
+      console.error("❌ Missing Stripe signature");
+      return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
     }
 
-    // 🔥 Verify webhook signature with raw body
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
 
-    console.log(`✅ Verified Stripe webhook: ${event.type}`)
-
+    event = stripe.webhooks.constructEvent(
+      await req.text(),
+      signature as string,
+      process.env.STRIPE_WEBHOOK_SECRET as string
+    );
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error"
-    console.error("❌ Stripe Webhook Signature Error:", msg)
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    // On error, log and return the error message.
+    if (err! instanceof Error) console.log(err);
+    console.log(`❌ Error message: ${errorMessage}`);
     return NextResponse.json(
-      { error: `Webhook Error: ${msg}` },
+      { message: `Webhook Error: ${errorMessage}` },
       { status: 400 }
-    )
+    );
   }
+
+  const supabase = await createClient()
 
   try {
     switch (event.type) {
@@ -270,10 +267,3 @@ export async function POST(req: Request) {
     )
   }
 }
-
-// 🔥 IMPORTANT: Remove this if it exists
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// }

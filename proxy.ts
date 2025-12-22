@@ -53,9 +53,7 @@ function getClientIP(request: NextRequest): string {
     return "127.0.0.1"
 }
 
-// Helper function to add security headers
 function addSecurityHeaders(response: NextResponse, pathname: string): NextResponse {
-    // Always set these security headers
     response.headers.set('X-Content-Type-Options', 'nosniff')
 
     if (!response.headers.has('X-Frame-Options')) {
@@ -68,38 +66,39 @@ function addSecurityHeaders(response: NextResponse, pathname: string): NextRespo
         response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
     }
 
-    // Aggressively remove X-Powered-By
     response.headers.delete('X-Powered-By')
     response.headers.delete('x-powered-by')
     response.headers.set('Server', '')
 
-    // Set appropriate Cache-Control based on path
     const isAuthPage = ['/login', '/forgot_password', '/reset_password', '/signup'].some(p => pathname.startsWith(p))
     const isDashboard = pathname.startsWith('/dashboard')
     const isAPI = pathname.startsWith('/api')
     const isBreachCheck = pathname === '/home/breach_check'
 
     if (isAuthPage || isDashboard || isAPI || isBreachCheck) {
-        // Never cache sensitive pages - FIX FOR CACHE VULNERABILITY
         response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, private')
         response.headers.set('Pragma', 'no-cache')
         response.headers.set('Expires', '0')
     } else if (!response.headers.has('Cache-Control')) {
-        // Default: private cache (not public) - FIX FOR CACHE VULNERABILITY
         response.headers.set('Cache-Control', 'private, max-age=0, must-revalidate')
     }
 
     return response
 }
 
-// FIXED: Changed function name from 'proxy' to 'middleware'
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
     const method = request.method
     const origin = request.headers.get('origin')
     const ip = getClientIP(request)
 
-    // Block dangerous HTTP methods (TRACE/TRACK fix)
+    // 🔥 FIX: BYPASS ALL MIDDLEWARE FOR WEBHOOKS
+    if (pathname.startsWith('/api/webhooks/')) {
+        console.log(`⚡ Webhook request bypassing middleware: ${pathname}`)
+        return NextResponse.next()
+    }
+
+    // Block dangerous HTTP methods
     const BLOCKED_METHODS = ['TRACE', 'TRACK']
 
     if (BLOCKED_METHODS.includes(method)) {
@@ -117,13 +116,12 @@ export async function proxy(request: NextRequest) {
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',
-                    'X-Powered-By': '',
                 }
             }
         )
     }
 
-    // Restrict OPTIONS method (fingerprinting prevention)
+    // Handle OPTIONS (CORS preflight)
     if (method === 'OPTIONS') {
         const isCORSPreflight = origin && request.headers.get('access-control-request-method')
 
@@ -137,12 +135,10 @@ export async function proxy(request: NextRequest) {
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',
-                    'X-Powered-By': '',
                 }
             })
         }
 
-        // Allow legitimate CORS preflight
         return new NextResponse(null, {
             status: 204,
             headers: {
@@ -153,12 +149,11 @@ export async function proxy(request: NextRequest) {
                 'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                 'X-Content-Type-Options': 'nosniff',
                 'Server': '',
-                'X-Powered-By': '',
             }
         })
     }
 
-    // Skip checks for static assets (but still add security headers)
+    // Skip checks for static assets
     if (
         pathname.startsWith('/_next/static') ||
         pathname.startsWith('/_next/image') ||
@@ -183,7 +178,6 @@ export async function proxy(request: NextRequest) {
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',
-                    'X-Powered-By': '',
                 }
             }
         )
@@ -206,7 +200,6 @@ export async function proxy(request: NextRequest) {
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',
-                    'X-Powered-By': '',
                 }
             }
         )
@@ -252,7 +245,6 @@ export async function proxy(request: NextRequest) {
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',
-                    'X-Powered-By': '',
                 }
             }
         )
@@ -266,7 +258,7 @@ export async function proxy(request: NextRequest) {
     response.headers.set('X-RateLimit-Remaining', remaining.toString())
     response.headers.set('X-RateLimit-Reset', reset.toString())
 
-    // Add security headers including cache control (CRITICAL FIX)
+    // Add security headers
     const secureResponse = addSecurityHeaders(response, pathname)
 
     // Add IP to response headers (development only)

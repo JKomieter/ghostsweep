@@ -105,6 +105,10 @@ const nextConfig: NextConfig = {
     ];
 
     return [
+      // {
+      //   source: '/api/webhooks/:path*',
+      //   headers: [],
+      // },
       // Public marketing pages - can be cached
       {
         source: '/home/:path((?!breach_check).*)*',
