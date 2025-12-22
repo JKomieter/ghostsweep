@@ -16,19 +16,19 @@ export async function POST() {
   }
 
   // 2. Update notifications (mark all unread as read)
-  const { error: updateError } = await supabase
-    .from("user_notifications")
-    .update({ read: true })
-    .eq("user_id", user.id)
-    .eq("read", false)
+  // const { error: updateError } = await supabase
+  //   .from("user_notifications")
+  //   .update({ read: true })
+  //   .eq("user_id", user.id)
+  //   .eq("read", false)
 
-  if (updateError) {
-    console.error("Error marking notifications read:", updateError);
-    return NextResponse.json(
-      { error: "Failed to update notifications" },
-      { status: 500 }
-    );
-  }
+  // if (updateError) {
+  //   console.error("Error marking notifications read:", updateError);
+  //   return NextResponse.json(
+  //     { error: "Failed to update notifications" },
+  //     { status: 500 }
+  //   );
+  // }
 
   return NextResponse.json({
     success: true,

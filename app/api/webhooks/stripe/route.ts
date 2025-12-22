@@ -99,22 +99,6 @@ export async function POST(req: Request) {
           console.error("❌ Error updating subscription:", updateError)
         }
 
-        // Create welcome notification
-        const { error: notifError } = await supabase
-          .from("user_notifications")
-          .insert({
-            user_id: supabaseUserId,
-            type: "plan_upgraded",
-            title: "Welcome to Professional! 🎉",
-            message: "Your GhostSweep Professional plan is now active. Enjoy unlimited scans, breach detection, and AI-powered deletion templates.",
-            read: false,
-            created_at: new Date().toISOString(),
-          })
-
-        if (notifError) {
-          console.warn("⚠️ Failed to create notification:", notifError)
-        }
-
         console.log(`✨ User ${supabaseUserId} upgraded to Pro (renews: ${renewsAt})`)
         break
       }
@@ -195,21 +179,6 @@ export async function POST(req: Request) {
           console.error("❌ Error downgrading user:", updateError)
         }
 
-        const { error: notifError } = await supabase
-          .from("user_notifications")
-          .insert({
-            user_id: subRow.user_id,
-            type: "plan_downgraded",
-            title: "Subscription Canceled",
-            message: "Your Professional plan has been canceled. You've been moved to the Free plan. You can resubscribe anytime from the billing page.",
-            read: false,
-            created_at: new Date().toISOString(),
-          })
-
-        if (notifError) {
-          console.warn("⚠️ Failed to create notification:", notifError)
-        }
-
         console.log(`✅ User ${subRow.user_id} downgraded to Free`)
         break
       }
@@ -232,16 +201,17 @@ export async function POST(req: Request) {
           break
         }
 
-        const { error: notifError } = await supabase
-          .from("user_notifications")
-          .insert({
-            user_id: subRow.user_id,
-            type: "payment_failed",
-            title: "Payment Failed",
-            message: "Your payment couldn't be processed. Please update your payment method to keep your Professional plan active.",
-            read: false,
-            created_at: new Date().toISOString(),
-          })
+        const { error: notifError } = await supabase.functions.invoke(
+            'payment-failed-notification',
+            {
+              body: {
+                userId: subRow.user_id,
+              },
+              headers: {
+                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+              }
+            }
+        )
 
         if (notifError) {
           console.warn("⚠️ Failed to create notification:", notifError)

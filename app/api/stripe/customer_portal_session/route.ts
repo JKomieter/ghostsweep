@@ -18,7 +18,7 @@ export async function POST() {
     
     // get the customer id from user subscriptions table
     const { data: subscription, error: subscriptionError } = await supabase
-        .from("subscriptions")
+        .from("user_subscriptions")
         .select("stripe_customer_id")
         .eq("user_id", user.id)
         .maybeSingle();
