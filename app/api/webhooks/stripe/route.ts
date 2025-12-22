@@ -1,3 +1,4 @@
+// app/api/webhooks/stripe/route.ts
 import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 import Stripe from "stripe"
@@ -6,9 +7,7 @@ import { createClient } from "@/utils/supabase/server"
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
-// Price IDs from your billing page
 const MONTHLY_PRICE_ID = "price_1SVNdMK2SUgcYUhjVOPOghzk"
-// const YEARLY_PRICE_ID = "price_1SVNecK2SUgcYUhjSkW1DnwS"
 
 function getNextMonthDate(): string {
   const now = new Date()
@@ -37,8 +36,12 @@ export async function POST(req: Request) {
   const supabase = await createClient()
 
   try {
-    const body = Buffer.from(await req.arrayBuffer())
-    const signature = (await headers()).get("stripe-signature")
+    // 🔥 FIX: Get raw body as text (not JSON)
+    const body = await req.text()
+
+    // 🔥 FIX: Get signature from headers (await the headers call)
+    const headersList = await headers()
+    const signature = headersList.get("stripe-signature")
 
     if (!signature) {
       console.error("❌ No Stripe signature found")
@@ -48,7 +51,11 @@ export async function POST(req: Request) {
       )
     }
 
+    // 🔥 Verify webhook signature with raw body
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+
+    console.log(`✅ Verified Stripe webhook: ${event.type}`)
+
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error"
     console.error("❌ Stripe Webhook Signature Error:", msg)
@@ -111,7 +118,6 @@ export async function POST(req: Request) {
 
         if (notifError) {
           console.warn("⚠️ Failed to create notification:", notifError)
-          // Don't fail webhook for notification errors
         }
 
         console.log(`✨ User ${supabaseUserId} upgraded to Pro (renews: ${renewsAt})`)
@@ -125,7 +131,6 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        // Find user by customer ID
         const { data: subRow, error: findError } = await supabase
           .from("user_subscriptions")
           .select("user_id")
@@ -158,10 +163,6 @@ export async function POST(req: Request) {
 
         if (updateError) {
           console.error("❌ Error updating subscription:", updateError)
-          return NextResponse.json(
-            { error: "Failed to update subscription" },
-            { status: 500 }
-          )
         }
 
         console.log(`✅ Subscription updated for user ${subRow.user_id} (status: ${subscription.status})`)
@@ -175,7 +176,6 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        // Find user by customer ID
         const { data: subRow, error: findError } = await supabase
           .from("user_subscriptions")
           .select("user_id")
@@ -187,7 +187,6 @@ export async function POST(req: Request) {
           break
         }
 
-        // Downgrade to free
         const { error: updateError } = await supabase.functions.invoke('downgrade-user-subscription', {
           body: {
             userId: subRow.user_id,
@@ -199,13 +198,8 @@ export async function POST(req: Request) {
 
         if (updateError) {
           console.error("❌ Error downgrading user:", updateError)
-          return NextResponse.json(
-            { error: "Failed to downgrade user" },
-            { status: 500 }
-          )
         }
 
-        // Create downgrade notification
         const { error: notifError } = await supabase
           .from("user_notifications")
           .insert({
@@ -232,7 +226,6 @@ export async function POST(req: Request) {
         const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer as string
 
-        // Find user by customer ID
         const { data: subRow, error: findError } = await supabase
           .from("user_subscriptions")
           .select("user_id")
@@ -244,7 +237,6 @@ export async function POST(req: Request) {
           break
         }
 
-        // Create payment failed notification
         const { error: notifError } = await supabase
           .from("user_notifications")
           .insert({
@@ -269,6 +261,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ received: true }, { status: 200 })
+
   } catch (err) {
     console.error("❌ Stripe Webhook Handler Error:", err)
     return NextResponse.json(
@@ -278,8 +271,9 @@ export async function POST(req: Request) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// 🔥 IMPORTANT: Remove this if it exists
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// }
