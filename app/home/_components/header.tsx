@@ -5,7 +5,13 @@ import Link from "next/link";
 import { Logo } from "@/svgs";
 import { ArrowRight, Menu, X } from "lucide-react";
 
-const NavLinks = ({ className = "", onClick }: { className?: string; onClick?: () => void }) => (
+const NavLinks = ({
+    className = "",
+    onClick,
+}: {
+    className?: string;
+    onClick?: () => void;
+}) => (
     <nav className={className}>
         <Link
             href="/home/how-it-works"
@@ -57,8 +63,6 @@ export default function Header() {
 
     const closeMobile = () => setMobileOpen(false);
 
-    
-
     return (
         <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-sm">
             <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
@@ -75,8 +79,27 @@ export default function Header() {
                 {/* Center nav – desktop only */}
                 <NavLinks className="hidden items-center gap-6 text-xs text-muted-foreground sm:flex" />
 
-                {/* Right CTAs (desktop) */}
-                <div className="hidden items-center gap-2 sm:flex">
+                {/* Right side (desktop) */}
+                <div className="hidden items-center gap-3 sm:flex">
+                    {/* Policy links (more visible) */}
+                    <nav className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                        <Link
+                            href="/home/privacy"
+                            className="transition-colors hover:text-foreground"
+                        >
+                            Privacy
+                        </Link>
+                        <Link
+                            href="/home/terms"
+                            className="transition-colors hover:text-foreground"
+                        >
+                            Terms
+                        </Link>
+                    </nav>
+
+                    <div className="h-4 w-px bg-border/60" />
+
+                    {/* CTAs */}
                     <Link
                         href="/login"
                         className="text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -112,6 +135,27 @@ export default function Header() {
                             onClick={closeMobile}
                             className="flex flex-col gap-2 text-sm text-muted-foreground"
                         />
+
+                        {/* Policy links (mobile) */}
+                        <div className="pt-2 border-t border-border/60">
+                            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                                <Link
+                                    href="/home/privacy"
+                                    className="transition-colors hover:text-foreground"
+                                    onClick={closeMobile}
+                                >
+                                    Privacy
+                                </Link>
+                                <Link
+                                    href="/home/terms"
+                                    className="transition-colors hover:text-foreground"
+                                    onClick={closeMobile}
+                                >
+                                    Terms
+                                </Link>
+                            </div>
+                        </div>
+
                         <div className="flex flex-col gap-2 pt-2">
                             <Link
                                 href="/login"
