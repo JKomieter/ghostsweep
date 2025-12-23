@@ -101,9 +101,12 @@ export default function DashboardTitle() {
 
             // Invalidate data queries
             Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["services"] }),
-                queryClient.invalidateQueries({ queryKey: ["breaches"] }),
+                queryClient.invalidateQueries({ queryKey: ["user_services"] }),
+                queryClient.invalidateQueries({ queryKey: ["user_breaches"] }),
                 queryClient.invalidateQueries({ queryKey: ["metrics"] }),
+                queryClient.invalidateQueries({ queryKey: ["deletion_requests"] }),
+                queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] }),
+                queryClient.invalidateQueries({ queryKey: ["plan"] }),
             ]);
 
             toast.success("Sweep complete — dashboard updated", {
