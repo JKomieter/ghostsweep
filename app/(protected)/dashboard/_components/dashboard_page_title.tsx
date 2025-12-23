@@ -131,6 +131,10 @@ export default function DashboardTitle() {
         queryClient,
     ]);
 
+    useEffect(() => {
+        console.log("Sweep progress:", latestSweep?.progress);
+    }, [latestSweep?.progress]);
+
     const onSweep = async () => {
         // If sweep already in progress, just show status
         if (isInProgress) {

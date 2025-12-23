@@ -161,11 +161,11 @@ function difficultyBadge(d: string | null | undefined) {
 function InfoColumns({
     dataDeletionInfo,
     deletionDifficulty,
-    retentionNotes,
+    notes,
 }: {
     dataDeletionInfo: DataDeletionInfo;
     deletionDifficulty: string | null | undefined;
-    retentionNotes: string | null | undefined;
+    notes: string | null | undefined;
 }) {
     const info = deletionInfoLabel(dataDeletionInfo);
     const diff = difficultyBadge(deletionDifficulty);
@@ -188,7 +188,7 @@ function InfoColumns({
 
             <div className="rounded-md border border-white/10 bg-black/60 p-3">
                 <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Retention notes</p>
-                <p className="mt-2 text-[11px] text-white/70 leading-relaxed">{retentionNotes?.trim() ? retentionNotes : "—"}</p>
+                <p className="mt-2 text-[11px] text-white/70 leading-relaxed">{notes?.trim() ? notes : "—"}</p>
             </div>
         </div>
     );
@@ -217,9 +217,9 @@ export default function DeletionTab({
     const steps = playbook?.steps ?? null;
 
     // new: info columns pulled from playbook
-    const retentionNotes = (playbook as any)?.data_retention_notes as string | null | undefined;
-    const deletionDifficulty = (playbook as any)?.deletion_difficulty as string | null | undefined;
-    const dataDeletionInfo = (playbook as any)?.data_deletion_info as DataDeletionInfo;
+    const notes = (playbook)?.notes as string | null | undefined;
+    const deletionDifficulty = (playbook)?.deletion_difficulty as string | null | undefined;
+    const dataDeletionInfo = (playbook)?.data_deletion_info as DataDeletionInfo;
 
     const hasRequest = Boolean(request);
     const canAutomateEmail = currentPlan === "pro" && gmailConnected;
@@ -505,7 +505,7 @@ ${request?.sender_email ?? ""}
                         <InfoColumns
                             dataDeletionInfo={dataDeletionInfo}
                             deletionDifficulty={deletionDifficulty}
-                            retentionNotes={retentionNotes}
+                            notes={notes}
                         />
 
                         <div className="mt-4 flex flex-wrap gap-2">
@@ -668,7 +668,7 @@ ${request?.sender_email ?? ""}
                     <InfoColumns
                         dataDeletionInfo={dataDeletionInfo}
                         deletionDifficulty={deletionDifficulty}
-                        retentionNotes={retentionNotes}
+                        notes={notes}
                     />
 
                     {!!steps?.length && (

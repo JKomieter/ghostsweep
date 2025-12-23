@@ -100,14 +100,14 @@ export interface ServiceDeletionPlaybook {
 
     // ===== Metadata =====
     deletion_difficulty: 'easy' | 'medium' | 'hard' | null
-    notes: string | null               // Important notes (grace period, etc.)
+    notes: string | null              
 
     // ===== Timestamps =====
     created_at: string
     updated_at: string
 
     data_deletion_info: 'deletes_data' | 'archives_data' | 'unclear' | null
-    data_retention_notes: string | null  // e.g., "Keeps data for 90 days", "Archives indefinitely"
+    confidence:number | null
 }
 
 export interface Breach {

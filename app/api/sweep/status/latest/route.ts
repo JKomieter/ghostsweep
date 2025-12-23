@@ -53,19 +53,19 @@ export async function GET() {
             .from("sweep_events")
             .select(
                 `
-        id,
-        status,
-        progress,
-        services_found,
-        breaches_found,
-        error_message,
-        started_at,
-        completed_at,
-        messages_processed
+                id,
+                status,
+                progress,
+                services_found,
+                breaches_found,
+                error_message,
+                started_at,
+                completed_at,
+                messages_processed
       `,
             )
             .eq("user_id", user.id)
-            .eq("is_read", false)
+            // .eq("is_read", false)
             .order("created_at", { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -97,12 +97,6 @@ export async function GET() {
                 message: "No sweep has been started yet.",
             });
         }
-
-        // Mark as read (fire-and-forget, but we still await here)
-        await supabase
-            .from("sweep_events")
-            .update({ is_read: true })
-            .eq("id", sweep.id);
 
         const rawStatus = sweep.status as string;
 
