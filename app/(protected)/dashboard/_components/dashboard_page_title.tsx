@@ -521,6 +521,17 @@ export default function DashboardTitle() {
                                 )}
                             </>
                         )}
+                        {isInProgress && (
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => onCancelSweep.mutate()}
+                                disabled={isCancelling || latestSweep?.status === "cancelled"}
+                                className="w-full sm:w-auto"
+                            >
+                                {latestSweep?.status === "cancelled" ? "Stopping…" : "Cancel sweep"}
+                            </Button>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
