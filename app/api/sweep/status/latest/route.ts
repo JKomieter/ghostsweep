@@ -95,6 +95,7 @@ export async function GET() {
                 startedAt: null,
                 completedAt: null,
                 message: "No sweep has been started yet.",
+                errorMessage: null,
             });
         }
 
@@ -139,6 +140,10 @@ export async function GET() {
             }
         }
 
+        const errorMessage = sweep.error_message === "Token has been expired or revoked." ? 
+        "Your gmail access token has expired. Please reconnect your Google account to continue the sweep."
+        : sweep.error_message ?? null;
+
         return NextResponse.json({
             sweepId: sweep.id as string,
             status,                       // "pending" | "processing" | "completed" | "failed"
@@ -153,6 +158,8 @@ export async function GET() {
             startedAt: sweep.started_at ?? null,
             completedAt: sweep.completed_at ?? null,
             message: undefined,
+            errorMessage,
+
         });
     } catch (error) {
         console.error("Error getting latest sweep:", error);

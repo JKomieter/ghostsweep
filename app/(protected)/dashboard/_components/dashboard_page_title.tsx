@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { useState } from "react";
 
 type LatestSweepResponse = {
     sweepId: string | null;
-    status: "pending" | "processing" | "completed" | "failed" | null;
+    status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;
     progress?: number | null;
 
     // 🔥 new bits
@@ -34,6 +34,7 @@ type LatestSweepResponse = {
     startedAt?: string | null;
     completedAt?: string | null;
     message?: string;
+    errorMessage?: string | null;
 };
 
 export default function DashboardTitle() {
@@ -41,6 +42,7 @@ export default function DashboardTitle() {
     const [sweepDialogOpen, setSweepDialogOpen] = useState(false);
     const [lastNotifiedStatus, setLastNotifiedStatus] = useState<string | null>(null);
     const queryClient = useQueryClient();
+    const [isCancelling, setIsCancelling] = useState(false);
 
     // Gmail account
     const { data: gmailData } = useQuery({
@@ -75,7 +77,7 @@ export default function DashboardTitle() {
         refetchInterval: (query) => {
             const data = query.state.data;
             if (!data) return false;
-            return data.status === "pending" || data.status === "processing"
+            return data.status === "pending" || data.status === "processing" || data.status === "cancelled"
                 ? 5000
                 : false;
         },
@@ -116,21 +118,29 @@ export default function DashboardTitle() {
             });
         }
 
+        if (latestSweep.status === "cancelled") {
+            setLastNotifiedStatus(sweepKey);
+
+            // optional: invalidate anything that might have partially changed
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["latestSweep"] }),
+                queryClient.invalidateQueries({ queryKey: ["metrics"] }),
+                queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] }),
+            ]);
+
+            toast("Sweep cancelled", {
+                description: "No more inbox processing will occur.",
+            });
+        }
+
         if (latestSweep.status === "failed") {
             setLastNotifiedStatus(sweepKey);
 
             toast.error("Sweep failed", {
-                description: "Your inbox sweep encountered an error. Please try again later.",
+                description: latestSweep.errorMessage || "Your inbox sweep encountered an error. Please try again later.",
             });
         }
-    }, [
-        latestSweep?.sweepId,
-        latestSweep?.status,
-        latestSweep?.servicesFound,
-        latestSweep?.breachesFound,
-        lastNotifiedStatus,
-        queryClient,
-    ]);
+    }, [latestSweep?.sweepId, latestSweep?.status, latestSweep?.servicesFound, latestSweep?.breachesFound, lastNotifiedStatus, queryClient, latestSweep?.errorMessage]);
 
     useEffect(() => {
         console.log("Sweep progress:", latestSweep?.progress);
@@ -219,6 +229,38 @@ export default function DashboardTitle() {
         return Math.floor(elapsed / 60000);
     };
 
+    const onCancelSweep = useMutation({
+        mutationFn: async () => {
+            const res = await fetch(`/api/sweep/cancel/${latestSweep?.sweepId}`, {
+                method: "POST",
+            });
+            const json = await res.json();
+            if (!res.ok) {
+                throw new Error(json.error || "Failed to cancel sweep");
+            }
+            return json;
+        },
+        onMutate: () => {
+            setIsCancelling(true);
+        },
+        onSuccess: () => {
+            toast.success("Sweep cancellation requested", {
+                description: "The sweep will stop shortly.",
+            });
+            // Refetch latest sweep status
+            queryClient.invalidateQueries({ queryKey: ["latestSweep"] });
+        },
+        onError: (error) => {
+            console.error("Error cancelling sweep:", error);
+            toast.error("Failed to cancel sweep", {
+                description: error.message || "Please try again later.",
+            });
+        },
+        onSettled: () => {
+            setIsCancelling(false);
+        },
+    })
+
     return (
         <>
             {/* HEADER */}
@@ -303,19 +345,35 @@ export default function DashboardTitle() {
                         </div>
                     </div>
 
-                    {typeof latestSweep.progress === "number" && (
-                        <div className="flex items-center gap-2">
-                            <div className="hidden h-1.5 w-32 overflow-hidden rounded-full bg-cyan-900/50 sm:block">
-                                <div
-                                    className="h-full bg-cyan-400 transition-all duration-300"
-                                    style={{ width: `${latestSweep.progress}%` }}
-                                />
-                            </div>
-                            <span className="text-[11px] font-semibold text-cyan-200">
-                                {latestSweep.progress}%
-                            </span>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {typeof latestSweep.progress === "number" && (
+                            <>
+                                <div className="hidden h-1.5 w-32 overflow-hidden rounded-full bg-cyan-900/50 sm:block">
+                                    <div
+                                        className="h-full bg-cyan-400 transition-all duration-300"
+                                        style={{ width: `${latestSweep.progress}%` }}
+                                    />
+                                </div>
+                                <span className="text-[11px] font-semibold text-cyan-200">
+                                    {latestSweep.progress}%
+                                </span>
+                            </>
+                        )}
+
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={isCancelling || latestSweep.status === "cancelled"}
+                            onClick={() => onCancelSweep.mutate()}
+                            className="h-8 text-[11px] text-cyan-100 hover:bg-white/10"
+                        >
+                            {latestSweep.status === "cancelled"
+                                ? "Stopping…"
+                                : isCancelling
+                                    ? "Stopping…"
+                                    : "Cancel sweep"}
+                        </Button>
+                    </div>
                 </div>
             )}
 
