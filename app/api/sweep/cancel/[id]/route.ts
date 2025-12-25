@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+const allowedToCancelStatuses = [
+    "pending", "processing", "account_discovery", "metadata_extraction", "service_normalisation", "account_classification", "data_ingestion"
+]
+
 export async function POST(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -37,7 +41,7 @@ export async function POST(
     }
 
     // 5) Only allow cancel if it’s running (or queued if you have that)
-    if (!["running", "queued", "processing"].includes(sweep.status)) {
+    if (!allowedToCancelStatuses.includes(sweep.status)) {
         return NextResponse.json(
             { error: `Cannot cancel a sweep in status: ${sweep.status}` },
             { status: 409 }
@@ -56,7 +60,7 @@ export async function POST(
         .eq("id", id)
         .eq("user_id", user.id)
         // avoid racing: only update if it was still running/queued
-        .in("status", ["pending", "processing", "account_discovery", "metadata_extraction", "service_normalisation", "account_classification", "data_ingestion"])
+        .in("status", allowedToCancelStatuses)
         .select("id,status")
         .single();
 
