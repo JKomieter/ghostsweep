@@ -61,7 +61,8 @@ export async function GET() {
                 error_message,
                 started_at,
                 completed_at,
-                messages_processed
+                messages_processed,
+                is_read
       `,
             )
             .eq("user_id", user.id)
@@ -91,7 +92,6 @@ export async function GET() {
                 messagesProcessed: null,
                 servicesFound: null,
                 breachesFound: null,
-                errorMessage: null,
                 startedAt: null,
                 completedAt: null,
                 message: "No sweep has been started yet.",
@@ -123,6 +123,22 @@ export async function GET() {
             status = "processing";
         }
 
+        if (sweep.error_message) {
+            console.log("Sweep error message:", sweep.error_message);
+        }
+
+        // ✅ Update `is_read` to true for the sweep
+        if (status === "completed" || status === "failed") {
+            const { error: updateError } = await supabase
+                .from("sweep_events")
+                .update({ is_read: true })
+                .eq("id", sweep.id);
+
+            if (updateError) {
+                console.error("Failed to update is_read for sweep:", updateError);
+            }
+        }
+
         return NextResponse.json({
             sweepId: sweep.id as string,
             status,                       // "pending" | "processing" | "completed" | "failed"
@@ -134,7 +150,6 @@ export async function GET() {
             messagesProcessed: sweep.messages_processed ?? null,
             servicesFound: sweep.services_found ?? null,
             breachesFound: sweep.breaches_found ?? null,
-            errorMessage: sweep.error_message ?? null,
             startedAt: sweep.started_at ?? null,
             completedAt: sweep.completed_at ?? null,
             message: undefined,

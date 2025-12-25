@@ -31,7 +31,6 @@ type LatestSweepResponse = {
 
     servicesFound?: number | null;
     breachesFound?: number | null;
-    errorMessage?: string | null;
     startedAt?: string | null;
     completedAt?: string | null;
     message?: string;
@@ -121,7 +120,7 @@ export default function DashboardTitle() {
             setLastNotifiedStatus(sweepKey);
 
             toast.error("Sweep failed", {
-                description: latestSweep.errorMessage || "Unknown error occurred.",
+                description: "Your inbox sweep encountered an error. Please try again later.",
             });
         }
     }, [
@@ -129,7 +128,6 @@ export default function DashboardTitle() {
         latestSweep?.status,
         latestSweep?.servicesFound,
         latestSweep?.breachesFound,
-        latestSweep?.errorMessage,
         lastNotifiedStatus,
         queryClient,
     ]);
