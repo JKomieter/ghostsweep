@@ -110,7 +110,7 @@ export function BreachDetailsSheet({
                         <div className="space-y-1">
                             <div className="flex items-center gap-2">
                                 <span className="text-base font-medium">
-                                    {service.name || breach.raw?.name || "Unknown service"}
+                                    {service.name || breach?.name || "Unknown service"}
                                 </span>
                                 {service.domain && (
                                     <span className="text-xs text-muted-foreground">

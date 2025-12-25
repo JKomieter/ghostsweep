@@ -108,8 +108,8 @@ export default function Breaches() {
                                 if (!breach) return null;
 
                                 const name =
-                                    (breach.raw as any)?.title ||
-                                    (breach.raw as any)?.name ||
+                                    (breach.raw)?.title ||
+                                    (breach)?.name ||
                                     breach.domain ||
                                     "Unknown service";
 

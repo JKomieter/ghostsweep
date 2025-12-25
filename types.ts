@@ -112,6 +112,7 @@ export interface ServiceDeletionPlaybook {
 
 export interface Breach {
     id: string;
+    name: string | null;
     created_at: string;
     domain: string | null;
     breach_date: string | null;
