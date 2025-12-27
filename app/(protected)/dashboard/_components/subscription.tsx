@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, Crown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 
 export default function SubscriptionModal({
@@ -66,6 +67,7 @@ export default function SubscriptionModal({
             const data = await res.json();
             window.location.href = data.url;
         } catch (error) {
+            toast.error('Could not open billing portal. Please try again later.');
             console.error('Error managing billing:', error);
         }
     };
