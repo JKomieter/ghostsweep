@@ -20,6 +20,7 @@ import {
     Mail,
     ArrowDown,
 } from "lucide-react";
+import Image from "next/image";
 
 const faqs = [
     {
@@ -414,9 +415,11 @@ export default function HomePage() {
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
                                     <item.icon className="h-4 w-4 text-emerald-400" />
                                 </div>
+
                                 <div className="mt-3 space-y-1">
                                     <p className="text-sm font-semibold text-white">{item.title}</p>
                                     <p className="text-xs text-zinc-400">{item.desc}</p>
+
                                     {item.linkHref && item.linkText ? (
                                         <Link
                                             href={item.linkHref}
@@ -430,6 +433,47 @@ export default function HomePage() {
                                 </div>
                             </div>
                         ))}
+
+                        {/* Founder card */}
+                        <div className="rounded-2xl border border-white/10 bg-[#050509] p-5 md:col-span-3">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                                        {/* Put your image in /public and set src="/joel.jpg" */}
+                                        <Image src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg" alt="Founder of GhostSweep" fill className="object-cover" />
+                                    </div>
+
+                                    <div className="space-y-0.5">
+                                        <p className="text-sm font-semibold text-white">Built by Joel</p>
+                                        <p className="text-xs text-zinc-400">
+                                            Founder of GhostSweep — privacy-first tools, no ads, no data selling.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-zinc-300">
+                                        Real human support
+                                    </span>
+                                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-zinc-300">
+                                        Built to minimize access
+                                    </span>
+                                    <Link
+                                        href="mailto:kommieterj@gmail.com"
+                                        className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11px] text-emerald-200 hover:bg-emerald-500/15 transition"
+                                    >
+                                        Email me
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <div className="mt-3 rounded-xl border border-white/10 bg-black/30 p-4">
+                                <p className="text-xs text-zinc-400 leading-relaxed">
+                                    I built GhostSweep because deleting old accounts is deliberately hard. This tool helps you find what exists and take action —
+                                    <span className="text-zinc-200"> and you stay in control the whole time.</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="text-center">
