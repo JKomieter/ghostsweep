@@ -19,6 +19,7 @@ import {
     ListChecks,
     Mail,
     ArrowDown,
+    BadgeCheck,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -76,6 +77,13 @@ const trustItems = [
         desc: "Questions or concerns? Email support directly and get a real response from a real person.",
         linkText: "Contact support",
         linkHref: "mailto:support@ghostsweep.com",
+    },
+    {
+        icon: BadgeCheck,
+        title: "Google verified + CASA certified",
+        desc: "GhostSweep is verified for Google OAuth and CASA certified for sensitive scopes.",
+        linkText: "Learn more",
+        linkHref: "/home/security",
     },
 ];
 
@@ -331,10 +339,10 @@ export default function HomePage() {
 
                                         <span
                                             className={`text-[10px] rounded-full px-2 py-0.5 border ${row.status === "inactive"
-                                                    ? "border-zinc-500/40 text-zinc-300"
-                                                    : row.status === "security"
-                                                        ? "border-amber-500/40 text-amber-300"
-                                                        : "border-emerald-500/40 text-emerald-300"
+                                                ? "border-zinc-500/40 text-zinc-300"
+                                                : row.status === "security"
+                                                    ? "border-amber-500/40 text-amber-300"
+                                                    : "border-emerald-500/40 text-emerald-300"
                                                 }`}
                                         >
                                             {row.status}
