@@ -16,7 +16,7 @@ type StatusFilter = "open" | "all" | "sent" | "received" | "needs_verification" 
 
 export default function PrivacyRequestsPage() {
     const [page, setPage] = useState(1);
-    const [statusFilter, setStatusFilter] = useState<StatusFilter>("open");
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
     const [selected, setSelected] = useState<DeletionRequestListRow | null>(null);
     const [sheetOpen, setSheetOpen] = useState(false);
