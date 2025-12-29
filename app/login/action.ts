@@ -28,19 +28,16 @@ export async function login({email, password}: { email: string, password: string
 export async function signup({ email, password }: { email: string, password: string }) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
-    const data = {
+    const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
             data: {
                 plan: 'free',
-            }
+            },
+            emailRedirectTo: 'https://www.ghostsweep.com/dashboard'
         }
-    }
-
-    const { error } = await supabase.auth.signUp(data)
+    })
 
     if (error) {
         // redirect('/error')
