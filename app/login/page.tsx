@@ -184,6 +184,7 @@ function SignUpForm({
         try {
             await signup({ email, password });
             setMode("confirm");
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             toast.error("An error occurred during signup. Please try again.");
         } finally {

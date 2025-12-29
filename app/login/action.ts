@@ -31,12 +31,6 @@ export async function signup({ email, password }: { email: string, password: str
     const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-            data: {
-                plan: 'free',
-            },
-            emailRedirectTo: 'https://www.ghostsweep.com/dashboard'
-        }
     })
 
     if (error) {
