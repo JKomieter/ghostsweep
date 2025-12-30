@@ -1,21 +1,23 @@
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 
 export async function POST() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const {
         data: { user },
         error: userError,
     } = await supabase.auth.getUser();
 
-    if (userError || !user) {
+    if (userError) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { error } = await supabase.auth.admin.deleteUser(
-        user.id
-    )
+    if (!user?.id) {
+        return NextResponse.json({ error: "User ID not found" }, { status: 400 });
+    }
+
+    const { error } = await supabase.auth.admin.deleteUser(user.id);
 
     if (error) {
         console.error("Error deleting user news:", error);
