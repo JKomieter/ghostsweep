@@ -47,7 +47,6 @@ export default function DashboardUserServicesTable() {
     });
 
     const isLoading = status === "pending";
-    const currentPlan = data?.currentPlan ?? "free";
     const total = data?.total ?? 0;
     const rows = data?.userServices ?? [];
 
@@ -64,104 +63,96 @@ export default function DashboardUserServicesTable() {
                         {isLoading ? "Loading…" : `${total.toLocaleString()} total`}
                     </div>
                 </div>
-
-                {currentPlan === "free" && (
-                    <Link href="/dashboard/billing?plan=monthly">
-                        <Button size="sm" className="bg-primary text-black hover:bg-primary/80">
-                            Upgrade
-                        </Button>
-                    </Link>
-                )}
             </div>
-                   <div className="overflow-auto rounded-lg border border-white/10 max-h-[300px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="text-xs text-muted-foreground">Service</TableHead>
-                                    <TableHead className="text-xs text-muted-foreground">Last seen</TableHead>
-                                    <TableHead className="text-xs text-muted-foreground">Emails</TableHead>
-                                    <TableHead className="text-xs text-muted-foreground text-right">Risk</TableHead>
-                                </TableRow>
-                            </TableHeader>
+            <div className="overflow-auto rounded-lg border border-white/10 max-h-[300px]">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="text-xs text-muted-foreground">Service</TableHead>
+                            <TableHead className="text-xs text-muted-foreground">Last seen</TableHead>
+                            <TableHead className="text-xs text-muted-foreground">Emails</TableHead>
+                            <TableHead className="text-xs text-muted-foreground text-right">Risk</TableHead>
+                        </TableRow>
+                    </TableHeader>
 
-                            <TableBody>
-                                {isLoading ? (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={4}
-                                            className="h-24 text-center text-sm text-muted-foreground relative"
-                                        >
-                                            <Spinner className="text-primary absolute left-1/2 top-1/2" />
+                    <TableBody>
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={4}
+                                    className="h-24 text-center text-sm text-muted-foreground relative"
+                                >
+                                    <Spinner className="text-primary absolute left-1/2 top-1/2" />
+                                </TableCell>
+                            </TableRow>
+                        ) : rows.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center text-sm text-muted-foreground">
+                                    No services found yet.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            rows.slice(0, LIMIT).map((r) => {
+                                const name = r.service?.name ?? "Unknown";
+                                const domain = r.service?.domain ?? "";
+                                const breached = r.service?.is_breached === true;
+
+                                return (
+                                    <TableRow key={r.id}>
+                                        <TableCell className="align-top">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-medium text-white">{name}</span>
+                                                {domain ? (
+                                                    <span className="text-xs text-muted-foreground">{domain}</span>
+                                                ) : null}
+                                            </div>
+                                        </TableCell>
+
+                                        <TableCell className="text-xs text-muted-foreground align-top">
+                                            {formatShortDate(r.last_seen_at!)}
+                                        </TableCell>
+
+                                        <TableCell className="text-xs text-muted-foreground align-top">
+                                            {(r.email_count ?? 0).toLocaleString()}
+                                        </TableCell>
+
+                                        <TableCell className="text-right align-top">
+                                            <Badge
+                                                variant="outline"
+                                                className={
+                                                    breached
+                                                        ? "border-red-500/30 bg-red-500/10 text-red-200"
+                                                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                                                }
+                                            >
+                                                {breached ? "Breached" : "Normal"}
+                                            </Badge>
                                         </TableCell>
                                     </TableRow>
-                                ) : rows.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={4} className="h-24 text-center text-sm text-muted-foreground">
-                                            No services found yet.
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    rows.slice(0, LIMIT).map((r) => {
-                                        const name = r.service?.name ?? "Unknown";
-                                        const domain = r.service?.domain ?? "";
-                                        const breached = r.service?.is_breached === true;
+                                );
+                            })
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
 
-                                        return (
-                                            <TableRow key={r.id}>
-                                                <TableCell className="align-top">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-medium text-white">{name}</span>
-                                                        {domain ? (
-                                                            <span className="text-xs text-muted-foreground">{domain}</span>
-                                                        ) : null}
-                                                    </div>
-                                                </TableCell>
+            <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-muted-foreground">
+                    Showing {showing.toLocaleString()} of {total.toLocaleString()} services
+                </p>
 
-                                                <TableCell className="text-xs text-muted-foreground align-top">
-                                                    {formatShortDate(r.last_seen_at!)}
-                                                </TableCell>
+                <Link href="/dashboard/user_services">
+                    <Button size="sm" variant="outline" className="border-white/15">
+                        Go to accounts page
+                    </Button>
+                </Link>
+            </div>
 
-                                                <TableCell className="text-xs text-muted-foreground align-top">
-                                                    {(r.email_count ?? 0).toLocaleString()}
-                                                </TableCell>
-
-                                                <TableCell className="text-right align-top">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className={
-                                                            breached
-                                                                ? "border-red-500/30 bg-red-500/10 text-red-200"
-                                                                : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
-                                                        }
-                                                    >
-                                                        {breached ? "Breached" : "Normal"}
-                                                    </Badge>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs text-muted-foreground">
-                            Showing {showing.toLocaleString()} of {total.toLocaleString()} services
-                        </p>
-
-                        <Link href="/dashboard/user_services">
-                            <Button size="sm" variant="outline" className="border-white/15">
-                                Go to accounts page
-                            </Button>
-                        </Link>
-                    </div>
-
-                    {hasMore && (
-                        <div className="rounded-lg border border-white/10 bg-black/40 p-3 text-xs text-muted-foreground">
-                            There are more than {LIMIT} accounts. Visit the accounts page to view the full list and details.
-                        </div>
-                    )}
-                        </div>
+            {hasMore && (
+                <div className="rounded-lg border border-white/10 bg-black/40 p-3 text-xs text-muted-foreground">
+                    There are more than {LIMIT} accounts. Visit the accounts page to view the full list and details.
+                </div>
+            )}
+        </div>
     );
 }
