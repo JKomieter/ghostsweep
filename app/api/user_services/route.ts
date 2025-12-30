@@ -200,23 +200,7 @@ export async function GET(request: NextRequest) {
                 { status: 500 }
             );
         }
-
-        // Free tier: return only count
-        if (!isPro) {
-            return NextResponse.json({
-                userServices: [],
-                total: serviceCount ?? 0,
-                page,
-                pageSize: PAGE_SIZE,
-                hasMore: typeof serviceCount === "number" ? to + 1 < serviceCount : false,
-                gated: true,
-                currentPlan,
-            });
-        }
-
-        // ===========================
-        // Pro tier: full list
-        // ===========================
+        
         let query = supabase
             .from("user_services")
             .select(

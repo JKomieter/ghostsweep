@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { DeletionRequest, Service } from "@/types";
 
 type ApiUserService = {
@@ -82,13 +81,6 @@ function riskFromSignals(emailCount: number, breached: boolean): ServiceNode["ri
     return "low";
 }
 
-async function fetchPlan(): Promise<{ current_plan: "free" | "pro" }> {
-    const res = await fetch("/api/plan", { cache: "no-store" });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(j?.error ?? "Failed to load subscription");
-    return j;
-}
-
 async function fetchAllUserServices(): Promise<AllUserServicesResponse> {
     const res = await fetch("/api/user_services/all", { cache: "no-store" });
     const j = (await res.json().catch(() => ({}))) as AllUserServicesResponse;
@@ -106,20 +98,6 @@ export default function FootprintPage() {
     const [zoomTransform, setZoomTransform] = useState<d3.ZoomTransform | null>(null);
 
     const {
-        data: plan,
-        isPending: planPending,
-        isError: planIsError,
-        error: planError,
-        refetch: refetchPlan,
-    } = useQuery({
-        queryKey: ["me", "subscription"],
-        queryFn: fetchPlan,
-        staleTime: 60_000,
-    });
-
-    const isPro = plan?.current_plan === "pro";
-
-    const {
         data: rows,
         isPending,
         isError,
@@ -129,7 +107,6 @@ export default function FootprintPage() {
         queryKey: ["user_services", "all"],
         queryFn: fetchAllUserServices,
         staleTime: 60_000,
-        enabled: Boolean(isPro),
     });
 
     const services = useMemo(() => {
@@ -153,7 +130,7 @@ export default function FootprintPage() {
     }, [rows]);
 
     useEffect(() => {
-        if (!isPro || !svgRef.current || isPending || !services || services.length === 0) return;
+        if (!svgRef.current || isPending || !services || services.length === 0) return;
 
         const width = 900;
         const height = 620;
@@ -330,9 +307,9 @@ export default function FootprintPage() {
         return () => {
             simulation.stop();
         };
-    }, [isPro, services, isPending]);
+    }, [services, isPending]);
 
-    const headerCountLabel = planPending ? "Loading…" : `${(rows?.total ?? 0).toLocaleString()} services found`;
+    const headerCountLabel = `${(rows?.total ?? 0).toLocaleString()} services found`;
 
     return (
         <div className="p-4">
@@ -341,62 +318,13 @@ export default function FootprintPage() {
                     <div>
                         <CardTitle>Digital Footprint Map</CardTitle>
                         <CardDescription>
-                            {isPro
-                                ? "Interactive visualization of your online presence"
-                                : "Preview — upgrade to see your full footprint map"}
+                            Interactive visualization of your online presence
                         </CardDescription>
                     </div>
                     <div className="text-xs text-white/60">{headerCountLabel}</div>
                 </CardHeader>
 
                 <CardContent>
-                    {planPending ? (
-                        <div className="flex items-center justify-center py-16">
-                            <Spinner className="text-primary" />
-                        </div>
-                    ) : planIsError ? (
-                        <div className="rounded-lg border border-white/10 bg-[#050505] p-4">
-                            <div className="text-sm text-white">Couldn&apos;t load subscription</div>
-                            <div className="mt-1 text-xs text-white/60">
-                                {(planError as any)?.message ?? "Unknown error"}
-                            </div>
-                            <div className="mt-3 flex gap-2">
-                                <Button size="sm" variant="outline" onClick={() => refetchPlan()}>
-                                    Retry
-                                </Button>
-                            </div>
-                        </div>
-                    ) : !isPro ? (
-                        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
-                            <div className="p-4 text-sm text-white">
-                                <div className="font-semibold">This is a Pro feature</div>
-                                <div className="mt-1 text-white/60">
-                                    Free users can scan and see the <strong>number</strong> of accounts found, but not
-                                    the map or the list.
-                                </div>
-
-                                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                                    <Link href="/dashboard/billing?plan=monthly" className="inline-flex">
-                                        <Button>Upgrade to Pro</Button>
-                                    </Link>
-                                    <Link href="/dashboard" className="inline-flex">
-                                        <Button variant="outline">Back to dashboard</Button>
-                                    </Link>
-                                </div>
-                            </div>
-
-                            <div className="relative h-[420px] w-full border-t border-slate-800">
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.18),transparent_45%),radial-gradient(circle_at_70%_60%,rgba(59,130,246,0.16),transparent_45%)]" />
-                                <div className="absolute inset-0 backdrop-blur-sm opacity-80" />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2 text-xs text-slate-200">
-                                        Locked preview — upgrade to unlock your footprint map
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
                             {isPending ? (
                                 <div className="flex items-center justify-center py-16">
                                     <Spinner className="text-primary" />
@@ -629,8 +557,6 @@ export default function FootprintPage() {
                                     </div>
                                 </>
                             )}
-                        </>
-                    )}
                 </CardContent>
             </Card>
         </div>

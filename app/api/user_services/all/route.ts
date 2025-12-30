@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -12,26 +12,8 @@ export async function GET() {
 
     if (authError || !user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        
     }
 
-    // ✅ Get plan
-    const { data: subscriptionData, error: subscriptionError } = await supabase
-        .from("user_subscriptions")
-        .select("current_plan")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-    if (subscriptionError) {
-        console.error("Error fetching user subscription:", subscriptionError);
-        return NextResponse.json(
-            { error: "Internal Server Error", code: "SUBSCRIPTION_FETCH_ERROR" },
-            { status: 500 }
-        );
-    }
-
-    const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "pro";
-    const isPro = currentPlan === "pro";
 
     // 2) Fetch all user services for this user
     const { data, error } = await supabase
@@ -108,7 +90,7 @@ export async function GET() {
 
     return NextResponse.json(
         {
-            userServices: !isPro ? [] : userServices,
+            userServices,
             total: userServices.length,
         },
         { status: 200 }

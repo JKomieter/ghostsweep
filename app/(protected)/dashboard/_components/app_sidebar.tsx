@@ -132,7 +132,7 @@ export default function SlidingSidebar() {
                         Footprint Map
                     </Link>
 
-                    <Link
+                    {/* <Link
                         href="/dashboard/tools/data_removal"
                         onClick={() => setOpen(false)}
                         className={cn(
@@ -143,7 +143,7 @@ export default function SlidingSidebar() {
                         )}
                     >
                         Email Templates
-                    </Link>
+                    </Link> */}
 
                     <div className="mt-auto pt-4 border-t border-white/10">
                         <button

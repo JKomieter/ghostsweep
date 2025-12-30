@@ -496,8 +496,8 @@ export default function HomePage() {
                 <section className="space-y-8" id="pricing">
                     <SectionTitle
                         eyebrow="Pricing"
-                        title="Free to see the risk. Pro to fix it."
-                        desc="Free shows the total count. Pro shows the list, breach signals, and gives you deletion + tracking tools."
+                        title="Start free. Upgrade for automation."
+                        desc="Free users see everything and can delete manually. Pro users get breach monitoring, automatic rescans, and priority support."
                     />
 
                     <div className="grid gap-4 md:grid-cols-2">
@@ -507,34 +507,39 @@ export default function HomePage() {
                                 <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Free</p>
                                 <div className="flex items-baseline gap-1">
                                     <p className="text-3xl font-semibold text-white">$0</p>
-                                    <span className="text-xs text-zinc-400">always free</span>
+                                    <span className="text-xs text-zinc-400">forever</span>
                                 </div>
+                                <p className="text-xs text-zinc-400">Perfect for one-time cleanups</p>
                             </div>
 
                             <ul className="space-y-2 text-sm text-zinc-300">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Run a scan</span>
+                                    <span>Scan your email</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>See your total account count</span>
+                                    <span>See all accounts found</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>View breach status</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>Step-by-step deletion guides</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>Manual tracking</span>
                                 </li>
                                 <li className="flex items-start gap-2 text-zinc-400">
                                     <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
-                                    <span>No account list (count only)</span>
+                                    <span>No breach monitoring</span>
                                 </li>
                                 <li className="flex items-start gap-2 text-zinc-400">
                                     <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
-                                    <span>No breach visibility</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-zinc-400">
-                                    <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
-                                    <span>No deletion tools</span>
-                                </li>
-                                <li className="flex items-start gap-2 text-zinc-400">
-                                    <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
-                                    <span>No auto follow-ups/status checking</span>
+                                    <span>No automatic rescans</span>
                                 </li>
                             </ul>
 
@@ -542,7 +547,7 @@ export default function HomePage() {
                                 href="/login"
                                 className="inline-flex w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-50 hover:bg-white/10 transition"
                             >
-                                Start free scan
+                                Start free
                             </Link>
                         </div>
 
@@ -554,22 +559,18 @@ export default function HomePage() {
                                     <p className="text-3xl font-semibold text-white">$9.99</p>
                                     <span className="text-xs text-zinc-300">/month</span>
                                 </div>
-                                <p className="text-xs text-emerald-300">Full visibility, breach alerts, and clean-up workflows.</p>
+                                <p className="text-xs text-emerald-300">Ongoing protection with automated monitoring</p>
                             </div>
 
                             <ul className="space-y-2 text-sm text-zinc-200">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>See the full account list</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Breach visibility + prioritization</span>
+                                    <span className="font-medium">Everything in Free</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
                                     <span>
-                                        New account detection{" "}
+                                        Automatic breach monitoring{" "}
                                         <span className="inline-flex items-center gap-1 ml-1 text-xs text-zinc-300">
                                             <Bell className="h-3 w-3" /> alerts
                                         </span>
@@ -577,15 +578,19 @@ export default function HomePage() {
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Send deletion requests (email/link/manual)</span>
+                                    <span>Quarterly automatic rescans</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Bulk deletion workflows</span>
+                                    <span>Send bulk deletion requests</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Auto follow-ups + reply/status checking</span>
+                                    <span>Auto follow-ups & status tracking</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>Priority email support</span>
                                 </li>
                             </ul>
 
@@ -596,6 +601,18 @@ export default function HomePage() {
                                 Upgrade to Pro
                             </Link>
                         </div>
+                    </div>
+
+                    {/* FAQ below pricing */}
+                    <div className="mt-8 pt-8 border-t border-white/10">
+                        <details className="text-sm">
+                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium">
+                                Can I scan multiple emails on the free plan?
+                            </summary>
+                            <p className="mt-2 text-zinc-400 text-xs">
+                                Yes! Free users can scan any email address, one at a time. Pro users get automatic quarterly rescans and breach monitoring for ongoing protection.
+                            </p>
+                        </details>
                     </div>
                 </section>
 
@@ -613,7 +630,7 @@ export default function HomePage() {
                 </section>
 
                 {/* FINAL CTA */}
-                <section className="rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 text-center space-y-4">
+                <section className="rounded-3xl border border-white/10 bg-white/2 p-6 sm:p-8 text-center space-y-4">
                     <h2 className="text-lg font-semibold text-white sm:text-xl">Get visibility in minutes</h2>
                     <p className="mx-auto max-w-xl text-sm text-zinc-400">
                         You can’t protect what you can’t see. Run a scan, see your footprint, then choose what you want to shut down.

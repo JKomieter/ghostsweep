@@ -238,6 +238,13 @@ export async function proxy(request: NextRequest) {
         }
     }
 
+    // redirect to /home if root path is accessed
+    if (pathname === '/') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/home';
+        return NextResponse.redirect(url);
+    }
+
     // Update session
     const response = await updateSession(request);
 

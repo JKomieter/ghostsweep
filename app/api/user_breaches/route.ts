@@ -30,7 +30,6 @@ export async function GET() {
     }
 
     const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "pro";
-    const isPro = currentPlan === "pro";
 
     // 3) Always compute total count (safe for both tiers)
     const { count: breachCount, error: countError } = await supabase
@@ -44,16 +43,6 @@ export async function GET() {
             { error: "Internal Server Error", code: "BREACH_COUNT_ERROR" },
             { status: 500 }
         );
-    }
-
-    // 4) Free tier: return count only (no list)
-    if (!isPro) {
-        return NextResponse.json({
-            userBreaches: [],
-            total: breachCount ?? 0,
-            gated: true,
-            currentPlan,
-        });
     }
 
     // 5) Pro tier: return list + count

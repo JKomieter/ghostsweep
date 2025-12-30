@@ -47,7 +47,6 @@ export default function DashboardUserServicesTable() {
     });
 
     const isLoading = status === "pending";
-    const gated = data?.gated ?? false;
     const currentPlan = data?.currentPlan ?? "free";
     const total = data?.total ?? 0;
     const rows = data?.userServices ?? [];
@@ -74,34 +73,7 @@ export default function DashboardUserServicesTable() {
                     </Link>
                 )}
             </div>
-
-            {/* Gatekeep: free users see count only, no list */}
-            {gated ? (
-                <div className="rounded-lg border border-white/10 bg-black/40 p-4 text-sm">
-                    <p className="text-white/80">
-                        We found <span className="font-semibold">{total.toLocaleString()}</span>{" "}
-                        accounts linked to your email.
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        Upgrade to Professional to view the account list and details.
-                    </p>
-
-                    <div className="mt-3 flex flex-wrap gap-2">
-                        <Link href="/dashboard/billing?plan=monthly">
-                            <Button size="sm" className="bg-primary text-black hover:bg-primary/80">
-                                Upgrade to Professional
-                            </Button>
-                        </Link>
-                        <Link href="/dashboard/user_services">
-                            <Button size="sm" variant="outline" className="border-white/15">
-                                Go to accounts page
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
-            ) : (
-                <>
-                        <div className="overflow-auto rounded-lg border border-white/10 max-h-[300px]">
+                   <div className="overflow-auto rounded-lg border border-white/10 max-h-[300px]">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -190,8 +162,6 @@ export default function DashboardUserServicesTable() {
                             There are more than {LIMIT} accounts. Visit the accounts page to view the full list and details.
                         </div>
                     )}
-                </>
-            )}
-        </div>
+                        </div>
     );
 }

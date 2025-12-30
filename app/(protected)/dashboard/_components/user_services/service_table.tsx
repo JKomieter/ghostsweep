@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
+import React, { Dispatch, SetStateAction, useMemo, useState } from "react"
 import {
     ColumnDef,
     flexRender,
@@ -13,7 +13,6 @@ import { RefreshCw, Lock, SlidersHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -327,16 +326,8 @@ export default function ServiceTable(props: ServiceTableProps) {
     const canPrev = page > 1
     const canNext = page < totalPages
 
-    const gated = userServicesQueryResult?.gated === true || userServicesQueryResult?.currentPlan === "free"
+    const data = ((userServicesQueryResult?.userServices || [])) as RowType[]
 
-    const data = (gated ? [] : (userServicesQueryResult?.userServices || [])) as RowType[]
-
-    // Add this after your existing state declarations
-    useEffect(() => {
-        if (gated && Object.keys(rowSelection).length > 0) {
-            setRowSelection({})
-        }
-    }, [gated, rowSelection])
 
     const table = useReactTable({
         data,
@@ -344,7 +335,6 @@ export default function ServiceTable(props: ServiceTableProps) {
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
         pageCount: totalPages,
-        enableRowSelection: !gated,
         state: {
             columnVisibility,
             rowSelection,  // ← FIXED: Always use rowSelection state
@@ -353,13 +343,11 @@ export default function ServiceTable(props: ServiceTableProps) {
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,  // ← FIXED: Always allow updates (table will block if disabled)
         meta: {
-            gated,
             onView: (userServiceId: string) => router.push(`/dashboard/user_services/${userServiceId}/details`),
         },
     })
 
     const selectedIds = useMemo(() => {
-        if (gated) return []
 
         const rows = table.getSelectedRowModel().rows
         if (!rows || rows.length === 0) return []
@@ -368,7 +356,7 @@ export default function ServiceTable(props: ServiceTableProps) {
             .map((r) => r.original.id)
             .filter((id): id is string => typeof id === "string" && id.length > 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gated, table, rowSelection])
+    }, [table, rowSelection])
 
     const selectedCount = selectedIds.length
 
@@ -411,17 +399,6 @@ export default function ServiceTable(props: ServiceTableProps) {
     }
 
     const startBulkDeletion = async () => {
-        if (gated) {
-            toast(() => (
-                <div className="space-y-2">
-                    <p className="text-sm font-medium">Upgrade to Professional to bulk delete.</p>
-                    <Link href="/dashboard/billing">
-                        <Button variant="secondary" size="sm">Upgrade</Button>
-                    </Link>
-                </div>
-            ))
-            return
-        }
 
         if (selectedIds.length === 0) return
 
@@ -463,9 +440,9 @@ export default function ServiceTable(props: ServiceTableProps) {
                     <Button
                         size="sm"
                         className="bg-primary text-black hover:bg-primary/80"
-                        disabled={gated || selectedCount === 0 || bulkLoading}
+                        disabled={selectedCount === 0 || bulkLoading}
                         onClick={startBulkDeletion}
-                        title={gated ? "Upgrade to use bulk deletion" : selectedCount === 0 ? "Select services first" : "Start bulk deletion"}
+                        title={selectedCount === 0 ? "Select services first" : "Start bulk deletion"}
                     >
                         {bulkLoading ? (
                             <span className="flex items-center gap-2">
@@ -475,15 +452,6 @@ export default function ServiceTable(props: ServiceTableProps) {
                             <>Bulk delete{selectedCount ? ` (${selectedCount})` : ""}</>
                         )}
                     </Button>
-
-                    {gated ? (
-                        <Link href="/dashboard/billing">
-                            <Button size="sm" variant="outline" className="border-white/15 bg-[#050505]">
-                                <Lock className="h-4 w-4 mr-2" />
-                                Upgrade
-                            </Button>
-                        </Link>
-                    ) : null}
 
                     <Button variant="ghost" size="icon" onClick={resetFilters} title="Reset filters">
                         <RefreshCw className="h-4 w-4" />
@@ -516,41 +484,11 @@ export default function ServiceTable(props: ServiceTableProps) {
                     GhostSweep found{" "}
                     <span className="text-white font-semibold">{totalCount.toLocaleString()}</span>{" "}
                     accounts matching your filters.
-                    {gated ? <span className="ml-2 text-white/60">Upgrade to view the list and bulk delete.</span> : null}
                 </div>
-
-                {gated ? (
-                    <Link href="/dashboard/billing">
-                        <Button size="sm" className="bg-primary text-black hover:bg-primary/80">
-                            Upgrade now
-                        </Button>
-                    </Link>
-                ) : null}
             </div>
 
             {/* Table wrapper */}
             <div className="relative overflow-hidden rounded-md border border-border bg-[#050505] max-h-[500px] min-h-[300px] overflow-y-auto">
-                {/* Gate overlay */}
-                {gated && !isLoading ? (
-                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/55 backdrop-blur-[2px]">
-                        <div className="max-w-sm rounded-xl border border-white/10 bg-black/70 p-4 text-center">
-                            <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5">
-                                <Lock className="h-5 w-5 text-white/80" />
-                            </div>
-                            <p className="text-sm font-medium text-white">Accounts list is a Pro feature</p>
-                            <p className="mt-1 text-xs text-white/60">
-                                You can see the total accounts discovered, but the full list (and bulk deletion) is hidden on Free.
-                            </p>
-                            <div className="mt-3">
-                                <Link href="/dashboard/billing">
-                                    <Button size="sm" className="bg-primary text-black hover:bg-primary/80">
-                                        Upgrade now
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                ) : null}
 
                 <Table>
                     <TableHeader>
@@ -570,12 +508,6 @@ export default function ServiceTable(props: ServiceTableProps) {
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="relative h-24 text-center text-sm text-muted-foreground">
                                     <Spinner className="absolute left-1/2 top-1/2 text-primary" />
-                                </TableCell>
-                            </TableRow>
-                        ) : gated ? (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center text-sm text-muted-foreground">
-                                    Upgrade to view discovered accounts.
                                 </TableCell>
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (
@@ -606,13 +538,8 @@ export default function ServiceTable(props: ServiceTableProps) {
             {/* Pagination footer */}
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                    {gated ? (
-                        <>0 of 0 row(s) selected.</>
-                    ) : (
-                        <>
                             {table.getSelectedRowModel().rows.length} of {table.getRowModel().rows.length} row(s) selected.
-                        </>
-                    )}
+                        
                 </div>
 
                 <div className="space-x-2">

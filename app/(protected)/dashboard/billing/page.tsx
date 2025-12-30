@@ -211,15 +211,14 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                             <div className="grid gap-2 text-xs text-muted-foreground">
                                 <p className="font-medium text-white/80">What you get:</p>
-                                <ul className="space-y-1">
-                                    <li>• Unlimited inbox scans</li>
-                                    <li>• See ALL accounts (not just 50)</li>
-                                    <li>• Full breach history with details</li>
-                                    <li>• Auto-detect new accounts</li>
-                                    <li>• Deletion request templates</li>
-                                    <li>• Track deletion progress</li>
-                                    <li>• Email alerts for new breaches</li>
-                                </ul>
+                                    <ul className="space-y-1">
+                                        <li>• Everything in Free</li>
+                                        <li>• Automatic breach monitoring & alerts</li>
+                                        <li>• Quarterly automatic rescans</li>
+                                        <li>• Bulk deletion request tools</li>
+                                        <li>• Auto follow-ups & status tracking</li>
+                                        <li>• Priority email support</li>
+                                    </ul>
                             </div>
                         </section>
 

@@ -43,17 +43,14 @@ function SignInForm({
         } catch (error: unknown) {
             console.error("Login error:", error);
 
-            const code =
-                error && typeof error === "object" && "code" in error
-                    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (error as any).code
-                    : undefined;
-
-            if (code === "invalid_credentials") {
-                toast.error("Login failed. Please check your email and password.");
-            } else {
-                toast.error("Something went wrong. Please try again.");
+            if (!(error instanceof Error)) {
+                toast.error("An unexpected error occurred. Please try again.");
+                return;
             }
+
+            if (error.message === "Invalid login credentials") {
+                toast.error("Login failed. Please check your email and password.");
+            } 
         } finally {
             setIsLoading(false);
         }
