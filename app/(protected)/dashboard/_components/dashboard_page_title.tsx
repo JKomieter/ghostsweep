@@ -116,13 +116,6 @@ export default function DashboardTitle() {
                     : ""
                     }.`,
             });
-
-            if (typeof window !== "undefined" && window.fbq) {
-                window.fbq("track", "Search", {
-                    content_category: "email_scan",
-                    accounts_found: latestSweep.servicesFound,
-                });
-            }
         }
 
         if (latestSweep.status === "cancelled") {

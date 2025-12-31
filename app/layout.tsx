@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { Toaster } from "@/components/ui/sonner"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
-import { MetaPixel } from "@/lib/meta-pixel";
+import FBPixel from "@/components/pixel-tracker";
 
 
 const interSans = Inter({
@@ -88,10 +88,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <FBPixel />
       <body
         className={`${interSans.variable} ${inter.variable} antialiased`}
       >
-        <MetaPixel />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
