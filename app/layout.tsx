@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { Toaster } from "@/components/ui/sonner"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
-import { FacebookPixel } from "@/lib/meta-pixel";
+import { MetaPixel } from "@/lib/meta-pixel";
 
 
 const interSans = Inter({
@@ -91,7 +91,7 @@ export default function RootLayout({
       <body
         className={`${interSans.variable} ${inter.variable} antialiased`}
       >
-        <FacebookPixel />
+        <MetaPixel />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
