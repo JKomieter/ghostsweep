@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useState } from "react";
+import * as pixel from "@/lib/meta-pixels";
 
 type LatestSweepResponse = {
     sweepId: string | null;
@@ -127,6 +128,12 @@ export default function DashboardTitle() {
                 queryClient.invalidateQueries({ queryKey: ["metrics"] }),
                 queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] }),
             ]);
+
+            pixel.event("Search", {
+                content_category: "email_scan",
+                accounts_found: latestSweep.servicesFound || 0,
+                breaches_found: latestSweep.breachesFound || 0,
+            });
 
             toast("Sweep cancelled", {
                 description: "No more inbox processing will occur.",
