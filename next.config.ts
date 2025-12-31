@@ -78,22 +78,22 @@ const nextConfig: NextConfig = {
           ? // DEVELOPMENT CSP (permissive)
           [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://va.vercel-scripts.com",
+            "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://va.vercel-scripts.com https://connect.facebook.net", // ✅ Added Facebook
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: https:",
             "font-src 'self' data:",
-            "connect-src 'self' ws: wss: https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co",
+            "connect-src 'self' ws: wss: https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co https://www.facebook.com https://connect.facebook.net", // ✅ Added Facebook
             "worker-src 'self' blob:",
             "frame-src 'self' https://accounts.google.com",
           ].join("; ")
           : // PRODUCTION CSP (strict)
           [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://va.vercel-scripts.com",
+            "script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://va.vercel-scripts.com https://connect.facebook.net", // ✅ Added Facebook
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: https:",
+            "img-src 'self' data: https: https://www.facebook.com",
             "font-src 'self' data:",
-            "connect-src 'self' https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co",
+            "connect-src 'self' https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co https://www.facebook.com https://connect.facebook.net", // ✅ Added Facebook
             "worker-src 'self' blob:",
             "frame-src 'self' https://accounts.google.com",
           ].join("; "),
@@ -105,10 +105,6 @@ const nextConfig: NextConfig = {
     ];
 
     return [
-      // {
-      //   source: '/api/webhooks/:path*',
-      //   headers: [],
-      // },
       // Public marketing pages - can be cached
       {
         source: '/home/:path((?!breach_check).*)*',
