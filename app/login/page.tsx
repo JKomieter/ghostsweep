@@ -17,7 +17,6 @@ import { toast } from "sonner";
 import { login, signup } from "./action";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
-import ReactPixel from "react-facebook-pixel";
 
 type Mode = "signin" | "signup" | "confirm";
 
@@ -181,10 +180,6 @@ function SignUpForm({
 
         try {
             await signup({ email, password });
-            ReactPixel.track("CompleteRegistration", {
-                content_name: "GhostSweep Signup",
-                status: "success",
-            });
             setMode("confirm");
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {

@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export const FacebookPixel = () => {
+const FacebookPixelClient = () => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
@@ -27,4 +28,12 @@ export const FacebookPixel = () => {
     }, [pathname, searchParams]);
 
     return null;
+};
+
+export const FacebookPixel = () => {
+    return (
+        <Suspense fallback={null}>
+            <FacebookPixelClient />
+        </Suspense>
+    );
 };
