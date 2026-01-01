@@ -217,7 +217,7 @@ export default function DeletionTab({
     const steps = playbook?.steps ?? null;
 
     // new: info columns pulled from playbook
-    const notes = (playbook)?.notes as string | null | undefined;
+    const notes = (playbook)?.data_retention_notes as string | null | undefined;
     const deletionDifficulty = (playbook)?.deletion_difficulty as string | null | undefined;
     const dataDeletionInfo = (playbook)?.data_deletion_info as DataDeletionInfo;
 

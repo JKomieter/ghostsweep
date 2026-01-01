@@ -100,7 +100,7 @@ export interface ServiceDeletionPlaybook {
 
     // ===== Metadata =====
     deletion_difficulty: 'easy' | 'medium' | 'hard' | null
-    notes: string | null              
+    data_retention_notes: string | null              
 
     // ===== Timestamps =====
     created_at: string
