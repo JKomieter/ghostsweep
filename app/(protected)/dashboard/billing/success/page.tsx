@@ -100,9 +100,9 @@ function shortId(id: string) {
 export default async function SuccessPage({
     searchParams,
 }: {
-    searchParams: { session_id?: string };
+    searchParams: Promise<{ session_id?: string }>;
 }) {
-    const sessionId = searchParams?.session_id;
+    const sessionId = (await searchParams)?.session_id;
     if (!sessionId) redirect("/dashboard/billing");
 
     const session = await stripe.checkout.sessions.retrieve(sessionId, {

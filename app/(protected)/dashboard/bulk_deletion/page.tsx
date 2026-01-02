@@ -13,6 +13,7 @@ import { BulkUserServicesQueryResult } from "@/queryTypes";
 import EmailBulkTab from "../_components/bulk_deletion/email_bulk_tab";
 import LinkBulkTab from "../_components/bulk_deletion/link_bulk_tab";
 import ManualBulkTab from "../_components/bulk_deletion/manual_bulk_tab";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * URL formats supported:
@@ -44,12 +45,13 @@ export default function BulkDeletionsPage() {
     const { data, error, status } = useQuery({
         queryKey: ["bulk_user_services", ...userServiceIds],
         queryFn: async (): Promise<BulkUserServicesQueryResult> => {
-            const res = await fetch(`/api/bulk_user_services?ids=${userServiceIds.join(",")}`)
-            const data = await res.json()
-            if (!res.ok) throw new Error(data?.error)
-            return data
-        }
-    })
+            const res = await fetch(`/api/bulk_user_services?ids=${userServiceIds.join(",")}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || "Failed to fetch bulk user services");
+            return data;
+        },
+        enabled: userServiceIds.length > 0, // Only fetch if there are IDs
+    });
 
     const hasSelection = userServiceIds.length > 0;
 
@@ -80,8 +82,23 @@ export default function BulkDeletionsPage() {
                 </div>
             </div>
 
+            {/* Loading state */}
+            {status === "pending" && (
+                <div className="rounded-xl border border-white/10 bg-[#050505] p-5">
+                    <Spinner className="bg-primary" fontSize={40} />
+                </div>
+            )}
+
+            {/* Error state */}
+            {status === "error" && (
+                <div className="rounded-xl border border-red-500 bg-red-900/10 p-5">
+                    <p className="text-sm text-red-500">Failed to load services.</p>
+                    <p className="mt-1 text-xs text-red-400">{(error as Error)?.message}</p>
+                </div>
+            )}
+
             {/* Empty selection state */}
-            {!hasSelection ? (
+            {status === "success" && !hasSelection && (
                 <div className="rounded-xl border border-white/10 bg-[#050505] p-5">
                     <p className="text-sm text-white/80">No services selected.</p>
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -94,7 +111,10 @@ export default function BulkDeletionsPage() {
                         </Button>
                     </div>
                 </div>
-            ) : (
+            )}
+
+            {/* Main content */}
+            {status === "success" && hasSelection && (
                 <div className="rounded-xl border border-white/10 bg-[#050505] p-4 md:p-5">
                     <Tabs defaultValue="email" className="w-full">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
