@@ -9,6 +9,9 @@ export interface UserServicesQueryResult {
     hasMore: boolean,
     gated: boolean,
     currentPlan: Plan,
+    hiddenCount: number
+    freeLimit: number
+    shownCount: number
 }
 
 export type DeletionRequestListRow = Pick<

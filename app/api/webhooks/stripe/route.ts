@@ -5,7 +5,6 @@ import { createClient } from "@/utils/supabase/server"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-
 const MONTHLY_PRICE_ID = "price_1SVNdMK2SUgcYUhjVOPOghzk"
 
 function getNextMonthDate(): string {
@@ -32,7 +31,7 @@ function getRenewalDate(priceId: string): string {
 
 export async function POST(req: Request) {
   let event: Stripe.Event;
-  
+
   try {
     const signature = req.headers.get("stripe-signature");
 
@@ -41,7 +40,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
     }
 
-
     event = stripe.webhooks.constructEvent(
       await req.text(),
       signature as string,
@@ -49,7 +47,6 @@ export async function POST(req: Request) {
     );
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    // On error, log and return the error message.
     if (err! instanceof Error) console.log(err);
     console.log(`❌ Error message: ${errorMessage}`);
     return NextResponse.json(
@@ -100,6 +97,51 @@ export async function POST(req: Request) {
         }
 
         console.log(`✨ User ${supabaseUserId} upgraded to Pro (renews: ${renewsAt})`)
+        break
+      }
+
+      // ================================================================
+      // 🔥 TRIAL WILL END (3 days before trial ends)
+      // ================================================================
+      case "customer.subscription.trial_will_end": {
+        const subscription = event.data.object as Stripe.Subscription
+        const customerId = subscription.customer as string
+
+        // Find user by Stripe customer ID
+        const { data: subRow, error: findError } = await supabase
+          .from("user_subscriptions")
+          .select("user_id")
+          .eq("stripe_customer_id", customerId)
+          .maybeSingle()
+
+        if (findError || !subRow) {
+          console.warn(`⚠️ No user found for customer ${customerId}`)
+          break
+        }
+
+        const trialEndDate = subscription.trial_end
+          ? new Date(subscription.trial_end * 1000).toISOString()
+          : null
+
+        // Call edge function to handle trial ending reminder
+        const { error: trialError } = await supabase.functions.invoke(
+          "trial-will-end-notification",
+          {
+            body: {
+              userId: subRow.user_id,
+              trialEndDate,
+            },
+            headers: {
+              "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+            }
+          }
+        )
+
+        if (trialError) {
+          console.error("❌ Error sending trial reminder:", trialError)
+        }
+
+        console.log(`⏰ Trial ending soon for user ${subRow.user_id} (ends: ${trialEndDate})`)
         break
       }
 
@@ -202,15 +244,15 @@ export async function POST(req: Request) {
         }
 
         const { error: notifError } = await supabase.functions.invoke(
-            'payment-failed-notification',
-            {
-              body: {
-                userId: subRow.user_id,
-              },
-              headers: {
-                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
-              }
+          'payment-failed-notification',
+          {
+            body: {
+              userId: subRow.user_id,
+            },
+            headers: {
+              "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
             }
+          }
         )
 
         if (notifError) {

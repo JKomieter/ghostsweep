@@ -73,7 +73,7 @@ type HasDeletionFilter = "all" | "yes" | "no"
 
 type RowType = Partial<UserService> & {
     service: Service
-    deletion_requests?: DeletionRequest[] | null // ✅ FIX: array (or null/undefined)
+    deletion_requests?: DeletionRequest[] | null
 }
 
 const PAGE_SIZE = 20
@@ -118,17 +118,12 @@ export const columns: ColumnDef<RowType>[] = [
             const logoUrl = svc?.logo_url ?? null
 
             return (
-                <div className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
+                // <div className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
+                <div>
                     <div className="flex items-start gap-2">
                         <div className="relative h-6 w-6 overflow-hidden rounded-full border border-white/10 bg-white/5 shrink-0">
                             {logoUrl ? (
-                                <Image
-                                    src={logoUrl}
-                                    width={64}
-                                    height={64}
-                                    alt=""
-                                    className="h-full w-full object-cover"
-                                />
+                                <Image src={logoUrl} width={64} height={64} alt="" className="h-full w-full object-cover" />
                             ) : null}
                         </div>
                         <div className="flex flex-col leading-tight min-w-0">
@@ -149,7 +144,8 @@ export const columns: ColumnDef<RowType>[] = [
             const category = row.original.service?.category
 
             return (
-                <span className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
+                // <span className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
+                <span>
                     {category || "Unknown"}
                 </span>
             )
@@ -164,7 +160,8 @@ export const columns: ColumnDef<RowType>[] = [
             const count = row.original.email_count ?? 0
 
             return (
-                <div className={gated ? "blur-[6px] select-none pointer-events-none text-left text-sm" : "text-left text-sm"}>
+                // <div className={gated ? "blur-[6px] select-none pointer-events-none text-left text-sm" : "text-left text-sm"}>
+                <div className="text-left text-sm">
                     {lastSeen} · {count} emails
                 </div>
             )
@@ -184,7 +181,8 @@ export const columns: ColumnDef<RowType>[] = [
             const { label, className } = priorityLabel(score)
 
             return (
-                <div className={gated ? "blur-[6px] select-none pointer-events-none flex items-center gap-2" : "flex items-center gap-2"}>
+                // <div className={gated ? "blur-[6px] select-none pointer-events-none flex items-center gap-2" : "flex items-center gap-2"}>
+                <div className="flex items-center gap-2">
                     <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${className}`}>
                         {label}
                     </span>
@@ -197,10 +195,10 @@ export const columns: ColumnDef<RowType>[] = [
         accessorKey: "deletion_requests",
         header: "Deletion Request",
         cell: ({ row, table }) => {
-            const gated = (table.options.meta as TableMeta | undefined)?.gated
-            if (gated) {
-                return <span className="text-xs text-muted-foreground blur-[6px] select-none pointer-events-none">—</span>
-            }
+            // const gated = (table.options.meta as TableMeta | undefined)?.gated
+            // if (gated) {
+            //     return <span className="text-xs text-muted-foreground blur-[6px] select-none pointer-events-none">—</span>
+            // }
 
             const requests = (row.original.deletion_requests ?? null) as
                 | { id: string; status: DeletionStatus; sent_at: string | null }[]
@@ -237,18 +235,18 @@ export const columns: ColumnDef<RowType>[] = [
         enableHiding: false,
         cell: ({ row, table }) => {
             const meta = table.options.meta as TableMeta | undefined
-            const gated = meta?.gated
+            // const gated = meta?.gated
 
-            if (gated) {
-                return (
-                    <Link href="/dashboard/billing">
-                        <Button variant="link" size="sm" className="px-0 text-muted-foreground">
-                            <Lock className="h-3 w-3 mr-1" />
-                            Upgrade
-                        </Button>
-                    </Link>
-                )
-            }
+            // if (gated) {
+            //     return (
+            //         <Link href="/dashboard/billing">
+            //             <Button variant="link" size="sm" className="px-0 text-muted-foreground">
+            //                 <Lock className="h-3 w-3 mr-1" />
+            //                 Upgrade
+            //             </Button>
+            //         </Link>
+            //     )
+            // }
 
             return (
                 <Button
@@ -319,15 +317,22 @@ export default function ServiceTable(props: ServiceTableProps) {
 
     const isLoading = userServicesQueryResultStatus === "pending"
 
-    const visibleCount = userServicesQueryResult?.userServices?.length ?? 0
-    const totalCount = userServicesQueryResult?.total ?? visibleCount
-    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
-
-    const canPrev = page > 1
-    const canNext = page < totalPages
-
     const data = ((userServicesQueryResult?.userServices || [])) as RowType[]
 
+    // --- use API hints (preferred) ---
+    const apiTotal = userServicesQueryResult?.total ?? data.length
+    const apiShown = userServicesQueryResult?.shownCount ?? data.length
+    const apiHidden = userServicesQueryResult?.hiddenCount ?? 0
+    const apiGated = Boolean(userServicesQueryResult?.gated) || apiHidden > 0
+    const freeLimit = userServicesQueryResult?.freeLimit ?? 10
+
+    // If gated, backend is returning ONLY first 10, so pagination should not pretend there are more pages.
+    const totalCountForUi = apiTotal
+    const shownCountForUi = apiShown
+    const totalPages = apiGated ? 1 : Math.max(1, Math.ceil(totalCountForUi / PAGE_SIZE))
+
+    const canPrev = !apiGated && page > 1
+    const canNext = !apiGated && page < totalPages
 
     const table = useReactTable({
         data,
@@ -337,25 +342,24 @@ export default function ServiceTable(props: ServiceTableProps) {
         pageCount: totalPages,
         state: {
             columnVisibility,
-            rowSelection,  // ← FIXED: Always use rowSelection state
+            rowSelection,
             pagination: { pageIndex: page - 1, pageSize: PAGE_SIZE },
         },
         onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,  // ← FIXED: Always allow updates (table will block if disabled)
+        onRowSelectionChange: setRowSelection,
         meta: {
             onView: (userServiceId: string) => router.push(`/dashboard/user_services/${userServiceId}/details`),
+            gated: apiGated, // ✅ gates selection + row actions + blurs (already implemented in columns)
         },
     })
 
     const selectedIds = useMemo(() => {
-
         const rows = table.getSelectedRowModel().rows
         if (!rows || rows.length === 0) return []
-
         return rows
             .map((r) => r.original.id)
             .filter((id): id is string => typeof id === "string" && id.length > 0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [table, rowSelection])
 
     const selectedCount = selectedIds.length
@@ -399,9 +403,7 @@ export default function ServiceTable(props: ServiceTableProps) {
     }
 
     const startBulkDeletion = async () => {
-
         if (selectedIds.length === 0) return
-
         try {
             setBulkLoading(true)
             const idsJoin = encodeURIComponent(selectedIds.join(","))
@@ -410,7 +412,7 @@ export default function ServiceTable(props: ServiceTableProps) {
             setBulkLoading(false)
         }
     }
-    
+
     return (
         <div className="space-y-3">
             {/* Header controls */}
@@ -424,6 +426,7 @@ export default function ServiceTable(props: ServiceTableProps) {
                         setQuery(e.target.value)
                         setPage(1)
                     }}
+                    disabled={isLoading || apiGated}
                 />
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -440,11 +443,16 @@ export default function ServiceTable(props: ServiceTableProps) {
                     <Button
                         size="sm"
                         className="bg-primary text-black hover:bg-primary/80"
-                        disabled={selectedCount === 0 || bulkLoading}
+                        disabled={apiGated || selectedCount === 0 || bulkLoading}
                         onClick={startBulkDeletion}
-                        title={selectedCount === 0 ? "Select services first" : "Start bulk deletion"}
+                        title={apiGated ? "Upgrade to use bulk delete" : selectedCount === 0 ? "Select services first" : "Start bulk deletion"}
                     >
-                        {bulkLoading ? (
+                        {apiGated ? (
+                            <span className="flex items-center gap-2">
+                                <Lock className="h-4 w-4" />
+                                Bulk delete (Pro)
+                            </span>
+                        ) : bulkLoading ? (
                             <span className="flex items-center gap-2">
                                 <Spinner /> Creating…
                             </span>
@@ -478,17 +486,54 @@ export default function ServiceTable(props: ServiceTableProps) {
                 </div>
             ) : null}
 
-            {/* Count / gate banner */}
-            <div className="rounded-lg border border-white/10 bg-[#050505] px-4 py-3 text-xs flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-muted-foreground">
-                    GhostSweep found{" "}
-                    <span className="text-white font-semibold">{totalCount.toLocaleString()}</span>{" "}
-                    accounts matching your filters.
+            {/* ✅ Gate banner (uses query payload fields) */}
+            {!isLoading && apiGated ? (
+                <div className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="text-white/70">
+                        Showing <strong className="text-white">{shownCountForUi.toLocaleString()}</strong> of{" "}
+                        <strong className="text-white">{totalCountForUi.toLocaleString()}</strong> accounts.
+                        <span className="text-white/60"> Upgrade to see the remaining {apiHidden.toLocaleString()}.</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <Link href="/dashboard/billing">
+                            <Button size="sm" className="bg-white text-black hover:bg-zinc-100">
+                                <Lock className="h-4 w-4 mr-2" />
+                                Upgrade to Pro
+                            </Button>
+                        </Link>
+                        <Button size="sm" variant="outline" className="border-white/15" onClick={() => router.push("/dashboard/billing")}>
+                            View plans
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="rounded-lg border border-white/10 bg-[#050505] px-4 py-3 text-xs flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="text-muted-foreground">
+                        GhostSweep found{" "}
+                        <span className="text-white font-semibold">{totalCountForUi.toLocaleString()}</span>{" "}
+                        accounts matching your filters.
+                    </div>
+
+                    {/* nice-to-have: show limit hint even if backend doesn't set gated but total==shown */}
+                    {!isLoading && !apiGated && totalCountForUi <= freeLimit ? (
+                        <div className="text-white/40">
+                            Tip: Pro unlocks full history, tracking, and follow-ups.
+                        </div>
+                    ) : null}
+                </div>
+            )}
 
             {/* Table wrapper */}
             <div className="relative overflow-hidden rounded-md border border-border bg-[#050505] max-h-[500px] min-h-[300px] overflow-y-auto">
+                {/* Optional overlay to visually hint gating (without blocking scroll) */}
+                {/* {!isLoading && apiGated ? (
+                    <div className="pointer-events-none absolute inset-0 z-10">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-black/60 px-3 py-1 text-[11px] text-white/80 backdrop-blur">
+                            Showing first {freeLimit} — upgrade to see all
+                        </div>
+                    </div>
+                ) : null} */}
 
                 <Table>
                     <TableHeader>
@@ -538,8 +583,16 @@ export default function ServiceTable(props: ServiceTableProps) {
             {/* Pagination footer */}
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
+                    {apiGated ? (
+                        <span className="flex items-center gap-2">
+                            <Lock className="h-4 w-4" />
+                            Showing {shownCountForUi} of {totalCountForUi} • Upgrade to select rows & paginate
+                        </span>
+                    ) : (
+                        <>
                             {table.getSelectedRowModel().rows.length} of {table.getRowModel().rows.length} row(s) selected.
-                        
+                        </>
+                    )}
                 </div>
 
                 <div className="space-x-2">
@@ -547,7 +600,8 @@ export default function ServiceTable(props: ServiceTableProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => canPrev && setPage((p) => p - 1)}
-                        disabled={!canPrev || isLoading}
+                        disabled={!canPrev || isLoading || apiGated}
+                        title={apiGated ? "Upgrade to browse pages" : undefined}
                     >
                         Previous
                     </Button>
@@ -556,10 +610,19 @@ export default function ServiceTable(props: ServiceTableProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => canNext && setPage((p) => p + 1)}
-                        disabled={!canNext || isLoading}
+                        disabled={!canNext || isLoading || apiGated}
+                        title={apiGated ? "Upgrade to browse pages" : undefined}
                     >
                         Next
                     </Button>
+
+                    {apiGated ? (
+                        <Link href="/dashboard/billing">
+                            <Button size="sm" className="bg-white text-black hover:bg-zinc-100">
+                                Upgrade
+                            </Button>
+                        </Link>
+                    ) : null}
                 </div>
             </div>
 

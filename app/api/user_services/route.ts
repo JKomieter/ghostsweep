@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { type NextRequest, NextResponse } from "next/server";
 
 const PAGE_SIZE = 50;
+const FREE_ACCOUNT_LIMIT = 10;
 
 const ALLOWED_STATUSES = new Set([
     "drafted",
@@ -174,7 +175,7 @@ export async function GET(request: NextRequest) {
         }
 
         // ===========================
-        // Count query
+        // Count query (always get full count)
         // ===========================
         let countQuery = supabase
             .from("user_services")
@@ -200,7 +201,15 @@ export async function GET(request: NextRequest) {
                 { status: 500 }
             );
         }
-        
+
+        const totalCount = serviceCount ?? 0;
+
+        // ===========================
+        // 🔥 FREE TIER GATING
+        // ===========================
+        const isGated = !isPro && totalCount > FREE_ACCOUNT_LIMIT;
+        const effectiveLimit = isPro ? to : Math.min(to, FREE_ACCOUNT_LIMIT - 1);
+
         let query = supabase
             .from("user_services")
             .select(
@@ -220,7 +229,14 @@ export async function GET(request: NextRequest) {
             .limit(1, { foreignTable: "deletion_requests" });
 
         query = applyFilters(query);
-        query = query.range(from, to);
+
+        // 🔥 Apply free tier limit
+        if (isPro) {
+            query = query.range(from, to);
+        } else {
+            // Free users: only show first 10 accounts
+            query = query.range(0, FREE_ACCOUNT_LIMIT - 1);
+        }
 
         const { data: userServices, error } = await query;
 
@@ -234,12 +250,15 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
             userServices: userServices ?? [],
-            total: serviceCount ?? 0,
+            total: totalCount,
+            shownCount: (userServices ?? []).length,
+            hiddenCount: isGated ? totalCount - FREE_ACCOUNT_LIMIT : 0,
             page,
             pageSize: PAGE_SIZE,
-            hasMore: typeof serviceCount === "number" ? to + 1 < serviceCount : false,
-            gated: false,
+            hasMore: isPro ? (typeof totalCount === "number" ? to + 1 < totalCount : false) : false,
+            gated: isGated,
             currentPlan,
+            freeLimit: FREE_ACCOUNT_LIMIT,
         });
     } catch (err) {
         console.error("Error in /api/user_services:", err);

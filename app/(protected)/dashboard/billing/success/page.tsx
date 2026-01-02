@@ -1,14 +1,13 @@
 // app/dashboard/billing/success/page.tsx
 export const dynamic = "force-dynamic";
 
-import { stripe } from "@/lib/stripe";
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import type Stripe from "stripe";
-import { JSX } from "react";
+import { stripe } from "@/lib/stripe";
 
 const SuccessIcon = (
-    <svg width="16" height="14" viewBox="0 0 16 14" fill="none">
+    <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
         <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -19,7 +18,7 @@ const SuccessIcon = (
 );
 
 const ErrorIcon = (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -30,7 +29,7 @@ const ErrorIcon = (
 );
 
 const InfoIcon = (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
         <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -50,138 +49,236 @@ const InfoIcon = (
     </svg>
 );
 
-// PaymentIntent statuses: requires_payment_method | requires_confirmation | requires_action | processing | requires_capture | canceled | succeeded
 const STATUS_CONTENT_MAP: Record<
     string,
-    { text: string; iconColor: string; icon: JSX.Element }
+    { title: string; subtitle: string; iconColor: string; icon: React.JSX.Element }
 > = {
-    succeeded: { text: "Payment succeeded", iconColor: "#30B130", icon: SuccessIcon },
-    processing: { text: "Your payment is processing.", iconColor: "#6D6E78", icon: InfoIcon },
+    succeeded: {
+        title: "You’re all set.",
+        subtitle: "Your plan will activate shortly — usually within a few seconds.",
+        iconColor: "#16a34a",
+        icon: SuccessIcon,
+    },
+    processing: {
+        title: "Payment processing…",
+        subtitle: "This can take a minute. Your plan will activate once it clears.",
+        iconColor: "#64748b",
+        icon: InfoIcon,
+    },
     requires_payment_method: {
-        text: "Your payment wasn’t successful, please try again.",
-        iconColor: "#DF1B41",
+        title: "Payment failed.",
+        subtitle: "Your payment wasn’t successful. Please try again.",
+        iconColor: "#ef4444",
         icon: ErrorIcon,
     },
-    requires_action: { text: "Additional authentication required.", iconColor: "#6D6E78", icon: InfoIcon },
-    canceled: { text: "Payment was canceled.", iconColor: "#DF1B41", icon: ErrorIcon },
-    default: { text: "Something went wrong, please try again.", iconColor: "#DF1B41", icon: ErrorIcon },
+    requires_action: {
+        title: "Action required.",
+        subtitle: "Additional authentication is required to complete payment.",
+        iconColor: "#64748b",
+        icon: InfoIcon,
+    },
+    canceled: {
+        title: "Payment canceled.",
+        subtitle: "No worries — you can try again anytime.",
+        iconColor: "#ef4444",
+        icon: ErrorIcon,
+    },
+    default: {
+        title: "Something went wrong.",
+        subtitle: "Please try again, or contact support if it keeps happening.",
+        iconColor: "#ef4444",
+        icon: ErrorIcon,
+    },
 };
+
+function shortId(id: string) {
+    if (!id) return "—";
+    if (id.length <= 18) return id;
+    return `${id.slice(0, 10)}…${id.slice(-6)}`;
+}
 
 export default async function SuccessPage({
     searchParams,
 }: {
-    searchParams: Promise<{ session_id?: string }>;
+    searchParams: { session_id?: string };
 }) {
-    const { session_id } = await searchParams;
+    const sessionId = searchParams?.session_id;
+    if (!sessionId) redirect("/dashboard/billing");
 
-    if (!session_id) redirect("/dashboard/billing");
-
-    // Expand payment_intent so we can show real status
-    const session = await stripe.checkout.sessions.retrieve(session_id, {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
         expand: ["payment_intent", "line_items"],
     });
 
     // If user hits success URL but never completed checkout
     if (session.status === "open") redirect("/dashboard/billing");
 
-    // PaymentIntent can be:
-    // - string (id)
-    // - PaymentIntent object (because we expanded)
-    // - null (rare but possible)
     const paymentIntent = session.payment_intent as Stripe.PaymentIntent | null;
     const piStatus = paymentIntent?.status ?? "default";
     const ui = STATUS_CONTENT_MAP[piStatus] ?? STATUS_CONTENT_MAP.default;
-    console.log(paymentIntent)
+
     const customerEmail =
         session.customer_details?.email ??
         (typeof session.customer_email === "string" ? session.customer_email : null);
 
     const paymentIntentId = paymentIntent?.id ?? null;
 
-    // ✅ OPTIONAL: if you need to mark user as Pro, do it via webhook (recommended),
-    // not on this page load. You can show a message like:
-    // "Your plan will update in a few seconds." and rely on webhook.
+    const isSuccess = piStatus === "succeeded";
+    const isProcessing = piStatus === "processing";
+    const isFailure =
+        piStatus === "requires_payment_method" ||
+        piStatus === "canceled" ||
+        piStatus === "default";
+
+    const showStripeLink =
+        process.env.NODE_ENV !== "production" && Boolean(paymentIntentId);
 
     return (
         <main className="min-h-screen bg-background px-4 py-10 text-foreground">
-            <div className="mx-auto w-full max-w-lg rounded-2xl border border-white/10 bg-[#050505] p-6 shadow-lg">
-                <div className="flex items-start gap-3">
-                    <div
-                        className="flex h-10 w-10 items-center justify-center rounded-full"
-                        style={{ backgroundColor: ui.iconColor }}
-                    >
-                        {ui.icon}
-                    </div>
-
-                    <div className="flex-1">
-                        <h1 className="text-xl font-semibold text-white">{ui.text}</h1>
-                        <p className="mt-1 text-sm text-white/60">
-                            {customerEmail ? (
-                                <>
-                                    Receipt will be sent to <span className="font-medium text-white/80">{customerEmail}</span>.
-                                </>
-                            ) : (
-                                <>Receipt will be sent to the email used at checkout.</>
-                            )}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="mt-5 h-px bg-white/10" />
-
-                <div className="mt-5 space-y-3 text-sm">
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-white/70">Checkout session</span>
-                            <span className="font-mono text-[12px] text-white/80">{session.id}</span>
+            <div className="mx-auto w-full max-w-xl space-y-4">
+                {/* Header card */}
+                <div className="rounded-2xl border border-white/10 bg-[#050505] p-6 shadow-lg">
+                    <div className="flex items-start gap-3">
+                        <div
+                            className="flex h-11 w-11 items-center justify-center rounded-full"
+                            style={{ backgroundColor: ui.iconColor }}
+                        >
+                            {ui.icon}
                         </div>
 
-                        {paymentIntentId && (
-                            <div className="mt-2 flex items-center justify-between">
-                                <span className="text-white/70">Payment Intent</span>
-                                <span className="font-mono text-[12px] text-white/80">{paymentIntentId}</span>
-                            </div>
-                        )}
+                        <div className="flex-1">
+                            <h1 className="text-xl font-semibold text-white">{ui.title}</h1>
+                            <p className="mt-1 text-sm text-white/60">{ui.subtitle}</p>
 
-                        <div className="mt-2 flex items-center justify-between">
-                            <span className="text-white/70">Status</span>
-                            <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[12px] text-white/80">
-                                {piStatus}
-                            </span>
+                            <p className="mt-3 text-sm text-white/70">
+                                {customerEmail ? (
+                                    <>
+                                        Receipt will be sent to{" "}
+                                        <span className="font-medium text-white/85">{customerEmail}</span>.
+                                    </>
+                                ) : (
+                                    <>Receipt will be sent to the email used at checkout.</>
+                                )}
+                            </p>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-2 sm:flex-row">
+                    {/* What to do next */}
+                    {(isSuccess || isProcessing) && (
+                        <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4">
+                            <p className="text-sm font-medium text-white/85">What to do next</p>
+                            <ul className="mt-2 space-y-2 text-xs text-white/65">
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
+                                    Go to your accounts list and start cleaning up the highest-risk services.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
+                                    Use deletion guides, then enable auto follow-ups + status tracking.
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
+                                    If your plan doesn’t update in 1–2 minutes, refresh the dashboard.
+                                </li>
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Unlocks */}
+                    {isSuccess && (
+                        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                            {[
+                                "Full account list (not just 10)",
+                                "Deletion request tracking",
+                                "Auto follow-ups + status checking",
+                                "Breach monitoring",
+                                "Priority email support",
+                            ].map((t) => (
+                                <div
+                                    key={t}
+                                    className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-xs text-white/75"
+                                >
+                                    {t}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* CTAs */}
+                    <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                         <Link
                             href="/dashboard"
-                            className="inline-flex w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/10"
+                            className="inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-medium text-black hover:bg-zinc-100"
                         >
                             Go to dashboard
                         </Link>
 
                         <Link
-                            href="/dashboard/billing"
+                            href="/dashboard/user_services"
                             className="inline-flex w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/10"
                         >
-                            Back to billing
+                            View accounts
                         </Link>
                     </div>
 
-                    {paymentIntentId && (
+                    <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                        <Link
+                            href="/dashboard/billing"
+                            className="inline-flex w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/10"
+                        >
+                            Manage billing
+                        </Link>
+
+                        <a
+                            href="mailto:support@ghostsweep.com"
+                            className="inline-flex w-full items-center justify-center rounded-md border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200 hover:bg-emerald-500/15"
+                        >
+                            Contact support
+                        </a>
+                    </div>
+
+                    {isFailure && (
+                        <div className="mt-4 rounded-xl border border-red-500/25 bg-red-500/10 p-4">
+                            <p className="text-sm font-medium text-red-200">Need help?</p>
+                            <p className="mt-1 text-xs text-red-200/80">
+                                If your card was charged but your plan didn’t activate, email support with the session ID below.
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Details card */}
+                <div className="rounded-2xl border border-white/10 bg-[#050505] p-5">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs text-white/60">Status</span>
+                        <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[12px] text-white/80">
+                            {piStatus}
+                        </span>
+                    </div>
+
+                    <div className="mt-3 grid gap-2 text-xs">
+                        <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                            <span className="text-white/60">Checkout session</span>
+                            <span className="font-mono text-white/80">{shortId(session.id)}</span>
+                        </div>
+
+                        {paymentIntentId ? (
+                            <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                                <span className="text-white/60">Payment Intent</span>
+                                <span className="font-mono text-white/80">{shortId(paymentIntentId)}</span>
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {showStripeLink ? (
                         <a
                             href={`https://dashboard.stripe.com/payments/${paymentIntentId}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center justify-center gap-2 rounded-md border border-blue-500/20 bg-blue-500/10 px-3 py-2 text-sm text-blue-200 hover:bg-blue-500/15"
+                            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-blue-500/20 bg-blue-500/10 px-3 py-2 text-sm text-blue-200 hover:bg-blue-500/15"
                         >
-                            View in Stripe Dashboard
-                            <span className="text-blue-200/70">↗</span>
+                            View in Stripe Dashboard <span className="text-blue-200/70">↗</span>
                         </a>
-                    )}
-
-                    <p className="pt-2 text-[11px] text-white/50">
-                        If your plan doesn’t update immediately, it’s normal—your webhook may take a few seconds to sync.
-                    </p>
+                    ) : null}
                 </div>
             </div>
         </main>

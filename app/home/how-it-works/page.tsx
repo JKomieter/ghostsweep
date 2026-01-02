@@ -13,7 +13,6 @@ import {
     CheckCircle,
     ExternalLink,
     X,
-    ListChecks,
     Wand2,
     Bell,
     Fingerprint,
@@ -80,7 +79,7 @@ function StepCard({
 
 export default function HowItWorksPage() {
     return (
-        <main className="min-h-screen bg-gradient-to-b from-black via-zinc-950 to-black text-foreground">
+        <main className="min-h-screen bg-linear-to-b from-black via-zinc-950 to-black text-foreground">
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-12 space-y-20">
                 {/* HERO */}
                 <section className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-start">
@@ -328,13 +327,14 @@ export default function HowItWorksPage() {
                 </section>
 
                 {/* FREE VS PRO (keep) */}
+                {/* FREE VS PRO */}
                 <section className="space-y-8 border-t border-white/10 pt-10">
                     <div className="space-y-2">
                         <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-                            Free snapshot vs full clean-up (Professional)
+                            Free discovery vs full control (Professional)
                         </h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            Free is for awareness. Professional is for control: list visibility, risk signals, deletion workflows, and follow-ups.
+                            Free shows you what you have. Professional gives you the tools to delete it all and stay protected.
                         </p>
                     </div>
 
@@ -343,28 +343,40 @@ export default function HowItWorksPage() {
                         <div className="space-y-5 rounded-xl border border-white/10 bg-black/40 p-5">
                             <div className="space-y-1">
                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Free</p>
-                                <p className="text-xs text-muted-foreground">A count-only snapshot</p>
+                                <p className="text-xs text-muted-foreground">Discover your digital footprint</p>
                             </div>
                             <ul className="space-y-2 text-xs text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>Run a scan</span>
+                                    <span>Scan your email once</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                    <span>See your total account count</span>
+                                    <span>See total account count</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>View up to 10 accounts</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>View all breach alerts</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Privacy score dashboard</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No full account list</span>
+                                    <span>No deletion playbooks</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No risk signals / breach visibility</span>
+                                    <span>No continuous monitoring</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <X className="h-3.5 w-3.5 text-white/40 mt-0.5" />
-                                    <span>No deletion workflows or tracking</span>
+                                    <span>No deletion tracking</span>
                                 </li>
                             </ul>
                             <Link
@@ -382,37 +394,64 @@ export default function HowItWorksPage() {
                             </div>
 
                             <div className="space-y-1 pt-2">
-                                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Clean-up + monitoring</p>
+                                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Complete privacy control</p>
                                 <p className="text-xs text-muted-foreground">
-                                    Full visibility + workflows to delete accounts and stay on top of replies.
+                                    Unlimited access + deletion tools + continuous protection
                                 </p>
                             </div>
 
                             <ul className="space-y-2 text-xs text-muted-foreground">
-                                {[
-                                    "Full account list + organization",
-                                    "Risk signals + prioritization",
-                                    "New-account detection (alerts)",
-                                    "Deletion workflows (link / email / manual)",
-                                    "Bulk actions where possible",
-                                    "Follow-ups + reply/status tracking",
-                                ].map((t) => (
-                                    <li key={t} className="flex items-start gap-2">
-                                        <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                                        <span>{t}</span>
-                                    </li>
-                                ))}
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span className="font-medium">Everything in Free, plus:</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Unlimited accounts discovered</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Step-by-step deletion playbooks</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Weekly monitoring (auto-detect new accounts)</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Deletion tracking dashboard</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Continuous breach monitoring + alerts</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Export privacy report (PDF)</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                                    <span>Priority email support</span>
+                                </li>
                             </ul>
 
                             <Link
                                 href="/dashboard/billing?plan=monthly"
                                 className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
                             >
-                                Upgrade to Pro
+                                Upgrade to Pro — $9.99/mo
                             </Link>
                         </div>
                     </div>
+
+                    {/* Quick comparison note */}
+                    <div className="max-w-4xl">
+                        <p className="text-xs text-muted-foreground border-l-2 border-primary/30 pl-3">
+                            <strong className="text-foreground">Free users see what they have.</strong> Pro users get the tools to delete it all—with playbooks for every account, tracking dashboards, and continuous monitoring to catch new accounts automatically.
+                        </p>
+                    </div>
                 </section>
+
 
                 {/* PRIVACY GUARANTEE (keep, tighten) */}
                 <section className="space-y-6 border-t border-primary/40 pt-10">

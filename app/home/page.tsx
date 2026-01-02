@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import Link from "next/link";
@@ -20,6 +21,8 @@ import {
     Mail,
     ArrowDown,
     BadgeCheck,
+    ChevronDown,
+    Zap,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -127,7 +130,7 @@ export default function HomePage() {
         <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608] text-foreground">
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 space-y-16 md:space-y-20">
                 {/* HERO */}
-                <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-10">
+                <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/2 p-6 sm:p-10">
                     {/* premium glow */}
                     <div className="pointer-events-none absolute inset-0">
                         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
@@ -252,7 +255,7 @@ export default function HomePage() {
                         ))}
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                    <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
                         <p className="text-xs text-zinc-400">
                             <span className="font-medium text-zinc-200">Important:</span> GhostSweep never sends deletion emails automatically. You
                             preview and approve everything.
@@ -496,8 +499,8 @@ export default function HomePage() {
                 <section className="space-y-8" id="pricing">
                     <SectionTitle
                         eyebrow="Pricing"
-                        title="Start free. Upgrade for automation."
-                        desc="Free users see everything and can delete manually. Pro users get breach monitoring, automatic rescans, and priority support."
+                        title="Start free. Upgrade to see everything."
+                        desc="Free users discover their digital footprint. Pro users get unlimited access, deletion playbooks, and continuous monitoring."
                     />
 
                     <div className="grid gap-4 md:grid-cols-2">
@@ -509,37 +512,37 @@ export default function HomePage() {
                                     <p className="text-3xl font-semibold text-white">$0</p>
                                     <span className="text-xs text-zinc-400">forever</span>
                                 </div>
-                                <p className="text-xs text-zinc-400">Perfect for one-time cleanups</p>
+                                <p className="text-xs text-zinc-400">Perfect for discovering your digital footprint</p>
                             </div>
 
                             <ul className="space-y-2 text-sm text-zinc-300">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Scan your email</span>
+                                    <span>One email scan</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>See all accounts found</span>
+                                    <span>See up to 10 accounts</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>View breach status</span>
+                                    <span>View all breach alerts</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Step-by-step deletion guides</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Manual tracking</span>
+                                    <span>Privacy score dashboard</span>
                                 </li>
                                 <li className="flex items-start gap-2 text-zinc-400">
                                     <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
-                                    <span>No breach monitoring</span>
+                                    <span>No deletion playbooks</span>
                                 </li>
                                 <li className="flex items-start gap-2 text-zinc-400">
                                     <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
-                                    <span>No automatic rescans</span>
+                                    <span>No continuous monitoring</span>
+                                </li>
+                                <li className="flex items-start gap-2 text-zinc-400">
+                                    <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
+                                    <span>No deletion tracking</span>
                                 </li>
                             </ul>
 
@@ -552,41 +555,65 @@ export default function HomePage() {
                         </div>
 
                         {/* Pro */}
-                        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-6 space-y-5">
+                        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/5 p-6 space-y-5 relative">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
+                                    <Zap className="h-3 w-3" /> Most Popular
+                                </span>
+                            </div>
+
                             <div className="space-y-2">
                                 <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Professional</p>
                                 <div className="flex items-baseline gap-2">
                                     <p className="text-3xl font-semibold text-white">$9.99</p>
                                     <span className="text-xs text-zinc-300">/month</span>
                                 </div>
-                                <p className="text-xs text-emerald-300">Ongoing protection with automated monitoring</p>
+                                <p className="text-xs text-emerald-300">Complete privacy protection & account deletion</p>
                             </div>
 
                             <ul className="space-y-2 text-sm text-zinc-200">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span className="font-medium">Everything in Free</span>
+                                    <span className="font-medium">Everything in Free, plus:</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
                                     <span>
-                                        Automatic breach monitoring{" "}
-                                        <span className="inline-flex items-center gap-1 ml-1 text-xs text-zinc-300">
-                                            <Bell className="h-3 w-3" /> alerts
+                                        <strong>Unlimited accounts</strong> discovered
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>
+                                        <strong>Step-by-step deletion playbooks</strong> for every account
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>
+                                        Weekly monitoring{" "}
+                                        <span className="text-xs text-zinc-300">(auto-detect new accounts)</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>
+                                        Deletion tracking dashboard{" "}
+                                        <span className="text-xs text-zinc-300">(mark as deleted/pending)</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>
+                                        Continuous breach monitoring{" "}
+                                        <span className="inline-flex items-center gap-1 text-xs text-zinc-300">
+                                            <Bell className="h-3 w-3" /> instant alerts
                                         </span>
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Quarterly automatic rescans</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Send bulk deletion requests</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>Auto follow-ups & status tracking</span>
+                                    <span>Export privacy report (PDF)</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
@@ -594,27 +621,94 @@ export default function HomePage() {
                                 </li>
                             </ul>
 
+                            <div className="space-y-2">
+                                <Link
+                                    href="/dashboard/billing?plan=monthly"
+                                    className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                                >
+                                    Start 7-Day Free Trial
+                                </Link>
+                                <p className="text-center text-xs text-zinc-400">
+                                    No credit card required • Cancel anytime
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Annual Plan */}
+                    <div className="rounded-xl border border-white/10 bg-[#050509]/50 p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-semibold text-white">Annual Plan</p>
+                                <p className="text-xs text-zinc-400">Save 20% with yearly billing</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-semibold text-white">$95.88<span className="text-sm text-zinc-400">/year</span></p>
+                                <p className="text-xs text-emerald-400">Just $7.99/month</p>
+                            </div>
                             <Link
-                                href="/dashboard/billing?plan=monthly"
-                                className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                                href="/dashboard/billing?plan=annual"
+                                className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
                             >
-                                Upgrade to Pro
+                                Save $23.88
                             </Link>
                         </div>
                     </div>
 
                     {/* FAQ below pricing */}
-                    <div className="mt-8 pt-8 border-t border-white/10">
-                        <details className="text-sm">
-                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium">
-                                Can I scan multiple emails on the free plan?
+                    <div className="mt-8 pt-8 border-t border-white/10 space-y-4">
+                        <details className="text-sm group">
+                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                                What happens if I find more than 10 accounts?
+                                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
                             </summary>
-                            <p className="mt-2 text-zinc-400 text-xs">
-                                Yes! Free users can scan any email address, one at a time. Pro users get automatic quarterly rescans and breach monitoring for ongoing protection.
+                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                                Free users can see the total number of accounts found (e.g., &quot;37 accounts&quot;), but can only view details for the first 10. Upgrade to Pro to see all accounts and get step-by-step deletion instructions for each one.
+                            </p>
+                        </details>
+
+                        <details className="text-sm group">
+                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                                Do I still see breach alerts on the free plan?
+                                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                            </summary>
+                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                                Yes! All users (free and Pro) can see which accounts have been involved in data breaches. Pro users get continuous monitoring and instant email alerts when new breaches are detected.
+                            </p>
+                        </details>
+
+                        <details className="text-sm group">
+                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                                Can I scan multiple emails on the free plan?
+                                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                            </summary>
+                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                                Free users can scan one email address per month. Pro users get unlimited scans plus automatic weekly monitoring to catch new accounts as they&apos;re created.
+                            </p>
+                        </details>
+
+                        <details className="text-sm group">
+                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                                What&apos;s included in the 7-day free trial?
+                                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                            </summary>
+                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                                You get full access to all Pro features for 7 days—unlimited accounts, deletion playbooks, tracking dashboard, and breach monitoring. No credit card required. After the trial, you can upgrade or continue with the free plan.
+                            </p>
+                        </details>
+
+                        <details className="text-sm group">
+                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                                How does deletion tracking work?
+                                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                            </summary>
+                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                                Pro users can mark accounts as "Pending", "Deletion Requested&ldquo;, or &quot;Deleted&quot; to track their progress. Your dashboard shows how many accounts you&apos;ve successfully removed and calculates your privacy score improvement.
                             </p>
                         </details>
                     </div>
                 </section>
+
 
                 {/* FAQ */}
                 <section className="space-y-8" id="faq">
