@@ -66,7 +66,7 @@ export async function GET() {
       `,
             )
             .eq("user_id", user.id)
-            // .eq("is_read", false)
+            .eq("is_read", false)
             .order("created_at", { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -129,14 +129,16 @@ export async function GET() {
         }
 
         // ✅ Update `is_read` to true for the sweep
-        if (status === "completed" || status === "failed") {
+        if ((status === "completed" || status === "failed") && !sweep.is_read) {
             const { error: updateError } = await supabase
                 .from("sweep_events")
                 .update({ is_read: true })
                 .eq("id", sweep.id);
 
             if (updateError) {
-                console.error("Failed to update is_read for sweep:", updateError);
+                console.error(`Failed to update is_read for sweep with ID ${sweep.id}:`, updateError);
+            } else {
+                console.log(`Successfully updated is_read for sweep with ID ${sweep.id}`);
             }
         }
 

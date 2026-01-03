@@ -469,7 +469,7 @@ export default function DashboardTitle() {
                                 </p>
                                 {plan?.current_plan === "free" && (
                                     <p className="text-xs text-yellow-200/80 border-l-2 border-yellow-500/30 pl-3">
-                                        Free plan: 1 sweep per month, up to 50 accounts shown.
+                                        Free plan: Up to 10 accounts shown.
                                     </p>
                                 )}
                             </>
