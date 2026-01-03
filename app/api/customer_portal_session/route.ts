@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
-import Stripe from "stripe"
 import { createClient } from "@/utils/supabase/server"
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import stripe from "@/lib/stripe"
 
 export async function POST() {
     const supabase = await createClient();

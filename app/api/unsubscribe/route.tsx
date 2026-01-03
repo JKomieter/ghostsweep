@@ -32,13 +32,10 @@ export async function POST(req: Request) {
         // 🔧 Change this table name to match your actual waitlist table
         // e.g. "waitlist_signups" or "waitlist"
         const { data, error } = await supabase
-            .from("waitlist")
-            .update({
-                is_subscribed: false,
-                unsubscribed_at: new Date().toISOString(),
+            .from("non-subscribers")
+            .insert({
+                email,
             })
-            .eq("email", email)
-            .select("id")
             .maybeSingle();
 
         if (error) {

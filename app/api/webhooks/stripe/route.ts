@@ -1,9 +1,8 @@
 // app/api/webhooks/stripe/route.ts
 import { NextResponse } from "next/server"
-import Stripe from "stripe"
 import { createClient } from "@/utils/supabase/server"
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import Stripe from "stripe"
+import stripe from "@/lib/stripe"
 
 const MONTHLY_PRICE_ID = "price_1SVNdMK2SUgcYUhjVOPOghzk"
 
@@ -29,6 +28,10 @@ function getRenewalDate(priceId: string): string {
   return priceId === MONTHLY_PRICE_ID ? getNextMonthDate() : getNextYearDate()
 }
 
+interface ExtendedSubscription extends Stripe.Subscription {
+  current_period_end: number; // Add the missing property
+}
+
 export async function POST(req: Request) {
   let event: Stripe.Event;
 
@@ -47,7 +50,6 @@ export async function POST(req: Request) {
     );
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    if (err! instanceof Error) console.log(err);
     console.log(`❌ Error message: ${errorMessage}`);
     return NextResponse.json(
       { message: `Webhook Error: ${errorMessage}` },
@@ -60,7 +62,8 @@ export async function POST(req: Request) {
   try {
     switch (event.type) {
       // ================================================================
-      // CHECKOUT SESSION COMPLETED
+      // CHECKOUT COMPLETED - First time user subscribes (with trial)
+      // This fires when user completes checkout and subscription is created
       // ================================================================
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session
@@ -77,14 +80,15 @@ export async function POST(req: Request) {
 
         console.log(`✅ Checkout completed for user ${supabaseUserId}`)
 
-        // Update subscription via Edge Function
+        // Edge function will auto-detect if this is a new trial
+        // and override renewsAt to 7 days if needed
         const { error: updateError } = await supabase.functions.invoke(
-          "renew-user-subscription",
+          "update-subscription",
           {
             body: {
               userId: supabaseUserId,
               stripeCustomerId,
-              renewsAt,
+              renewsAt, // Pass the normal renewal date; edge function will override if trial
             },
             headers: {
               "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
@@ -96,18 +100,18 @@ export async function POST(req: Request) {
           console.error("❌ Error updating subscription:", updateError)
         }
 
-        console.log(`✨ User ${supabaseUserId} upgraded to Pro (renews: ${renewsAt})`)
+        console.log(`✨ User ${supabaseUserId} subscribed (renews: ${renewsAt})`)
         break
       }
 
       // ================================================================
-      // 🔥 TRIAL WILL END (3 days before trial ends)
+      // TRIAL WILL END - Fires 3 days before trial ends
+      // Stripe sends this automatically when trial_period_days is set
       // ================================================================
       case "customer.subscription.trial_will_end": {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        // Find user by Stripe customer ID
         const { data: subRow, error: findError } = await supabase
           .from("user_subscriptions")
           .select("user_id")
@@ -123,7 +127,7 @@ export async function POST(req: Request) {
           ? new Date(subscription.trial_end * 1000).toISOString()
           : null
 
-        // Call edge function to handle trial ending reminder
+        // Edge function checks if trial actually ended or just ending soon
         const { error: trialError } = await supabase.functions.invoke(
           "trial-will-end-notification",
           {
@@ -141,35 +145,38 @@ export async function POST(req: Request) {
           console.error("❌ Error sending trial reminder:", trialError)
         }
 
-        console.log(`⏰ Trial ending soon for user ${subRow.user_id} (ends: ${trialEndDate})`)
+        console.log(`⏰ Trial notification sent for user ${subRow.user_id} (ends: ${trialEndDate})`)
         break
       }
 
       // ================================================================
-      // SUBSCRIPTION UPDATED
+      // SUBSCRIPTION UPDATED - Fires when subscription changes
+      // This includes: trial → paid, plan changes, cancellations scheduled
       // ================================================================
       case "customer.subscription.updated": {
-        const subscription = event.data.object as Stripe.Subscription
+        const subscription = event.data.object as ExtendedSubscription
         const customerId = subscription.customer as string
-
+        console.log(subscription)
         const { data: subRow, error: findError } = await supabase
           .from("user_subscriptions")
           .select("user_id")
           .eq("stripe_customer_id", customerId)
           .maybeSingle()
 
-        if (findError || !subRow) {
-          console.warn(`⚠️ No user found for customer ${customerId}`)
-          break
-        }
-
+          
+          if (findError || !subRow) {
+            console.warn(`⚠️ No user found for customer ${customerId}`)
+            break
+          }
+        // When trial converts to paid, status becomes "active"
         const isActive = subscription.status === "active"
         const renewsAt = isActive
-          ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
+          ? new Date(subscription.current_period_end * 1000).toISOString()
           : null
 
+        // Edge function will detect if user was on trial and convert them
         const { error: updateError } = await supabase.functions.invoke(
-          "renew-user-subscription",
+          "update-subscription",
           {
             body: {
               userId: subRow.user_id,
@@ -191,7 +198,7 @@ export async function POST(req: Request) {
       }
 
       // ================================================================
-      // SUBSCRIPTION DELETED (Canceled)
+      // SUBSCRIPTION DELETED - User canceled and subscription ended
       // ================================================================
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription
@@ -208,14 +215,17 @@ export async function POST(req: Request) {
           break
         }
 
-        const { error: updateError } = await supabase.functions.invoke('downgrade-user-subscription', {
-          body: {
-            userId: subRow.user_id,
-          },
-          headers: {
-            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+        const { error: updateError } = await supabase.functions.invoke(
+          'downgrade-user-subscription',
+          {
+            body: {
+              userId: subRow.user_id,
+            },
+            headers: {
+              "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+            }
           }
-        })
+        )
 
         if (updateError) {
           console.error("❌ Error downgrading user:", updateError)
@@ -226,7 +236,7 @@ export async function POST(req: Request) {
       }
 
       // ================================================================
-      // PAYMENT FAILED
+      // PAYMENT FAILED - Renewal payment failed
       // ================================================================
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice
@@ -265,6 +275,7 @@ export async function POST(req: Request) {
 
       default:
         console.log(`🔔 Unhandled Stripe event: ${event.type}`)
+        break
     }
 
     return NextResponse.json({ received: true }, { status: 200 })
