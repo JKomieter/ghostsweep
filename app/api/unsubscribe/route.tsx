@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         // 🔧 Change this table name to match your actual waitlist table
         // e.g. "waitlist_signups" or "waitlist"
         const { data, error } = await supabase
-            .from("non-subscribers")
+            .from("non_subscribers")
             .insert({
                 email,
             })

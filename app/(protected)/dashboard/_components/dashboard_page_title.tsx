@@ -475,12 +475,17 @@ export default function DashboardTitle() {
                             </>
                         ) : (
                             <>
-                                <p className="text-yellow-200">
-                                    You haven&apos;t connected Gmail yet.
-                                </p>
-                                <p className="text-white/50">
-                                    Connect to let GhostSweep analyze your email metadata.
-                                </p>
+                                <>
+                                    <p className="text-yellow-200">
+                                        You haven&apos;t connected Gmail yet.
+                                    </p>
+                                    <p className="text-white/50">
+                                        Connect to let GhostSweep analyze your email metadata.
+                                    </p>
+                                    <p className="text-white/50">
+                                        <span className="font-medium text-cyan-300">Note:</span> When the OAuth flow appears, please allow the requested permissions to enable GhostSweep to access your email metadata securely.
+                                    </p>
+                                </>
                             </>
                         )}
                     </div>
