@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import stripe from "@/lib/stripe";
 
 const SuccessIcon = (
     <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
