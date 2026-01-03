@@ -92,7 +92,7 @@ export async function proxy(request: NextRequest) {
     const method = request.method;
     const origin = request.headers.get('origin');
     const ip = getClientIP(request);
-    console.info(`➡️ Incoming request: ${method} ${pathname} from IP: ${ip}`);
+    
     // Bypass middleware for webhooks
     if (pathname.startsWith('/api/webhooks/')) {
         console.log(`⚡ Webhook request bypassing middleware: ${pathname}`);

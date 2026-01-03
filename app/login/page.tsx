@@ -7,7 +7,7 @@ import {
     type Dispatch,
     type SetStateAction,
 } from "react";
-import { Eye, EyeOff, MailIcon, Shield, Lock } from "lucide-react";
+import { Eye, EyeOff, MailIcon, Lock, Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
@@ -18,9 +18,87 @@ import { login, signup } from "./action";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 
+// ✅ add your supabase client import (adjust path to your project)
+import { createClient } from "@/utils/supabase/client";
+
 type Mode = "signin" | "signup" | "confirm";
 
-// TODOD: Fix error code UX
+// Optional: simple Google icon (no extra deps)
+function GoogleIcon() {
+    return (
+        <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.58 32.66 29.197 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.047 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.651-.389-3.917z" />
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.656 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.047 6.053 29.268 4 24 4c-7.682 0-14.344 4.337-17.694 10.691z" />
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.197l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.176 0-9.545-3.318-11.275-7.946l-6.52 5.025C9.505 39.556 16.227 44 24 44z" />
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a11.99 11.99 0 0 1-4.084 5.565l.003-.002 6.19 5.238C36.971 40.205 44 35 44 24c0-1.341-.138-2.651-.389-3.917z" />
+        </svg>
+    );
+}
+
+function OAuthDivider() {
+    return (
+        <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="text-[11px] text-white/40">or</span>
+            <div className="h-px flex-1 bg-white/10" />
+        </div>
+    );
+}
+
+function ContinueWithGoogleButton({ label }: { label: string }) {
+    const [loading, setLoading] = useState(false);
+
+    const handleGoogle = async () => {
+        setLoading(true);
+        try {
+            const supabase = createClient();
+
+            const origin =
+                typeof window !== "undefined" ? window.location.origin : "";
+
+            // ✅ Choose where the user should land after OAuth
+            // - If you have an auth callback route, point there.
+            // - Otherwise, point to a page and handle session there.
+            const redirectTo = `${origin}/auth/callback`;
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo,
+                    // If you need refresh tokens for Gmail access, you'd use:
+                    // queryParams: { access_type: "offline", prompt: "consent" },
+                },
+            });
+
+            if (error) throw error;
+        } catch (err) {
+            console.error(err);
+            toast.error("Google sign-in failed. Please try again.");
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-full rounded-lg border-white/10 bg-white/5 text-white hover:bg-white/10"
+            onClick={handleGoogle}
+            disabled={loading}
+        >
+            {loading ? (
+                <span className="flex items-center gap-2">
+                    <Spinner /> Redirecting…
+                </span>
+            ) : (
+                <span className="flex items-center justify-center gap-2">
+                    <GoogleIcon />
+                    {label}
+                </span>
+            )}
+        </Button>
+    );
+}
 
 function SignInForm({
     email,
@@ -50,95 +128,100 @@ function SignInForm({
 
             if (error.message === "Invalid login credentials") {
                 toast.error("Login failed. Please check your email and password.");
-            } 
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <form className="space-y-5" onSubmit={handleLogin}>
-            <div className="space-y-2">
-                <label className="text-sm font-medium text-white/90" htmlFor="email">
-                    Email
-                </label>
-                <Input
-                    id="email"
-                    type="email"
-                    placeholder="example@gmail.com"
-                    value={email}
-                    onChange={setEmail}
-                    required
-                    className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
-                />
-            </div>
+        <div className="space-y-5">
+            {/* ✅ Google OAuth */}
+            <ContinueWithGoogleButton label="Continue with Google" />
+            <OAuthDivider />
 
-            <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <label
-                        className="text-sm font-medium text-white/90"
-                        htmlFor="password"
-                    >
-                        Password
+            {/* ✅ Existing email+password form */}
+            <form className="space-y-5" onSubmit={handleLogin}>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/90" htmlFor="email">
+                        Email
                     </label>
-                    <Link
-                        href="/forgot_password"
-                        className="text-xs text-primary hover:text-primary/80 transition"
-                    >
-                        Forgot password?
-                    </Link>
-                </div>
-                <div className="relative">
                     <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={setPassword}
+                        id="email"
+                        type="email"
+                        placeholder="example@gmail.com"
+                        value={email}
+                        onChange={setEmail}
                         required
-                        disableCopyPaste
-                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                     />
-                    <button
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                    >
-                        {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
-                        ) : (
-                            <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
-                        )}
-                    </button>
                 </div>
-            </div>
 
-            <Button
-                type="submit"
-                className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
-                disabled={isLoading}
-            >
-                {isLoading ? <Spinner /> : "Sign in"}
-            </Button>
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-white/90" htmlFor="password">
+                            Password
+                        </label>
+                        <Link
+                            href="/forgot_password"
+                            className="text-xs text-primary hover:text-primary/80 transition"
+                        >
+                            Forgot password?
+                        </Link>
+                    </div>
 
-            <p className="text-center text-[11px] text-white/40 leading-relaxed">
-                By continuing, you agree to our{" "}
-                <Link
-                    href="/home/terms"
-                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={setPassword}
+                            required
+                            disableCopyPaste
+                            className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                        />
+                        <button
+                            className="absolute inset-y-0 right-0 flex items-center pr-3"
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                            ) : (
+                                <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                <Button
+                    type="submit"
+                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    disabled={isLoading}
                 >
-                    Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                    href="/home/privacy"
-                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
-                >
-                    Privacy Policy
-                </Link>
-                .
-            </p>
-        </form>
+                    {isLoading ? <Spinner /> : "Sign in"}
+                </Button>
+
+                <p className="text-center text-[11px] text-white/40 leading-relaxed">
+                    By continuing, you agree to our{" "}
+                    <Link
+                        href="/home/terms"
+                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                    >
+                        Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                        href="/home/privacy"
+                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                    >
+                        Privacy Policy
+                    </Link>
+                    .
+                </p>
+            </form>
+        </div>
     );
 }
 
@@ -181,8 +264,7 @@ function SignUpForm({
         try {
             await signup({ email, password });
             setMode("confirm");
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
+        } catch {
             toast.error("An error occurred during signup. Please try again.");
         } finally {
             setIsLoading(false);
@@ -190,101 +272,102 @@ function SignUpForm({
     };
 
     return (
-        <form className="space-y-5" onSubmit={handleSignup}>
-            <div className="space-y-2">
-                <label className="text-sm font-medium text-white/90" htmlFor="email">
-                    Email
-                </label>
-                <Input
-                    id="email"
-                    type="email"
-                    placeholder="example@gmail.com"
-                    value={email}
-                    onChange={setEmail}
-                    required
-                    className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
-                />
-            </div>
+        <div className="space-y-5">
+            {/* ✅ Google OAuth for signup too */}
+            <ContinueWithGoogleButton label="Continue with Google" />
+            <OAuthDivider />
 
-            <div className="space-y-2">
-                <label
-                    className="text-sm font-medium text-white/90"
-                    htmlFor="password"
-                >
-                    Password
-                </label>
-                <div className="relative">
+            {/* ✅ Existing signup form */}
+            <form className="space-y-5" onSubmit={handleSignup}>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/90" htmlFor="email">
+                        Email
+                    </label>
                     <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create a strong password"
-                        value={password}
-                        onChange={setPassword}
+                        id="email"
+                        type="email"
+                        placeholder="example@gmail.com"
+                        value={email}
+                        onChange={setEmail}
+                        required
+                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/90" htmlFor="password">
+                        Password
+                    </label>
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Create a strong password"
+                            value={password}
+                            onChange={setPassword}
+                            required
+                            disableCopyPaste
+                            className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                        />
+                        <button
+                            className="absolute inset-y-0 right-0 flex items-center pr-3"
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                            ) : (
+                                <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/90" htmlFor="confirmPassword">
+                        Confirm password
+                    </label>
+                    <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Repeat your password"
+                        value={confirmPassword}
+                        onChange={setConfirmPassword}
                         required
                         disableCopyPaste
-                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                     />
-                    <button
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                    >
-                        {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
-                        ) : (
-                            <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
-                        )}
-                    </button>
                 </div>
-            </div>
 
-            <div className="space-y-2">
-                <label
-                    className="text-sm font-medium text-white/90"
-                    htmlFor="confirmPassword"
+                {showPasswordWarning && <PasswordWarning feedback={passwordFeedback} />}
+
+                <Button
+                    type="submit"
+                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    disabled={isLoading}
                 >
-                    Confirm password
-                </label>
-                <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Repeat your password"
-                    value={confirmPassword}
-                    onChange={setConfirmPassword}
-                    required
-                    disableCopyPaste
-                    className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
-                />
-            </div>
+                    {isLoading ? <Spinner /> : "Create account"}
+                </Button>
 
-            {showPasswordWarning && <PasswordWarning feedback={passwordFeedback} />}
-
-            <Button
-                type="submit"
-                className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
-                disabled={isLoading}
-            >
-                {isLoading ? <Spinner /> : "Create account"}
-            </Button>
-
-            <p className="text-center text-[11px] text-white/40 leading-relaxed">
-                By continuing, you agree to our{" "}
-                <Link
-                    href="/home/terms"
-                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
-                >
-                    Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                    href="/home/privacy"
-                    className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
-                >
-                    Privacy Policy
-                </Link>
-                .
-            </p>
-        </form>
+                <p className="text-center text-[11px] text-white/40 leading-relaxed">
+                    By continuing, you agree to our{" "}
+                    <Link
+                        href="/home/terms"
+                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                    >
+                        Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                        href="/home/privacy"
+                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                    >
+                        Privacy Policy
+                    </Link>
+                    .
+                </p>
+            </form>
+        </div>
     );
 }
 
@@ -293,10 +376,7 @@ function PasswordWarning({ feedback }: { feedback: string[] }) {
         <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
             <ul className="space-y-1">
                 {feedback.map((msg, index) => (
-                    <li
-                        key={index}
-                        className="flex items-start gap-2 text-xs text-red-400"
-                    >
+                    <li key={index} className="flex items-start gap-2 text-xs text-red-400">
                         <span className="mt-0.5">•</span>
                         <span>{msg}</span>
                     </li>
@@ -316,8 +396,8 @@ function ConfirmEmail({ email = "email address" }: { email?: string }) {
                 <h2 className="text-2xl font-bold text-white">Check your email</h2>
                 <p className="text-sm text-white/60 max-w-md leading-relaxed">
                     We've sent a confirmation link to{" "}
-                    <span className="font-semibold text-white">{email}</span>. Click the
-                    link to verify your account and get started.
+                    <span className="font-semibold text-white">{email}</span>. Click the link
+                    to verify your account and get started.
                 </p>
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm p-4 max-w-md text-left">
@@ -339,13 +419,13 @@ export default function LoginPage() {
 
     return (
         <div className="relative flex min-h-screen w-full overflow-hidden bg-gradient-to-b from-black via-zinc-950 to-black">
-            {/* Soft background accents */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -left-40 top-[-10%] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
                 <div className="absolute right-[-10%] bottom-[-10%] h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
             </div>
-
+            {/* (snip) */}
             <div className="relative z-10 grid flex-1 grid-cols-1 lg:grid-cols-2">
+                {/* Left side */}
                 {/* Left Side - Branding */}
                 <div className="hidden lg:flex relative overflow-hidden border-r border-white/5">
                     {/* Background */}
@@ -423,9 +503,8 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                {/* Right Side - Login / Signup */}
+                {/* Right side unchanged except it uses updated forms */}
                 <div className="relative col-span-1 flex items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
-                    {/* Mobile logo */}
                     <div className="absolute left-5 top-5 lg:hidden">
                         <div className="flex items-center gap-2">
                             <Logo className="h-7 w-7" />
@@ -433,14 +512,12 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    {/* Card container */}
                     <div className="w-full max-w-md">
                         <div className="mt-16 sm:mt-10 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
                             {mode === "confirm" ? (
                                 <ConfirmEmail email={email} />
                             ) : (
                                 <>
-                                    {/* Tabs */}
                                     <div className="flex rounded-full border border-white/10 bg-white/5 backdrop-blur-sm p-1">
                                         <button
                                             type="button"
@@ -464,7 +541,6 @@ export default function LoginPage() {
                                         </button>
                                     </div>
 
-                                    {/* Heading */}
                                     <div className="space-y-1.5">
                                         <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
                                             {mode === "signin" ? "Welcome back" : "Create your account"}
@@ -476,21 +552,15 @@ export default function LoginPage() {
                                         </p>
                                     </div>
 
-                                    {/* Form */}
                                     {mode === "signin" ? (
                                         <SignInForm email={email} setEmail={setEmail} />
                                     ) : (
-                                        <SignUpForm
-                                            email={email}
-                                            setEmail={setEmail}
-                                            setMode={setMode}
-                                        />
+                                        <SignUpForm email={email} setEmail={setEmail} setMode={setMode} />
                                     )}
                                 </>
                             )}
                         </div>
 
-                        {/* Small footer text */}
                         <p className="mt-4 text-[11px] text-center text-white/35">
                             Protected with OAuth. GhostSweep never sees your email password.
                         </p>

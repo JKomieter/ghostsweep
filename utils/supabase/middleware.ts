@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 const publicRoutes = [
     "/login",
     "/forgot_password",
-    "/api/auth/confirm",
+    "/api/auth",
     "/help",
     "/home",
     "/reset_password",
