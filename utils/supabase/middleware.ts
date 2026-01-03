@@ -50,12 +50,14 @@ export async function updateSession(request: NextRequest) {
 
     const user = data?.claims
 
+    if (publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
+        return supabaseResponse
+    }
+
     if (
         !user &&
         !publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
     ) {
-        console.log('No user session detected in middleware.')
-        // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
