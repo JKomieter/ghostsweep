@@ -59,7 +59,7 @@ function ContinueWithGoogleButton({ label }: { label: string }) {
             // ✅ Choose where the user should land after OAuth
             // - If you have an auth callback route, point there.
             // - Otherwise, point to a page and handle session there.
-            const redirectTo = `${origin}/auth/callback`;
+            const redirectTo = `${origin}/api/auth/callback`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: "google",
