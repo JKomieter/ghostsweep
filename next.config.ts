@@ -84,7 +84,7 @@ const nextConfig: NextConfig = {
             "font-src 'self' data:",
             "connect-src 'self' ws: wss: https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co https://www.facebook.com https://connect.facebook.net", // ✅ Added Facebook
             "worker-src 'self' blob:",
-            "frame-src 'self' https://accounts.google.com",
+            "frame-src 'self' https://accounts.google.com https://www.youtube.com",
           ].join("; ")
           : // PRODUCTION CSP (strict)
           [
@@ -95,7 +95,7 @@ const nextConfig: NextConfig = {
             "font-src 'self' data:",
             "connect-src 'self' https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co https://www.facebook.com https://connect.facebook.net", // ✅ Added Facebook
             "worker-src 'self' blob:",
-            "frame-src 'self' https://accounts.google.com",
+            "frame-src 'self' https://accounts.google.com https://www.youtube.com",
           ].join("; "),
       },
       {

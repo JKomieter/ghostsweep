@@ -23,8 +23,168 @@ import {
     BadgeCheck,
     ChevronDown,
     Zap,
+    Play
 } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+
+function VideoModal({
+    open,
+    onClose,
+    videoUrl,
+    title,
+}: {
+    open: boolean;
+    onClose: () => void;
+    videoUrl: string;
+    title: string;
+}) {
+    if (!open) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <button
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                onClick={onClose}
+                aria-label="Close video"
+            />
+            <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-[#050507] shadow-[0_30px_120px_rgba(0,0,0,0.75)]">
+                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                    <div className="text-sm font-semibold text-white">{title}</div>
+                    <button
+                        onClick={onClose}
+                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/80 hover:bg-white/10"
+                    >
+                        Close
+                    </button>
+                </div>
+
+                {/* Responsive video */}
+                <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                    {/* <iframe
+                        className="absolute inset-0 h-full w-full"
+                        src={videoUrl}
+                        title={title}
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        allowFullScreen
+                    /> */}
+                    <iframe 
+                    className="absolute inset-0 h-full w-full" 
+                    src={videoUrl}
+                    title={title} 
+                    frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function FounderVideoSection() {
+    const [open, setOpen] = useState(false);
+
+    // Use a YouTube embed URL like:
+    // https://www.youtube.com/embed/VIDEO_ID?autoplay=1
+    // For Loom, use its embed link.
+    const videoEmbedUrl = "https://www.youtube.com/embed/WsHW8Hwd2UU?si=Iiguj41N69lppJAU";
+    const thumbUrl = "https://ghostsweep.t3.storage.dev/thumbnail.png"; // put in /public
+
+    return (
+        <section className="space-y-6">
+            <SectionTitle
+                eyebrow="Founder story"
+                title="This is the problem I had — and why I built GhostSweep"
+                desc="A quick 2–3 minute walkthrough of how I’m using it to find and clean up accounts tied to my email."
+            />
+
+            <div className="grid gap-4 md:grid-cols-2">
+                {/* Thumbnail card */}
+                <button
+                    type="button"
+                    onClick={() => setOpen(true)}
+                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#050509] text-left"
+                    aria-label="Play video"
+                >
+                    <div className="relative aspect-video w-full">
+                        <Image
+                            src={thumbUrl}
+                            alt="Watch the GhostSweep story video"
+                            fill
+                            className="object-cover opacity-90 transition group-hover:opacity-100"
+                            priority={false}
+                        />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition group-hover:scale-[1.03]">
+                                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black">
+                                    <Play className="h-4 w-4" />
+                                </span>
+                                Watch the video
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-4">
+                        <div className="text-sm font-semibold text-white">
+                            “I couldn’t remember what I signed up for…”
+                        </div>
+                        <div className="mt-1 text-xs text-zinc-400">
+                            Click to play — shows my real workflow using GhostSweep.
+                        </div>
+                    </div>
+                </button>
+
+                {/* Copy + micro trust */}
+                <div className="rounded-2xl border border-white/10 bg-[#050509] p-5">
+                    <div className="space-y-3">
+                        <p className="text-sm font-semibold text-white">
+                            Real story. Real inbox. No fluff.
+                        </p>
+                        <p className="text-sm text-zinc-400 leading-relaxed">
+                            I kept finding old accounts I forgot existed — which later became spam,
+                            breach exposure, and security risk. This video shows how GhostSweep
+                            scans Gmail metadata, builds your footprint, and helps you clean it up.
+                        </p>
+
+                        <div className="rounded-xl border border-white/10 bg-black/30 p-4 text-xs text-zinc-400">
+                            <div className="flex items-start gap-2">
+                                <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
+                                <div>
+                                    <p className="text-zinc-200 font-medium">Privacy-first by design</p>
+                                    <p className="mt-1">
+                                        Metadata only · OAuth · revoke anytime · you approve every deletion email
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                            <Link
+                                href="/login"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                            >
+                                Start free scan <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <Link
+                                href="#how"
+                                className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-sm text-white/90 hover:bg-white/10 transition"
+                            >
+                                Then see how it works
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <VideoModal
+                open={open}
+                onClose={() => setOpen(false)}
+                videoUrl={videoEmbedUrl}
+                title="How I use GhostSweep to clean up my accounts"
+            />
+        </section>
+    );
+}
 
 const faqs = [
     {
@@ -216,6 +376,8 @@ export default function HomePage() {
                         </div>
                     </div>
                 </section>
+
+                <FounderVideoSection />
 
                 {/* HOW IT WORKS (premium stepper) */}
                 <section className="space-y-8" id="how">
