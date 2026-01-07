@@ -91,18 +91,32 @@ function ServicesPageContent() {
 
     const forgotten = useMemo(() => {
         let count = 0;
-        if (!userServicesQueryResult?.userServices) return count;
+        if (!userServicesQueryResult?.userServices) {
+            console.log("No user services data available");
+            return count;
+        }
+
+        console.log("Total services:", userServicesQueryResult.userServices.length);
 
         for (const svc of userServicesQueryResult.userServices || []) {
-            const svcIsForgotten = isForgottenService({
+            console.log("Service data:", {
+                last_seen_at: svc.last_seen_at,
+                first_seen_at: svc.first_seen_at,
+                email_count: svc.email_count,
+            });
+
+            const result = isForgottenService({
                 last_seen_at: svc.last_seen_at!,
                 first_seen_at: svc.first_seen_at!,
                 email_count: svc.email_count!,
-            }).isForgotten;
+            });
 
-            if (svcIsForgotten) count += 1;
+            console.log("isForgotten result:", result);
+
+            if (result.isForgotten) count += 1;
         }
 
+        console.log("Total forgotten services:", count);
         return count;
     }, [userServicesQueryResult]);
 

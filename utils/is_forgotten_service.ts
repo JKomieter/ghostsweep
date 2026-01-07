@@ -20,19 +20,9 @@ export function isForgottenService(service: {
     const lastSeen = new Date(service.last_seen_at);
     const firstSeen = service.first_seen_at ? new Date(service.first_seen_at) : null;
 
-    // Calculate months since last activity
     const monthsSinceLastSeen = getMonthsDifference(lastSeen, now);
-
-    // Calculate account age (if available)
-    const accountAgeMonths = firstSeen
-        ? getMonthsDifference(firstSeen, now)
-        : null;
-
+    const accountAgeMonths = firstSeen ? getMonthsDifference(firstSeen, now) : null;
     const emailCount = service.email_count ?? 0;
-
-    // ============================================
-    // SIMPLE MVP RULES
-    // ============================================
 
     // Rule 1: Very old + inactive = FORGOTTEN (high confidence)
     if (monthsSinceLastSeen >= 12) {
@@ -67,6 +57,15 @@ export function isForgottenService(service: {
             isForgotten: true,
             confidence: "low",
             reason: `Low engagement: ${emailCount} emails, ${monthsSinceLastSeen} months inactive`
+        };
+    }
+
+    // NEW Rule 5: Very low email count (even if recent)
+    if (emailCount <= 1) {
+        return {
+            isForgotten: true,
+            confidence: "low",
+            reason: `Only ${emailCount} email(s) received`
         };
     }
 
