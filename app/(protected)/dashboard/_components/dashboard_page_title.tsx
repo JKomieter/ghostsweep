@@ -111,11 +111,11 @@ export default function DashboardTitle() {
                 queryClient.invalidateQueries({ queryKey: ["plan"] }),
             ]);
 
-            toast.success("Sweep complete — dashboard updated", {
-                description: `Found ${latestSweep.servicesFound || 0} services${latestSweep.breachesFound
-                    ? ` and ${latestSweep.breachesFound} breaches`
-                    : ""
-                    }.`,
+            toast.success("Sweep complete — here’s what has your data", {
+                description: `Detected ${latestSweep.servicesFound || 0} accounts${latestSweep.breachesFound
+                        ? `, including ${latestSweep.breachesFound} breached`
+                        : ""
+                    }. The riskiest ones are waiting in your dashboard.`,
             });
         }
 

@@ -45,6 +45,8 @@ export default async function BillingPage({ searchParams }: PageProps) {
         .eq("user_id", user.id)
         .maybeSingle();
 
+        console.log("User visited billing page:", JSON.stringify(sub));
+
     const isPro = sub?.current_plan === "pro";
     const renewsAt = sub?.renews_at ?? null;
     const wasCanceled = params?.canceled === "true"; // Add this
