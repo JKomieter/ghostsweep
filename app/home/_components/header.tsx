@@ -110,7 +110,7 @@ export default function Header() {
                         href="/login"
                         className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
                     >
-                        Start free scan
+                        Find accounts
                         <ArrowRight className="h-3 w-3" />
                     </Link>
                 </div>
@@ -169,7 +169,7 @@ export default function Header() {
                                 onClick={closeMobile}
                                 className="inline-flex items-center justify-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
                             >
-                                Start free scan
+                                Find accounts
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                         </div>

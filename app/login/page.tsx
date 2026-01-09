@@ -200,7 +200,7 @@ function SignInForm({
                     className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
                     disabled={isLoading}
                 >
-                    {isLoading ? <Spinner /> : "Sign in"}
+                    {isLoading ? <Spinner /> : "Sign In"}
                 </Button>
 
                 <p className="text-center text-[11px] text-white/40 leading-relaxed">
@@ -346,7 +346,7 @@ function SignUpForm({
                     className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
                     disabled={isLoading}
                 >
-                    {isLoading ? <Spinner /> : "Create account"}
+                    {isLoading ? <Spinner /> : "See My Forgotten Accounts"}
                 </Button>
 
                 <p className="text-center text-[11px] text-white/40 leading-relaxed">

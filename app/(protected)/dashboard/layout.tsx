@@ -1,6 +1,7 @@
 "use client"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Header from "./_components/app_header"
+import StartScanOnboardingDialog from "./_components/start_scan_onboarding_dialog"
 
 
 const queryClient = new QueryClient()
@@ -15,6 +16,7 @@ export default function DashboardLayout({
                 <main className="bg-background relative">
                     <Header />
                     {children}
+                    <StartScanOnboardingDialog />
                 </main>
         </QueryClientProvider>
     )

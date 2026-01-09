@@ -163,7 +163,7 @@ function FounderVideoSection() {
                                 href="/login"
                                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
                             >
-                                Start free scan <ArrowRight className="h-4 w-4" />
+                                See My Forgotten Accounts <ArrowRight className="h-4 w-4" />
                             </Link>
                             <Link
                                 href="#how"
@@ -345,7 +345,7 @@ export default function HomePage() {
                                     href="/login"
                                     className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black shadow-sm hover:bg-zinc-100 transition"
                                 >
-                                    Start free scan
+                                    See My Forgotten Accounts
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
 
@@ -897,7 +897,7 @@ export default function HomePage() {
                             href="/login"
                             className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
                         >
-                            Start free scan
+                            See My Forgotten Accounts
                             <ArrowRight className="h-4 w-4" />
                         </Link>
 
