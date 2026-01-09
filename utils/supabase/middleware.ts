@@ -50,24 +50,24 @@ export async function updateSession(request: NextRequest) {
 
     const user = data?.claims
 
+    if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/forgot_password")) {
+        const url = request.nextUrl.clone()
+        url.pathname = "/dashboard"
+        return NextResponse.redirect(url)
+    }
+
     if (publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
         return supabaseResponse
     }
 
     if (
-        !user &&
-        !publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))
+        !user 
     ) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
     }
 
-    if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/forgot_password")) {
-        const url = request.nextUrl.clone()
-        url.pathname = "/dashboard"
-        return NextResponse.redirect(url)
-    }
 
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
     // creating a new response object with NextResponse.next() make sure to:
