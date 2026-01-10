@@ -210,28 +210,30 @@ export async function proxy(request: NextRequest) {
         const { success, limit, remaining, reset } = await ratelimit.limit(ip);
 
         if (!success) {
-            console.warn(`⚠️ Rate limit exceeded for IP: ${ip}`);
-            return new NextResponse(
-                JSON.stringify({
-                    error: 'Too Many Requests',
-                    message: 'You have exceeded the rate limit. Please try again later.',
+            const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
+
+            return NextResponse.json(
+                {
+                    code: "RATE_LIMITED",
+                    error: "Too Many Requests",
+                    message: "You're doing that too fast. Please try again shortly.",
+                    retryAfterSeconds,
                     rateLimitState: {
                         limit,
                         remaining,
                         reset: new Date(reset).toISOString(),
                     },
-                }),
+                },
                 {
                     status: 429,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-RateLimit-Limit': limit.toString(),
-                        'X-RateLimit-Remaining': remaining.toString(),
-                        'X-RateLimit-Reset': reset.toString(),
-                        'Retry-After': Math.ceil((reset - Date.now()) / 1000).toString(),
-                        'Cache-Control': 'no-cache, no-store, must-revalidate, private',
-                        'X-Content-Type-Options': 'nosniff',
-                        'Server': '',
+                        "X-RateLimit-Limit": String(limit),
+                        "X-RateLimit-Remaining": String(remaining),
+                        "X-RateLimit-Reset": String(reset),
+                        "Retry-After": String(retryAfterSeconds),
+                        "Cache-Control": "no-cache, no-store, must-revalidate, private",
+                        "X-Content-Type-Options": "nosniff",
+                        "Server": "",
                     },
                 }
             );

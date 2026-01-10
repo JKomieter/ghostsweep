@@ -19,14 +19,47 @@ import {
     Sparkles,
     ListChecks,
     Mail,
-    ArrowDown,
     BadgeCheck,
     ChevronDown,
     Zap,
     Play
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function ExitIntentPopup({ onClose }: { onClose: () => void }) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                onClick={onClose}
+            />
+            <div className="relative z-10 max-w-md rounded-2xl border border-white/10 bg-[#050509] p-8 text-center shadow-2xl">
+                <h3 className="text-xl font-bold text-white">
+                    Wait — before you go
+                </h3>
+                <p className="mt-3 text-sm text-zinc-400">
+                    Takes 2 minutes to find accounts you forgot about.
+                    <br />
+                    <span className="text-white font-medium">Completely free. No credit card.</span>
+                </p>
+                <Link
+                    href="/login"
+                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                >
+                    Okay, scan my email
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
+                <button
+                    onClick={onClose}
+                    className="mt-3 text-xs text-zinc-500 hover:text-zinc-300 transition"
+                >
+                    No thanks, I'll stay insecure
+                </button>
+            </div>
+        </div>
+    );
+}
 
 function VideoModal({
     open,
@@ -59,21 +92,16 @@ function VideoModal({
                     </button>
                 </div>
 
-                {/* Responsive video */}
                 <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-                    {/* <iframe
+                    <iframe
                         className="absolute inset-0 h-full w-full"
                         src={videoUrl}
                         title={title}
-                        allow="autoplay; encrypted-media; picture-in-picture"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
-                    /> */}
-                    <iframe 
-                    className="absolute inset-0 h-full w-full" 
-                    src={videoUrl}
-                    title={title} 
-                    frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                    />
                 </div>
             </div>
         </div>
@@ -83,22 +111,18 @@ function VideoModal({
 function FounderVideoSection() {
     const [open, setOpen] = useState(false);
 
-    // Use a YouTube embed URL like:
-    // https://www.youtube.com/embed/VIDEO_ID?autoplay=1
-    // For Loom, use its embed link.
     const videoEmbedUrl = "https://www.youtube.com/embed/WsHW8Hwd2UU?si=Iiguj41N69lppJAU";
-    const thumbUrl = "https://ghostsweep.t3.storage.dev/thumbnail.png"; // put in /public
+    const thumbUrl = "https://ghostsweep.t3.storage.dev/thumbnail.png";
 
     return (
         <section className="space-y-6">
             <SectionTitle
-                eyebrow="Founder story"
-                title="This is the problem I had — and why I built GhostSweep"
-                desc="A quick 2–3 minute walkthrough of how I’m using it to find and clean up accounts tied to my email."
+                eyebrow="See how it works"
+                title="Real story. Real inbox. No fluff."
+                desc="Watch me use GhostSweep to find 258 accounts I forgot existed."
             />
 
             <div className="grid gap-4 md:grid-cols-2">
-                {/* Thumbnail card */}
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
@@ -126,7 +150,7 @@ function FounderVideoSection() {
 
                     <div className="p-4">
                         <div className="text-sm font-semibold text-white">
-                            “I couldn’t remember what I signed up for…”
+                            "I couldn't remember what I signed up for…"
                         </div>
                         <div className="mt-1 text-xs text-zinc-400">
                             Click to play — shows my real workflow using GhostSweep.
@@ -134,11 +158,10 @@ function FounderVideoSection() {
                     </div>
                 </button>
 
-                {/* Copy + micro trust */}
                 <div className="rounded-2xl border border-white/10 bg-[#050509] p-5">
                     <div className="space-y-3">
                         <p className="text-sm font-semibold text-white">
-                            Real story. Real inbox. No fluff.
+                            This video shows my actual results
                         </p>
                         <p className="text-sm text-zinc-400 leading-relaxed">
                             I kept finding old accounts I forgot existed — which later became spam,
@@ -163,13 +186,7 @@ function FounderVideoSection() {
                                 href="/login"
                                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
                             >
-                                See My Forgotten Accounts <ArrowRight className="h-4 w-4" />
-                            </Link>
-                            <Link
-                                href="#how"
-                                className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-sm text-white/90 hover:bg-white/10 transition"
-                            >
-                                Then see how it works
+                                Find My Hidden Accounts <ArrowRight className="h-4 w-4" />
                             </Link>
                         </div>
                     </div>
@@ -286,259 +303,275 @@ function SectionTitle({
 }
 
 export default function HomePage() {
+    const [showExitPopup, setShowExitPopup] = useState(false);
+    const [hasShownPopup, setHasShownPopup] = useState(false);
+
+    useEffect(() => {
+        const handleMouseLeave = (e: MouseEvent) => {
+            if (e.clientY <= 0 && !hasShownPopup) {
+                setShowExitPopup(true);
+                setHasShownPopup(true);
+            }
+        };
+
+        document.addEventListener('mouseleave', handleMouseLeave);
+        return () => document.removeEventListener('mouseleave', handleMouseLeave);
+    }, [hasShownPopup]);
+
     return (
         <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608] text-foreground">
+            {showExitPopup && <ExitIntentPopup onClose={() => setShowExitPopup(false)} />}
+
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 space-y-16 md:space-y-20">
-                {/* HERO */}
+                {/* HERO - REDESIGNED */}
                 <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/2 p-6 sm:p-10">
-                    {/* premium glow */}
                     <div className="pointer-events-none absolute inset-0">
                         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
                         <div className="absolute -bottom-24 right-10 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
                     </div>
 
-                    <div className="relative space-y-8">
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                            <Badge>
-                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                                <span>
-                                    <span className="font-medium text-white">GhostSweep</span> · Privacy-first Gmail metadata scanning
+                    <div className="relative space-y-6">
+                        {/* Social proof badge */}
+                        <div className="flex justify-center">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm">
+                                <div className="flex -space-x-2">
+                                    <div className="h-6 w-6 rounded-full border-2 border-black bg-linear-to-br from-emerald-400 to-emerald-600" />
+                                    <div className="h-6 w-6 rounded-full border-2 border-black bg-linear-to-br from-cyan-400 to-cyan-600" />
+                                    <div className="h-6 w-6 rounded-full border-2 border-black bg-linear-to-br from-purple-400 to-purple-600" />
+                                </div>
+                                <span className="text-zinc-200">
+                                    <strong className="text-white">112 people · 3,540 accounts found</strong>
                                 </span>
-                            </Badge>
-                            <Badge>
-                                <Lock className="h-3.5 w-3.5 text-emerald-400" />
-                                <span>Revocable access · You stay in control</span>
-                            </Badge>
+                            </div>
                         </div>
 
+                        {/* Main headline - PROBLEM FOCUSED */}
                         <div className="mx-auto max-w-3xl space-y-4 text-center">
                             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-                                The average person has 130+ online accounts.
+                                You have 200+ accounts.
                                 <br />
                                 <span className="text-zinc-400">
-                                    They remember about 12.
+                                    You forgot about 180 of them.
                                 </span>
                             </h1>
 
-                            {/* ONE subtext: purpose + benefit (Google-friendly) */}
-                            <p className="text-sm text-zinc-400 sm:text-base">
-                                Scan your Gmail in 3 minutes. See every account. Delete the ones you forgot existed
+                            <p className="text-lg text-zinc-300 sm:text-xl">
+                                Those forgotten accounts are now security risks, spam sources, and data leaks.
+                                <br />
+                                <span className="text-white font-semibold">Find them in 2 minutes.</span>
                             </p>
+                        </div>
 
-                            {/* emotional hit (compact, premium) */}
-                            <div className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-black/20 p-4 text-left">
-                                <div className="flex items-start gap-3">
-                                    <TriangleAlert className="mt-0.5 h-4 w-4 text-amber-300" />
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium text-white">The risk is the accounts you can’t remember.</p>
-                                        <p className="text-xs text-zinc-400">
-                                            Old signups become breach exposure, spam, and takeover attempts later. GhostSweep gives you visibility — then a path
-                                            to cleanup.
-                                        </p>
-                                    </div>
+                        {/* Urgency warning */}
+                        <div className="mx-auto max-w-2xl rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
+                            <div className="flex items-start gap-3">
+                                <TriangleAlert className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-300" />
+                                <div className="space-y-2 text-left">
+                                    <p className="text-sm font-semibold text-white">
+                                        33 accounts were breached this month
+                                    </p>
+                                    <p className="text-xs text-zinc-300">
+                                        Check if yours are exposed. See every account tied to your email — old forums, shopping sites, free trials you never canceled, and services that got breached.
+                                    </p>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* CTAs */}
-                            <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-                                <Link
-                                    href="/login"
-                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black shadow-sm hover:bg-zinc-100 transition"
-                                >
-                                    See My Forgotten Accounts
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
+                        {/* ONE CLEAR CTA */}
+                        <div className="flex justify-center">
+                            <Link
+                                href="/login"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-semibold text-black shadow-lg hover:bg-zinc-100 transition transform hover:scale-105"
+                            >
+                                Find My Hidden Accounts (Free 2-Min Scan)
+                                <ArrowRight className="h-5 w-5" />
+                            </Link>
+                        </div>
 
-                                <Link
-                                    href="#how"
-                                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm text-zinc-100 hover:bg-white/10 transition"
-                                >
-                                    See how it works
-                                    <ArrowDown className="h-4 w-4" />
-                                </Link>
-                            </div>
+                        {/* Trust bullets */}
+                        <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-400">
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                2-minute scan
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                No credit card
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                Revoke anytime
+                            </span>
+                        </div>
 
-                            {/* Proof chips */}
-                            <div className="flex flex-wrap justify-center gap-4 text-[11px] text-zinc-400">
-                                <span className="inline-flex items-center gap-1">
-                                    <Check className="h-3 w-3 text-emerald-400" />
-                                    We don’t read email bodies
-                                </span>
-                                <span className="inline-flex items-center gap-1">
-                                    <Check className="h-3 w-3 text-emerald-400" />
-                                    Access is revocable anytime
-                                </span>
-                                <span className="inline-flex items-center gap-1">
-                                    <Check className="h-3 w-3 text-emerald-400" />
-                                    You approve every email
-                                </span>
+                        {/* Concrete result preview */}
+                        <div className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-black/30 p-5">
+                            <div className="flex items-start gap-3">
+                                <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-300" />
+                                <div className="space-y-2 text-left">
+                                    <p className="text-sm font-semibold text-white">
+                                        Here's what you'll discover:
+                                    </p>
+                                    <ul className="space-y-1 text-xs text-zinc-300">
+                                        <li>• Old forums you joined in 2011</li>
+                                        <li>• Shopping sites you used once</li>
+                                        <li>• Free trials you never canceled</li>
+                                        <li>• Services that got breached</li>
+                                        <li>• Apps you forgot existed</li>
+                                    </ul>
+                                    <p className="text-xs text-emerald-300 font-medium pt-1">
+                                        → Then we show you exactly how to delete them
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <FounderVideoSection />
-
-                {/* HOW IT WORKS (premium stepper) */}
+                {/* HOW IT WORKS - SIMPLIFIED */}
                 <section className="space-y-8" id="how">
-                    <SectionTitle
-                        eyebrow="How it works"
-                        title="A simple loop: discover → prioritize → clean up"
-                        desc="GhostSweep turns a messy inbox into a repeatable cleanup workflow you can actually finish."
-                    />
-
-                    <div className="grid gap-4 md:grid-cols-3">
-                        {[
-                            {
-                                icon: Mail,
-                                title: "Connect Gmail (securely)",
-                                body: "Sign in with Google using OAuth. You see permissions before you grant access, and you can revoke anytime.",
-                            },
-                            {
-                                icon: Fingerprint,
-                                title: "Build your footprint",
-                                body: "We group signup signals from metadata into services so you can see what’s connected to your email.",
-                            },
-                            {
-                                icon: ListChecks,
-                                title: "Take action (Pro)",
-                                body: "Generate deletion steps (email/link/manual), bulk where possible, and track replies + follow-ups.",
-                            },
-                        ].map((s) => (
-                            <div key={s.title} className="rounded-2xl border border-white/10 bg-[#050509] p-5">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
-                                        <s.icon className="h-4 w-4 text-emerald-300" />
-                                    </div>
-                                    <p className="text-sm font-semibold text-white">{s.title}</p>
-                                </div>
-                                <p className="mt-3 text-xs leading-relaxed text-zinc-400">{s.body}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="rounded-2xl border border-white/10 bg-white/2 p-5">
-                        <p className="text-xs text-zinc-400">
-                            <span className="font-medium text-zinc-200">Important:</span> GhostSweep never sends deletion emails automatically. You
-                            preview and approve everything.
+                    <div className="text-center space-y-2">
+                        <Badge>
+                            <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
+                            <span>How it works</span>
+                        </Badge>
+                        <h2 className="text-2xl font-bold text-white sm:text-3xl">
+                            Find every account in 3 clicks
+                        </h2>
+                        <p className="text-sm text-zinc-400">
+                            No setup. No email reading. Just results.
                         </p>
                     </div>
-                </section>
 
-                {/* WHAT YOU'LL SEE (text-only premium mock) */}
-                <section className="space-y-8">
-                    <SectionTitle
-                        eyebrow="Preview"
-                        title="What you’ll see after you connect"
-                        desc="A clean, organized view of your footprint — without reading your emails."
-                    />
-
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <div className="rounded-2xl border border-white/10 bg-[#050509] p-5">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="h-4 w-4 text-emerald-300" />
-                                <p className="text-sm font-semibold text-white">Footprint summary</p>
+                    <div className="grid gap-6 md:grid-cols-3">
+                        {[
+                            {
+                                step: "1",
+                                icon: Mail,
+                                title: "Connect Gmail",
+                                body: "Click 'Sign in with Google' — takes 10 seconds",
+                            },
+                            {
+                                step: "2",
+                                icon: Search,
+                                title: "We scan metadata",
+                                body: "We find signup emails (we don't read your messages)",
+                            },
+                            {
+                                step: "3",
+                                icon: ListChecks,
+                                title: "See everything",
+                                body: "Get your full list + steps to delete each account",
+                            },
+                        ].map((s) => (
+                            <div key={s.step} className="rounded-2xl border border-white/10 bg-[#050509] p-6 text-center">
+                                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-xl font-bold text-emerald-300">
+                                    {s.step}
+                                </div>
+                                <s.icon className="mx-auto mb-3 h-6 w-6 text-zinc-400" />
+                                <p className="mb-2 text-base font-semibold text-white">{s.title}</p>
+                                <p className="text-sm text-zinc-400">{s.body}</p>
                             </div>
-                            <p className="mt-2 text-xs text-zinc-400">
-                                GhostSweep aggregates signup signals into a footprint you can understand in minutes.
-                            </p>
-
-                            <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                                {[
-                                    { label: "Accounts discovered", value: "—" },
-                                    { label: "Forgotten or inactive", value: "—" },
-                                    { label: "Deletion actions available", value: "—" },
-                                ].map((x) => (
-                                    <div key={x.label} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                                        <p className="text-[11px] text-zinc-400">{x.label}</p>
-                                        <p className="text-lg font-semibold text-white">{x.value}</p>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mt-4 text-[11px] text-zinc-500">
-                                Free shows your total count. Pro unlocks the full list + workflows.
-                            </div>
-                        </div>
-
-                        <div className="rounded-2xl border border-white/10 bg-[#050509] p-5">
-                            <div className="flex items-center gap-2">
-                                <ListChecks className="h-4 w-4 text-emerald-300" />
-                                <p className="text-sm font-semibold text-white">Account list (example)</p>
-                            </div>
-                            <p className="mt-2 text-xs text-zinc-400">
-                                GhostSweep groups Gmail signup signals into a clear account footprint — so you can see what exists and decide what stays.
-                            </p>
-
-                            <div className="mt-4 space-y-2">
-                                {[
-                                    {
-                                        name: "Dropbox",
-                                        meta: "last seen 2019 · login / security emails",
-                                        status: "inactive",
-                                    },
-                                    {
-                                        name: "Spotify",
-                                        meta: "subscription / billing emails",
-                                        status: "active",
-                                    },
-                                    {
-                                        name: "LinkedIn",
-                                        meta: "security alerts · password reset",
-                                        status: "security",
-                                    },
-                                    {
-                                        name: "Old e-commerce site",
-                                        meta: "receipt emails · no activity in years",
-                                        status: "cleanup",
-                                    },
-                                ].map((row) => (
-                                    <div
-                                        key={row.name}
-                                        className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-                                    >
-                                        <div className="flex flex-col">
-                                            <p className="text-xs font-medium text-white/90">{row.name}</p>
-                                            <span className="text-[10px] text-zinc-400">{row.meta}</span>
-                                        </div>
-
-                                        <span
-                                            className={`text-[10px] rounded-full px-2 py-0.5 border ${row.status === "inactive"
-                                                ? "border-zinc-500/40 text-zinc-300"
-                                                : row.status === "security"
-                                                    ? "border-amber-500/40 text-amber-300"
-                                                    : "border-emerald-500/40 text-emerald-300"
-                                                }`}
-                                        >
-                                            {row.status}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mt-4 text-[11px] text-zinc-500">
-                                Pro adds breach visibility, deletion workflows, and follow-up tracking.
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
                     <div className="flex justify-center">
                         <Link
                             href="/login"
-                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-zinc-100 transition"
                         >
-                            Run my scan
+                            Start My Scan Now
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
                 </section>
 
+                {/* RESULTS PREVIEW - NEW VISUAL SECTION */}
+                <section className="space-y-6">
+                    <div className="text-center space-y-2">
+                        <Badge>
+                            <Fingerprint className="h-3.5 w-3.5 text-emerald-300" />
+                            <span>What you'll see</span>
+                        </Badge>
+                        <h2 className="text-2xl font-bold text-white sm:text-3xl">
+                            Real examples from real scans
+                        </h2>
+                        <p className="text-sm text-zinc-400">
+                            Most people discover 50-200 accounts they completely forgot about
+                        </p>
+                    </div>
+
+                    {/* VISUAL MOCK OF RESULTS */}
+                    <div className="rounded-2xl border border-white/10 bg-[#050509] p-6">
+                        <div className="mb-6 grid gap-4 sm:grid-cols-3">
+                            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+                                <p className="text-3xl font-bold text-white">127</p>
+                                <p className="text-xs text-zinc-400 mt-1">Accounts found</p>
+                            </div>
+                            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-center">
+                                <p className="text-3xl font-bold text-amber-300">23</p>
+                                <p className="text-xs text-zinc-400 mt-1">Breached</p>
+                            </div>
+                            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
+                                <p className="text-3xl font-bold text-emerald-300">89</p>
+                                <p className="text-xs text-zinc-400 mt-1">Can be deleted</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            {[
+                                { name: "Old Forum (2011)", risk: "Breached 2019", action: "Delete now", color: "red" },
+                                { name: "Shopping site", risk: "Inactive 4 years", action: "Delete", color: "amber" },
+                                { name: "Free trial (never used)", risk: "Data shared with 47 companies", action: "Delete", color: "amber" },
+                                { name: "Spotify", risk: "Active subscription", action: "Keep", color: "green" },
+                            ].map((item, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                                >
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-white">{item.name}</p>
+                                        <p className="text-xs text-zinc-400">{item.risk}</p>
+                                    </div>
+                                    <span
+                                        className={`rounded-full px-3 py-1 text-xs font-medium ${item.color === "red"
+                                                ? "border border-red-500/40 bg-red-500/10 text-red-300"
+                                                : item.color === "amber"
+                                                    ? "border border-amber-500/40 bg-amber-500/10 text-amber-300"
+                                                    : "border border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                                            }`}
+                                    >
+                                        {item.action}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <p className="mt-4 text-center text-xs text-zinc-500">
+                            This is what your dashboard will look like (with your real accounts)
+                        </p>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <Link
+                            href="/login"
+                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                        >
+                            See My Real Results
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
+                </section>
+
+                {/* VIDEO - MOVED AFTER RESULTS */}
+                <FounderVideoSection />
+
                 {/* FEATURES */}
                 <section className="space-y-8">
                     <SectionTitle
-                        eyebrow="What GhostSweep does"
-                        title="A cleanup workflow you’ll actually finish"
-                        desc="Discover accounts, spot risk, then delete what you don’t want holding your data."
+                        eyebrow="Features"
+                        title="Everything you need to clean up"
+                        desc="Discover accounts, spot risk, then delete what you don't want holding your data."
                     />
 
                     <div className="grid gap-4 md:grid-cols-3">
@@ -559,7 +592,7 @@ export default function HomePage() {
                                 icon: Send,
                                 title: "Deletion workflow (Pro)",
                                 body: "Generate deletion emails/links, bulk-send where possible, and track replies + follow-ups.",
-                                foot: "No more “where was that link?”",
+                                foot: "No more \"where was that link?\"",
                             },
                         ].map((f) => (
                             <div key={f.title} className="rounded-2xl border border-white/10 bg-[#050509] p-5">
@@ -577,7 +610,7 @@ export default function HomePage() {
                 {/* TRUST */}
                 <section className="space-y-8">
                     <SectionTitle
-                        eyebrow="Trust"
+                        eyebrow="Security"
                         title="Privacy-first, not privacy-flavored"
                         desc="Designed to minimize access, be explicit about what it does, and make it easy to revoke permissions."
                     />
@@ -612,7 +645,6 @@ export default function HomePage() {
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                                        {/* Put your image in /public and set src="/joel.jpg" */}
                                         <Image src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg" alt="Founder of GhostSweep" fill className="object-cover" />
                                     </div>
 
@@ -799,12 +831,12 @@ export default function HomePage() {
 
                     {/* Annual Plan */}
                     <div className="rounded-xl border border-white/10 bg-[#050509]/50 p-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div>
                                 <p className="text-sm font-semibold text-white">Annual Plan</p>
                                 <p className="text-xs text-zinc-400">Save 20% with yearly billing</p>
                             </div>
-                            <div className="text-right">
+                            <div className="text-center sm:text-right">
                                 <p className="text-2xl font-semibold text-white">$95.88<span className="text-sm text-zinc-400">/year</span></p>
                                 <p className="text-xs text-emerald-400">Just $7.99/month</p>
                             </div>
@@ -865,16 +897,18 @@ export default function HomePage() {
                                 <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
                             </summary>
                             <p className="mt-2 text-zinc-400 text-xs pl-4">
-                                Pro users can mark accounts as "Pending", "Deletion Requested&ldquo;, or &quot;Deleted&quot; to track their progress. Your dashboard shows how many accounts you&apos;ve successfully removed and calculates your privacy score improvement.
+                                Pro users can mark accounts as "Pending", "Deletion Requested", or "Deleted" to track their progress. Your dashboard shows how many accounts you&apos;ve successfully removed and calculates your privacy score improvement.
                             </p>
                         </details>
                     </div>
                 </section>
 
-
                 {/* FAQ */}
                 <section className="space-y-8" id="faq">
-                    <SectionTitle title="Frequently asked questions" />
+                    <SectionTitle
+                        eyebrow="FAQ"
+                        title="Common questions"
+                    />
                     <div className="grid gap-4 md:grid-cols-2">
                         {faqs.map((item) => (
                             <div key={item.q} className="rounded-2xl border border-white/10 bg-[#050509] p-5 space-y-2">
@@ -887,28 +921,32 @@ export default function HomePage() {
 
                 {/* FINAL CTA */}
                 <section className="rounded-3xl border border-white/10 bg-white/2 p-6 sm:p-8 text-center space-y-4">
-                    <h2 className="text-lg font-semibold text-white sm:text-xl">Get visibility in minutes</h2>
+                    <h2 className="text-lg font-semibold text-white sm:text-xl">Ready to clean up?</h2>
                     <p className="mx-auto max-w-xl text-sm text-zinc-400">
-                        You can’t protect what you can’t see. Run a scan, see your footprint, then choose what you want to shut down.
+                        You can't protect what you can't see. Run a scan, see your footprint, then choose what you want to shut down.
                     </p>
 
-                    <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                    <div className="flex flex-col items-center justify-center gap-3">
                         <Link
                             href="/login"
-                            className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                            className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-semibold text-black hover:bg-zinc-100 transition transform hover:scale-105"
                         >
-                            See My Forgotten Accounts
-                            <ArrowRight className="h-4 w-4" />
+                            Find My Hidden Accounts (Free)
+                            <ArrowRight className="h-5 w-5" />
                         </Link>
 
                         <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-zinc-400">
                             <span className="inline-flex items-center gap-1">
                                 <Check className="h-3 w-3 text-emerald-400" />
-                                No credit card required
+                                2-minute scan
                             </span>
                             <span className="inline-flex items-center gap-1">
                                 <Check className="h-3 w-3 text-emerald-400" />
-                                Revoke access any time
+                                No credit card
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                Revoke anytime
                             </span>
                         </div>
                     </div>
