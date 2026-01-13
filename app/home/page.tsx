@@ -111,8 +111,8 @@ function VideoModal({
 function FounderVideoSection() {
     const [open, setOpen] = useState(false);
 
-    const videoEmbedUrl = "https://www.youtube.com/embed/WsHW8Hwd2UU?si=Iiguj41N69lppJAU";
-    const thumbUrl = "https://ghostsweep.t3.storage.dev/thumbnail.png";
+    const videoEmbedUrl = "https://www.youtube.com/embed/FYN08Jr-PTE?si=KZIubL2gTsAHEyWw";
+    const thumbUrl = "https://ghostsweep.t3.storage.dev/final.png";
 
     return (
         <section className="space-y-6">
@@ -197,7 +197,7 @@ function FounderVideoSection() {
                 open={open}
                 onClose={() => setOpen(false)}
                 videoUrl={videoEmbedUrl}
-                title="How I use GhostSweep to clean up my accounts"
+                title="Why You Get Spam From Companies You've Never Heard Of"
             />
         </section>
     );
