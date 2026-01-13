@@ -119,7 +119,7 @@ export async function POST(req: Request) {
           .maybeSingle()
 
         if (findError || !subRow) {
-          console.warn(`⚠️ No user found for customer ${customerId}`)
+          console.warn(`⚠️ Customer trial ending but no user found for customer ${customerId}`)
           break
         }
 
@@ -156,7 +156,7 @@ export async function POST(req: Request) {
       case "customer.subscription.updated": {
         const subscription = event.data.object as ExtendedSubscription
         const customerId = subscription.customer as string
-        console.log(subscription)
+        
         const { data: subRow, error: findError } = await supabase
           .from("user_subscriptions")
           .select("user_id")
@@ -165,7 +165,7 @@ export async function POST(req: Request) {
 
           
           if (findError || !subRow) {
-            console.warn(`⚠️ No user found for customer ${customerId}`)
+            console.error(`⚠️ Customer subscription updated but no user found for customer ${customerId}`)
             break
           }
         // When trial converts to paid, status becomes "active"
@@ -211,7 +211,7 @@ export async function POST(req: Request) {
           .maybeSingle()
 
         if (findError || !subRow) {
-          console.warn(`⚠️ No user found for customer ${customerId}`)
+          console.warn(`⚠️ Customer subscription deleted but no user found for customer ${customerId}`)
           break
         }
 
@@ -249,7 +249,7 @@ export async function POST(req: Request) {
           .maybeSingle()
 
         if (findError || !subRow) {
-          console.warn(`⚠️ No user found for customer ${customerId}`)
+          console.warn(`⚠️ Customer payment failed but no user found for customer ${customerId}`)
           break
         }
 
