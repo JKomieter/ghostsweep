@@ -136,6 +136,7 @@ function FounderVideoSection() {
                             fill
                             className="object-cover opacity-90 transition group-hover:opacity-100"
                             priority={false}
+                            unoptimized
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -645,7 +646,7 @@ export default function HomePage() {
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                                        <Image src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg" alt="Founder of GhostSweep" fill className="object-cover" />
+                                        <Image src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg" alt="Founder of GhostSweep" fill className="object-cover" unoptimized />
                                     </div>
 
                                     <div className="space-y-0.5">
