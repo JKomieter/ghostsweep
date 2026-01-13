@@ -112,7 +112,7 @@ function FounderVideoSection() {
     const [open, setOpen] = useState(false);
 
     const videoEmbedUrl = "https://www.youtube.com/embed/FYN08Jr-PTE?si=KZIubL2gTsAHEyWw";
-    const thumbUrl = "https://ghostsweep.t3.storage.dev/final.png";
+    const thumbUrl = "https://auth.ghostsweep.com/storage/v1/object/public/news/You%20in%202017.png";
 
     return (
         <section className="space-y-6">
