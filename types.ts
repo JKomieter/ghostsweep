@@ -159,3 +159,59 @@ export interface BulkDeletionItems {
 }
 
 export type DeletionMethod = 'email' | 'link' | 'manual'
+
+// types/database.ts
+
+export type DataBrokerType = 'broker' | 'ad_network' | 'government' | 'other';
+export type LinkConfidence = 'confirmed' | 'likely' | 'possible';
+
+export interface DataBroker {
+  id: string;
+  name: string;
+  domain: string;
+  type: DataBrokerType;
+  description: string | null;
+  website: string | null;
+  removal_url: string | null;
+  contact_email: string | null;
+  phone: string | null;
+  address: string | null;
+  category: string | null;
+  is_credit_bureau: boolean;
+  is_health_related: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceDataBrokerLink {
+  id: string;
+  service_id: string;
+  data_broker_id: string;
+  confidence: LinkConfidence;
+  source: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// With relations
+export interface ServiceDataBrokerLinkWithBroker extends ServiceDataBrokerLink {
+  data_broker: DataBroker;
+}
+
+export interface DataBrokerWithLinks extends DataBroker {
+  service_data_broker_links: ServiceDataBrokerLink[];
+}
+
+export type OptOutRequestStatus = "not_started" | "in_progress" | "completed" | "failed" | null;
+
+export interface OptOutRequest {
+    id: string;
+    user_id: string;
+    broker_id: string;
+    status: OptOutRequestStatus;
+    created_at: string;
+    updated_at: string;
+    notes: string | null;
+    method: "email" | "web_form" | "phone" | "mail" | null;
+    expired_at: string | null;
+}
