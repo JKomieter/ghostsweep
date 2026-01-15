@@ -342,7 +342,7 @@ export default function HomePage() {
                                     <div className="h-6 w-6 rounded-full border-2 border-black bg-linear-to-br from-purple-400 to-purple-600" />
                                 </div>
                                 <span className="text-zinc-200">
-                                    <strong className="text-white">112 people · 3,540 accounts found</strong>
+                                    <strong className="text-white">155 people · 5,320 accounts found</strong>
                                 </span>
                             </div>
                         </div>
