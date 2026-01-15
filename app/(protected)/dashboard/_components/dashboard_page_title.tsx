@@ -482,9 +482,25 @@ export default function DashboardTitle() {
                                     <p className="text-white/50">
                                         Connect to let GhostSweep analyze your email metadata.
                                     </p>
-                                    <p className="text-white/50">
-                                        <span className="font-medium text-cyan-300">Note:</span> When the OAuth flow appears, please allow the requested permissions to enable GhostSweep to access your email metadata securely.
-                                    </p>
+                                    <div className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
+                                        <p className="font-medium text-cyan-300">Permissions Required:</p>
+                                        <div className="space-y-2 text-[11px] text-white/70">
+                                            <div className="flex gap-2">
+                                                <span className="text-emerald-400">✓</span>
+                                                <div>
+                                                    <span className="font-medium text-white">Read Email</span>
+                                                    <p className="text-white/60">Required to scan your inbox for accounts and breaches</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <span className="text-amber-400">◆</span>
+                                                <div>
+                                                    <span className="font-medium text-white">Send Email (Optional)</span>
+                                                    <p className="text-white/60">Allow this to send deletion requests directly from GhostSweep</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </>
                             </>
                         )}

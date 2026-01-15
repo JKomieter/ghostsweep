@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { DigitalShadowSection } from "./_components/digital-shadow-section";
 
 function ExitIntentPopup({ onClose }: { onClose: () => void }) {
     return (
@@ -486,6 +487,9 @@ export default function HomePage() {
                         </Link>
                     </div>
                 </section>
+
+                {/* DIGITAL SHADOW SECTION */}
+                <DigitalShadowSection />
 
                 {/* RESULTS PREVIEW - NEW VISUAL SECTION */}
                 <section className="space-y-6">
