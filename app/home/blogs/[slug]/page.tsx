@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -35,6 +36,73 @@ function formatDate(dateStr: string | null) {
 }
 
 type PageParams = { params: Promise<{ slug: string }> };
+
+// Generate metadata for blog posts
+export async function generateMetadata(
+    rawParams: PageParams
+): Promise<Metadata> {
+    const resolvedParams = await rawParams.params;
+    const { slug } = resolvedParams;
+
+    const supabase = await createClient();
+
+    const { data } = await supabase
+        .from("blog_posts")
+        .select(
+            "id, slug, title, excerpt, cover_image_url, published_at, category"
+        )
+        .eq("slug", slug)
+        .eq("status", "published")
+        .maybeSingle();
+
+    if (!data) {
+        return {
+            title: "Post Not Found | GhostSweep Blog",
+        };
+    }
+
+    const post = data as BlogPost;
+    const dateLabel = formatDate(post.published_at);
+
+    return {
+        title: `${post.title} | GhostSweep Blog`,
+        description: post.excerpt || `Read "${post.title}" on the GhostSweep blog. Digital privacy and security insights.`,
+        keywords: [
+            post.title,
+            post.category || "privacy",
+            "privacy",
+            "security",
+            "digital safety",
+        ],
+        openGraph: {
+            title: post.title,
+            description: post.excerpt || `Read this article on privacy and security.`,
+            url: `https://ghostsweep.com/home/blogs/${slug}`,
+            type: "article",
+            authors: ["GhostSweep"],
+            publishedTime: post.published_at ? new Date(post.published_at).toISOString() : undefined,
+            images: post.cover_image_url
+                ? [
+                    {
+                        url: post.cover_image_url,
+                        width: 1200,
+                        height: 630,
+                        alt: post.title,
+                    },
+                ]
+                : [],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.excerpt || `Read this article on the GhostSweep blog.`,
+            images: post.cover_image_url ? [post.cover_image_url] : [],
+        },
+        alternates: {
+            canonical: `https://ghostsweep.com/home/blogs/${slug}`,
+        },
+    };
+}
 
 export default async function BlogPostPage(rawParams: PageParams) {
     const resolvedParams = await rawParams.params;

@@ -9,8 +9,18 @@ import Link from 'next/link'
 const inter = JetBrains_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: '404 - Page Not Found',
-    description: 'The page you are looking for does not exist.',
+    title: '404 - Page Not Found | GhostSweep',
+    description: 'The page you are looking for does not exist. Return to GhostSweep and discover your hidden accounts.',
+    robots: {
+        index: false,
+        follow: true,
+    },
+    openGraph: {
+        title: '404 - Page Not Found',
+        description: 'The page you requested could not be found.',
+        url: 'https://ghostsweep.com/404',
+        type: 'website',
+    },
 }
 
 export default function GlobalNotFound() {

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
@@ -18,6 +18,15 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+// Viewport configuration
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  minimumScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
   description: "Scan your inbox to discover forgotten accounts, detect data breaches, and take control of where your information lives. Privacy-first account discovery tool.",
@@ -33,28 +42,58 @@ export const metadata: Metadata = {
     "forgotten accounts",
     "data removal",
   ],
+  authors: [{ name: "GhostSweep" }],
+  creator: "GhostSweep",
+  formatDetection: {
+    email: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://ghostsweep.com"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
     description: "Discover forgotten accounts linked to your email and take control of your digital presence.",
     url: "https://ghostsweep.com/home",
     type: "website",
+    siteName: "GhostSweep",
     images: [
       {
         url: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
         width: 1200,
         height: 630,
         alt: "GhostSweep - Find your hidden accounts",
+        type: "image/png",
       },
     ],
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
     description: "Discover forgotten accounts and secure your digital presence.",
     images: ["https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"],
+    creator: "@ghostsweep",
   },
   alternates: {
     canonical: "https://ghostsweep.com/home",
+  },
+  appLinks: {
+    ios: [
+      {
+        app_name: "GhostSweep",
+        url: "https://ghostsweep.com",
+      },
+    ],
   },
 };
 
@@ -80,6 +119,26 @@ export const metadata: Metadata = {
  * 
  * See: https://nextjs.org/docs/architecture/nextjs-compiler
  */
+
+// Organization Schema for Google Knowledge Panel
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "GhostSweep",
+  "url": "https://ghostsweep.com",
+  "logo": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+  "description": "Privacy-first account discovery and digital footprint management platform.",
+  "sameAs": [
+    "https://twitter.com/ghostsweep",
+    "https://www.instagram.com/ghostsweep",
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Service",
+    "url": "https://ghostsweep.com/support",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -87,6 +146,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Organization Schema for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      </head>
       <FBPixel />
       <body
         className={`${interSans.variable} ${inter.variable} antialiased`}

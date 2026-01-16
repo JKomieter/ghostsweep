@@ -112,16 +112,16 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        const { data: subRow, error: findError } = await supabase
-          .from("user_subscriptions")
-          .select("user_id")
-          .eq("stripe_customer_id", customerId)
-          .maybeSingle()
+        const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
+          body: { stripeCustomerId: customerId },
+        })
 
-        if (findError || !subRow) {
-          console.warn(`⚠️ Customer trial ending but no user found for customer ${customerId}`)
+        if (error || !data?.userId) {
+          console.error(`❌ Trial ending but no user found for customer ${customerId}:`, error)
           break
         }
+
+        const subRow = { user_id: data.userId }
 
         const trialEndDate = subscription.trial_end
           ? new Date(subscription.trial_end * 1000).toISOString()
@@ -157,17 +157,17 @@ export async function POST(req: Request) {
         const subscription = event.data.object as ExtendedSubscription
         const customerId = subscription.customer as string
         
-        const { data: subRow, error: findError } = await supabase
-          .from("user_subscriptions")
-          .select("user_id")
-          .eq("stripe_customer_id", customerId)
-          .maybeSingle()
+        const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
+          body: { stripeCustomerId: customerId },
+        })
 
-          
-          if (findError || !subRow) {
-            console.error(`⚠️ Customer subscription updated but no user found for customer ${customerId}`)
-            break
-          }
+        if (error || !data?.userId) {
+          console.error(`❌ Customer subscription updated but no user found for customer ${customerId}:`, error)
+          break
+        }
+
+        const subRow = { user_id: data.userId }
+
         // When trial converts to paid, status becomes "active"
         const isActive = subscription.status === "active"
         const renewsAt = isActive
@@ -204,16 +204,16 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        const { data: subRow, error: findError } = await supabase
-          .from("user_subscriptions")
-          .select("user_id")
-          .eq("stripe_customer_id", customerId)
-          .maybeSingle()
+        const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
+          body: { stripeCustomerId: customerId },
+        })
 
-        if (findError || !subRow) {
-          console.warn(`⚠️ Customer subscription deleted but no user found for customer ${customerId}`)
+        if (error || !data?.userId) {
+          console.error(`❌ Customer subscription deleted but no user found for customer ${customerId}:`, error)
           break
         }
+
+        const subRow = { user_id: data.userId }
 
         const { error: updateError } = await supabase.functions.invoke(
           'downgrade-user-subscription',
@@ -242,16 +242,16 @@ export async function POST(req: Request) {
         const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer as string
 
-        const { data: subRow, error: findError } = await supabase
-          .from("user_subscriptions")
-          .select("user_id")
-          .eq("stripe_customer_id", customerId)
-          .maybeSingle()
+        const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
+          body: { stripeCustomerId: customerId },
+        })
 
-        if (findError || !subRow) {
-          console.warn(`⚠️ Customer payment failed but no user found for customer ${customerId}`)
+        if (error || !data?.userId) {
+          console.error(`❌ Payment failed but no user found for customer ${customerId}:`, error)
           break
         }
+
+        const subRow = { user_id: data.userId }
 
         const { error: notifError } = await supabase.functions.invoke(
           'payment-failed-notification',

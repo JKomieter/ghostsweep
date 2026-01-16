@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";

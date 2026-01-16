@@ -1,10 +1,25 @@
-"use client"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import type { Metadata } from "next"
 import Header from "./_components/app_header"
 import StartScanOnboardingDialog from "./_components/start_scan_onboarding_dialog"
+import { DashboardProvider } from "./_components/dashboard-provider"
 
-
-const queryClient = new QueryClient()
+export const metadata: Metadata = {
+    title: "Dashboard | GhostSweep Account Management",
+    description: "Manage your digital footprint. View discovered accounts, monitor data breaches, and control your online presence.",
+    robots: {
+        index: false,
+        follow: false,
+    },
+    openGraph: {
+        title: "Dashboard | GhostSweep",
+        description: "Manage your account security and digital footprint.",
+        url: "https://ghostsweep.com/dashboard",
+        type: "website",
+    },
+    alternates: {
+        canonical: "https://ghostsweep.com/dashboard",
+    },
+}
 
 export default function DashboardLayout({
     children,
@@ -12,12 +27,12 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <QueryClientProvider client={queryClient}>
-                <main className="bg-background relative">
-                    <Header />
-                    {children}
-                    <StartScanOnboardingDialog />
-                </main>
-        </QueryClientProvider>
+        <DashboardProvider>
+            <main className="bg-background relative">
+                <Header />
+                {children}
+                <StartScanOnboardingDialog />
+            </main>
+        </DashboardProvider>
     )
 }
