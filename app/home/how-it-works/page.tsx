@@ -78,8 +78,69 @@ function StepCard({
 }
 
 export default function HowItWorksPage() {
+    // HowTo schema for search results
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to Find and Delete Hidden Accounts with GhostSweep",
+        "description": "Step-by-step process to connect Gmail, scan for hidden accounts, and delete services you no longer use",
+        "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Connect Gmail with Google OAuth",
+                "text": "Sign in with Google and grant GhostSweep permission to scan Gmail metadata. You can disconnect anytime.",
+                "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Scan metadata for account signals",
+                "text": "GhostSweep analyzes sender addresses, subjects, and dates to detect signup patterns and account signals. No email bodies are read.",
+                "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "View your account footprint",
+                "text": "Get a count of all accounts (Free) or a detailed list organized by service (Pro). See breach indicators and risk signals.",
+                "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Delete accounts and track progress",
+                "text": "Choose accounts to delete, preview deletion emails, and track which services you've successfully removed (Pro feature).",
+                "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"
+            }
+        ]
+    };
+
+    // WebPage schema
+    const pageSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "How GhostSweep Works | Email Scan to Account Cleanup",
+        "description": "Step-by-step guide explaining how GhostSweep finds hidden accounts and helps delete them.",
+        "url": "https://ghostsweep.com/home/how-it-works",
+        "publisher": {
+            "@type": "Organization",
+            "name": "GhostSweep",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+            },
+        },
+    };
+
     return (
         <main className="min-h-screen bg-linear-to-b from-black via-zinc-950 to-black text-foreground">
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+            />
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-12 space-y-20">
                 {/* HERO */}
                 <section className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-start">

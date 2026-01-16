@@ -1,5 +1,6 @@
-// app/privacy/page.tsx
+/* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
+import { Metadata } from "next";
 import {
     ShieldCheck,
     Mail,
@@ -9,396 +10,372 @@ import {
     Send,
     Trash2,
     RefreshCw,
+    ArrowRight,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+    title: "Privacy Policy | GhostSweep Data Protection",
+    description: "Read GhostSweep's comprehensive privacy policy. Learn what data we collect, how we protect it, and how you maintain control over your information.",
+    keywords: [
+        "privacy policy",
+        "data protection",
+        "user data",
+        "GDPR",
+        "CCPA",
+        "data collection",
+        "privacy rights",
+        "data deletion",
+    ],
+    openGraph: {
+        title: "Privacy Policy | GhostSweep Data Protection",
+        description: "Understand GhostSweep's privacy practices and how your data is protected.",
+        url: "https://ghostsweep.com/home/privacy",
+        type: "website",
+    },
+    alternates: {
+        canonical: "https://ghostsweep.com/home/privacy",
+    },
+};
+
+// WebPage schema for privacy page
+const privacyPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://ghostsweep.com/home/privacy",
+    "name": "Privacy Policy | GhostSweep Data Protection",
+    "description": "GhostSweep's comprehensive privacy policy explaining data collection, protection, and user control.",
+    "url": "https://ghostsweep.com/home/privacy",
+    "publisher": {
+        "@type": "Organization",
+        "name": "GhostSweep",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+        },
+    },
+};
 
 export default function PrivacyPolicyPage() {
     return (
-        <main className="min-h-screen bg-background text-foreground">
+        <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608]">
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(privacyPageSchema) }}
+            />
+
             <div className="mx-auto max-w-4xl px-4 py-10 space-y-10">
                 {/* Header */}
-                <header className="space-y-3">
-                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                <header className="space-y-4 rounded-3xl border border-white/10 bg-white/2 p-8">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                         Privacy Policy
                     </p>
-                    <h1 className="text-2xl font-semibold tracking-tight">
-                        GhostSweep Privacy Policy
+                    <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+                        Your Data, Your Control
                     </h1>
-                    <p className="max-w-2xl text-sm text-muted-foreground">
-                        This Privacy Policy explains how GhostSweep collects, uses, and protects your
-                        information when you use our services. GhostSweep is designed to help you reduce your
-                        digital footprint and track deletion requests — while minimizing what we store.
+                    <p className="max-w-2xl text-base text-zinc-300">
+                        GhostSweep is designed with privacy-first principles. Learn exactly what data we collect, how we protect it, and how you maintain complete control.
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-xs text-zinc-400">
                         Last updated: Dec 13, 2025
                     </p>
                 </header>
 
                 {/* Summary */}
-                <section className="grid gap-4 md:grid-cols-3 text-sm">
-                    <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
-                        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                            Metadata-first
+                <section className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5">
+                        <div className="mb-3 flex items-center gap-2">
+                            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                            <p className="text-sm font-semibold text-white">Metadata-first</p>
                         </div>
-                        <p className="text-xs text-muted-foreground/90">
-                            Sweeps analyze email metadata (e.g., sender, subject, date) to detect services. We do
-                            not read or store full email bodies as part of sweeps.
+                        <p className="text-xs text-zinc-300">
+                            We scan email metadata (sender, subject, date) to detect services. Full email bodies are never read or stored.
                         </p>
                     </div>
 
-                    <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
-                        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                            <Lock className="h-3.5 w-3.5 text-primary" />
-                            You control actions
+                    <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-5">
+                        <div className="mb-3 flex items-center gap-2">
+                            <Lock className="h-4 w-4 text-cyan-400" />
+                            <p className="text-sm font-semibold text-white">You control actions</p>
                         </div>
-                        <p className="text-xs text-muted-foreground/90">
-                            Deletion emails are only sent when you explicitly trigger them (e.g., “Start Deletion”
-                            or follow-ups you enable).
+                        <p className="text-xs text-zinc-300">
+                            Nothing happens without your explicit approval. Deletion emails only send when you trigger them.
                         </p>
                     </div>
 
-                    <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
-                        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                            <Globe2 className="h-3.5 w-3.5 text-primary" />
-                            No selling data
+                    <div className="rounded-2xl border border-violet-500/30 bg-violet-500/10 p-5">
+                        <div className="mb-3 flex items-center gap-2">
+                            <Globe2 className="h-4 w-4 text-violet-400" />
+                            <p className="text-sm font-semibold text-white">No data selling</p>
                         </div>
-                        <p className="text-xs text-muted-foreground/90">
-                            We do not sell your personal data. Limited third-party services are used only to
-                            operate GhostSweep (hosting, billing, error monitoring).
+                        <p className="text-xs text-zinc-300">
+                            We never sell your data. Third parties only used for hosting, billing, and error monitoring.
                         </p>
                     </div>
                 </section>
 
                 {/* Who we are */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">1. Who we are</h2>
-                    <p className="text-sm text-muted-foreground">
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">1. Who we are</h2>
+                    <p className="text-sm text-zinc-300">
                         GhostSweep is a web application that helps you:
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                    <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
                         <li>Find services linked to your email address (via inbox metadata signals).</li>
                         <li>Identify potential breach exposure using breach sources you choose to query.</li>
                         <li>Generate and track account deletion requests across services.</li>
                     </ul>
-                    <p className="text-sm text-muted-foreground">
-                        If you have questions about this policy, contact{" "}
-                        <a href="mailto:support@ghostsweep.com" className="text-primary underline">
+                    <p className="text-sm text-zinc-300">
+                        Questions? Contact{" "}
+                        <a href="mailto:support@ghostsweep.com" className="text-emerald-300 underline hover:text-emerald-200">
                             support@ghostsweep.com
                         </a>
-                        .
                     </p>
                 </section>
 
                 {/* Information we collect */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">2. Information we collect</h2>
+                <section className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">2. Information we collect</h2>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.1 Account information
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            When you create an account, we collect your email address and authentication details
-                            through our authentication provider (Supabase Auth). We may store basic profile
-                            information if you choose to provide it.
-                        </p>
-                    </div>
-
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.2 Gmail connection (Google OAuth)
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            When you connect Gmail, we use Google OAuth scopes to access the data needed to
-                            provide GhostSweep features.
-                        </p>
-
-                        <div className="mt-2 grid gap-3 md:grid-cols-2">
-                            <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-                                <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/80">
-                                    <Mail className="h-4 w-4 text-primary" />
-                                    Inbox scanning (sweeps)
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    Sweeps access email metadata (sender, subject, timestamps, labels/headers as
-                                    needed) to detect services and security signals. We do not read or store full
-                                    email bodies as part of sweep processing.
-                                </p>
-                            </div>
-
-                            <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-                                <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/80">
-                                    <Send className="h-4 w-4 text-primary" />
-                                    Sending deletion requests (optional)
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    If you use deletion features that send emails, GhostSweep may request Gmail “send”
-                                    permissions so we can send deletion request emails on your behalf. We only send
-                                    emails when you explicitly trigger them (e.g., “Start Deletion”, “Send follow-up”,
-                                    or a follow-up automation you enable).
-                                </p>
-                            </div>
+                    <div className="space-y-3">
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.1 Account information</h3>
+                            <p className="text-sm text-zinc-300">
+                                When you create an account, we collect your email address and authentication details through our authentication provider (Supabase Auth). We may store basic profile information if you choose to provide it.
+                            </p>
                         </div>
 
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            You can disconnect Gmail at any time to revoke access.
-                        </p>
-                    </div>
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.2 Gmail connection (Google OAuth)</h3>
+                            <p className="text-sm text-zinc-300 mb-3">
+                                When you connect Gmail, we use Google OAuth scopes to access the data needed to provide GhostSweep features.
+                            </p>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.3 Sweep summaries and service data
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            To show results, we store:
-                        </p>
-                        <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                            <li>Detected services/domains associated with your inbox signals.</li>
-                            <li>Activity indicators (e.g., first seen, last seen) and message counts.</li>
-                            <li>Risk indicators (e.g., “breached” flags and related breach metadata when available).</li>
-                            <li>Sweep history (e.g., status, progress, timestamps).</li>
-                        </ul>
-                    </div>
+                            <div className="grid gap-3 md:grid-cols-2 mb-3">
+                                <div className="rounded-lg border border-white/10 bg-black/30 p-4">
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <Mail className="h-4 w-4 text-emerald-400" />
+                                        <p className="text-xs font-semibold text-white">Inbox scanning (sweeps)</p>
+                                    </div>
+                                    <p className="text-xs text-zinc-300">
+                                        Sweeps access email metadata (sender, subject, timestamps) to detect services. We do not read or store full email bodies.
+                                    </p>
+                                </div>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.4 Deletion requests and tracking
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            If you use “Bulk Delete” or deletion tracking, we store deletion workflow records such as:
-                        </p>
-                        <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                            <li>Which services you selected for deletion.</li>
-                            <li>Deletion method (open link vs email) and destination address/link (when available).</li>
-                            <li>Status tracking (e.g., queued, sent, waiting, follow-up sent, completed, failed).</li>
-                            <li>Timestamps (sent at, follow-up at, completed at) and limited error logs.</li>
-                        </ul>
-                        <p className="text-sm text-muted-foreground">
-                            GhostSweep does not automatically delete accounts. It helps you send requests and track progress.
-                        </p>
-                    </div>
+                                <div className="rounded-lg border border-white/10 bg-black/30 p-4">
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <Send className="h-4 w-4 text-emerald-400" />
+                                        <p className="text-xs font-semibold text-white">Sending deletion requests</p>
+                                    </div>
+                                    <p className="text-xs text-zinc-300">
+                                        Deletion emails are sent only when you explicitly trigger them. We only send when you approve.
+                                    </p>
+                                </div>
+                            </div>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.5 AI-generated suggestions (optional)
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            GhostSweep may offer AI-assisted suggestions (for example, “recommended next steps” or
-                            “suggested deletion method”) for a service. When enabled, we send only the minimum
-                            necessary inputs (such as domain, subjects/snippets we already store, or aggregated signals)
-                            to generate suggestions. We do not send full email bodies for these suggestions.
-                        </p>
-                    </div>
+                            <p className="text-sm text-zinc-300">
+                                You can disconnect Gmail at any time to revoke access.
+                            </p>
+                        </div>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.6 Payment information
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            When you purchase a Professional subscription, payments are processed by Stripe.
-                            GhostSweep does not store your full card details. We store subscription status, plan,
-                            and billing metadata (e.g., Stripe customer ID, renewals).
-                        </p>
-                    </div>
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.3 Sweep summaries and service data</h3>
+                            <p className="text-sm text-zinc-300 mb-2">We store:</p>
+                            <ul className="space-y-1 list-disc pl-5 text-sm text-zinc-300">
+                                <li>Detected services/domains associated with your inbox signals.</li>
+                                <li>Activity indicators (first seen, last seen, message counts).</li>
+                                <li>Risk indicators (breached flags and breach metadata).</li>
+                                <li>Sweep history (status, progress, timestamps).</li>
+                            </ul>
+                        </div>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.12em]">
-                            2.7 Usage and diagnostic data
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            We may collect basic technical and diagnostic information (e.g., pages visited, device/browser
-                            type, approximate region, performance metrics, and error logs) to operate and improve GhostSweep.
-                            We do not sell this data or use it to build advertising profiles.
-                        </p>
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.4 Deletion requests and tracking</h3>
+                            <p className="text-sm text-zinc-300 mb-2">We store deletion workflow records such as:</p>
+                            <ul className="space-y-1 list-disc pl-5 text-sm text-zinc-300">
+                                <li>Services you selected for deletion.</li>
+                                <li>Deletion method and destination address/link.</li>
+                                <li>Status tracking (queued, sent, waiting, follow-up sent, completed, failed).</li>
+                                <li>Timestamps and limited error logs.</li>
+                            </ul>
+                            <p className="text-sm text-zinc-300 mt-2">
+                                GhostSweep helps you send requests and track progress — it doesn't automatically delete accounts.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.5 Payment information</h3>
+                            <p className="text-sm text-zinc-300">
+                                When you purchase a subscription, payments are processed by Stripe. GhostSweep does not store full card details. We store subscription status, plan, and billing metadata (Stripe customer ID, renewals).
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.6 Usage and diagnostic data</h3>
+                            <p className="text-sm text-zinc-300">
+                                We may collect basic technical information (pages visited, device/browser type, approximate region, performance metrics, error logs) to operate and improve GhostSweep. We do not use this data for ads.
+                            </p>
+                        </div>
                     </div>
                 </section>
 
-                {/* How we use your information */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">3. How we use your information</h2>
-                    <p className="text-sm text-muted-foreground">
-                        We use the information we collect to:
-                    </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                        <li>Run inbox sweeps you request and display service/breach results.</li>
-                        <li>Show account risk indicators and priority signals (e.g., “breached”, “high priority”).</li>
-                        <li>
-                            Power deletion workflows you initiate (open deletion pages, send deletion emails, and track requests).
-                        </li>
-                        <li>Send service-related emails (e.g., sweep completed, deletion request sent) when relevant.</li>
-                        <li>Provide support and respond to issues you report.</li>
+                {/* How we use */}
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">3. How we use your information</h2>
+                    <p className="text-sm text-zinc-300">We use your data to:</p>
+                    <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
+                        <li>Run inbox sweeps and display service/breach results.</li>
+                        <li>Show account risk indicators and priority signals.</li>
+                        <li>Power deletion workflows you initiate.</li>
+                        <li>Send service-related emails when relevant.</li>
+                        <li>Provide support and respond to issues.</li>
                         <li>Handle billing and subscriptions.</li>
                         <li>Improve accuracy, reliability, security, and user experience.</li>
                     </ul>
                 </section>
 
                 {/* Google user data */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">4. Use of Google user data</h2>
-                    <p className="text-sm text-muted-foreground">
-                        GhostSweep’s use of information received from Google APIs adheres to the{" "}
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">4. Use of Google user data</h2>
+                    <p className="text-sm text-zinc-300">
+                        GhostSweep's use of information from Google APIs adheres to the{" "}
                         <a
                             href="https://developers.google.com/terms/api-services-user-data-policy"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary underline"
+                            className="text-emerald-300 underline hover:text-emerald-200"
                         >
                             Google API Services User Data Policy
                         </a>
-                        , including the Limited Use requirements.
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                        <li>
-                            We use Gmail data to provide features you explicitly request (such as running a sweep or sending a deletion request you trigger).
-                        </li>
-                        <li>We do not use Google user data for ads or marketing profiling.</li>
-                        <li>
-                            We do not sell Google user data. We only share data with service providers as necessary to run GhostSweep (e.g., hosting, billing),
-                            or when required by law.
-                        </li>
-                        <li>
-                            Access to Google data is restricted to automated systems and is not available for human review except when necessary for security,
-                            legal compliance, or debugging a specific issue you request help with.
-                        </li>
+                    <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
+                        <li>We use Gmail data to provide features you request.</li>
+                        <li>We don't use Google data for ads or marketing profiling.</li>
+                        <li>We don't sell Google data. We only share with service providers as needed.</li>
+                        <li>Access is restricted to automated systems and not available for human review except for security/debugging.</li>
                     </ul>
-                    <div className="mt-3 rounded-lg border border-white/10 bg-black/40 p-3">
-                        <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/80">
-                            <Trash2 className="h-4 w-4 text-primary" />
-                            You can revoke access
+
+                    <div className="rounded-lg border border-white/10 bg-black/30 p-4 mt-3">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Trash2 className="h-4 w-4 text-emerald-400" />
+                            <p className="text-sm font-semibold text-white">You can revoke access anytime</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                            You can disconnect Gmail anytime from the app to revoke tokens. You can also delete sweep and deletion-tracking data from within the app.
+                        <p className="text-xs text-zinc-300">
+                            Disconnect Gmail from the app to revoke tokens. You can also delete sweep and deletion-tracking data anytime.
                         </p>
                     </div>
                 </section>
 
                 {/* Data retention */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">5. Data retention and deletion</h2>
-                    <p className="text-sm text-muted-foreground">
-                        We retain your account information, subscription status, sweep summaries, and deletion tracking records for as long as your account remains active,
-                        unless you request deletion.
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">5. Data retention and deletion</h2>
+                    <p className="text-sm text-zinc-300">
+                        We retain your data while your account is active, unless you request deletion.
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                        <li>You can delete sweep data (services, summary signals, scan history) from within the app.</li>
-                        <li>You can delete deletion tracking records (deletion requests, batches, and statuses) from within the app.</li>
-                        <li>
-                            You can disconnect Gmail to revoke access. We recommend deleting stored sweep and deletion-tracking data if you no longer want it retained.
-                        </li>
-                        <li>
-                            You can request account deletion. This may permanently remove your profile, subscriptions, and history, subject to minimal legal retention needs
-                            (e.g., billing records).
-                        </li>
+                    <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
+                        <li>Delete sweep data from within the app anytime.</li>
+                        <li>Delete deletion tracking records from within the app anytime.</li>
+                        <li>Disconnect Gmail to revoke access (we recommend deleting stored data).</li>
+                        <li>Request full account deletion (removes profile, subscriptions, and history).</li>
                     </ul>
                 </section>
 
                 {/* Sharing */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">6. Sharing your information</h2>
-                    <p className="text-sm text-muted-foreground">
-                        We do not sell your personal data. We may share limited information with:
-                    </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">6. Sharing your information</h2>
+                    <p className="text-sm text-zinc-300">We do not sell your data. We may share limited information with:</p>
+                    <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
                         <li>Infrastructure providers (database, hosting, serverless functions).</li>
                         <li>Payment processors (Stripe) for billing.</li>
-                        <li>Analytics/logging tools to monitor performance and stability.</li>
+                        <li>Analytics/logging tools for performance monitoring.</li>
                         <li>Authorities if required by law or valid legal process.</li>
                     </ul>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        We only share the minimum necessary to provide GhostSweep.
-                    </p>
                 </section>
 
                 {/* Your rights */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">7. Your rights and choices</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Depending on your location, you may have rights over your data such as access, correction,
-                        deletion, limitation, or portability.
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">7. Your rights and choices</h2>
+                    <p className="text-sm text-zinc-300">
+                        Depending on your location, you may have rights such as access, correction, deletion, limitation, or portability.
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-zinc-300">
                         To exercise these rights, contact{" "}
-                        <a href="mailto:support@ghostsweep.com" className="text-primary underline">
+                        <a href="mailto:support@ghostsweep.com" className="text-emerald-300 underline hover:text-emerald-200">
                             support@ghostsweep.com
                         </a>
-                        .
                     </p>
 
-                    <div className="mt-3 grid gap-3 md:grid-cols-2">
-                        <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-                            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/80">
-                                <RefreshCw className="h-4 w-4 text-primary" />
-                                Manage automations
+                    <div className="grid gap-3 md:grid-cols-2 mt-3">
+                        <div className="rounded-lg border border-white/10 bg-black/30 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <RefreshCw className="h-4 w-4 text-emerald-400" />
+                                <p className="text-xs font-semibold text-white">Manage automations</p>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                If you enable follow-up reminders/automations for deletion requests, you can disable them anytime.
+                            <p className="text-xs text-zinc-300">
+                                Disable follow-up reminders/automations for deletion requests anytime.
                             </p>
                         </div>
-                        <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-                            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/80">
-                                <Lock className="h-4 w-4 text-primary" />
-                                Security choices
+                        <div className="rounded-lg border border-white/10 bg-black/30 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Lock className="h-4 w-4 text-emerald-400" />
+                                <p className="text-xs font-semibold text-white">Security choices</p>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                You can revoke Gmail access, change your password, and delete stored data from within the app.
+                            <p className="text-xs text-zinc-300">
+                                Revoke Gmail access, change password, and delete stored data from the app.
                             </p>
                         </div>
                     </div>
                 </section>
 
                 {/* Security */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">8. Security</h2>
-                    <p className="text-sm text-muted-foreground">
-                        We use reasonable measures to protect data, including encryption in transit, restricted access,
-                        and scoped database policies. No method is 100% secure.
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">8. Security</h2>
+                    <p className="text-sm text-zinc-300">
+                        We use reasonable measures to protect data, including encryption in transit, restricted access, and scoped database policies. No method is 100% secure.
                     </p>
-                    <p className="text-sm text-muted-foreground">
-                        If you believe your GhostSweep account or Gmail connection has been compromised, disconnect Gmail,
-                        change your password, and contact us.
+                    <p className="text-sm text-zinc-300">
+                        If you believe your account has been compromised, disconnect Gmail, change your password, and contact us.
                     </p>
                 </section>
 
                 {/* Children */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">9. Children&apos;s privacy</h2>
-                    <p className="text-sm text-muted-foreground">
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">9. Children&apos;s privacy</h2>
+                    <p className="text-sm text-zinc-300">
                         GhostSweep is not intended for children under 16. We do not knowingly collect personal data from children.
                     </p>
                 </section>
 
                 {/* Changes */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
-                    <h2 className="text-base font-semibold tracking-tight">10. Changes to this policy</h2>
-                    <p className="text-sm text-muted-foreground">
-                        We may update this policy to reflect changes to GhostSweep or the law. We will update the “Last updated”
-                        date and may notify you in-app or by email for material changes.
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <h2 className="text-xl font-semibold text-white">10. Changes to this policy</h2>
+                    <p className="text-sm text-zinc-300">
+                        We may update this policy to reflect changes to GhostSweep or the law. We will update the "Last updated" date and may notify you in-app or by email for material changes.
                     </p>
                 </section>
 
                 {/* Contact */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
+                <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
                     <div className="flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-primary" />
-                        <h2 className="text-base font-semibold tracking-tight">Questions about this policy?</h2>
+                        <AlertCircle className="h-4 w-4 text-emerald-400" />
+                        <h2 className="text-xl font-semibold text-white">Questions about this policy?</h2>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                        Contact us at:
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                        <Mail className="mr-1 inline h-3 w-3 text-primary" />
-                        <a href="mailto:support@ghostsweep.com" className="text-primary underline">
+                    <p className="text-sm text-zinc-300">Contact us at:</p>
+                    <p className="text-sm text-zinc-300">
+                        <Mail className="mr-1 inline h-3 w-3 text-emerald-400" />
+                        <a href="mailto:support@ghostsweep.com" className="text-emerald-300 underline hover:text-emerald-200">
                             support@ghostsweep.com
                         </a>
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
-                        Please avoid sending sensitive information (passwords, full payment card numbers) by email.
+                    <p className="text-xs text-zinc-400">
+                        Please avoid sending sensitive information (passwords, card numbers) by email.
                     </p>
                 </section>
 
                 {/* Back */}
-                <div className="pb-10 text-xs text-muted-foreground">
-                    <Link href="/" className="text-primary underline hover:opacity-90 transition">
+                <div className="pb-10">
+                    <Link href="/home" className="inline-flex items-center gap-2 text-sm text-emerald-300 hover:text-emerald-200 transition">
+                        <ArrowRight className="h-4 w-4 rotate-180" />
                         Back to GhostSweep
                     </Link>
                 </div>

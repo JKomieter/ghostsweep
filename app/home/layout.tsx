@@ -2,6 +2,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import Header from "./_components/header"
 
+
 const queryClient = new QueryClient()
 
 export default function HomeLayout({

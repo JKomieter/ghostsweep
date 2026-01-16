@@ -1,5 +1,6 @@
 // app/terms/page.tsx
 import Link from "next/link"
+import { Metadata } from "next"
 import {
     FileText,
     ShieldCheck,
@@ -9,9 +10,53 @@ import {
     UserX2,
 } from "lucide-react"
 
+export const metadata: Metadata = {
+    title: "Terms of Service | GhostSweep",
+    description: "Read GhostSweep's Terms of Service. Understand the rules and guidelines for using our privacy-first account discovery and management platform.",
+    keywords: [
+        "terms of service",
+        "terms and conditions",
+        "user agreement",
+        "service terms",
+        "legal terms",
+    ],
+    openGraph: {
+        title: "Terms of Service | GhostSweep",
+        description: "GhostSweep Terms of Service - governing access and use of our service.",
+        url: "https://ghostsweep.com/home/terms",
+        type: "website",
+    },
+    alternates: {
+        canonical: "https://ghostsweep.com/home/terms",
+    },
+};
+
+// WebPage schema for terms page
+const termsPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://ghostsweep.com/home/terms",
+    "name": "Terms of Service | GhostSweep",
+    "description": "GhostSweep Terms of Service governing access and use of the platform.",
+    "url": "https://ghostsweep.com/home/terms",
+    "publisher": {
+        "@type": "Organization",
+        "name": "GhostSweep",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+        },
+    },
+};
+
 export default function TermsPage() {
     return (
         <main className="min-h-screen bg-background text-foreground">
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(termsPageSchema) }}
+            />
             <div className="mx-auto max-w-4xl px-4 py-10 space-y-10">
                 {/* Header */}
                 <header className="space-y-3">

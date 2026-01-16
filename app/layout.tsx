@@ -19,43 +19,42 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "GhostSweep — Protect Your Digital Footprint",
-  description:
-    "GhostSweep helps you uncover hidden accounts, detect breaches, and take control of where your data lives. Scan your inbox, review connected services, and secure your digital presence with privacy-first tools.",
+  title: "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
+  description: "Scan your inbox to discover forgotten accounts, detect data breaches, and take control of where your information lives. Privacy-first account discovery tool.",
   keywords: [
-    "privacy",
-    "data security",
+    "find hidden accounts",
     "email scanner",
-    "breach detection",
-    "account cleanup",
-    "digital footprint",
-    "inbox scanner",
     "account discovery",
+    "data breach detection",
+    "digital footprint",
     "privacy tools",
+    "account cleanup",
+    "email security",
+    "forgotten accounts",
+    "data removal",
   ],
   openGraph: {
-    title: "GhostSweep — Protect Your Digital Footprint",
-    description:
-      "Scan your inbox, uncover hidden services, detect breaches, and take control of your data exposure.",
-    url: "https://ghostsweep.com",
-    siteName: "GhostSweep",
+    title: "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
+    description: "Discover forgotten accounts linked to your email and take control of your digital presence.",
+    url: "https://ghostsweep.com/home",
+    type: "website",
     images: [
       {
         url: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
         width: 1200,
         height: 630,
-        alt: "GhostSweep — Privacy Dashboard",
+        alt: "GhostSweep - Find your hidden accounts",
       },
     ],
-    locale: "en_US",
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GhostSweep — Protect Your Digital Footprint",
-    description:
-      "Uncover hidden accounts, detect breaches, and secure your personal data.",
+    title: "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
+    description: "Discover forgotten accounts and secure your digital presence.",
     images: ["https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"],
+  },
+  alternates: {
+    canonical: "https://ghostsweep.com/home",
   },
 };
 

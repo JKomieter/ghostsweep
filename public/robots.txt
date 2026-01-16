@@ -1,14 +1,51 @@
 User-agent: *
 Allow: /
+Allow: /home/
+Allow: /api/google/
 Disallow: /api/
 Disallow: /dashboard/
 Disallow: /_next/
 Disallow: /monitoring/
+Disallow: /login/
+Disallow: /reset_password/
+Disallow: /forgot_password/
 
-# Prevent crawling of potential sensitive content
+# Prevent crawling of sensitive content
 Disallow: /*.sql$
 Disallow: /*.db$
 Disallow: /*.env$
 Disallow: /*.config$
+Disallow: /*.backup$
 
+# Specific allow rules for important pages (override general Disallow)
+Allow: /home/
+Allow: /home/privacy
+Allow: /home/terms
+Allow: /home/security
+Allow: /home/how-it-works
+Allow: /home/breach_check
+
+# Crawl-delay to prevent server overload (in seconds)
+Crawl-delay: 1
+
+# Request-rate limiting (requests per second)
+Request-rate: 1/1s
+
+# Additional search engines
+User-agent: Googlebot
+Allow: /home/
+Allow: /home/*
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /home/
+Allow: /home/*
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /home/
+Allow: /home/*
+Crawl-delay: 1
+
+# Sitemap location
 Sitemap: https://www.ghostsweep.com/sitemap.xml

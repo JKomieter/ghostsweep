@@ -28,6 +28,72 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { DigitalShadowSection } from "./_components/digital-shadow-section";
 
+// Structured data (JSON-LD) for search engines
+const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Find Hidden Accounts & Manage Your Digital Footprint | GhostSweep",
+    "description": "Scan your inbox to discover forgotten accounts, detect data breaches, and take control of where your information lives.",
+    "url": "https://ghostsweep.com/home",
+    "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+    "publisher": {
+        "@type": "Organization",
+        "name": "GhostSweep",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+        },
+    },
+};
+
+// FAQ Schema for rich snippets
+const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Do you read my emails?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. GhostSweep uses Gmail metadata (sender, subject, date) to detect accounts. We do not read email bodies, passwords, or attachments.",
+            },
+        },
+        {
+            "@type": "Question",
+            "name": "Can GhostSweep send emails on my behalf?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, but only when you explicitly approve. Deletion requests are sent FROM your Gmail account, and you preview every email before it's sent. We never send anything without your permission.",
+            },
+        },
+        {
+            "@type": "Question",
+            "name": "What happens if I disconnect Gmail?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can revoke access any time from GhostSweep settings or your Google account. When you disconnect, we lose access immediately. Your saved data remains unless you delete it.",
+            },
+        },
+        {
+            "@type": "Question",
+            "name": "Do you sell my data?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. We don't sell your data, run ads, or track you across other websites. Your privacy is the product, not the price.",
+            },
+        },
+        {
+            "@type": "Question",
+            "name": "What's included in the 7-day free trial?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You get full access to all Pro features for 7 days—unlimited accounts, deletion playbooks, tracking dashboard, and breach monitoring. No credit card required. After the trial, you can upgrade or continue with the free plan.",
+            },
+        },
+    ],
+};
+
 function ExitIntentPopup({ onClose }: { onClose: () => void }) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -308,21 +374,31 @@ export default function HomePage() {
     const [showExitPopup, setShowExitPopup] = useState(false);
     const [hasShownPopup, setHasShownPopup] = useState(false);
 
-    useEffect(() => {
-        const handleMouseLeave = (e: MouseEvent) => {
-            if (e.clientY <= 0 && !hasShownPopup) {
-                setShowExitPopup(true);
-                setHasShownPopup(true);
-            }
-        };
+    // useEffect(() => {
+    //     const handleMouseLeave = (e: MouseEvent) => {
+    //         if (e.clientY <= 0 && !hasShownPopup) {
+    //             setShowExitPopup(true);
+    //             setHasShownPopup(true);
+    //         }
+    //     };
 
-        document.addEventListener('mouseleave', handleMouseLeave);
-        return () => document.removeEventListener('mouseleave', handleMouseLeave);
-    }, [hasShownPopup]);
+    //     document.addEventListener('mouseleave', handleMouseLeave);
+    //     return () => document.removeEventListener('mouseleave', handleMouseLeave);
+    // }, [hasShownPopup]);
 
     return (
         <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608] text-foreground">
             {showExitPopup && <ExitIntentPopup onClose={() => setShowExitPopup(false)} />}
+
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            />
 
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 space-y-16 md:space-y-20">
                 {/* HERO - REDESIGNED */}

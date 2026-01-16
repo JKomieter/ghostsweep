@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Metadata } from "next";
 import {
     Shield,
     Lock,
@@ -16,9 +17,62 @@ import {
     Trash2,
 } from "lucide-react";
 
+export const metadata: Metadata = {
+    title: "Security & Privacy | How GhostSweep Protects Your Data",
+    description: "Learn how GhostSweep securely scans your email using metadata-only analysis, Google OAuth, and privacy-first design. CASA certified and Google verified.",
+    keywords: [
+        "email security",
+        "privacy protection",
+        "OAuth security",
+        "data privacy",
+        "email scanning security",
+        "CCPA compliant",
+        "GDPR compliant",
+        "data encryption",
+        "metadata analysis",
+        "privacy certification",
+    ],
+    openGraph: {
+        title: "Security & Privacy | How GhostSweep Protects Your Data",
+        description: "Discover how GhostSweep securely protects your privacy with metadata-only scanning and Google OAuth verification.",
+        url: "https://ghostsweep.com/home/security",
+        type: "website",
+    },
+    alternates: {
+        canonical: "https://ghostsweep.com/home/security",
+    },
+};
+
+// Organization schema for security page
+const securityPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Security & Privacy | How GhostSweep Protects Your Data",
+    "description": "Learn how GhostSweep securely scans your email using metadata-only analysis, Google OAuth, and privacy-first design.",
+    "url": "https://ghostsweep.com/home/security",
+    "publisher": {
+        "@type": "Organization",
+        "name": "GhostSweep",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+        },
+        "sameAs": [
+            "https://twitter.com/ghostsweep",
+            "https://ghostsweep.com",
+        ],
+    },
+};
+
 export default function SecurityPage() {
     return (
         <main className="min-h-screen text-foreground bg-linear-to-b from-[#020308] via-black to-[#050608]">
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(securityPageSchema) }}
+            />
+
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 pt-12 space-y-16">
                 {/* HERO */}
                 <section className="space-y-8">
