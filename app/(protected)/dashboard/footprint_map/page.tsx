@@ -342,17 +342,14 @@ export default function FootprintPage() {
         : `${totalCount.toLocaleString()} services found`;
 
     return (
-        <div className="p-4">
-            <Card>
-                <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <CardTitle>Digital Footprint Map</CardTitle>
-                        <CardDescription>Interactive visualization of your online presence</CardDescription>
-                    </div>
-                    <div className="text-xs text-white/60">{headerCountLabel}</div>
-                </CardHeader>
+        <div className="p-6">
+            <div className="mb-6">
+                <h1 className="text-2xl font-semibold text-white mb-1">Digital Footprint Map</h1>
+                <p className="text-sm text-white/60">Interactive visualization of your online presence across {headerCountLabel.split(" ")[0]} services</p>
+            </div>
 
-                <CardContent>
+            <div className="rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] overflow-hidden">
+                <div className="p-6">
                     {/* Upgrade indicator (top) */}
                     {!isPending && !isError && isGated ? (
                         <div className="mb-4 rounded-xl border border-white/10 bg-black/40 p-3">
@@ -386,50 +383,34 @@ export default function FootprintPage() {
                     ) : null}
 
                     {isPending ? (
-                        <div className="flex items-center justify-center py-16">
-                            <Spinner className="text-primary" />
+                        <div className="flex items-center justify-center py-24">
+                            <Spinner className="text-white/40" />
                         </div>
                     ) : isError ? (
-                        <div className="rounded-lg border border-white/10 bg-[#050505] p-4">
-                            <div className="text-sm text-white">Couldn&apos;t load footprint</div>
-                            <div className="mt-1 text-xs text-white/60">
-                                {(error as any)?.message ?? "Unknown error"}
+                        <div className="text-center py-16">
+                            <div className="text-sm text-white/80 mb-2">Unable to load footprint</div>
+                            <div className="text-xs text-white/50 mb-4">
+                                {(error as any)?.message ?? "Please try again"}
                             </div>
-                            <div className="mt-3">
-                                <Button size="sm" variant="outline" onClick={() => refetch()}>
-                                    Retry
-                                </Button>
-                            </div>
+                            <Button size="sm" variant="outline" onClick={() => refetch()}>
+                                Retry
+                            </Button>
                         </div>
                     ) : !services || services.length === 0 ? (
-                        <div className="text-sm text-white/60 text-center py-16">
-                            No services found yet. Connect Gmail and run a scan.
+                        <div className="text-sm text-white/50 text-center py-16">
+                            No services found yet. Connect Gmail and run a scan to get started.
                         </div>
                     ) : (
                         <>
-                            {/* Instructions */}
-                            <div className="mb-4 p-3 bg-slate-900/50 border border-slate-800 rounded-lg text-xs text-slate-400">
-                                <div className="flex items-start gap-2">
-                                    <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
-                                    <div className="space-y-1">
-                                        <p>
-                                            <strong>Controls:</strong>
-                                        </p>
-                                        <ul className="space-y-0.5 ml-4 list-disc">
-                                            <li>Scroll to zoom in/out</li>
-                                            <li>Drag background to pan</li>
-                                            <li>Drag nodes to reposition</li>
-                                            <li>Double-click to reset view</li>
-                                            <li>Hover nodes for details</li>
-                                        </ul>
-                                    </div>
+                            {/* Instructions - Minimal */}
+                            <div className="mb-4 p-3 bg-white/5 border border-white/5 rounded-lg text-xs text-white/60">
+                                <p className="font-medium text-white/80 mb-2">How to use:</p>
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                    <div><span className="text-white/70">Scroll</span> to zoom</div>
+                                    <div><span className="text-white/70">Drag</span> to pan</div>
+                                    <div><span className="text-white/70">Drag nodes</span> to move</div>
+                                    <div><span className="text-white/70">Double-click</span> reset</div>
+                                    <div><span className="text-white/70">Hover</span> details</div>
                                 </div>
                             </div>
 
@@ -446,12 +427,12 @@ export default function FootprintPage() {
 
                                 <svg
                                     ref={svgRef}
-                                    className="w-full h-auto bg-slate-950 rounded-lg border border-slate-800"
+                                    className="w-full h-auto bg-gradient-to-br from-black via-black to-black/80 rounded-lg border border-white/5"
                                     style={{ maxHeight: "620px" }}
                                 />
 
-                                {/* Zoom Controls */}
-                                <div className="absolute bottom-4 left-4 flex flex-col gap-2">
+                                {/* Zoom Controls - Minimal */}
+                                <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
                                     <button
                                         onClick={() => {
                                             if (!svgRef.current) return;
@@ -461,10 +442,10 @@ export default function FootprintPage() {
                                                 1.3,
                                             );
                                         }}
-                                        className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-white transition-colors"
+                                        className="w-9 h-9 bg-black/60 hover:bg-black/80 border border-white/10 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur"
                                         title="Zoom In"
                                     >
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                         </svg>
                                     </button>
@@ -478,10 +459,10 @@ export default function FootprintPage() {
                                                 0.7,
                                             );
                                         }}
-                                        className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-white transition-colors"
+                                        className="w-9 h-9 bg-black/60 hover:bg-black/80 border border-white/10 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur"
                                         title="Zoom Out"
                                     >
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                                         </svg>
                                     </button>
@@ -495,10 +476,10 @@ export default function FootprintPage() {
                                                 d3.zoomIdentity,
                                             );
                                         }}
-                                        className="w-10 h-10 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-lg flex items-center justify-center text-white transition-colors"
+                                        className="w-9 h-9 bg-black/60 hover:bg-black/80 border border-white/10 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur"
                                         title="Reset View"
                                     >
-                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
@@ -509,43 +490,43 @@ export default function FootprintPage() {
                                     </button>
                                 </div>
 
-                                {/* Zoom Level */}
+                                {/* Zoom Level - Minimal */}
                                 {zoomTransform && (
-                                    <div className="absolute bottom-4 right-4 bg-slate-800/90 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-300">
-                                        Zoom: {Math.round(zoomTransform.k * 100)}%
+                                    <div className="absolute bottom-4 right-4 bg-black/60 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white/60 backdrop-blur">
+                                        {Math.round(zoomTransform.k * 100)}%
                                     </div>
                                 )}
 
-                                {/* Hover Tooltip */}
+                                {/* Hover Tooltip - Cleaner */}
                                 {hoveredNode && (
-                                    <div className="absolute top-4 right-4 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl w-[260px] z-10">
-                                        <h4 className="font-semibold text-white truncate">{hoveredNode.name}</h4>
-                                        <div className="mt-3 space-y-2 text-sm">
+                                    <div className="absolute top-4 right-4 bg-black/95 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-2xl w-[260px] z-10">
+                                        <h4 className="font-semibold text-white truncate text-sm">{hoveredNode.name}</h4>
+                                        <div className="mt-3 space-y-2.5 text-xs">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-slate-400">Category:</span>
+                                                <span className="text-white/60">Category</span>
                                                 <span className="text-white font-medium">{hoveredNode.categoryLabel}</span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-slate-400">Risk:</span>
+                                                <span className="text-white/60">Risk</span>
                                                 <span
                                                     className={`font-semibold ${hoveredNode.risk === "high"
                                                             ? "text-red-400"
                                                             : hoveredNode.risk === "medium"
                                                                 ? "text-amber-400"
-                                                                : "text-green-400"
+                                                                : "text-emerald-400"
                                                         }`}
                                                 >
                                                     {hoveredNode.risk.toUpperCase()}
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-slate-400">Status:</span>
+                                                <span className="text-white/60">Status</span>
                                                 <span
                                                     className={`font-semibold ${hoveredNode.status === "deleted"
-                                                            ? "text-slate-500"
+                                                            ? "text-white/40"
                                                             : hoveredNode.status === "pending"
                                                                 ? "text-amber-400"
-                                                                : "text-green-400"
+                                                                : "text-emerald-400"
                                                         }`}
                                                 >
                                                     {hoveredNode.status.toUpperCase()}
@@ -553,45 +534,42 @@ export default function FootprintPage() {
                                             </div>
 
                                             {hoveredNode.breached && (
-                                                <div className="pt-2 border-t border-slate-700">
-                                                    <div className="flex items-center gap-2 text-red-400">
-                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth={2}
-                                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                                            />
-                                                        </svg>
-                                                        <span className="text-xs font-medium">Breach detected</span>
-                                                    </div>
+                                                <div className="pt-2 border-t border-white/10 flex items-center gap-2 text-red-400">
+                                                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                                        />
+                                                    </svg>
+                                                    <span className="text-xs font-medium">Breach detected</span>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Legend */}
-                                <div className="mt-6 pt-4 border-t border-slate-800">
-                                    <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
-                                        <LegendDot label="High Risk" className="bg-red-500" />
-                                        <LegendDot label="Medium Risk" className="bg-amber-500" />
-                                        <LegendDot label="Low Risk" className="bg-green-500" />
-                                        <LegendDot label="Breached" className="bg-red-500 ring-2 ring-red-300/50" />
-                                        <LegendDot label="Pending" className="bg-amber-400" />
+                                {/* Legend - Minimal */}
+                                <div className="mt-5 pt-4 border-t border-white/5">
+                                    <div className="flex flex-wrap gap-x-6 gap-y-2.5 text-xs">
+                                        <LegendDot label="High Risk" className="bg-red-500/80" />
+                                        <LegendDot label="Medium Risk" className="bg-amber-500/80" />
+                                        <LegendDot label="Low Risk" className="bg-emerald-500/80" />
+                                        <LegendDot label="Breached" className="bg-red-500/80 ring-2 ring-red-400/50" />
+                                        <LegendDot label="Pending" className="bg-amber-400/80" />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Bottom CTA (extra clear) */}
+                            {/* Bottom CTA */}
                             {isGated ? (
-                                <div className="mt-4 rounded-xl border border-white/10 bg-black/40 p-3 text-xs text-white/70 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/70 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
-                                        Showing <strong className="text-white">{returnedCount}</strong> of{" "}
-                                        <strong className="text-white">{totalCount.toLocaleString()}</strong>. Upgrade to unlock the full map.
+                                        <span className="text-white font-medium">{returnedCount}</span> of <span className="text-white font-medium">{totalCount.toLocaleString()}</span> services. Upgrade for the full map.
                                     </div>
                                     <Link href="/dashboard/billing">
-                                        <Button size="sm" className="bg-white text-black hover:bg-zinc-100">
+                                        <Button size="sm" className="bg-white text-black hover:bg-white/90">
                                             Upgrade
                                         </Button>
                                     </Link>
@@ -599,17 +577,17 @@ export default function FootprintPage() {
                             ) : null}
                         </>
                     )}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }
 
 function LegendDot({ label, className }: { label: string; className: string }) {
     return (
-        <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${className}`} />
-            <span className="text-slate-400">{label}</span>
+        <div className="flex items-center gap-2.5">
+            <div className={`w-2.5 h-2.5 rounded-full ${className}`} />
+            <span className="text-white/60 text-xs">{label}</span>
         </div>
     );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, LayoutDashboard, Zap, FileText, Shield, CheckCircle2, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, Zap, FileText, Shield, CheckCircle2, LogOut, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -27,6 +27,11 @@ const dataItems = [
         label: "Digital Shadow",
         href: "/dashboard/digital_shadow",
         icon: Shield,
+    },
+    {
+        label: "Footprint Map",
+        href: "/dashboard/footprint_map",
+        icon: Map,
     },
     {
         label: "Deletion Requests",
