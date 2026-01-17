@@ -57,8 +57,8 @@ export default function OptOutEmailModal({
     // Move mutation hook before early return
     const sendOptOutMutation = useMutation({
         mutationFn: async () => {
-            const res = await fetch(`/api/broker/${brokerId}/send_opt_out_email`, {
-                method: "PATCH",
+            const res = await fetch(`/api/broker/${brokerId}/send-opt-out-email`, {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: {

@@ -108,13 +108,9 @@ function BrokerDetailRow({ broker }: { broker: BrokerOut }) {
             }
 
             // Track the visit
-            const res = await fetch(`/api/broker/${broker.id}/opt-out-status`, {
-                method: "PATCH",
+            const res = await fetch(`/api/broker/${broker.id}/visit-opt-out-page`, {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    status: hasOptedOut ? "completed" : "in_progress",
-                    method: "web_form",
-                }),
             });
 
             if (!res.ok) {
