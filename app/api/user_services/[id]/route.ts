@@ -19,8 +19,11 @@ export async function GET(
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
+        console.error("Auth error:", userError);
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    console.log(`Fetching user_service ${id} for user ${user.id}`);
 
     // 1) Fetch the user_service (and the linked global service) WITH OWNERSHIP CHECK
     const { data: userService, error: userServiceError } = await supabase
@@ -28,7 +31,7 @@ export async function GET(
         .select(
             `
         *,
-        service:services!inner (*)
+        service:services (*)
       `
         )
         .eq("id", id)
@@ -41,8 +44,11 @@ export async function GET(
     }
 
     if (!userService) {
+        console.log(`User service ${id} not found for user ${user.id} - may not exist or user doesn't own it`);
         return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
+
+    console.log(`Found user_service ${id}`);
 
     // 2) Fetch user-specific breaches for this service
     const { data: userBreaches, error: userBreachesError } = await supabase

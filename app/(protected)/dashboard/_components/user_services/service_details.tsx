@@ -209,57 +209,54 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     };
 
     return (
-        <div className="w-full">
-            {/* Top bar */}
-            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="w-full space-y-6">
+            {/* Header */}
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 {/* Left: back + title/meta */}
                 <div className="flex items-start gap-3">
                     <Link href="/dashboard/user_services" className="shrink-0">
-                        <Button variant="ghost" size="sm" className="gap-2 px-2 md:px-3">
+                        <Button variant="ghost" size="sm" className="gap-2 px-2">
                             <ArrowLeft className="h-4 w-4" />
-                            <span className="hidden sm:inline">Back</span>
+                            <span className="hidden sm:inline text-sm">Back</span>
                         </Button>
                     </Link>
 
-                    <div className="min-w-0 space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <h1 className="min-w-0 truncate text-lg font-semibold text-white md:text-xl">
-                                {serviceName}
-                            </h1>
-
-                            {domain && (
-                                <span className="max-w-[70vw] truncate rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-mono text-white/70 sm:max-w-[360px]">
-                                    {domain}
-                                </span>
-                            )}
-                        </div>
+                    <div className="min-w-0 space-y-2">
+                        <h1 className="text-2xl font-semibold tracking-tight">
+                            {serviceName}
+                        </h1>
 
                         <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline" className="text-xs capitalize">
+                            <Badge variant="outline" className="text-xs">
                                 {category}
                             </Badge>
 
                             {breached ? (
-                                <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-xs">
+                                <Badge className="bg-destructive/15 text-destructive border-destructive/30 text-xs">
                                     <ShieldAlert className="mr-1 h-3 w-3" />
                                     Breached
                                 </Badge>
                             ) : (
-                                <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30 text-xs">
-                                    No known breach
+                                <Badge className="bg-emerald-500/15 text-emerald-500 border-emerald-500/30 text-xs">
+                                    Secure
                                 </Badge>
                             )}
                         </div>
+
+                        {domain && (
+                            <p className="text-sm text-muted-foreground">
+                                {domain}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 {/* Right: actions */}
-                <div className="grid grid-cols-2 gap-2 md:flex md:items-center md:justify-end">
-                    <Button variant="outline" size="sm" onClick={refetchEverything} className="w-full md:w-auto">
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={refetchEverything}>
                         Refresh
                     </Button>
-
-                    <Button size="sm" onClick={openDeletionModal} className="w-full md:w-auto md:min-w-[170px]">
+                    <Button size="sm" onClick={openDeletionModal} className="md:min-w-[170px]">
                         {deletionActionLabel}
                     </Button>
                 </div>
@@ -267,200 +264,180 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
 
             {/* Loading / Error */}
             {userServiceDetailsQueryResultStatus === "pending" ? (
-                <div className="flex min-h-[300px] w-full items-center justify-center">
+                <div className="flex h-96 items-center justify-center rounded-lg border border-border">
                     <Spinner className="text-primary size-8" />
                 </div>
             ) : userServiceDetailsQueryResultStatus === "error" ? (
-                <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-                    <h2 className="text-base font-semibold text-white">Error loading service</h2>
-                    <p className="mt-1 text-sm text-white/60">
+                <div className="rounded-lg border border-border p-6 space-y-3">
+                    <h2 className="font-semibold">Error loading service</h2>
+                    <p className="text-sm text-muted-foreground">
                         {(error as Error)?.message || "Something went wrong."}
                     </p>
-                    <div className="mt-4">
-                        <Button variant="outline" size="sm" onClick={refetchEverything}>
-                            Try again
-                        </Button>
-                    </div>
+                    <Button variant="outline" size="sm" onClick={refetchEverything}>
+                        Try again
+                    </Button>
                 </div>
             ) : !userServiceDetailsQueryResult ? (
-                <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-                    <h2 className="text-base font-semibold text-white">Service not found</h2>
-                    <p className="mt-1 text-sm text-white/60">This record may have been deleted.</p>
+                <div className="rounded-lg border border-border p-6">
+                    <h2 className="font-semibold">Service not found</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">This record may have been deleted.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
                     {/* Main content */}
                     <div className="lg:col-span-8">
-                        <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
+                        <div className="rounded-lg border border-border">
                             <Tabs defaultValue="summary" className="w-full">
-                                <TabsList className="w-full justify-start bg-transparent border-b border-white/10 rounded-none px-0">
+                                <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none px-4 h-10">
                                     <TabsTrigger
                                         value="summary"
-                                        className="data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-white rounded-none px-3 pb-2 text-sm"
+                                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10"
                                     >
                                         Summary
                                     </TabsTrigger>
 
                                     <TabsTrigger
                                         value="breaches"
-                                        className="data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-white rounded-none px-3 pb-2 text-sm"
+                                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10 ml-6"
                                     >
                                         Breaches
                                     </TabsTrigger>
 
                                     <TabsTrigger
                                         value="deletion_requests"
-                                        className="data-[state=active]:border-b data-[state=active]:border-primary data-[state=active]:text-white rounded-none px-3 pb-2 text-sm"
+                                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10 ml-6"
                                     >
                                         Deletion
                                     </TabsTrigger>
                                 </TabsList>
 
-                                <TabsContent value="summary" className="pt-4">
-                                    <SummaryTab
-                                        lastSeen={lastSeen}
-                                        firstSeen={firstSeen}
-                                        emailCount={userServiceDetailsQueryResult?.userService?.email_count ?? 0}
-                                        breached={breached}
-                                        websiteUrl={websiteUrl}
-                                        contact={userServiceDetailsQueryResult.userService?.service.contact}
-                                        current_plan={currentPlan}
-                                    />
-                                </TabsContent>
+                                <div className="p-4">
+                                    <TabsContent value="summary" className="mt-0">
+                                        <SummaryTab
+                                            lastSeen={lastSeen}
+                                            firstSeen={firstSeen}
+                                            emailCount={userServiceDetailsQueryResult?.userService?.email_count ?? 0}
+                                            breached={breached}
+                                            websiteUrl={websiteUrl}
+                                            contact={userServiceDetailsQueryResult.userService?.service.contact}
+                                            current_plan={currentPlan}
+                                        />
+                                    </TabsContent>
 
-                                <TabsContent value="breaches" className="pt-4">
-                                    <BreachesTab userBreaches={userServiceDetailsQueryResult.userBreaches} />
-                                </TabsContent>
+                                    <TabsContent value="breaches" className="mt-0">
+                                        <BreachesTab userBreaches={userServiceDetailsQueryResult.userBreaches} />
+                                    </TabsContent>
 
-                                <TabsContent value="deletion_requests" className="pt-4">
-                                    <DeletionTab
-                                        serviceName={userServiceDetailsQueryResult?.userService?.service?.name}
-                                        request={userServiceDetailsQueryResult.deletionRequest}
-                                        openModal={openDeletionModal}
-                                        setIsDeletionProfileModalOpen={setIsDeletionProfileModalOpen}
-                                        primaryActionLabel={deletionActionLabel}
-                                        currentPlan={currentPlan}
-                                        gmailConnected={gmailConnected}
-                                        serviceDeletionPlaybook={playbook}
-                                        followUpDays={7} // MVP: hardcoded policy here
-                                        userServiceId={userServiceDetailsQueryResult?.userService?.id}
-                                    />
-                                </TabsContent>
+                                    <TabsContent value="deletion_requests" className="mt-0">
+                                        <DeletionTab
+                                            serviceName={userServiceDetailsQueryResult?.userService?.service?.name}
+                                            request={userServiceDetailsQueryResult.deletionRequest}
+                                            openModal={openDeletionModal}
+                                            setIsDeletionProfileModalOpen={setIsDeletionProfileModalOpen}
+                                            primaryActionLabel={deletionActionLabel}
+                                            currentPlan={currentPlan}
+                                            gmailConnected={gmailConnected}
+                                            serviceDeletionPlaybook={playbook}
+                                            followUpDays={7}
+                                            userServiceId={userServiceDetailsQueryResult?.userService?.id}
+                                        />
+                                    </TabsContent>
+                                </div>
                             </Tabs>
                         </div>
                     </div>
 
                     {/* Right rail */}
                     <div className="lg:col-span-4">
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {/* Quick info */}
-                            <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-semibold text-white">Quick info</h3>
-                                </div>
+                            <div className="rounded-lg border border-border p-4 space-y-3">
+                                <h3 className="text-sm font-semibold">Quick info</h3>
 
-                                <div className="mt-3 space-y-3 text-sm">
-                                    <div className="flex items-center justify-between text-white/80">
-                                        <span className="text-white/60">First seen</span>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">First seen</span>
                                         <span>{firstSeen}</span>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-white/80">
-                                        <span className="text-white/60">Last seen</span>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Last seen</span>
                                         <span>{lastSeen}</span>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-white/80">
-                                        <span className="text-white/60">Emails</span>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Emails</span>
                                         <span>
                                             {(userServiceDetailsQueryResult?.userService?.email_count ?? 0).toLocaleString()}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-white/80">
-                                        <span className="text-white/60">Deletion email</span>
-                                        <span className="truncate max-w-[180px]">
-                                            {playbook?.deletion_email ?? "—"}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center justify-between text-white/80">
-                                        <span className="text-white/60">Deletion status</span>
-                                        <span className="capitalize">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground">Status</span>
+                                        <span className="capitalize text-xs">
                                             {userServiceDetailsQueryResult?.deletionRequest?.status ?? "none"}
                                         </span>
                                     </div>
+                                </div>
 
-                                    <div className="flex flex-wrap gap-2 pt-2">
-                                        {websiteUrl && (
-                                            <a href={websiteUrl} target="_blank" rel="noreferrer">
-                                                <Button variant="outline" size="sm" className="gap-2">
-                                                    Visit website <ExternalLink className="h-4 w-4" />
-                                                </Button>
-                                            </a>
-                                        )}
-                                        {domain && (
-                                            <Button variant="outline" size="sm" className="gap-2" onClick={copyDomain}>
-                                                Copy domain <Copy className="h-4 w-4" />
+                                <div className="flex flex-col gap-2 pt-2">
+                                    {websiteUrl && (
+                                        <a href={websiteUrl} target="_blank" rel="noreferrer" className="w-full">
+                                            <Button variant="outline" size="sm" className="gap-2 w-full">
+                                                Visit website <ExternalLink className="h-3 w-3" />
                                             </Button>
-                                        )}
-                                    </div>
+                                        </a>
+                                    )}
+                                    {domain && (
+                                        <Button variant="outline" size="sm" className="gap-2 w-full" onClick={copyDomain}>
+                                            Copy domain <Copy className="h-3 w-3" />
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 
                             {/* Deletion setup */}
-                            <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
-                                <h3 className="text-sm font-semibold text-white">Deletion setup</h3>
-                                <p className="mt-1 text-xs text-white/60">
-                                    What actions are available for this service (link, email, steps, tracking).
-                                </p>
+                            <div className="rounded-lg border border-border p-4 space-y-3">
+                                <div>
+                                    <h3 className="text-sm font-semibold">Deletion setup</h3>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Available actions for this service.
+                                    </p>
+                                </div>
 
-                                <div className="mt-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs text-white/60">Score</span>
-                                        <span className="text-xs font-semibold text-white">{deletionSetupScore}/100</span>
+                                <div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-muted-foreground">Score</span>
+                                        <span className="font-semibold">{deletionSetupScore}/100</span>
                                     </div>
 
-                                    <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
-                                        <div className="h-full bg-cyan-400 transition-all duration-300" style={{ width: `${deletionSetupScore}%` }} />
-                                    </div>
-
-                                    <div className="mt-3 space-y-2 text-xs text-white/70">
-                                        {playbook?.deletion_url ? <p>• Deletion link available.</p> : <p>• No deletion link found.</p>}
-                                        {playbook?.steps?.length ? <p>• Guided deletion steps available.</p> : <p>• Steps not available yet (we’ll generate them when needed).</p>}
-
-                                        {playbook?.deletion_email ? (
-                                            <p>• Deletion email available.</p>
-                                        ) : (
-                                            <p>• No deletion email available.</p>
-                                        )}
-
-                                        {gmailConnected ? (
-                                            <p>• Gmail connected (supports tracking + sending if allowed).</p>
-                                        ) : (
-                                            <p>• Gmail not connected (no tracking or sending).</p>
-                                        )}
-
-                                        {currentPlan === "pro" ? <p>• Reminders + tracking enabled.</p> : <p>• Reminders are Pro-only.</p>}
-                                        {breached && <p>• Known breach flagged (prioritize cleanup).</p>}
-                                    </div>
-
-                                    <div className="mt-4 space-y-2">
-                                        {currentPlan !== "pro" && (
-                                            <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs text-white/70">
-                                                <span className="font-medium text-white">Free plan:</span> use links + steps and mark completion manually.{" "}
-                                                <Link href="/dashboard/billing?plan=monthly" className="text-primary underline">
-                                                    Upgrade
-                                                </Link>{" "}
-                                                to auto-send emails and reminders.
-                                            </div>
-                                        )}
-
-                                        <Button size="sm" onClick={openDeletionModal} className="w-full">
-                                            {deletionActionLabel}
-                                        </Button>
+                                    <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${deletionSetupScore}%` }} />
                                     </div>
                                 </div>
+
+                                <div className="space-y-1 text-xs text-muted-foreground">
+                                    {playbook?.deletion_url && <p>✓ Deletion link available</p>}
+                                    {playbook?.steps?.length && <p>✓ Deletion steps available</p>}
+                                    {playbook?.deletion_email && <p>✓ Deletion email available</p>}
+                                    {gmailConnected && <p>✓ Gmail connected</p>}
+                                    {currentPlan === "pro" && <p>✓ Tracking enabled</p>}
+                                </div>
+
+                                {currentPlan !== "pro" && (
+                                    <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs space-y-2">
+                                        <p className="text-muted-foreground">
+                                            <span className="font-medium text-foreground">Upgrade to Pro</span> for auto-send emails and reminders.
+                                        </p>
+                                        <Link href="/dashboard/billing?plan=monthly" className="text-primary hover:underline text-xs">
+                                            View plans →
+                                        </Link>
+                                    </div>
+                                )}
+
+                                <Button size="sm" onClick={openDeletionModal} className="w-full">
+                                    {deletionActionLabel}
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -469,7 +446,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                     <DeletionRequestEmailModal
                         open={isDeletionEmailModalOpen}
                         onOpenChangeAction={setIsDeletionEmailModalOpen}
-                        userService={userServiceDetailsQueryResult.userService}
+                        userService={userServiceDetailsQueryResult?.userService}
                         gmailAddress={gmailAccountQueryResult?.gmail_address || ""}
                         playbook={serviceDeletionPlaybookQueryResult?.playbook}
                     />

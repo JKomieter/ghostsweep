@@ -10,7 +10,9 @@ export default async function Page({
 
     return (
         <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
-            <ServiceDetailsPage userServiceId={id} />
+            <div className="max-w-6xl mx-auto">
+                <ServiceDetailsPage userServiceId={id} />
+            </div>
         </div>
     )
 }

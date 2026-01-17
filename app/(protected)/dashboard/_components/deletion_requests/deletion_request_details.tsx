@@ -4,7 +4,6 @@ import {
     SheetContent,
     SheetHeader,
     SheetTitle,
-    SheetDescription,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { statusMap } from "@/constant/deletion-request-statuses";
@@ -25,7 +24,7 @@ export default function DeletionRequestDetail({
     if (!selected) {
         return (
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                <SheetContent className="bg-[#050505] border-white/10 text-white" />
+                <SheetContent />
             </Sheet>
         );
     }
@@ -34,7 +33,7 @@ export default function DeletionRequestDetail({
     const statusInfo =
         statusMap[selected.status] ?? {
             label: selected.status,
-            className: "bg-zinc-500/15 text-zinc-200 border-zinc-500/30",
+            className: "bg-muted/40 text-muted-foreground border-muted",
         };
 
     const methodLabel =
@@ -46,119 +45,142 @@ export default function DeletionRequestDetail({
 
     return (
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetContent className="bg-[#050505] border-white/10 text-white">
+            <SheetContent className="overflow-y-auto">
                 <SheetHeader>
-                    <SheetTitle className="flex flex-col gap-1">
-                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                            Deletion request
-                        </span>
-                        <span className="text-lg font-semibold">
-                            {svc?.name || "Unknown service"}
-                        </span>
-                    </SheetTitle>
-                    <SheetDescription className="text-xs text-white/50">
-                        {svc?.domain || "—"}
-                    </SheetDescription>
+                    <div className="space-y-2">
+                        <SheetTitle className="text-2xl">
+                            {svc?.name || "Unknown"}
+                        </SheetTitle>
+                        {svc?.domain && (
+                            <p className="text-xs text-muted-foreground">
+                                {svc.domain}
+                            </p>
+                        )}
+                    </div>
                 </SheetHeader>
 
-                <div className="mt-4 space-y-4 text-sm px-4">
+                <div className="mt-6 space-y-6 px-4">
+                    {/* Status & Method */}
                     <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-xs capitalize">
-                            {svc?.category || "Uncategorized"}
-                        </Badge>
-
-                        <Badge className={`text-xs border-0 ${statusInfo.className}`}>
+                        {svc?.category && (
+                            <Badge variant="outline" className="text-xs">
+                                {svc.category}
+                            </Badge>
+                        )}
+                        <Badge
+                            variant="outline"
+                            className={`text-xs font-medium ${statusInfo.className}`}
+                        >
                             {statusInfo.label}
                         </Badge>
-
                         <Badge variant="outline" className="text-xs">
-                            Method: {methodLabel}
+                            {methodLabel}
                         </Badge>
-
                         {svc?.is_breached && (
-                            <Badge className="text-xs bg-red-500/15 text-red-200 border-red-500/40">
-                                Breached service
+                            <Badge className="text-xs bg-destructive/15 text-destructive border-destructive/30">
+                                Breached
                             </Badge>
                         )}
                     </div>
 
-                    <div className="space-y-2 text-xs">
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">To</span>
-                            <span className="truncate max-w-[180px] md:max-w-60 text-right">
-                                {selected.receiver_email || "—"}
-                            </span>
+                    {/* Details */}
+                    <div className="space-y-4 text-sm">
+                        <div className="grid gap-3">
+                            {selected.receiver_email && (
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                                        To
+                                    </p>
+                                    <p className="text-sm break-all">
+                                        {selected.receiver_email}
+                                    </p>
+                                </div>
+                            )}
+
+                            {selected.sender_email && (
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                                        From
+                                    </p>
+                                    <p className="text-sm break-all">
+                                        {selected.sender_email}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">From</span>
-                            <span className="truncate max-w-[180px] md:max-w-60 text-right">
-                                {selected.sender_email || "—"}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Started</span>
-                            <span>{selected.created_at ? formatDate(selected.created_at) : "—"}</span>
-                        </div>
-
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Sent</span>
-                            <span>{selected.sent_at ? formatDate(selected.sent_at) : "—"}</span>
-                        </div>
-
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Last reply</span>
-                            <span>{selected.last_reply_at ? formatDate(selected.last_reply_at) : "—"}</span>
-                        </div>
-
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Updated</span>
-                            <span>{selected.updated_at ? formatDate(selected.updated_at) : "—"}</span>
-                        </div>
-
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Follow-ups</span>
-                            <span>{typeof selected.follow_up_count === "number" ? selected.follow_up_count : "—"}</span>
-                        </div>
-
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Next follow-up</span>
-                            <span>
-                                {selected.next_follow_up_at ? formatDate(selected.next_follow_up_at) : "—"}
-                            </span>
+                        {/* Dates */}
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                            {selected.created_at && (
+                                <div>
+                                    <p className="text-muted-foreground font-medium mb-1">Started</p>
+                                    <p>{formatDate(selected.created_at)}</p>
+                                </div>
+                            )}
+                            {selected.sent_at && (
+                                <div>
+                                    <p className="text-muted-foreground font-medium mb-1">Sent</p>
+                                    <p>{formatDate(selected.sent_at)}</p>
+                                </div>
+                            )}
+                            {selected.last_reply_at && (
+                                <div>
+                                    <p className="text-muted-foreground font-medium mb-1">Last reply</p>
+                                    <p>{formatDate(selected.last_reply_at)}</p>
+                                </div>
+                            )}
+                            {selected.updated_at && (
+                                <div>
+                                    <p className="text-muted-foreground font-medium mb-1">Updated</p>
+                                    <p>{formatDate(selected.updated_at)}</p>
+                                </div>
+                            )}
+                            {typeof selected.follow_up_count === "number" && (
+                                <div>
+                                    <p className="text-muted-foreground font-medium mb-1">Follow-ups</p>
+                                    <p>{selected.follow_up_count}</p>
+                                </div>
+                            )}
+                            {selected.next_follow_up_at && (
+                                <div>
+                                    <p className="text-muted-foreground font-medium mb-1">Next follow-up</p>
+                                    <p>{formatDate(selected.next_follow_up_at)}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
+                    {/* Latest reply */}
                     {selected.last_reply_snippet && (
-                        <div className="mt-4">
-                            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
-                                Latest reply preview
+                        <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-2">
+                                Latest reply
                             </p>
-                            <div className="rounded-md border border-white/10 bg-black/60 p-3 max-h-40 overflow-auto">
-                                <p className="text-xs text-white/80 whitespace-pre-wrap">
+                            <div className="rounded-lg border border-border bg-muted/30 p-3 max-h-40 overflow-auto">
+                                <p className="text-xs text-muted-foreground whitespace-pre-wrap">
                                     {selected.last_reply_snippet}
                                 </p>
                             </div>
                         </div>
                     )}
 
+                    {/* Your notes */}
                     {selected.user_notes && (
-                        <div className="mt-4">
-                            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                        <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-2">
                                 Your notes
                             </p>
-                            <div className="rounded-md border border-white/10 bg-black/60 p-3 max-h-40 overflow-auto">
-                                <p className="text-xs text-white/80 whitespace-pre-wrap">
+                            <div className="rounded-lg border border-border bg-muted/30 p-3 max-h-40 overflow-auto">
+                                <p className="text-xs text-muted-foreground whitespace-pre-wrap">
                                     {selected.user_notes}
                                 </p>
                             </div>
                         </div>
                     )}
 
-                    <div className="mt-4 text-xs text-muted-foreground">
-                        GhostSweep is not a law firm. Always review company replies and, if needed,
-                        consult a legal professional for complex privacy disputes.
+                    {/* Disclaimer */}
+                    <div className="text-xs text-muted-foreground border-t border-border pt-4 mt-4">
+                        Not legal advice. Always review replies and consult professionals for complex disputes.
                     </div>
                 </div>
             </SheetContent>

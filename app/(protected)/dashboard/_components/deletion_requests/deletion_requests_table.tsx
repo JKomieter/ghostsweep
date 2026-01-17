@@ -73,8 +73,12 @@ export default function DeletionRequestsTable({
     };
 
     return (
-        <div className="space-y-3">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-white/10 bg-[#050505] p-4">
+        <div className="space-y-4">
+            {/* Filter */}
+            <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground uppercase">
+                    Filter
+                </span>
                 <Select
                     value={statusFilter}
                     onValueChange={(value) => {
@@ -82,7 +86,7 @@ export default function DeletionRequestsTable({
                         setPage(1);
                     }}
                 >
-                    <SelectTrigger className="w-[180px] bg-[#050505] border-white/15">
+                    <SelectTrigger className="w-[180px] h-8 text-xs">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -95,35 +99,36 @@ export default function DeletionRequestsTable({
                 </Select>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-[#050505] p-4 md:p-5">
+            {/* Table */}
+            <div className="rounded-lg border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Service</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Method</TableHead>
-                                <TableHead>Sent</TableHead>
-                                <TableHead>Last update</TableHead>
-                                <TableHead />
+                        <TableHeader className="bg-muted/30">
+                            <TableRow className="border-border hover:bg-transparent">
+                                <TableHead className="font-medium">Service</TableHead>
+                                <TableHead className="font-medium">Status</TableHead>
+                                <TableHead className="font-medium">Method</TableHead>
+                                <TableHead className="font-medium">Sent</TableHead>
+                                <TableHead className="font-medium">Updated</TableHead>
+                                <TableHead className="text-right font-medium">Action</TableHead>
                             </TableRow>
                         </TableHeader>
 
                         <TableBody>
                             {isLoading ? (
-                                <TableRow>
+                                <TableRow className="hover:bg-transparent">
                                     <TableCell
                                         colSpan={6}
-                                        className="h-24 text-center text-sm text-muted-foreground relative"
+                                        className="h-20 text-center text-sm text-muted-foreground relative"
                                     >
-                                        <Spinner className="text-primary absolute top-1/2 left-1/2" />
+                                        <Spinner className="text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                                     </TableCell>
                                 </TableRow>
                             ) : (requests?.length ?? 0) === 0 ? (
-                                <TableRow>
+                                <TableRow className="hover:bg-transparent">
                                     <TableCell
                                         colSpan={6}
-                                        className="h-24 text-center text-sm text-muted-foreground"
+                                        className="h-20 text-center text-sm text-muted-foreground"
                                     >
                                         No deletion requests yet.
                                     </TableCell>
@@ -131,11 +136,10 @@ export default function DeletionRequestsTable({
                             ) : (
                                 requests!.map((req) => {
                                     const svc = req.user_service?.service;
-
                                     const statusInfo =
                                         statusMap[req.status] ?? {
                                             label: req.status,
-                                            className: "bg-zinc-500/15 text-zinc-200 border-zinc-500/30",
+                                            className: "bg-muted/40 text-muted-foreground border-muted",
                                         };
 
                                     const methodLabel =
@@ -145,15 +149,14 @@ export default function DeletionRequestsTable({
                                                 ? "Link"
                                                 : "Manual";
 
-                                    // new schema: prefer last_reply_at, else updated_at
                                     const lastUpdateIso = req.last_reply_at ?? req.updated_at ?? null;
 
                                     return (
-                                        <TableRow key={req.id}>
-                                            <TableCell>
+                                        <TableRow key={req.id} className="hover:bg-muted/20">
+                                            <TableCell className="text-sm">
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium">
-                                                        {svc?.name || "Unknown service"}
+                                                    <span className="font-medium text-foreground">
+                                                        {svc?.name || "Unknown"}
                                                     </span>
                                                     {svc?.domain && (
                                                         <span className="text-xs text-muted-foreground">
@@ -164,7 +167,10 @@ export default function DeletionRequestsTable({
                                             </TableCell>
 
                                             <TableCell>
-                                                <Badge className={`text-xs border-0 ${statusInfo.className}`}>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={`text-xs font-medium ${statusInfo.className}`}
+                                                >
                                                     {statusInfo.label}
                                                 </Badge>
                                             </TableCell>
@@ -183,9 +189,9 @@ export default function DeletionRequestsTable({
 
                                             <TableCell className="text-right">
                                                 <Button
-                                                    variant="link"
+                                                    variant="ghost"
                                                     size="sm"
-                                                    className="px-0 text-xs"
+                                                    className="text-xs h-7"
                                                     onClick={() => handleView(req)}
                                                 >
                                                     View
@@ -198,41 +204,34 @@ export default function DeletionRequestsTable({
                         </TableBody>
                     </Table>
                 </div>
-
-                {/* Pagination */}
-                {total > 0 && (
-                    <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                        <p className="text-xs text-muted-foreground">
-                            Showing page {page} of {totalPages} • {total} request
-                            {total === 1 ? "" : "s"}
-                        </p>
-                        <div className="flex gap-2 justify-end">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={!canPrev || isLoading}
-                                onClick={() => {
-                                    if (!canPrev) return;
-                                    setPage((p) => p - 1);
-                                }}
-                            >
-                                Previous
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={!canNext || isLoading}
-                                onClick={() => {
-                                    if (!canNext) return;
-                                    setPage((p) => p + 1);
-                                }}
-                            >
-                                Next
-                            </Button>
-                        </div>
-                    </div>
-                )}
             </div>
+
+            {/* Pagination */}
+            {total > 0 && (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-xs text-muted-foreground">
+                    <p>
+                        Page {page} of {totalPages} • {total} request{total === 1 ? "" : "s"}
+                    </p>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!canPrev || isLoading}
+                            onClick={() => canPrev && setPage((p) => p - 1)}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!canNext || isLoading}
+                            onClick={() => canNext && setPage((p) => p + 1)}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

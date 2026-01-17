@@ -81,40 +81,42 @@ export default function PrivacyRequestsPage() {
     }, [requests]);
 
     return (
-        <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)] space-y-6">
-            <DeletionRequestTitle />
+        <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
+            <div className="max-w-6xl mx-auto space-y-6">
+                <DeletionRequestTitle />
 
-            <DeletionRequestsMetrics
-                isLoading={isLoading}
-                total={total}
-                open={requestStats.open}
-                completed={requestStats.completed}
-                failedOrExpired={requestStats.failedOrExpired}
-            />
+                <DeletionRequestsMetrics
+                    isLoading={isLoading}
+                    total={total}
+                    open={requestStats.open}
+                    completed={requestStats.completed}
+                    failedOrExpired={requestStats.failedOrExpired}
+                />
 
-            <DeletionRequestsTable
-                requests={requests}
-                isLoading={isLoading}
-                statusFilter={statusFilter}
-                setStatusFilter={(v) => {
-                    setStatusFilter(v as StatusFilter);
-                    setPage(1); // reset pagination when filter changes
-                }}
-                setSelected={setSelected}
-                setSheetOpen={setSheetOpen}
-                page={page}
-                setPage={setPage}
-                canPrev={canPrev}
-                canNext={canNext}
-                total={total}
-                totalPages={totalPages}
-            />
+                <DeletionRequestsTable
+                    requests={requests}
+                    isLoading={isLoading}
+                    statusFilter={statusFilter}
+                    setStatusFilter={(v) => {
+                        setStatusFilter(v as StatusFilter);
+                        setPage(1); // reset pagination when filter changes
+                    }}
+                    setSelected={setSelected}
+                    setSheetOpen={setSheetOpen}
+                    page={page}
+                    setPage={setPage}
+                    canPrev={canPrev}
+                    canNext={canNext}
+                    total={total}
+                    totalPages={totalPages}
+                />
 
-            <DeletionRequestDetail
-                sheetOpen={sheetOpen}
-                setSheetOpen={setSheetOpen}
-                selected={selected}
-            />
+                <DeletionRequestDetail
+                    sheetOpen={sheetOpen}
+                    setSheetOpen={setSheetOpen}
+                    selected={selected}
+                />
+            </div>
         </div>
     );
 }

@@ -126,34 +126,36 @@ function ServicesPageContent() {
         deletionRequestsQueryResultStatus === "pending";
 
     return (
-        <div className="min-h-[calc(100vh-3.5rem)] px-4 py-6 md:px-8 md:py-8 space-y-6">
-            <ServicePageTitle />
-            <ServicesMetrics
-                accountsFound={accountsFound}
-                forgotten={forgotten}
-                breached={breached}
-                deletions={deletionRequestsQueryResult?.total ?? 0}
-                isLoading={isLoading}
-            />
+        <div className="min-h-[calc(100vh-3.5rem)] px-4 py-6 md:px-8 md:py-8">
+            <div className="max-w-6xl mx-auto space-y-8">
+                <ServicePageTitle />
+                <ServicesMetrics
+                    accountsFound={accountsFound}
+                    forgotten={forgotten}
+                    breached={breached}
+                    deletions={deletionRequestsQueryResult?.total ?? 0}
+                    isLoading={isLoading}
+                />
 
-            <ServiceTable
-                userServicesQueryResult={userServicesQueryResult}
-                userServicesQueryResultStatus={userServicesQueryResultStatus}
-                query={query}
-                setQuery={setQuery}
-                category={category}
-                setCategory={setCategory}
-                page={page}
-                setPage={setPage}
-                breachedFilter={breachedFilter}
-                setBreachedFilter={setBreachedFilter}
-                activityFilter={activityFilter}
-                setActivityFilter={setActivityFilter}
-                minEmails={minEmails}
-                setMinEmails={setMinEmails}
-                hasDeletionRequest={hasDeletionRequest}
-                setHasDeletionRequest={setHasDeletionRequest}
-            />
+                <ServiceTable
+                    userServicesQueryResult={userServicesQueryResult}
+                    userServicesQueryResultStatus={userServicesQueryResultStatus}
+                    query={query}
+                    setQuery={setQuery}
+                    category={category}
+                    setCategory={setCategory}
+                    page={page}
+                    setPage={setPage}
+                    breachedFilter={breachedFilter}
+                    setBreachedFilter={setBreachedFilter}
+                    activityFilter={activityFilter}
+                    setActivityFilter={setActivityFilter}
+                    minEmails={minEmails}
+                    setMinEmails={setMinEmails}
+                    hasDeletionRequest={hasDeletionRequest}
+                    setHasDeletionRequest={setHasDeletionRequest}
+                />
+            </div>
         </div>
     );
 }

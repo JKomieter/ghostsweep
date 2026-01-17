@@ -1,11 +1,9 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 
-
 type MiniMetricCardProps = {
     label: string;
     value: string | number;
-    description: string;
     accent?: "default" | "danger" | "warning" | "success";
     tooltip?: string
 };
@@ -13,55 +11,42 @@ type MiniMetricCardProps = {
 function MiniMetricCard({
     label,
     value,
-    description,
     accent = "default",
     tooltip,
 }: MiniMetricCardProps) {
-    const baseClasses =
-        "rounded-xl bg-[#050505] border p-5 transition-all min-h-32 w-full";
-
-    const accentClasses = {
-        default: "border-white/10 hover:border-white/30",
-        danger: "border-red-500/40 hover:border-red-500/70",
-        warning: "border-amber-500/40 hover:border-amber-500/70",
-        success: "border-emerald-500/40 hover:border-emerald-500/70",
-    }[accent];
-
     const valueColor = {
-        default: "text-white",
-        danger: "text-red-400",
-        warning: "text-amber-400",
-        success: "text-emerald-400",
+        default: "text-foreground",
+        danger: "text-destructive",
+        warning: "text-amber-500/80",
+        success: "text-emerald-500/80",
     }[accent];
 
     return (
-        <div className={`${baseClasses} ${accentClasses}`}>
-            <div className="flex flex-row items-center justify-between">
-            <p className="text-sm text-white/60">{label}</p>
-            {tooltip && (
+        <div className="space-y-1">
+            <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    {label}
+                </p>
+                {tooltip && (
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <button
                                 type="button"
-                                className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/20 text-[10px] text-white/60 hover:border-white/40 hover:text-white"
+                                className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-border text-[10px] text-muted-foreground hover:text-foreground"
                                 aria-label={tooltip}
                             >
                                 <Info className="h-3 w-3" />
                             </button>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-[#0A0A0A] border border-white/10">
-                            <p className="text-white">{tooltip}</p>
+                        <TooltipContent>
+                            <p className="text-xs">{tooltip}</p>
                         </TooltipContent>
                     </Tooltip>
-
-            )}
+                )}
             </div>
-
-            <h2 className={`mt-1 text-3xl font-semibold ${valueColor}`}>
+            <h2 className={`text-3xl font-semibold ${valueColor}`}>
                 {value}
             </h2>
-
-            <p className="mt-2 text-xs text-white/40">{description}</p>
         </div>
     );
 }
@@ -82,28 +67,25 @@ export default function ServicesMetrics({
     isLoading = false,
 }: AccountMetricsProps) {
     return (
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
             {/* Accounts Found */}
             <MiniMetricCard
-                label="Accounts Found"
+                label="Accounts"
                 value={isLoading ? "…" : accountsFound}
-                description="Services linked to your email"
             />
 
             {/* Forgotten */}
             <MiniMetricCard
                 label="Forgotten"
                 value={isLoading ? "…" : forgotten}
-                description="You no longer actively use these"
                 accent="warning"
-                tooltip="Accounts you forgot about, but that never forgot about you."
+                tooltip="Accounts you no longer actively use"
             />
 
             {/* Breached */}
             <MiniMetricCard
                 label="Breached"
                 value={isLoading ? "…" : breached}
-                description="Appeared in confirmed breaches"
                 accent="danger"
             />
 
@@ -111,7 +93,6 @@ export default function ServicesMetrics({
             <MiniMetricCard
                 label="Deletions"
                 value={isLoading ? "…" : deletions}
-                description="GDPR/CCPA requests sent"
                 accent="success"
             />
         </div>

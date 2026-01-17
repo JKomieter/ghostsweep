@@ -3,12 +3,12 @@
 
 export default function DeletionRequestTitle() {
     return (
-        <div>
-            <h1 className="text-xl md:text-2xl font-semibold text-white">
+        <div className="space-y-2">
+            <h1 className="text-3xl font-semibold tracking-tight">
                 Deletion Requests
             </h1>
-            <p className="text-sm text-white/50 mt-1">
-                Track your deletion and data reduction requests across services.
+            <p className="text-sm text-muted-foreground">
+                Track your deletion and data reduction requests across all services.
             </p>
         </div>
     )
