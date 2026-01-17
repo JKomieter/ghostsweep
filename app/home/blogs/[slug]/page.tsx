@@ -10,7 +10,6 @@ import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import Image from "next/image";
 import type { Components } from "react-markdown";
 
 type BlogPost = {
@@ -243,13 +242,12 @@ export default async function BlogPostPage(rawParams: PageParams) {
                     )}
 
                     {post.cover_image_url && (
-                        <div className="mt-3 relative overflow-hidden rounded-xl border border-white/10 h-64 w-full">
-                            <Image
+                        <div className="mt-3 overflow-hidden rounded-xl border border-white/10 h-64 w-full">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
                                 src={post.cover_image_url}
                                 alt={post.title}
-                                fill
-                                className="object-cover"
-                                priority
+                                className="w-full h-full object-cover"
                             />
                         </div>
                     )}
