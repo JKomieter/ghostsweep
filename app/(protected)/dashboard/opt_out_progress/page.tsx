@@ -687,7 +687,7 @@ function EmptyState() {
                     <Button
                         size="sm"
                         className="bg-white text-black hover:bg-zinc-100 font-semibold mx-auto"
-                        onClick={() => (window.location.href = "/dashboard/digital-shadow")}
+                        onClick={() => (window.location.href = "/dashboard/digital_shadow")}
                     >
                         View Digital Shadow Map
                         <ArrowRight className="h-4 w-4 ml-2" />
