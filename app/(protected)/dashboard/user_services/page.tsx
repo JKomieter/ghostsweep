@@ -86,39 +86,52 @@ function ServicesPageContent() {
         },
     });
 
+    // Fetch forgotten count separately (without pagination) for consistent total
+    const { data: forgottenCountResult } = useQuery({
+        queryKey: [
+            "forgotten_count",
+            query,
+            category ?? "",
+            breachedFilter,
+            activityFilter,
+            minEmails ?? "",
+            hasDeletionRequest,
+        ],
+        queryFn: async (): Promise<{ forgotten: number }> => {
+            const params = new URLSearchParams();
+
+            if (query) params.set("query", query);
+
+            if (category && category !== "all") {
+                params.set("category", category);
+            }
+
+            if (breachedFilter !== "all") {
+                params.set("breached", breachedFilter);
+            }
+
+            if (activityFilter !== "all") {
+                params.set("activity", activityFilter);
+            }
+
+            if (typeof minEmails === "number") {
+                params.set("min_emails", String(minEmails));
+            }
+
+            if (hasDeletionRequest !== "all") {
+                params.set("has_deletion_request", hasDeletionRequest);
+            }
+
+            const res = await fetch(`/api/user_services/forgotten_count?${params.toString()}`);
+            if (!res.ok) throw new Error("Failed to fetch forgotten count");
+            return res.json();
+        },
+        refetchOnWindowFocus: false,
+    });
+
     const accountsFound = userServicesQueryResult?.total ?? 0;
     const breached = userBreachesQueryResult?.total ?? 0;
-
-    const forgotten = useMemo(() => {
-        let count = 0;
-        if (!userServicesQueryResult?.userServices) {
-            console.log("No user services data available");
-            return count;
-        }
-
-        console.log("Total services:", userServicesQueryResult.userServices.length);
-
-        for (const svc of userServicesQueryResult.userServices || []) {
-            console.log("Service data:", {
-                last_seen_at: svc.last_seen_at,
-                first_seen_at: svc.first_seen_at,
-                email_count: svc.email_count,
-            });
-
-            const result = isForgottenService({
-                last_seen_at: svc.last_seen_at!,
-                first_seen_at: svc.first_seen_at!,
-                email_count: svc.email_count!,
-            });
-
-            console.log("isForgotten result:", result);
-
-            if (result.isForgotten) count += 1;
-        }
-
-        console.log("Total forgotten services:", count);
-        return count;
-    }, [userServicesQueryResult]);
+    const forgotten = forgottenCountResult?.forgotten ?? 0;
 
     const isLoading =
         userServicesQueryResultStatus === "pending" ||
