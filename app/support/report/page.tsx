@@ -117,124 +117,141 @@ export default function ReportIssuePage() {
                     className="space-y-6 rounded-xl border border-white/10 bg-[#050505] p-6 md:p-8"
                 >
                     {/* Issue type */}
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">
-                            Issue type
+                    <div className="space-y-2">
+                        <label className="text-sm font-semibold text-foreground block">
+                            What&apos;s the issue?
                         </label>
                         <Select
                             value={issueType}
                             onValueChange={(value) => setIssueType(value as IssueType)}
                         >
-                            <SelectTrigger className="h-9 text-xs">
+                            <SelectTrigger className="h-10 text-sm">
                                 <SelectValue placeholder="Select an issue type" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="bug">Bug / something broken</SelectItem>
+                                <SelectItem value="bug">🐛 Bug / Something is broken</SelectItem>
                                 <SelectItem value="incorrect-detection">
-                                    Incorrect service detection
+                                    🔍 Incorrect service detection
                                 </SelectItem>
                                 <SelectItem value="breach-data">
-                                    Breach result seems wrong
+                                    ⚠️ Breach result seems wrong
                                 </SelectItem>
-                                <SelectItem value="billing">Billing / subscription issue</SelectItem>
-                                <SelectItem value="login">Login / Gmail connection issue</SelectItem>
-                                <SelectItem value="other">Something else</SelectItem>
+                                <SelectItem value="billing">💳 Billing / Subscription issue</SelectItem>
+                                <SelectItem value="login">🔐 Login / Gmail connection issue</SelectItem>
+                                <SelectItem value="other">❓ Something else</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     {/* Summary */}
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">
-                            Short summary
+                    <div className="space-y-2">
+                        <label htmlFor="summary" className="text-sm font-semibold text-foreground block">
+                            Brief summary <span className="text-red-400">*</span>
                         </label>
                         <Input
-                            placeholder="Example: Sweep says I have 0 services, but I know I have several."
-                            className="h-9 text-xs"
+                            id="summary"
+                            placeholder="e.g., 'Sweep reports 0 services but I know I have connected accounts'"
+                            className="h-10 text-sm"
                             value={summary}
                             onChange={setSummary}
-                            id="summary"
                         />
+                        <p className="text-xs text-muted-foreground">
+                            Keep it short and specific
+                        </p>
                     </div>
 
                     {/* Details */}
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">
-                            What happened?
+                    <div className="space-y-2">
+                        <label htmlFor="details" className="text-sm font-semibold text-foreground block">
+                            What happened? <span className="text-red-400">*</span>
                         </label>
                         <Textarea
-                            rows={5}
-                            className="text-xs"
-                            placeholder="Include what you were trying to do, what you expected, and what actually happened. If it helps, mention the browser, device, and approximate time."
+                            id="details"
+                            rows={6}
+                            className="text-sm resize-none"
+                            placeholder="Walk us through:
+• What you were doing when the issue occurred
+• What you expected to happen
+• What actually happened instead
+• Any error messages you saw
+• Browser, device, and approximate time of the issue"
                             value={details}
                             onChange={(e) => setDetails(e.target.value)}
                         />
+                        <p className="text-xs text-muted-foreground">
+                            More details help us fix issues faster
+                        </p>
                     </div>
 
                     {/* Optional email */}
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">
-                            Email (optional)
+                    <div className="space-y-2">
+                        <label htmlFor="email" className="text-sm font-semibold text-foreground block">
+                            Email <span className="text-xs font-normal text-muted-foreground">(optional)</span>
                         </label>
                         <Input
+                            id="email"
                             type="email"
-                            className="h-9 text-xs"
-                            placeholder="We’ll use this only if we need more detail."
+                            className="h-10 text-sm"
+                            placeholder="your@email.com"
                             value={email}
                             onChange={setEmail}
-                            id="email"
                         />
-                        <p className="text-[11px] text-muted-foreground">
-                            If you&apos;re already signed in, you can leave this blank. We&apos;ll
-                            associate the report with your account where possible.
+                        <p className="text-xs text-muted-foreground">
+                            Only used if we need follow-up details. Signed-in users can leave this blank.
                         </p>
                     </div>
 
-                    {/* Status */}
-                    {error && (
-                        <p className="text-[11px] text-red-400">
-                            {error}
+                    {/* Security notice */}
+                    <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                        <p className="text-xs text-amber-200">
+                            <strong>⚠️ Keep it secure:</strong> Don&apos;t include passwords, full card numbers, or sensitive personal data.
                         </p>
+                    </div>
+
+                    {/* Status Messages */}
+                    {error && (
+                        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
+                            <p className="text-sm text-red-400">
+                                {error}
+                            </p>
+                        </div>
                     )}
                     {success && (
-                        <p className="text-[11px] text-emerald-400">
-                            {success}
-                        </p>
+                        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                            <p className="text-sm text-emerald-400">
+                                ✓ {success}
+                            </p>
+                        </div>
                     )}
 
-                    {/* Actions */}
-                    <div className="flex items-center justify-between pt-2">
-                        <p className="text-[11px] text-muted-foreground">
-                            Please don&apos;t include passwords or full card numbers in your
-                            description.
-                        </p>
-                        <Button
-                            type="submit"
-                            size="sm"
-                            className="text-xs"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Sending…" : "Submit report"}
-                        </Button>
-                    </div>
+                    {/* Submit Button */}
+                    <Button
+                        type="submit"
+                        size="lg"
+                        className="w-full text-base font-semibold"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? "Sending…" : "Submit report"}
+                    </Button>
                 </form>
 
                 {/* Extra guidance */}
-                <section className="rounded-xl border border-white/10 bg-[#050505] p-4 text-[11px] text-muted-foreground">
-                    <p className="font-medium text-foreground text-xs mb-1">
-                        Urgent billing or access issues
-                    </p>
-                    <p>
-                        If you&apos;re unable to access your account or have a billing-related
-                        problem that needs urgent attention, you can also email us directly at{" "}
-                        <a
-                            href="mailto:support@ghostsweep.com?subject=GhostSweep%20Billing%20Issue"
-                            className="text-primary underline"
-                        >
-                            support@ghostsweep.com
-                        </a>
-                        .
-                    </p>
+                <section className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-6">
+                    <div className="space-y-3">
+                        <p className="font-semibold text-foreground text-sm flex items-center gap-2">
+                            🚨 Urgent issues?
+                        </p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                            For account access or billing emergencies, email us directly at{" "}
+                            <a
+                                href="mailto:support@ghostsweep.com?subject=GhostSweep%20Urgent%20Issue"
+                                className="text-blue-400 hover:text-blue-300 font-semibold underline"
+                            >
+                                support@ghostsweep.com
+                            </a>
+                            {" "}and we&apos;ll get back to you ASAP.
+                        </p>
+                    </div>
                 </section>
             </div>
         </main>
