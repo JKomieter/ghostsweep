@@ -124,8 +124,7 @@ export async function GET() {
     }
   }
 
-  // 4) FIXED: Get breached services properly
-  // First get all user_breaches with their breach_id
+  // 4) Get breached services by matching breach domains to user service domains
   const { data: userBreaches, error: ubErr } = await supabase
     .from("user_breaches")
     .select("breach_id")
@@ -139,25 +138,33 @@ export async function GET() {
     );
   }
 
-  // Then get the actual breaches with service_id
   const breachIds = (userBreaches ?? []).map(ub => ub.breach_id).filter(Boolean);
 
   const breachedServiceIds = new Set<string>();
+  const breachedDomains = new Set<string>();
 
   if (breachIds.length > 0) {
     const { data: breaches, error: breachErr } = await supabase
       .from("breaches")
-      .select("service_id")
+      .select("domain")
       .in("id", breachIds);
 
     if (breachErr) {
       console.error("Error loading breaches details:", breachErr);
     } else {
       for (const breach of breaches ?? []) {
-        if (breach.service_id) {
-          breachedServiceIds.add(breach.service_id);
+        if (breach.domain) {
+          breachedDomains.add(breach.domain);
         }
       }
+    }
+  }
+
+  // Match breached domains to user services
+  for (const r of rows) {
+    const service = Array.isArray(r.service) ? r.service[0] : r.service;
+    if (service?.domain && breachedDomains.has(service.domain)) {
+      breachedServiceIds.add(r.id);
     }
   }
 
