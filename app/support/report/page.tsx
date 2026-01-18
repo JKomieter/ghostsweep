@@ -82,7 +82,7 @@ export default function ReportIssuePage() {
 
     return (
         <main className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
+            <div className="mx-auto max-w-2xl px-4 py-12 space-y-8">
                 {/* Back link */}
                 <button
                     type="button"
@@ -94,27 +94,27 @@ export default function ReportIssuePage() {
                 </button>
 
                 {/* Header */}
-                <header className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <Bug className="h-4 w-4 text-primary" />
+                <header className="space-y-3 border-b border-white/5 pb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                            <Bug className="h-5 w-5 text-primary" />
+                        </div>
                         <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                             Report an issue
                         </p>
                     </div>
-                    <h1 className="text-xl font-semibold tracking-tight">
-                        Something not working as expected?
+                    <h1 className="text-3xl font-bold tracking-tight">
+                        Something not working?
                     </h1>
-                    <p className="max-w-xl text-sm text-muted-foreground">
-                        Tell us what went wrong so we can investigate. Include as much detail as
-                        you&apos;re comfortable sharing — this helps us fix issues faster and
-                        improve GhostSweep for everyone.
+                    <p className="max-w-xl text-sm text-muted-foreground leading-relaxed">
+                        We take bug reports seriously. Tell us what went wrong, and we&apos;ll investigate right away. The more detail you share, the faster we can fix it.
                     </p>
                 </header>
 
                 {/* Form card */}
                 <form
                     onSubmit={handleSubmit}
-                    className="space-y-4 rounded-xl border border-white/10 bg-[#050505] p-5"
+                    className="space-y-6 rounded-xl border border-white/10 bg-[#050505] p-6 md:p-8"
                 >
                     {/* Issue type */}
                     <div className="space-y-1.5">

@@ -1,6 +1,4 @@
 // app/blog/[slug]/page.tsx
-export const dynamic = "force-dynamic";
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
@@ -61,7 +59,6 @@ export async function generateMetadata(
     }
 
     const post = data as BlogPost;
-    const dateLabel = formatDate(post.published_at);
 
     return {
         title: `${post.title} | GhostSweep Blog`,
