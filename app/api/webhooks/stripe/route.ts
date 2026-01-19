@@ -114,6 +114,9 @@ export async function POST(req: Request) {
 
         const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
           body: { stripeCustomerId: customerId },
+          headers: {
+            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+          }
         })
 
         if (error || !data?.userId) {
@@ -159,6 +162,9 @@ export async function POST(req: Request) {
         
         const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
           body: { stripeCustomerId: customerId },
+          headers: {
+            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+          }
         })
 
         if (error || !data?.userId) {
@@ -206,6 +212,9 @@ export async function POST(req: Request) {
 
         const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
           body: { stripeCustomerId: customerId },
+          headers: {
+            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+          }
         })
 
         if (error || !data?.userId) {
@@ -244,6 +253,9 @@ export async function POST(req: Request) {
 
         const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
           body: { stripeCustomerId: customerId },
+          headers: {
+            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+          }
         })
 
         if (error || !data?.userId) {
