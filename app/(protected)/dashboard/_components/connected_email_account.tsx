@@ -36,16 +36,24 @@ export default function ConnectEmailModal({
     const [removeOpen, setRemoveOpen] = useState(false);
     const [removing, setRemoving] = useState(false);
     const [removeError, setRemoveError] = useState<string | null>(null);
+    const [removingType, setRemovingType] = useState<"gmail" | "microsoft" | null>(null);
     const queryClient = useQueryClient();
 
     const { data, status } = useQuery({
-        queryKey: ["gmailAccount"],
-        queryFn: async (): Promise<{ gmail_address: string | null }> => {
-            const res = await fetch("/api/gmail_account");
-            if (!res.ok) {
-                throw new Error("Failed to fetch Gmail account");
-            }
-            return res.json();
+        queryKey: ["emailAccounts"],
+        queryFn: async (): Promise<{ gmail_address: string | null; outlook_address: string | null }> => {
+            const [gmailRes, microsoftRes] = await Promise.all([
+                fetch("/api/gmail_account"),
+                fetch("/api/microsoft_account"),
+            ]);
+
+            const gmail = gmailRes.ok ? await gmailRes.json() : { gmail_address: null };
+            const microsoft = microsoftRes.ok ? await microsoftRes.json() : { outlook_address: null };
+
+            return {
+                gmail_address: gmail.gmail_address,
+                outlook_address: microsoft.outlook_address,
+            };
         },
         refetchOnWindowFocus: false,
     });
@@ -54,8 +62,10 @@ export default function ConnectEmailModal({
         setRemoveError(null);
         setRemoving(true);
 
+        const endpoint = "/api/gmail_account/delete";
+
         try {
-            const res = await fetch("/api/gmail_account/delete", {
+            const res = await fetch(endpoint, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
             });
@@ -68,13 +78,15 @@ export default function ConnectEmailModal({
             toast.success("Email account disconnected. GhostSweep can no longer access your email.");
             setRemoveOpen(false);
         } catch (err) {
-            console.error("Error removing Gmail connection:", err);
-            toast.error("Couldn’t disconnect this email. Please try again.");
-            setRemoveError("Couldn’t disconnect this email. Please try again.");
+            console.error(`Error removing ${removingType} connection:`, err);
+            toast.error("Couldn't disconnect this email. Please try again.");
+            setRemoveError("Couldn't disconnect this email. Please try again.");
         } finally {
             setRemoving(false);
             await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["emailAccounts"] }),
                 queryClient.invalidateQueries({ queryKey: ["gmailAccount"] }),
+                queryClient.invalidateQueries({ queryKey: ["microsoftAccount"] }),
                 queryClient.invalidateQueries({ queryKey: ["services"] }),
                 queryClient.invalidateQueries({ queryKey: ["breaches"] }),
                 queryClient.invalidateQueries({ queryKey: ["metrics"] }),
@@ -83,7 +95,10 @@ export default function ConnectEmailModal({
     };
 
     const loading = status === "pending";
-    const isConnected = !!data?.gmail_address;
+    const gmailConnected = !!data?.gmail_address;
+    const microsoftConnected = !!data?.outlook_address;
+    const isConnected = gmailConnected || microsoftConnected;
+    const connectedEmail = data?.gmail_address || data?.outlook_address;
 
     return (
         <>
@@ -128,7 +143,7 @@ export default function ConnectEmailModal({
                                         value={
                                             loading
                                                 ? ""
-                                                : data?.gmail_address ||
+                                                : connectedEmail ||
                                                 (isConnected ? "" : "No email connected")
                                         }
                                         placeholder={
@@ -152,7 +167,7 @@ export default function ConnectEmailModal({
 
                         {/* Actions */}
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 <Link href="/api/google/oauth/start">
                                     <Button
                                         size="sm"
@@ -160,19 +175,33 @@ export default function ConnectEmailModal({
                                         className="inline-flex items-center gap-1"
                                     >
                                         <RefreshCw className="h-4 w-4" />
-                                        {isConnected ? "Reconnect" : "Connect"}
+                                        {gmailConnected ? "Reconnect Gmail" : "Connect Gmail"}
                                     </Button>
                                 </Link>
 
-                                {isConnected && (
+                                <Link href="/api/microsoft/oauth/start">
+                                    <Button
+                                        size="sm"
+                                        disabled={loading || removing}
+                                        className="inline-flex items-center gap-1"
+                                    >
+                                        <RefreshCw className="h-4 w-4" />
+                                        {microsoftConnected ? "Reconnect Outlook" : "Connect Outlook"}
+                                    </Button>
+                                </Link>
+
+                                {gmailConnected && (
                                     <Button
                                         size="sm"
                                         variant="outline"
                                         className="border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 inline-flex items-center gap-1"
-                                        onClick={() => setRemoveOpen(true)}
+                                        onClick={() => {
+                                            setRemovingType("gmail");
+                                            setRemoveOpen(true);
+                                        }}
                                         disabled={removing}
                                     >
-                                        {removing ? (
+                                        {removing && removingType === "gmail" ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                                 Disconnecting...
@@ -180,7 +209,32 @@ export default function ConnectEmailModal({
                                         ) : (
                                             <>
                                                 <Unplug className="h-4 w-4" />
-                                                Disconnect
+                                                Disconnect Gmail
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+
+                                {microsoftConnected && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 inline-flex items-center gap-1"
+                                        onClick={() => {
+                                            setRemovingType("microsoft");
+                                            setRemoveOpen(true);
+                                        }}
+                                        disabled={removing}
+                                    >
+                                        {removing && removingType === "microsoft" ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                Disconnecting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Unplug className="h-4 w-4" />
+                                                Disconnect Outlook
                                             </>
                                         )}
                                     </Button>
@@ -206,7 +260,7 @@ export default function ConnectEmailModal({
                     <AlertDialogHeader>
                         <AlertDialogTitle>Disconnect this email?</AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">
-                            GhostSweep will disconnect this Gmail account and delete its sweep
+                            GhostSweep will disconnect this email account and delete its sweep
                             results (services found and breach data). You won’t be able to run
                             new sweeps or check for new breaches until you reconnect. You can
                             reconnect this email at any time.
