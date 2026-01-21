@@ -179,7 +179,7 @@ export default function ConnectEmailModal({
                                     </Button>
                                 </Link>
 
-                                <Link href="/api/microsoft/oauth/start">
+                                <Link href="/api/microsoft/oauth">
                                     <Button
                                         size="sm"
                                         disabled={loading || removing}
