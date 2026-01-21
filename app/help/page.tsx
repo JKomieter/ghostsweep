@@ -80,11 +80,11 @@ export default function HelpPage() {
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground">
-                                Why do I need to connect my Gmail account?
+                                Why do I need to connect my email account?
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
                                 Your inbox is a complete history of sign-ups, receipts, and security
-                                emails. By connecting Gmail with read-only permissions, GhostSweep can
+                                emails. By connecting Gmail or Outlook with read-only permissions, GhostSweep can
                                 build a map of where your data lives without ever modifying or sending
                                 emails on your behalf.
                             </p>
@@ -123,11 +123,11 @@ export default function HelpPage() {
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground">
-                                What permissions do you request from Google?
+                                What permissions do you request from Google and Microsoft?
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                We use Google&apos;s official OAuth flow with read-only access to your
-                                Gmail and basic profile details (email address and name). GhostSweep
+                                We use official OAuth flows with read-only access to your
+                                email and basic profile details (email address and name). GhostSweep
                                 cannot send, delete, or modify emails in your inbox.
                             </p>
                         </div>
@@ -138,7 +138,7 @@ export default function HelpPage() {
                             <p className="mt-1 text-sm text-muted-foreground">
                                 We store a summary of detected services, breaches linked to your
                                 email, and basic scan history. You can delete your sweep data at any
-                                time from within the app. If you disconnect Gmail, we also recommend
+                                time from within the app. If you disconnect your email account, we also recommend
                                 deleting your sweep history for maximum privacy.
                             </p>
                         </div>
@@ -217,15 +217,15 @@ export default function HelpPage() {
                                 If you recently created your email, or if you rarely sign up for new
                                 services, it&apos;s possible that there&apos;s very little to detect.
                                 If you think something&apos;s off, try running another sweep or
-                                reconnecting your Gmail account.
+                                reconnecting your email account.
                             </p>
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground">
-                                I disconnected Gmail, but sweep data is still visible.
+                                I disconnected my email account, but sweep data is still visible.
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Disconnecting Gmail removes future access, but doesn&apos;t
+                                Disconnecting removes future access, but doesn't
                                 automatically delete past sweep summaries. You can remove all saved
                                 sweep data from the Privacy Tools section inside the app.
                             </p>

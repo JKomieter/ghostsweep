@@ -65,7 +65,7 @@ export default function ConnectEmailModal({
                 throw new Error(body.error || "Failed to remove connection");
             }
 
-            toast.success("Gmail disconnected. GhostSweep can no longer access your Gmail.");
+            toast.success("Email account disconnected. GhostSweep can no longer access your email.");
             setRemoveOpen(false);
         } catch (err) {
             console.error("Error removing Gmail connection:", err);
@@ -92,7 +92,7 @@ export default function ConnectEmailModal({
                     <DialogHeader>
                         <DialogTitle className="text-lg">Connected email</DialogTitle>
                         <DialogDescription className="text-xs text-muted-foreground">
-                            Link a Gmail account so GhostSweep can scan sign-up, security, and
+                            Link a Gmail or Outlook account so GhostSweep can scan sign-up, security, and
                             breach-related emails. We only use this to detect services and
                             breaches — not to read your personal messages.
                         </DialogDescription>
@@ -118,7 +118,7 @@ export default function ConnectEmailModal({
 
                             <div className="space-y-1">
                                 <label className="text-xs font-medium text-muted-foreground">
-                                    Gmail account
+                                    Email account
                                 </label>
                                 <div className="relative">
                                     <Mail className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -145,7 +145,7 @@ export default function ConnectEmailModal({
 
                             {status === "error" && (
                                 <p className="text-[11px] text-red-400">
-                                    Problem fetching connected Gmail.
+                                    Problem fetching connected email account.
                                 </p>
                             )}
                         </div>
@@ -160,7 +160,7 @@ export default function ConnectEmailModal({
                                         className="inline-flex items-center gap-1"
                                     >
                                         <RefreshCw className="h-4 w-4" />
-                                        {isConnected ? "Reconnect Gmail" : "Connect Gmail"}
+                                        {isConnected ? "Reconnect" : "Connect"}
                                     </Button>
                                 </Link>
 

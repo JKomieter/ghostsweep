@@ -131,7 +131,7 @@ export default function SecurityPage() {
                                 Permissioned access only
                             </p>
                             <p className="text-muted-foreground">
-                                Gmail access is granted via Google OAuth and can be revoked at any time from your Google account.
+                                Email access is granted via Google or Microsoft OAuth and can be revoked at any time from your Google or Microsoft account.
                             </p>
                         </div>
 
@@ -204,7 +204,7 @@ export default function SecurityPage() {
                                     <Eye className="h-5 w-5 text-primary" />
                                 </div>
                                 <h3 className="text-sm sm:text-base font-semibold">
-                                    What we access (via Gmail)
+                                    What we access (via Gmail and Outlook)
                                 </h3>
                             </div>
 
@@ -241,7 +241,7 @@ export default function SecurityPage() {
                                         <li className="flex items-start gap-2">
                                             <Send className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                                             <span>
-                                                Send deletion request emails through the Gmail API when you click <span className="font-medium text-foreground">Start Deletion</span>
+                                                Send deletion request emails when you click <span className="font-medium text-foreground">Start Deletion</span>
                                             </span>
                                         </li>
                                         <li className="flex items-start gap-2">
@@ -254,7 +254,7 @@ export default function SecurityPage() {
 
                                     <p className="mt-2 text-[11px] text-muted-foreground">
                                         If you prefer, you can choose a workflow that opens the provider’s deletion page (no email sent),
-                                        or you can disconnect Gmail after sending.
+                                        or you can disconnect your email after sending.
                                     </p>
                                 </div>
                             </div>
@@ -281,7 +281,7 @@ export default function SecurityPage() {
                                     <div>
                                         <p className="font-medium">Sell data or run ads</p>
                                         <p className="text-[11px] text-muted-foreground mt-1">
-                                            We do not sell, rent, or share your Gmail data for advertising.
+                                            We do not sell, rent, or share your email data for advertising.
                                         </p>
                                     </div>
                                 </li>
@@ -417,7 +417,7 @@ export default function SecurityPage() {
 
                             <div className="pt-4 border-t border-white/10">
                                 <p className="text-[11px] text-muted-foreground">
-                                    You can disconnect Gmail at any time. If you also delete your scan data, we remove stored service
+                                    You can disconnect your email at any time. If you also delete your scan data, we remove stored service
                                     summaries and deletion tracking records associated with your account.
                                 </p>
                             </div>
@@ -493,7 +493,7 @@ export default function SecurityPage() {
                                 <p className="font-medium">Google</p>
                             </div>
                             <p className="text-muted-foreground">
-                                Gmail API and OAuth permissions to scan and (optionally) send deletion request emails when you choose.
+                                Email APIs and OAuth permissions to scan and (optionally) send deletion request emails when you choose.
                             </p>
                         </div>
 
@@ -538,7 +538,7 @@ export default function SecurityPage() {
                         {[
                             {
                                 title: "Disconnect anytime",
-                                body: "Revoke Gmail access from GhostSweep or directly from your Google account settings.",
+                                body: "Revoke email access from GhostSweep or directly from your Google/Microsoft account settings.",
                             },
                             {
                                 title: "Delete your data",

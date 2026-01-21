@@ -83,13 +83,13 @@ export default function HowItWorksPage() {
         "@context": "https://schema.org",
         "@type": "HowTo",
         "name": "How to Find and Delete Hidden Accounts with GhostSweep",
-        "description": "Step-by-step process to connect Gmail, scan for hidden accounts, and delete services you no longer use",
+        "description": "Step-by-step process to connect Gmail or Outlook, scan for hidden accounts, and delete services you no longer use",
         "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
         "step": [
             {
                 "@type": "HowToStep",
-                "name": "Connect Gmail with Google OAuth",
-                "text": "Sign in with Google and grant GhostSweep permission to scan Gmail metadata. You can disconnect anytime.",
+                "name": "Connect Gmail or Outlook with OAuth",
+                "text": "Sign in with Google or Microsoft and grant GhostSweep permission to scan email metadata. You can disconnect anytime.",
                 "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"
             },
             {
@@ -118,7 +118,7 @@ export default function HowItWorksPage() {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "How GhostSweep Works | Email Scan to Account Cleanup",
-        "description": "Step-by-step guide explaining how GhostSweep finds hidden accounts and helps delete them.",
+        "description": "Step-by-step guide explaining how GhostSweep finds hidden accounts using Gmail and Outlook, and helps delete them.",
         "url": "https://ghostsweep.com/home/how-it-works",
         "publisher": {
             "@type": "Organization",
@@ -156,14 +156,14 @@ export default function HowItWorksPage() {
 
                         <div className="space-y-4">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
-                                Connect Gmail → see your accounts → delete what you don’t want.
+                                Connect Gmail or Outlook → see your accounts → delete what you don&apos;t want.
                                 <br />
                                 <span className="text-white/80">A cleanup workflow built from email metadata.</span>
                             </h1>
 
                             {/* Purpose line (explicit for reviewers) */}
                             <p className="text-sm sm:text-base text-muted-foreground max-w-xl">
-                                <span className="text-white/80 font-medium">GhostSweep</span> is a privacy-first application that scans Gmail{" "}
+                                <span className="text-white/80 font-medium">GhostSweep</span> is a privacy-first application that scans Gmail and Outlook{" "}
                                 <span className="text-white/80">metadata</span> (sender, subject, date) — not email bodies or attachments — to estimate where your
                                 email is registered, organize those services into one view, and help you remove accounts that still hold your data.
                             </p>
@@ -203,7 +203,7 @@ export default function HowItWorksPage() {
                         <div className="flex flex-wrap gap-2">
                             <Pill>
                                 <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                                Google OAuth (permissioned)
+                                Google & Microsoft OAuth (permissioned)
                             </Pill>
                             <Pill>
                                 <EyeOff className="h-3.5 w-3.5 text-primary" />
@@ -221,7 +221,7 @@ export default function HowItWorksPage() {
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-white/70">
                                 <Sparkles className="h-3.5 w-3.5 text-primary" />
-                                What you get after connecting Gmail
+                                What you get after connecting Gmail or Outlook
                             </div>
 
                             <h2 className="text-lg font-semibold tracking-tight text-white/90">
@@ -285,7 +285,7 @@ export default function HowItWorksPage() {
                             Step-by-step: what GhostSweep does
                         </h2>
                         <p className="text-sm text-muted-foreground max-w-2xl">
-                            This is the exact workflow—from connecting Gmail to sending deletions. Clear, permissioned, and review-first.
+                            This is the exact workflow—from connecting Gmail or Outlook to sending deletions. Clear, permissioned, and review-first.
                         </p>
                     </div>
 
@@ -293,11 +293,11 @@ export default function HowItWorksPage() {
                         <StepCard
                             step="1"
                             icon={<ShieldCheck className="h-5 w-5 text-primary" />}
-                            title="Connect Gmail with Google OAuth"
-                            body="You connect through Google’s official OAuth flow. GhostSweep only requests the minimum access needed to scan metadata signals."
+                            title="Connect Gmail or Outlook with OAuth"
+                            body="You connect through Google's or Microsoft's official OAuth flow. GhostSweep only requests the minimum access needed to scan metadata signals."
                             bullets={[
-                                "You’ll see the Google permission screen before anything happens",
-                                "You can disconnect anytime from GhostSweep or your Google account",
+                                "You'll see the permission screen before anything happens",
+                                "You can disconnect anytime from GhostSweep or your Google/Microsoft account",
                             ]}
                         />
 
@@ -534,7 +534,7 @@ export default function HowItWorksPage() {
                             </div>
 
                             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                                GhostSweep uses Google&apos;s OAuth2 flow. We scan Gmail metadata (sender, subject, date) — not email bodies or attachments.
+                                GhostSweep uses Google&apos;s or Microsoft&apos;s OAuth2 flow. We scan email metadata (sender, subject, date) from Gmail and Outlook — not email bodies or attachments.
                                 Deletion emails/steps are generated and executed only when you explicitly choose to.
                             </p>
 

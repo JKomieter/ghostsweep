@@ -212,7 +212,7 @@ export default function DeletionRequestEmailModal({
                 <div className="mt-4 space-y-3 text-xs">
                     <div className="space-y-1">
                         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                            From (connected Gmail)
+                            From (connected email)
                         </div>
                         <div className="rounded-md border border-white/10 bg-black/60 px-3 py-2 font-mono text-[11px] text-emerald-200">
                             {gmailAddress || "—"}
@@ -276,7 +276,7 @@ export default function DeletionRequestEmailModal({
                 {/* Actions */}
                 <div className="mt-5 flex items-center justify-between gap-3">
                     <p className="text-[11px] text-muted-foreground max-w-xs">
-                        GhostSweep can send + track replies automatically. “Open in Gmail” is a
+                        GhostSweep can send + track replies automatically. "Open in email client" is a
                         fallback.
                     </p>
 
@@ -298,7 +298,7 @@ export default function DeletionRequestEmailModal({
 
                         <Link href={gmailComposeUrl || "#"} target="_blank" rel="noreferrer">
                             <Button size="sm" variant="outline" disabled={!gmailComposeUrl}>
-                                Open in Gmail
+                                Open in email client
                             </Button>
                         </Link>
                     </div>

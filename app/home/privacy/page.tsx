@@ -146,9 +146,9 @@ export default function PrivacyPolicyPage() {
                         </div>
 
                         <div>
-                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.2 Gmail connection (Google OAuth)</h3>
+                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-300 mb-2">2.2 Email connection (Google & Microsoft OAuth)</h3>
                             <p className="text-sm text-zinc-300 mb-3">
-                                When you connect Gmail, we use Google OAuth scopes to access the data needed to provide GhostSweep features.
+                                When you connect Gmail or Outlook, we use official OAuth flows to access the data needed to provide GhostSweep features.
                             </p>
 
                             <div className="grid gap-3 md:grid-cols-2 mb-3">
@@ -174,7 +174,7 @@ export default function PrivacyPolicyPage() {
                             </div>
 
                             <p className="text-sm text-zinc-300">
-                                You can disconnect Gmail at any time to revoke access.
+                                You can disconnect your email account at any time to revoke access.
                             </p>
                         </div>
 
@@ -236,9 +236,9 @@ export default function PrivacyPolicyPage() {
 
                 {/* Google user data */}
                 <section className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-6">
-                    <h2 className="text-xl font-semibold text-white">4. Use of Google user data</h2>
+                    <h2 className="text-xl font-semibold text-white">4. Use of Google and Microsoft user data</h2>
                     <p className="text-sm text-zinc-300">
-                        GhostSweep's use of information from Google APIs adheres to the{" "}
+                        GhostSweep's use of information from Google and Microsoft APIs adheres to their respective user data policies: {" "}
                         <a
                             href="https://developers.google.com/terms/api-services-user-data-policy"
                             target="_blank"
@@ -247,11 +247,20 @@ export default function PrivacyPolicyPage() {
                         >
                             Google API Services User Data Policy
                         </a>
+                        {" "}and{" "}
+                        <a
+                            href="https://learn.microsoft.com/en-us/legal/content-sharing-privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-300 underline hover:text-emerald-200"
+                        >
+                            Microsoft Privacy Policy
+                        </a>
                     </p>
                     <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
-                        <li>We use Gmail data to provide features you request.</li>
-                        <li>We don't use Google data for ads or marketing profiling.</li>
-                        <li>We don't sell Google data. We only share with service providers as needed.</li>
+                        <li>We use email data to provide features you request.</li>
+                        <li>We don't use email data for ads or marketing profiling.</li>
+                        <li>We don't sell email data. We only share with service providers as needed.</li>
                         <li>Access is restricted to automated systems and not available for human review except for security/debugging.</li>
                     </ul>
 
@@ -261,7 +270,7 @@ export default function PrivacyPolicyPage() {
                             <p className="text-sm font-semibold text-white">You can revoke access anytime</p>
                         </div>
                         <p className="text-xs text-zinc-300">
-                            Disconnect Gmail from the app to revoke tokens. You can also delete sweep and deletion-tracking data anytime.
+                            Disconnect your email from the app to revoke tokens. You can also delete sweep and deletion-tracking data anytime.
                         </p>
                     </div>
                 </section>
@@ -275,7 +284,7 @@ export default function PrivacyPolicyPage() {
                     <ul className="space-y-2 list-disc pl-5 text-sm text-zinc-300">
                         <li>Delete sweep data from within the app anytime.</li>
                         <li>Delete deletion tracking records from within the app anytime.</li>
-                        <li>Disconnect Gmail to revoke access (we recommend deleting stored data).</li>
+                        <li>Disconnect your email to revoke access (we recommend deleting stored data).</li>
                         <li>Request full account deletion (removes profile, subscriptions, and history).</li>
                     </ul>
                 </section>

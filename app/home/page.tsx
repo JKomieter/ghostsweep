@@ -25,8 +25,9 @@ import {
     Play
 } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DigitalShadowSection } from "./_components/digital-shadow-section";
+import { OutLookLogo, GmailLogo } from "@/svgs";
 
 // Structured data (JSON-LD) for search engines
 const structuredData = {
@@ -56,7 +57,7 @@ const faqSchema = {
             "name": "Do you read my emails?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "No. GhostSweep uses Gmail metadata (sender, subject, date) to detect accounts. We do not read email bodies, passwords, or attachments.",
+                "text": "No. GhostSweep uses email metadata (sender, subject, date) from Gmail and Outlook to detect accounts. We do not read email bodies, passwords, or attachments.",
             },
         },
         {
@@ -64,15 +65,15 @@ const faqSchema = {
             "name": "Can GhostSweep send emails on my behalf?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Yes, but only when you explicitly approve. Deletion requests are sent FROM your Gmail account, and you preview every email before it's sent. We never send anything without your permission.",
+                "text": "Yes, but only when you explicitly approve. Deletion requests are sent FROM your Gmail or Outlook account, and you preview every email before it's sent. We never send anything without your permission.",
             },
         },
         {
             "@type": "Question",
-            "name": "What happens if I disconnect Gmail?",
+            "name": "What happens if I disconnect Gmail or Outlook?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "You can revoke access any time from GhostSweep settings or your Google account. When you disconnect, we lose access immediately. Your saved data remains unless you delete it.",
+                "text": "You can revoke access any time from GhostSweep settings or your Google/Microsoft account. When you disconnect, we lose access immediately. Your saved data remains unless you delete it.",
             },
         },
         {
@@ -234,7 +235,7 @@ function FounderVideoSection() {
                         <p className="text-sm text-zinc-400 leading-relaxed">
                             I kept finding old accounts I forgot existed — which later became spam,
                             breach exposure, and security risk. This video shows how GhostSweep
-                            scans Gmail metadata, builds your footprint, and helps you clean it up.
+                            scans email metadata from Gmail and Outlook, builds your footprint, and helps you clean it up.
                         </p>
 
                         <div className="rounded-xl border border-white/10 bg-black/30 p-4 text-xs text-zinc-400">
@@ -274,15 +275,15 @@ function FounderVideoSection() {
 const faqs = [
     {
         q: "Do you read my emails?",
-        a: "No. GhostSweep uses Gmail metadata (sender, subject, date) to detect accounts. We do not read email bodies, passwords, or attachments.",
+        a: "No. GhostSweep uses email metadata (sender, subject, date) from Gmail and Outlook to detect accounts. We do not read email bodies, passwords, or attachments.",
     },
     {
         q: "Can GhostSweep send emails on my behalf?",
-        a: "Yes, but only when you explicitly approve. Deletion requests are sent FROM your Gmail account, and you preview every email before it's sent. We never send anything without your permission.",
+        a: "Yes, but only when you explicitly approve. Deletion requests are sent FROM your Gmail or Outlook account, and you preview every email before it's sent. We never send anything without your permission.",
     },
     {
-        q: "What happens if I disconnect Gmail?",
-        a: "You can revoke access any time from GhostSweep settings or your Google account. When you disconnect, we lose access immediately. Your saved data remains unless you delete it.",
+        q: "What happens if I disconnect Gmail or Outlook?",
+        a: "You can revoke access any time from GhostSweep settings or your Google/Microsoft account. When you disconnect, we lose access immediately. Your saved data remains unless you delete it.",
     },
     {
         q: "Do you sell my data?",
@@ -526,8 +527,8 @@ export default function HomePage() {
                             {
                                 step: "1",
                                 icon: Mail,
-                                title: "Connect Gmail",
-                                body: "Click 'Sign in with Google' — takes 10 seconds",
+                                title: "Connect Gmail or Outlook",
+                                body: "Sign in with Google or Microsoft — takes 10 seconds",
                             },
                             {
                                 step: "2",
@@ -561,6 +562,22 @@ export default function HomePage() {
                             Start My Scan Now
                             <ArrowRight className="h-4 w-4" />
                         </Link>
+                    </div>
+
+                    {/* SUPPORTED PROVIDERS */}
+                    <div className="mt-12 flex flex-col items-center gap-4">
+                        <p className="text-sm text-zinc-400">We support</p>
+                        <div className="flex items-center gap-8">
+                            <div className="flex items-center gap-2">
+                                <GmailLogo className="h-8 w-8" />
+                                <span className="text-sm font-medium text-zinc-300">Gmail</span>
+                            </div>
+                            <div className="text-zinc-500">•</div>
+                            <div className="flex items-center gap-2">
+                                <OutLookLogo className="h-8 w-8" />
+                                <span className="text-sm font-medium text-zinc-300">Outlook</span>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
