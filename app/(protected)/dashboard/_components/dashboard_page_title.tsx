@@ -17,6 +17,13 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
+import { OutLookLogo, GmailLogo } from "@/svgs";
+
+const EmailIcon = ({ type }: { type: "gmail" | "outlook" | null }) => {
+    if (type === "gmail") return <GmailLogo className="h-3.5 w-3.5" />;
+    if (type === "outlook") return <OutLookLogo className="h-3.5 w-3.5" />;
+    return null;
+};
 
 type LatestSweepResponse = {
     sweepId: string | null;
@@ -330,6 +337,7 @@ export default function DashboardTitle() {
                     >
                         {connectedEmail ? (
                             <>
+                                <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
                                 <span className="hidden sm:inline">Connected:&nbsp;</span>
                                 <span className="max-w-[140px] truncate sm:max-w-[200px]">
                                     {connectedEmail}
@@ -495,9 +503,12 @@ export default function DashboardTitle() {
                             </div>
                         ) : connectedEmail ? (
                             <>
-                                <p className="text-white/60">
-                                    Connected as{" "}
-                                    <span className="font-medium text-white">{connectedEmail}</span>.
+                                <p className="text-white/60 flex items-center gap-2">
+                                    <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
+                                    <span>Connected as</span>
+                                    <span className="font-medium text-white truncate max-w-[200px] sm:max-w-[260px]">
+                                        {connectedEmail}
+                                    </span>
                                 </p>
                                 <p className="text-white/50">
                                     The sweep runs in the background and typically takes 3-5 minutes.
