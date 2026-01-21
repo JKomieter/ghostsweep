@@ -19,40 +19,40 @@ export async function GET() {
     // ✅ User ID comes from the authenticated session
     const userId = user.id;
 
-      // ✅ ENFORCE: Check if sweep already in progress
-      const { data: existingSweep, error: sweepCheckError } = await supabase
-          .from("sweep_events")
-          .select("id, status, started_at")
-          .eq("user_id", user.id)
-          .in("status", ["pending", "processing"])
-          .order("created_at", { ascending: false })
-          .maybeSingle();
+    // ✅ ENFORCE: Check if sweep already in progress
+    const { data: existingSweep, error: sweepCheckError } = await supabase
+      .from("sweep_events")
+      .select("id, status, started_at")
+      .eq("user_id", user.id)
+      .in("status", ["pending", "processing"])
+      .order("created_at", { ascending: false })
+      .maybeSingle();
 
-      if (sweepCheckError && sweepCheckError.code !== "PGRST116") {
-          console.error("Error checking existing sweeps:", sweepCheckError);
-          return NextResponse.json(
-              { error: "Failed to check sweep status" },
-              { status: 500 }
-          );
-      }
+    if (sweepCheckError && sweepCheckError.code !== "PGRST116") {
+      console.error("Error checking existing sweeps:", sweepCheckError);
+      return NextResponse.json(
+        { error: "Failed to check sweep status" },
+        { status: 500 }
+      );
+    }
 
-      if (existingSweep) {
-          // Calculate how long it's been running
-          const elapsed = Date.now() - new Date(existingSweep.started_at).getTime();
-          const minutesElapsed = Math.floor(elapsed / 60000);
+    if (existingSweep) {
+      // Calculate how long it's been running
+      const elapsed = Date.now() - new Date(existingSweep.started_at).getTime();
+      const minutesElapsed = Math.floor(elapsed / 60000);
 
-          return NextResponse.json(
-              {
-                  error: "Sweep already in progress",
-                  code: "SWEEP_IN_PROGRESS",
-                  sweepId: existingSweep.id,
-                  status: existingSweep.status,
-                  minutesElapsed,
-                  message: `A sweep is already ${existingSweep.status}. Please wait for it to complete (${minutesElapsed} minutes elapsed).`,
-              },
-              { status: 409 } // 409 Conflict
-          );
-      }
+      return NextResponse.json(
+        {
+          error: "Sweep already in progress",
+          code: "SWEEP_IN_PROGRESS",
+          sweepId: existingSweep.id,
+          status: existingSweep.status,
+          minutesElapsed,
+          message: `A sweep is already ${existingSweep.status}. Please wait for it to complete (${minutesElapsed} minutes elapsed).`,
+        },
+        { status: 409 } // 409 Conflict
+      );
+    }
 
     // Check if Gmail or Microsoft account connected
     const { data: gmailAccount } = await supabase

@@ -12,7 +12,7 @@ const redis = new Redis({
 const ratelimit = new Ratelimit({
     redis: redis,
     limiter: Ratelimit.slidingWindow(100, '1 m'),
-    analytics: true,
+    analytics: false,  // Disabled to reduce Redis calls
 });
 
 const ALLOWED_ORIGINS = [
