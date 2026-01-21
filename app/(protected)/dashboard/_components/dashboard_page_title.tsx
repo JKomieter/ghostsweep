@@ -217,11 +217,11 @@ export default function DashboardTitle() {
 
         const elapsedMinutes = getElapsedMinutesLocal();
 
-        // Show notification after 2 minutes if not shown yet
-        if (elapsedMinutes >= 2 && !sweepLongNotified) {
+        // Show notification after 3 minutes if not shown yet
+        if (elapsedMinutes >= 3 && !sweepLongNotified) {
             setSweepLongNotified(true);
             toast.info("Sweep in progress", {
-                description: "This is taking a bit longer than usual. It should be done in a few minutes. You can close this window and we'll keep working.",
+                description: "Processing your inbox. This can take up to 5 minutes depending on your email volume. You can leave this window open and we'll keep working.",
             });
         }
 
@@ -242,7 +242,7 @@ export default function DashboardTitle() {
         }
 
         toast.info("Starting your GhostSweep in the background…", {
-            description: "This may take a few minutes depending on your inbox size. You can close this window and we'll keep working.",
+            description: "Processing your inbox. This typically takes 2-5 minutes depending on your email volume. You can close this window and we'll keep working.",
         });
 
         try {

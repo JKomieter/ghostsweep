@@ -75,6 +75,7 @@ type HasDeletionFilter = "all" | "yes" | "no"
 type RowType = Partial<UserService> & {
     service: Service
     deletion_requests?: DeletionRequest[] | null
+    user_breaches?: Array<{ id: string }>
 }
 
 const PAGE_SIZE = 20
@@ -123,7 +124,8 @@ export const columns: ColumnDef<RowType>[] = [
                     <div className="flex items-start gap-2">
                         <div className="relative h-6 w-6 overflow-hidden rounded-full border border-white/10 bg-white/5 shrink-0">
                             {logoUrl ? (
-                                <Image src={logoUrl} width={64} height={64} alt="" className="h-full w-full object-cover" />
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={logoUrl} alt="" className="h-full w-full object-cover" />
                             ) : null}
                         </div>
                         <div className="flex flex-col leading-tight min-w-0">
@@ -196,11 +198,12 @@ export const columns: ColumnDef<RowType>[] = [
         header: "Priority",
         cell: ({ row }) => {
             // const gated = (table.options.meta as TableMeta | undefined)?.gated
+            const hasUserBreaches = (row.original.user_breaches?.length ?? 0) > 0;
             const score = calcPriorityScore({
                 email_count: row.original.email_count,
                 last_seen_at: row.original.last_seen_at,
                 first_seen_at: row.original.first_seen_at,
-                is_breached: row.original.service?.is_breached,
+                is_breached: hasUserBreaches,
             })
             const { label, className } = priorityLabel(score)
 

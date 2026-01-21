@@ -110,10 +110,6 @@ export async function GET(request: NextRequest) {
                 query = query.eq("services.category", category);
             }
 
-            if (breachedFilter !== null) {
-                query = query.eq("services.is_breached", breachedFilter);
-            }
-
             // Started filter
             if (startedFilter === true) {
                 query = query.not("deletion_requests.id", "is", null);
@@ -216,6 +212,7 @@ export async function GET(request: NextRequest) {
                 `
                 id,
                 user_id,
+                service_id,
                 first_seen_at,
                 last_seen_at,
                 email_count,
@@ -250,10 +247,51 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        // Fetch user_breaches to determine which services are breached
+        const { data: userBreachesData, error: breachesError } = await supabase
+            .from("user_breaches")
+            .select("service_id, id")
+            .eq("user_id", user.id);
+
+        if (breachesError) {
+            console.error("Error fetching user breaches:", breachesError);
+            return NextResponse.json(
+                { error: "Internal Server Error", code: "BREACHES_FETCH_ERROR" },
+                { status: 500 }
+            );
+        }
+
+        // Create a map of service_id -> breaches
+        const breachesMap = new Map<string, Array<{ id: string }>>();
+        (userBreachesData ?? []).forEach((ub: { service_id: string; id: string }) => {
+            if (!breachesMap.has(ub.service_id)) {
+                breachesMap.set(ub.service_id, []);
+            }
+            breachesMap.get(ub.service_id)!.push({ id: ub.id });
+        });
+
+        // Add user_breaches to each service
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const servicesWithBreaches = (userServices ?? []).map((us: any) => ({
+            ...us,
+            user_breaches: breachesMap.get(us.service_id) ?? [],
+        }));
+
+        // Apply breach filter based on user_breaches (not services.is_breached)
+        let filteredServices = servicesWithBreaches;
+        if (breachedFilter !== null) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            filteredServices = filteredServices.filter((us: any) => {
+                // Check if user has any breaches for this service (via user_breaches table)
+                const hasUserBreaches = (us.user_breaches?.length ?? 0) > 0;
+                return breachedFilter ? hasUserBreaches : !hasUserBreaches;
+            });
+        }
+
         return NextResponse.json({
-            userServices: userServices ?? [],
+            userServices: filteredServices,
             total: totalCount,
-            shownCount: (userServices ?? []).length,
+            shownCount: filteredServices.length,
             hiddenCount: isGated ? totalCount - FREE_ACCOUNT_LIMIT : 0,
             page,
             pageSize: PAGE_SIZE,

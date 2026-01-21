@@ -2,7 +2,7 @@ import { UserService, Service, DeletionRequest, UserBreach, Breach, ServiceDelet
 
 
 export interface UserServicesQueryResult {
-    userServices: Array<Partial<UserService> & { service: Service, deletion_request: DeletionRequest | null }> | null;
+    userServices: Array<Partial<UserService> & { service: Service, deletion_request: DeletionRequest | null, user_breaches?: Array<{ id: string }> }> | null;
     total: number
     page: number,
     pageSize: number,
