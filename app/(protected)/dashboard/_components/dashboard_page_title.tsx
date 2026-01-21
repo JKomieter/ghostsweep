@@ -588,17 +588,38 @@ export default function DashboardTitle() {
                         >
                             {isInProgress ? "Close" : "Cancel"}
                         </Button>
-
                         {!isInProgress && (
                             <>
                                 {connectedEmail ? (
-                                    <Button
-                                        size="sm"
-                                        onClick={onSweep}
-                                        className="w-full sm:w-auto min-w-[140px]"
-                                    >
-                                        Start Sweep
-                                    </Button>
+                                    <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+                                        <Link
+                                            href={gmailAddress ? "/api/google/oauth/start" : "/api/microsoft/oauth"}
+                                            onClick={() => setIsConnecting(true)}
+                                        >
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                disabled={isConnecting}
+                                                className="w-full sm:w-auto min-w-40"
+                                            >
+                                                {isConnecting ? (
+                                                    <span className="flex items-center justify-center gap-2">
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                        Redirecting…
+                                                    </span>
+                                                ) : (
+                                                    `Reconnect ${gmailAddress ? "Gmail" : "Outlook"}`
+                                                )}
+                                            </Button>
+                                        </Link>
+                                        <Button
+                                            size="sm"
+                                            onClick={onSweep}
+                                            className="w-full sm:w-auto min-w-[140px]"
+                                        >
+                                            Start Sweep
+                                        </Button>
+                                    </div>
                                 ) : (
                                     <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row">
                                         <Link
@@ -645,6 +666,7 @@ export default function DashboardTitle() {
                                 )}
                             </>
                         )}
+                        
                         {isInProgress && (
                             <Button
                                 size="sm"
