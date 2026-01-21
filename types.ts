@@ -28,6 +28,8 @@ export interface UserService {
     updated_at: string | null;
     is_account: boolean | null;
     is_spam: boolean | null;
+    email: string | null;
+    email_provider: "gmail" | "outlook" | null;
 }
 
 export type Category =

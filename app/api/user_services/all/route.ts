@@ -46,7 +46,9 @@ export async function GET() {
         email_count,
         first_seen_at,
         last_seen_at,
-
+        email,
+        email_provider,
+        
         service:services (
           id,
           name,

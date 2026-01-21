@@ -418,7 +418,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
 
     return (
-        <div className="relative flex min-h-screen w-full overflow-hidden bg-gradient-to-b from-black via-zinc-950 to-black">
+        <div className="relative flex min-h-screen w-full overflow-hidden bg-linear-to-b from-black via-zinc-950 to-black">
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -left-40 top-[-10%] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
                 <div className="absolute right-[-10%] bottom-[-10%] h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -457,7 +457,7 @@ export default function LoginPage() {
 
                             {/* Hero copy */}
                             <div className="space-y-5 max-w-lg">
-                                <h1 className="text-4xl xl:text-5xl font-semibold leading-tight bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
+                                <h1 className="text-4xl xl:text-5xl font-semibold leading-tight bg-linear-to-b from-white to-white/70 bg-clip-text text-transparent">
                                     Sweep your digital footprint clean.
                                 </h1>
                                 <p className="text-sm md:text-base text-white/70 leading-relaxed">

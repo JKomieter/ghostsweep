@@ -22,8 +22,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 import type { DeletionRequest, DeletionStatus, ServiceDeletionPlaybook } from "@/types";
 
-// TODO: Finish follow up and also add the data deletion info
-
 interface DeletionRequestsTabProps {
     userServiceId: string | undefined; // ✅ REQUIRED so we can create a request row on link/manual actions
 

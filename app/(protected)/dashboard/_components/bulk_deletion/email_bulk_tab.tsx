@@ -22,10 +22,10 @@ import Input from "@/components/ui/input";
 import { masterBody, masterSubject } from "@/constant/master_template";
 import { useQuery } from "@tanstack/react-query";
 
-type DeletionProfileQueryResult = {
-    full_name: string | null;
-    country: string | null;
-};
+// type DeletionProfileQueryResult = {
+//     full_name: string | null;
+//     country: string | null;
+// };
 
 // SSE event types
 type SSEEvent =
@@ -60,13 +60,24 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
     const abortControllerRef = React.useRef<AbortController | null>(null);
 
     // Deletion profile
-    const { data: deletionProfileQueryResult } = useQuery({
-        queryKey: ["deletion_profile"],
-        queryFn: async (): Promise<DeletionProfileQueryResult> => {
-            const res = await fetch("/api/deletion_profile");
-            if (!res.ok) throw new Error("Failed to fetch deletion profile");
+    // const { data: deletionProfileQueryResult } = useQuery({
+    //     queryKey: ["deletion_profile"],
+    //     queryFn: async (): Promise<DeletionProfileQueryResult> => {
+    //         const res = await fetch("/api/deletion_profile");
+    //         if (!res.ok) throw new Error("Failed to fetch deletion profile");
+    //         return res.json();
+    //     },
+    // });
+
+    // Gmail account
+    const { data: gmailAccountQueryResult } = useQuery({
+        queryKey: ["gmail_account"],
+        queryFn: async (): Promise<{ gmail_address: string | null }> => {
+            const res = await fetch("/api/gmail_account");
+            if (!res.ok) throw new Error("Failed to fetch Gmail account");
             return res.json();
         },
+        refetchOnWindowFocus: false,
     });
 
     const getService = React.useCallback((row: Grouped[number]): Grouped[number]["service"] => {
@@ -107,6 +118,13 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
     // Start SSE bulk send
     const handleSend = async () => {
+        if (!gmailAccountQueryResult?.gmail_address) {
+            toast.error("Gmail account not connected", {
+                description: "You need to connect a Gmail account to send bulk emails.",
+            });
+            return;
+        }
+
         if (includedIds.length === 0) {
             toast.error("Select at least 1 service to send emails.");
             return;

@@ -23,6 +23,8 @@ import SummaryTab from "./service_tabs/summary_tab";
 import BreachesTab from "./service_tabs/breaches_tab";
 import DeletionTab from "./service_tabs/deletion_tab";
 
+import { OutLookLogo, GmailLogo } from "@/svgs";
+
 /** Keep same helper as your sheet */
 const formatDate = (dateString: string | null) => {
     if (!dateString) return "Unknown";
@@ -69,7 +71,16 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
         },
         refetchOnWindowFocus: false,
     });
-
+    // Microsoft account (presence helps you render "tracking enabled" messaging)
+    const { data: microsoftAccountQueryResult } = useQuery({
+        queryKey: ["microsoft_account"],
+        queryFn: async (): Promise<{ outlook_address: string | null }> => {
+            const res = await fetch("/api/microsoft_account");
+            if (!res.ok) throw new Error("Failed to fetch Microsoft account");
+            return res.json();
+        },
+        refetchOnWindowFocus: false,
+    });
     // Deletion profile
     const { data: deletionProfileQueryResult } = useQuery({
         queryKey: ["deletion_profile"],
@@ -97,6 +108,9 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
 
     const currentPlan = planQueryResult?.current_plan ?? "free";
     const gmailConnected = Boolean(gmailAccountQueryResult?.gmail_address);
+    const outlookConnected = Boolean(microsoftAccountQueryResult?.outlook_address);
+    const emailConnected = gmailConnected || outlookConnected;
+    const connectedEmail = gmailAccountQueryResult?.gmail_address || microsoftAccountQueryResult?.outlook_address;
 
     const serviceId = userServiceDetailsQueryResult?.userService?.service?.id;
 
@@ -158,7 +172,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
         if (hasLink) score += 30;
         if (hasSteps) score += 20;
         if (hasEmailContact) score += 20;
-        if (gmailConnected) score += 15;
+        if (emailConnected) score += 15;
         if (currentPlan === "pro") score += 15;
 
         return Math.min(100, score);
@@ -166,7 +180,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
         playbook?.deletion_url,
         playbook?.steps,
         userServiceDetailsQueryResult?.userService?.service?.contact,
-        gmailConnected,
+        emailConnected,
         currentPlan,
     ]);
 
@@ -202,6 +216,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
             queryClient.invalidateQueries({ queryKey: ["user_service_details", userServiceId] }),
             queryClient.invalidateQueries({ queryKey: ["plan"] }),
             queryClient.invalidateQueries({ queryKey: ["gmail_account"] }),
+            queryClient.invalidateQueries({ queryKey: ["microsoft_account"] }),
             queryClient.invalidateQueries({ queryKey: ["deletion_profile"] }),
             queryClient.invalidateQueries({ queryKey: ["service_deletion_playbook", serviceId] }),
         ]);
@@ -336,7 +351,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                             setIsDeletionProfileModalOpen={setIsDeletionProfileModalOpen}
                                             primaryActionLabel={deletionActionLabel}
                                             currentPlan={currentPlan}
-                                            gmailConnected={gmailConnected}
+                                            gmailConnected={emailConnected}
                                             serviceDeletionPlaybook={playbook}
                                             followUpDays={7}
                                             userServiceId={userServiceDetailsQueryResult?.userService?.id}
@@ -420,7 +435,22 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                     {playbook?.deletion_url && <p>✓ Deletion link available</p>}
                                     {playbook?.steps?.length && <p>✓ Deletion steps available</p>}
                                     {playbook?.deletion_email && <p>✓ Deletion email available</p>}
-                                    {gmailConnected && <p>✓ Gmail connected</p>}
+                                    {emailConnected && (
+                                        <div className="flex items-center gap-2 text-foreground pt-1">
+                                            {gmailConnected && (
+                                                <>
+                                                    <GmailLogo className="h-3 w-3" />
+                                                    <span>Gmail connected</span>
+                                                </>
+                                            )}
+                                            {outlookConnected && (
+                                                <>
+                                                    <OutLookLogo className="h-3 w-3" />
+                                                    <span>Outlook connected</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                     {currentPlan === "pro" && <p>✓ Tracking enabled</p>}
                                 </div>
 
@@ -447,7 +477,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                         open={isDeletionEmailModalOpen}
                         onOpenChangeAction={setIsDeletionEmailModalOpen}
                         userService={userServiceDetailsQueryResult?.userService}
-                        gmailAddress={gmailAccountQueryResult?.gmail_address || ""}
+                        gmailAddress={connectedEmail || ""}
                         playbook={serviceDeletionPlaybookQueryResult?.playbook}
                     />
 

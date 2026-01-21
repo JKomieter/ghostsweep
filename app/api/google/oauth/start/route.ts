@@ -58,9 +58,8 @@ export async function GET() {
         return res;
     } catch (error) {
         console.error("Error generating OAuth URL:", error);
-        return NextResponse.json(
-            { error: "Failed to initiate OAuth flow" },
-            { status: 500 },
-        );
+        // redirect to dashboard with error
+        const url = '/dashboard?google_oauth_error=1';
+        return NextResponse.redirect(url);
     }
 }

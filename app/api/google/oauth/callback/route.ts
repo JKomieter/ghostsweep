@@ -10,7 +10,10 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        url.searchParams.set('google_oauth_error', '1');
+        return NextResponse.redirect(url)
     }
 
     const { searchParams } = new URL(request.url);
@@ -24,6 +27,7 @@ export async function GET(request: NextRequest) {
     if (!cookieState || !returnedState || cookieState !== returnedState) {
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
+        url.searchParams.set('google_oauth_error', '1');
         return NextResponse.redirect(url)
     }
 
@@ -48,15 +52,15 @@ export async function GET(request: NextRequest) {
             auth: oauth2Client,
         });
 
-        const gmailEmail = userInfo.email;
         const accessTokenEnc = encryptToken(tokens.access_token || "");
         const refreshTokenEnc = encryptToken(tokens.refresh_token || "");
 
         // 5. Store the tokens (encrypt these)
         const {  error } = await supabase.functions.invoke('save-gmail-account', {
             body: {
+                provider: 'google',
                 userId: user.id,
-                gmailEmail,
+                email: userInfo.email!,
                 accessTokenEnc,
                 refreshTokenEnc,
                 tokenExpiresAt: tokens.expiry_date
@@ -70,7 +74,10 @@ export async function GET(request: NextRequest) {
 
         if (error) {
             console.error("Supabase upsert error:", error);
-            return new NextResponse("Failed to save Gmail account", { status: 500 });
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            url.searchParams.set('google_oauth_error', '1');
+            return NextResponse.redirect(url)
         }
 
         // 6. Optionally clear the state cookie now that we’re done
@@ -83,6 +90,9 @@ export async function GET(request: NextRequest) {
         return res;
     } catch (error) {
         console.error("Error during OAuth callback:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        url.searchParams.set('google_oauth_error', '1');
+        return NextResponse.redirect(url)
     }
 }

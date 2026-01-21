@@ -45,12 +45,46 @@ export default function DashboardTitle() {
     const queryClient = useQueryClient();
     const [isCancelling, setIsCancelling] = useState(false);
 
+    // ✅ Listen for OAuth errors in URL params
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const googleError = params.get('google_oauth_error');
+        const microsoftError = params.get('microsoft_oauth_error');
+
+        if (googleError) {
+            toast.error('Gmail connection failed', {
+                description: "There was an issue connecting your Gmail account. Please try again.",
+            });
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        if (microsoftError) {
+            toast.error('Outlook connection failed', {
+                description: "There was an issue connecting your Outlook account. Please try again.",
+            });
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, []);
+
     // Gmail account
     const { data: gmailData } = useQuery({
         queryKey: ["gmailAccount"],
         queryFn: async (): Promise<{ gmail_address: string | null }> => {
             const res = await fetch("/api/gmail_account");
             if (!res.ok) throw new Error("Failed to fetch Gmail account");
+            return res.json();
+        },
+        refetchOnWindowFocus: false,
+    });
+
+    // Microsoft account
+    const { data: microsoftData } = useQuery({
+        queryKey: ["microsoftAccount"],
+        queryFn: async (): Promise<{ outlook_address: string | null }> => {
+            const res = await fetch("/api/microsoft_account");
+            if (!res.ok) throw new Error("Failed to fetch Microsoft account");
             return res.json();
         },
         refetchOnWindowFocus: false,
@@ -86,6 +120,8 @@ export default function DashboardTitle() {
     });
 
     const gmailAddress = gmailData?.gmail_address ?? null;
+    const outlookAddress = microsoftData?.outlook_address ?? null;
+    const connectedEmail = gmailAddress || outlookAddress;
     const isInProgress =
         latestSweep?.status === "pending" || latestSweep?.status === "processing";
 
@@ -282,25 +318,25 @@ export default function DashboardTitle() {
                 </div>
 
                 <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
-                    {/* Gmail status pill */}
+                    {/* Email status pill */}
                     <span
                         className={[
                             "inline-flex items-center rounded-full border px-3 py-1 text-xs",
                             "justify-center sm:justify-start",
-                            gmailAddress
+                            connectedEmail
                                 ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
                                 : "border-yellow-500/30 bg-yellow-500/10 text-yellow-200",
                         ].join(" ")}
                     >
-                        {gmailAddress ? (
+                        {connectedEmail ? (
                             <>
                                 <span className="hidden sm:inline">Connected:&nbsp;</span>
                                 <span className="max-w-[140px] truncate sm:max-w-[200px]">
-                                    {gmailAddress}
+                                    {connectedEmail}
                                 </span>
                             </>
                         ) : (
-                            "Gmail not connected"
+                            "Email not connected"
                         )}
                     </span>
 
@@ -457,11 +493,11 @@ export default function DashboardTitle() {
                                     </p>
                                 )}
                             </div>
-                        ) : gmailAddress ? (
+                        ) : connectedEmail ? (
                             <>
                                 <p className="text-white/60">
                                     Connected as{" "}
-                                    <span className="font-medium text-white">{gmailAddress}</span>.
+                                    <span className="font-medium text-white">{connectedEmail}</span>.
                                 </p>
                                 <p className="text-white/50">
                                     The sweep runs in the background and typically takes 3-5 minutes.
@@ -475,33 +511,31 @@ export default function DashboardTitle() {
                             </>
                         ) : (
                             <>
-                                <>
-                                    <p className="text-yellow-200">
-                                        You haven&apos;t connected Gmail yet.
-                                    </p>
-                                    <p className="text-white/50">
-                                        Connect to let GhostSweep analyze your email metadata.
-                                    </p>
-                                    <div className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
-                                        <p className="font-medium text-cyan-300">Permissions Required:</p>
-                                        <div className="space-y-2 text-[11px] text-white/70">
-                                            <div className="flex gap-2">
-                                                <span className="text-emerald-400">✓</span>
-                                                <div>
-                                                    <span className="font-medium text-white">Read Email</span>
-                                                    <p className="text-white/60">Required to scan your inbox for accounts and breaches</p>
-                                                </div>
+                                <p className="text-yellow-200">
+                                    You haven&apos;t connected an email account yet.
+                                </p>
+                                <p className="text-white/50">
+                                    Connect Gmail or Outlook to let GhostSweep analyze your email metadata.
+                                </p>
+                                <div className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
+                                    <p className="font-medium text-cyan-300">Permissions Required:</p>
+                                    <div className="space-y-2 text-[11px] text-white/70">
+                                        <div className="flex gap-2">
+                                            <span className="text-emerald-400">✓</span>
+                                            <div>
+                                                <span className="font-medium text-white">Read Email</span>
+                                                <p className="text-white/60">Required to scan your inbox for accounts and breaches</p>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <span className="text-amber-400">◆</span>
-                                                <div>
-                                                    <span className="font-medium text-white">Send Email (Optional)</span>
-                                                    <p className="text-white/60">Allow this to send deletion requests directly from GhostSweep</p>
-                                                </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="text-amber-400">◆</span>
+                                            <div>
+                                                <span className="font-medium text-white">Send Email (Optional)</span>
+                                                <p className="text-white/60">Allow this to send deletion requests directly from GhostSweep</p>
                                             </div>
                                         </div>
                                     </div>
-                                </>
+                                </div>
                             </>
                         )}
                     </div>
@@ -518,7 +552,7 @@ export default function DashboardTitle() {
 
                         {!isInProgress && (
                             <>
-                                {gmailAddress ? (
+                                {connectedEmail ? (
                                     <Button
                                         size="sm"
                                         onClick={onSweep}
@@ -527,25 +561,48 @@ export default function DashboardTitle() {
                                         Start Sweep
                                     </Button>
                                 ) : (
-                                    <Link
-                                        href="/api/google/oauth/start"
-                                        onClick={() => setIsConnecting(true)}
-                                    >
-                                        <Button
-                                            size="sm"
-                                            disabled={isConnecting}
-                                            className="w-full sm:w-auto min-w-[150px]"
+                                    <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row">
+                                        <Link
+                                            href="/api/google/oauth/start"
+                                            onClick={() => setIsConnecting(true)}
                                         >
-                                            {isConnecting ? (
-                                                <span className="flex items-center justify-center gap-2">
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                    Connecting…
-                                                </span>
-                                            ) : (
-                                                "Connect Gmail"
-                                            )}
-                                        </Button>
-                                    </Link>
+                                            <Button
+                                                size="sm"
+                                                disabled={isConnecting}
+                                                color="#DB4437"
+                                                className="w-full sm:w-auto min-w-[130px] bg-red-600 hover:bg-red-700 text-white"
+                                            >
+                                                {isConnecting ? (
+                                                    <span className="flex items-center justify-center gap-2">
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                        Connecting…
+                                                    </span>
+                                                ) : (
+                                                    "Gmail"
+                                                )}
+                                            </Button>
+                                        </Link>
+                                        <Link
+                                            href="/api/microsoft/oauth"
+                                            onClick={() => setIsConnecting(true)}
+                                        >
+                                            <Button
+                                                size="sm"
+                                                disabled={isConnecting}
+                                                color="blue"
+                                                className="w-full sm:w-auto min-w-[130px] bg-blue-600 hover:bg-blue-700 text-white"
+                                            >
+                                                {isConnecting ? (
+                                                    <span className="flex items-center justify-center gap-2">
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                        Connecting…
+                                                    </span>
+                                                ) : (
+                                                    "Outlook"
+                                                )}
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 )}
                             </>
                         )}

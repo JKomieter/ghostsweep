@@ -208,7 +208,7 @@ export async function GET(request: NextRequest) {
         // 🔥 FREE TIER GATING
         // ===========================
         const isGated = !isPro && totalCount > FREE_ACCOUNT_LIMIT;
-        const effectiveLimit = isPro ? to : Math.min(to, FREE_ACCOUNT_LIMIT - 1);
+        // const effectiveLimit = isPro ? to : Math.min(to, FREE_ACCOUNT_LIMIT - 1);
 
         let query = supabase
             .from("user_services")
@@ -220,6 +220,8 @@ export async function GET(request: NextRequest) {
                 last_seen_at,
                 email_count,
                 confidence_score,
+                email,
+                email_provider,
                 service:services!inner (*),
                 deletion_request:deletion_requests!deletion_requests_user_service_id_fkey (*)
             `

@@ -46,6 +46,7 @@ import { Category, DeletionRequest, DeletionStatus, Service, UserService } from 
 import { formatDate } from "@/utils/format_date"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority_score"
 import { UserServicesQueryResult } from "@/queryTypes"
+import { GmailLogo, OutLookLogo } from "@/svgs";
 
 const categories: Category[] = [
     "Social Media",
@@ -109,8 +110,7 @@ export const columns: ColumnDef<RowType>[] = [
     {
         accessorKey: "service",
         header: "Service",
-        cell: ({ row, table }) => {
-            const gated = (table.options.meta as TableMeta | undefined)?.gated
+        cell: ({ row }) => {
             const svc = row.original.service
 
             const name = svc?.name ?? "Unknown"
@@ -139,8 +139,7 @@ export const columns: ColumnDef<RowType>[] = [
         id: "service_category",
         header: "Category",
         accessorFn: (row) => row.service?.category,
-        cell: ({ row, table }) => {
-            const gated = (table.options.meta as TableMeta | undefined)?.gated
+        cell: ({ row }) => {
             const category = row.original.service?.category
 
             return (
@@ -152,10 +151,35 @@ export const columns: ColumnDef<RowType>[] = [
         },
     },
     {
+        id: "email_provider",
+        header: "Email",
+        cell: ({ row }) => {
+            const email = row.original.email
+            const emailProvider = row.original.email_provider
+
+            if (!email) return <span className="text-xs text-muted-foreground">—</span>
+
+            const Icon = emailProvider === 'outlook' ? OutLookLogo : GmailLogo
+            const providerLabel = emailProvider === 'outlook' ? 'Outlook' : 'Gmail'
+
+            return (
+                <div className="flex items-center gap-2 min-w-0">
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <div className="flex flex-col leading-tight min-w-0">
+                        <span className="text-xs font-medium">{providerLabel}</span>
+                        <span className="text-xs text-muted-foreground truncate" title={email}>
+                            {email}
+                        </span>
+                    </div>
+                </div>
+            )
+        },
+    },
+    {
         accessorKey: "email_count",
         header: "Activity",
-        cell: ({ row, table }) => {
-            const gated = (table.options.meta as TableMeta | undefined)?.gated
+        cell: ({ row }) => {
+            // const gated = (table.options.meta as TableMeta | undefined)?.gated
             const lastSeen = row.original.last_seen_at ? formatDate(row.original.last_seen_at) : "—"
             const count = row.original.email_count ?? 0
 
@@ -170,8 +194,8 @@ export const columns: ColumnDef<RowType>[] = [
     {
         id: "priority",
         header: "Priority",
-        cell: ({ row, table }) => {
-            const gated = (table.options.meta as TableMeta | undefined)?.gated
+        cell: ({ row }) => {
+            // const gated = (table.options.meta as TableMeta | undefined)?.gated
             const score = calcPriorityScore({
                 email_count: row.original.email_count,
                 last_seen_at: row.original.last_seen_at,
@@ -194,7 +218,7 @@ export const columns: ColumnDef<RowType>[] = [
     {
         accessorKey: "deletion_requests",
         header: "Deletion Request",
-        cell: ({ row, table }) => {
+        cell: ({ row }) => {
             // const gated = (table.options.meta as TableMeta | undefined)?.gated
             // if (gated) {
             //     return <span className="text-xs text-muted-foreground blur-[6px] select-none pointer-events-none">—</span>

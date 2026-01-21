@@ -54,16 +54,22 @@ export async function GET() {
           );
       }
 
-    // Check if Gmail connected
+    // Check if Gmail or Microsoft account connected
     const { data: gmailAccount } = await supabase
       .from("gmail_accounts")
       .select("gmail_address")
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (!gmailAccount) {
+    const { data: microsoftAccount } = await supabase
+      .from("microsoft_accounts")
+      .select("outlook_address")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!gmailAccount && !microsoftAccount) {
       return NextResponse.json(
-        { error: "No Gmail account connected", code: "GMAIL_ACCOUNT_NOT_FOUND" },
+        { error: "No email account connected", code: "EMAIL_ACCOUNT_NOT_FOUND" },
         { status: 404 }
       );
     }

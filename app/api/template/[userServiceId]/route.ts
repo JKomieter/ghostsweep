@@ -596,24 +596,6 @@ export async function GET(
             .eq("user_id", user.id)
             .maybeSingle();
 
-        // Get Gmail account
-        const { data: gmailAccount, error: gmailAccountError } = await supabase
-            .from("gmail_accounts")
-            .select("gmail_address")
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-        if (
-            (gmailAccountError && gmailAccountError.code !== "PGRST116") ||
-            !gmailAccount
-        ) {
-            console.error("Gmail account cannot be found:", gmailAccountError);
-            return NextResponse.json(
-                { error: "Gmail account not found" },
-                { status: 404 },
-            );
-        }
-
         // Get service info with user_service details
         const { data: userService, error: userServiceError } = await supabase
             .from("user_services")
@@ -622,6 +604,8 @@ export async function GET(
                 first_seen_at,
                 last_seen_at,
                 email_count,
+                email,
+                email_provider,
                 service:services!inner (
                     id,
                     name,
@@ -637,6 +621,14 @@ export async function GET(
         if (userServiceError && userServiceError.code !== "PGRST116" || !userService) {
             console.error("Service not found:", userServiceError);
             return NextResponse.json({ error: "Service not found" }, { status: 404 });
+        }
+
+        if (!userService.email) {
+            console.error("No email account found for user");
+            return NextResponse.json(
+                { error: "No email account connected" },
+                { status: 404 },
+            );
         }
 
         const service = Array.isArray(userService?.service)
@@ -682,7 +674,7 @@ export async function GET(
 
         const context: PersonalizationContext = {
             userName: profile?.full_name ?? null,
-            userEmail: gmailAccount.gmail_address || user.email!,
+            userEmail: userService.email,
             serviceName: service.name,
             domain: service.domain,
             category: service.category || "Other",
