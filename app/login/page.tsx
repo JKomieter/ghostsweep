@@ -7,6 +7,7 @@ import {
     type Dispatch,
     type SetStateAction,
 } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, MailIcon, Lock, Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -107,6 +108,7 @@ function SignInForm({
     email: string;
     setEmail: Dispatch<SetStateAction<string>>;
 }) {
+    const router = useRouter();
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -118,8 +120,18 @@ function SignInForm({
         setErrorMessage(null);
 
         try {
-            await login({ email, password });
-            toast.success("Login successful");
+            const result = await login({ email, password });
+            
+            if (!result.success) {
+                setErrorMessage(result.error || "An unexpected error occurred. Please try again.");
+                toast.error(result.error || "Login failed");
+            } else {
+                toast.success("Login successful");
+                // Redirect after a brief delay to allow toast to show
+                setTimeout(() => {
+                    router.push("/dashboard");
+                }, 500);
+            }
         } catch (error: unknown) {
             console.error("Login error:", error);
 
@@ -277,8 +289,15 @@ function SignUpForm({
         setIsLoading(true);
 
         try {
-            await signup({ email, password });
-            setMode("confirm");
+            const result = await signup({ email, password });
+            
+            if (!result.success) {
+                setErrorMessage(result.error || "An error occurred during signup. Please try again.");
+                toast.error(result.error || "Signup failed");
+            } else {
+                toast.success("Account created successfully! Check your email to confirm.");
+                setMode("confirm");
+            }
         } catch (error) {
             console.error("Signup error:", error);
             let message = "An error occurred during signup. Please try again.";

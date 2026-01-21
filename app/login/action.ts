@@ -104,10 +104,12 @@ export async function login({email, password}: { email: string, password: string
         }
 
         revalidatePath('/', 'layout')
-        redirect('/dashboard')
+        // Return a success result instead of throwing redirect
+        // The client will handle the redirect
+        return { success: true }
     } catch (error) {
         const formattedError = formatAuthError(error)
-        throw new Error(formattedError.message)
+        return { success: false, error: formattedError.message }
     }
 }
 
@@ -137,8 +139,10 @@ export async function signup({ email, password }: { email: string, password: str
             const formattedError = formatAuthError(error)
             throw new Error(formattedError.message)
         }
+
+        return { success: true }
     } catch (error) {
         const formattedError = formatAuthError(error)
-        throw new Error(formattedError.message)
+        return { success: false, error: formattedError.message }
     }
 }
