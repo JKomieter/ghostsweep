@@ -110,10 +110,12 @@ function SignInForm({
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
+        setErrorMessage(null);
 
         try {
             await login({ email, password });
@@ -121,14 +123,14 @@ function SignInForm({
         } catch (error: unknown) {
             console.error("Login error:", error);
 
-            if (!(error instanceof Error)) {
-                toast.error("An unexpected error occurred. Please try again.");
-                return;
+            let message = "An unexpected error occurred. Please try again.";
+
+            if (error instanceof Error) {
+                message = error.message;
             }
 
-            if (error.message === "Invalid login credentials") {
-                toast.error("Login failed. Please check your email and password.");
-            }
+            setErrorMessage(message);
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -139,6 +141,13 @@ function SignInForm({
             {/* ✅ Google OAuth */}
             <ContinueWithGoogleButton label="Continue with Google" />
             <OAuthDivider />
+
+            {/* ✅ Error Message Display */}
+            {errorMessage && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+                    <p className="text-sm text-red-400">{errorMessage}</p>
+                </div>
+            )}
 
             {/* ✅ Existing email+password form */}
             <form className="space-y-5" onSubmit={handleLogin}>
@@ -240,12 +249,16 @@ function SignUpForm({
     const [passwordFeedback, setPasswordFeedback] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage(null);
 
         if (password !== confirmPassword) {
-            toast.error("Passwords do not match.");
+            const msg = "Passwords do not match.";
+            setErrorMessage(msg);
+            toast.error(msg);
             return;
         }
 
@@ -254,7 +267,9 @@ function SignUpForm({
 
         if (feedback.length > 0) {
             setShowPasswordWarning(true);
-            toast.error("Password is too weak. Please choose a stronger password.");
+            const msg = "Password is too weak. Please choose a stronger password.";
+            setErrorMessage(msg);
+            toast.error(msg);
             return;
         }
 
@@ -264,8 +279,16 @@ function SignUpForm({
         try {
             await signup({ email, password });
             setMode("confirm");
-        } catch {
-            toast.error("An error occurred during signup. Please try again.");
+        } catch (error) {
+            console.error("Signup error:", error);
+            let message = "An error occurred during signup. Please try again.";
+            
+            if (error instanceof Error) {
+                message = error.message;
+            }
+            
+            setErrorMessage(message);
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -276,6 +299,13 @@ function SignUpForm({
             {/* ✅ Google OAuth for signup too */}
             <ContinueWithGoogleButton label="Continue with Google" />
             <OAuthDivider />
+
+            {/* ✅ Error Message Display */}
+            {errorMessage && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+                    <p className="text-sm text-red-400">{errorMessage}</p>
+                </div>
+            )}
 
             {/* ✅ Existing signup form */}
             <form className="space-y-5" onSubmit={handleSignup}>
