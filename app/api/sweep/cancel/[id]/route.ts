@@ -54,7 +54,7 @@ export async function POST(
     const { data: updated, error: updateErr } = await supabase
         .from("sweep_events")
         .update({
-            status: "cencelled",
+            status: "cancelled",
             updated_at: nowIso,
         })
         .eq("id", id)
