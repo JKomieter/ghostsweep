@@ -168,27 +168,31 @@ export default function ConnectEmailModal({
                         {/* Actions */}
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex flex-wrap gap-2">
-                                <Link href="/api/google/oauth/start">
-                                    <Button
-                                        size="sm"
-                                        disabled={loading || removing}
-                                        className="inline-flex items-center gap-1"
-                                    >
-                                        <RefreshCw className="h-4 w-4" />
-                                        {gmailConnected ? "Reconnect Gmail" : "Connect Gmail"}
-                                    </Button>
-                                </Link>
+                                {!gmailConnected && (
+                                    <Link href="/api/google/oauth/start">
+                                        <Button
+                                            size="sm"
+                                            disabled={loading || removing}
+                                            className="inline-flex items-center gap-1"
+                                        >
+                                            <RefreshCw className="h-4 w-4" />
+                                            Connect Gmail
+                                        </Button>
+                                    </Link>
+                                )}
 
-                                <Link href="/api/microsoft/oauth">
-                                    <Button
-                                        size="sm"
-                                        disabled={loading || removing}
-                                        className="inline-flex items-center gap-1"
-                                    >
-                                        <RefreshCw className="h-4 w-4" />
-                                        {microsoftConnected ? "Reconnect Outlook" : "Connect Outlook"}
-                                    </Button>
-                                </Link>
+                                {!microsoftConnected && (
+                                    <Link href="/api/microsoft/oauth">
+                                        <Button
+                                            size="sm"
+                                            disabled={loading || removing}
+                                            className="inline-flex items-center gap-1"
+                                        >
+                                            <RefreshCw className="h-4 w-4" />
+                                            Connect Outlook
+                                        </Button>
+                                    </Link>
+                                )}
 
                                 {gmailConnected && (
                                     <Button
