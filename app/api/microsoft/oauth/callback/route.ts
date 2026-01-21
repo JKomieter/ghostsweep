@@ -80,13 +80,13 @@ export async function GET(req: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        const user = await userResponse.json();
+        const microsoftUser = await userResponse.json();
 
         // encrypt tokens.access_token and tokens.refresh_token before storing
         const accessTokenEnc = encryptToken(tokens.access_token);
         const refreshTokenEnc = encryptToken(tokens.refresh_token);
-        const email = user.mail || user.userPrincipalName;
-        const displayName = user.displayName;
+        const email = microsoftUser.mail || microsoftUser.userPrincipalName;
+        const displayName = microsoftUser.displayName;
 
         // store the tokens and user info in your database
         const { error } = await supabase.functions.invoke('save-gmail-account', {
@@ -100,6 +100,7 @@ export async function GET(req: NextRequest) {
                     ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
                     : new Date().toISOString(),
                 displayName,
+                microsoftUserId: microsoftUser.id,
             },
             headers: {
                 "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
