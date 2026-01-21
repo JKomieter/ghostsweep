@@ -19,6 +19,7 @@ import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
 import { OutLookLogo, GmailLogo } from "@/svgs";
 
+// Info: Sweeps may take several minutes to complete if you are queued. You can do something else and return later to check the results.
 const EmailIcon = ({ type }: { type: "gmail" | "outlook" | null }) => {
     if (type === "gmail") return <GmailLogo className="h-3.5 w-3.5" />;
     if (type === "outlook") return <OutLookLogo className="h-3.5 w-3.5" />;
@@ -49,6 +50,7 @@ export default function DashboardTitle() {
     const [isConnecting, setIsConnecting] = useState(false);
     const [sweepDialogOpen, setSweepDialogOpen] = useState(false);
     const [lastNotifiedStatus, setLastNotifiedStatus] = useState<string | null>(null);
+    const [sweepLongNotified, setSweepLongNotified] = useState(false);
     const queryClient = useQueryClient();
     const [isCancelling, setIsCancelling] = useState(false);
 
@@ -196,6 +198,39 @@ export default function DashboardTitle() {
         console.log("Sweep progress:", latestSweep?.progress);
     }, [latestSweep?.progress]);
 
+    // ✅ Calculate minutes elapsed for in-progress sweeps
+    const getElapsedMinutes = () => {
+        if (!latestSweep?.startedAt) return 0;
+        const elapsed = Date.now() - new Date(latestSweep.startedAt).getTime();
+        return Math.floor(elapsed / 60000);
+    };
+
+    // ✅ Notify user if sweep is taking a long time
+    useEffect(() => {
+        if (!isInProgress || !latestSweep?.startedAt) return;
+
+        const getElapsedMinutesLocal = () => {
+            if (!latestSweep?.startedAt) return 0;
+            const elapsed = Date.now() - new Date(latestSweep.startedAt).getTime();
+            return Math.floor(elapsed / 60000);
+        };
+
+        const elapsedMinutes = getElapsedMinutesLocal();
+
+        // Show notification after 2 minutes if not shown yet
+        if (elapsedMinutes >= 2 && !sweepLongNotified) {
+            setSweepLongNotified(true);
+            toast.info("Sweep in progress", {
+                description: "This is taking a bit longer than usual. It should be done in a few minutes. You can close this window and we'll keep working.",
+            });
+        }
+
+        // Reset notification flag when sweep completes
+        if (latestSweep?.status === "completed" || latestSweep?.status === "failed") {
+            setSweepLongNotified(false);
+        }
+    }, [latestSweep?.startedAt, latestSweep?.status, isInProgress, sweepLongNotified]);
+
     const onSweep = async () => {
         // If sweep already in progress, just show status
         if (isInProgress) {
@@ -207,7 +242,7 @@ export default function DashboardTitle() {
         }
 
         toast.info("Starting your GhostSweep in the background…", {
-            description: "You can keep using the dashboard while we process your inbox.",
+            description: "This may take a few minutes depending on your inbox size. You can close this window and we'll keep working.",
         });
 
         try {
@@ -270,13 +305,6 @@ export default function DashboardTitle() {
             default:
                 return "Run Sweep";
         }
-    };
-
-    // ✅ Calculate minutes elapsed for in-progress sweeps
-    const getElapsedMinutes = () => {
-        if (!latestSweep?.startedAt) return 0;
-        const elapsed = Date.now() - new Date(latestSweep.startedAt).getTime();
-        return Math.floor(elapsed / 60000);
     };
 
     const onCancelSweep = useMutation({
