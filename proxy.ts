@@ -205,40 +205,39 @@ export async function proxy(request: NextRequest) {
         );
     }
 
-    // Rate limiting
-    if (!WHITELISTED_IPS.includes(ip)) {
-        const { success, limit, remaining, reset } = await ratelimit.limit(ip);
-
-        if (!success) {
-            const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
-
-            return NextResponse.json(
-                {
-                    code: "RATE_LIMITED",
-                    error: "Too Many Requests",
-                    message: "You're doing that too fast. Please try again shortly.",
-                    retryAfterSeconds,
-                    rateLimitState: {
-                        limit,
-                        remaining,
-                        reset: new Date(reset).toISOString(),
-                    },
-                },
-                {
-                    status: 429,
-                    headers: {
-                        "X-RateLimit-Limit": String(limit),
-                        "X-RateLimit-Remaining": String(remaining),
-                        "X-RateLimit-Reset": String(reset),
-                        "Retry-After": String(retryAfterSeconds),
-                        "Cache-Control": "no-cache, no-store, must-revalidate, private",
-                        "X-Content-Type-Options": "nosniff",
-                        "Server": "",
-                    },
-                }
-            );
-        }
-    }
+    // Rate limiting - DISABLED for now
+    // TODO: Re-enable with optimized analytics settings
+    // if (!WHITELISTED_IPS.includes(ip)) {
+    //     const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+    //     if (!success) {
+    //         const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
+    //         return NextResponse.json(
+    //             {
+    //                 code: "RATE_LIMITED",
+    //                 error: "Too Many Requests",
+    //                 message: "You're doing that too fast. Please try again shortly.",
+    //                 retryAfterSeconds,
+    //                 rateLimitState: {
+    //                     limit,
+    //                     remaining,
+    //                     reset: new Date(reset).toISOString(),
+    //                 },
+    //             },
+    //             {
+    //                 status: 429,
+    //                 headers: {
+    //                     "X-RateLimit-Limit": String(limit),
+    //                     "X-RateLimit-Remaining": String(remaining),
+    //                     "X-RateLimit-Reset": String(reset),
+    //                     "Retry-After": String(retryAfterSeconds),
+    //                     "Cache-Control": "no-cache, no-store, must-revalidate, private",
+    //                     "X-Content-Type-Options": "nosniff",
+    //                     "Server": "",
+    //                 },
+    //             }
+    //         );
+    //     }
+    // }
 
     // redirect to /home if root path is accessed
     if (pathname === '/') {
