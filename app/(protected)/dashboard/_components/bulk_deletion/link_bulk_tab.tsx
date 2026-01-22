@@ -75,12 +75,12 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
         const batch = remaining.slice(0, BATCH_SIZE);
         if (batch.length === 0) {
+            console.log("[LinkBulkTab] Nothing left to open");
             toast.message("Nothing left to open", { description: "All selected deletion pages were opened." });
             return;
         }
 
-        // Popup blockers: must open windows synchronously inside click handler.
-        // We'll pre-open blank tabs, then navigate them.
+        console.log(`[LinkBulkTab] Opening next batch of ${batch.length} links`);
         setOpening(true);
 
         const ids = batch.map((b) => b.id);
@@ -88,6 +88,7 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
         // 1) Create deletion_requests (link method) for this batch
         try {
+            console.log(`[LinkBulkTab] Creating deletion requests for ${ids.length} services`);
             const res = await fetch("/api/bulk_link/opened", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -96,10 +97,14 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
             const j = await res.json().catch(() => ({}));
             if (!res.ok) {
-                throw new Error(j?.error || "Failed to create deletion requests");
+                const errorMsg = j?.error || `HTTP ${res.status}`;
+                console.error("[LinkBulkTab] Failed to create deletion requests:", errorMsg);
+                throw new Error(errorMsg);
             }
+            console.log("[LinkBulkTab] Deletion requests created successfully");
         } catch (e) {
             if (e instanceof Error) {
+                console.error("[LinkBulkTab] Error creating deletion requests:", e);
                 setOpening(false);
                 toast.error("Couldn’t start link deletions", { description: e?.message ?? "Try again." });
             }
@@ -108,11 +113,13 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
         // 2) Open links in new tabs (best effort)
         try {
+            console.log(`[LinkBulkTab] Opening ${urls.length} deletion URLs in new tabs`);
             const preOpened: (Window | null)[] = urls.map((url) => window.open(url, "_blank", "noopener,noreferrer"));
 
             // If popups blocked, stop early with a clear message
             const blocked = preOpened.some((w) => w === null);
             if (blocked) {
+                console.warn("[LinkBulkTab] Popup blocked - user needs to allow popups");
                 toast.error("Popup blocked", {
                     description: "Please allow popups for this site, then try again.",
                 });
@@ -120,16 +127,18 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
                 return;
             }
 
+            console.log(`[LinkBulkTab] All ${preOpened.length} popups opened successfully`);
             // Navigate the tabs
             preOpened.forEach((w, idx) => {
                 try {
                     w!.location.href = urls[idx];
-                } catch {
-                    // ignore
+                } catch (err) {
+                    console.error(`[LinkBulkTab] Failed to navigate tab ${idx}:`, err);
                 }
             });
 
             markOpened(ids);
+            console.log(`[LinkBulkTab] Marked ${ids.length} items as opened`);
 
             toast.success("Opened deletion pages", {
                 description: `Opened ${batch.length} tabs. Complete the forms, then come back for the next batch.`,
@@ -290,28 +299,39 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
                                         onClick={async () => {
                                             if (!url) return;
 
+                                            console.log(`[LinkBulkTab] Opening single link for service: ${item.service.name}`);
                                             // create deletion request for this one
                                             try {
+                                                console.log(`[LinkBulkTab] Creating deletion request for single link`);
                                                 const res = await fetch("/api/bulk_link/opened", {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
                                                     body: JSON.stringify({ user_service_ids: [id] }),
                                                 });
                                                 const j = await res.json().catch(() => ({}));
-                                                if (!res.ok) throw new Error(j?.error || "Failed to create deletion request");
+                                                if (!res.ok) {
+                                                    const errorMsg = j?.error || `HTTP ${res.status}`;
+                                                    console.error("[LinkBulkTab] Failed to create deletion request:", errorMsg);
+                                                    throw new Error(errorMsg);
+                                                }
+                                                console.log("[LinkBulkTab] Deletion request created for single link");
                                             } catch (e) {
                                                 if (e instanceof Error) {
-                                                    toast.error("Couldn’t start", { description: e?.message ?? "Try again." });
+                                                    console.error("[LinkBulkTab] Error opening single link:", e);
+                                                    toast.error("Couldn't start", { description: e?.message ?? "Try again." });
                                                 }
                                                 return;
                                             }
 
+                                            console.log(`[LinkBulkTab] Opening popup for URL: ${new URL(url).hostname}`);
                                             const w = window.open(url, "_blank", "noopener,noreferrer");
                                             if (!w) {
+                                                console.warn("[LinkBulkTab] Single popup was blocked");
                                                 toast.error("Popup blocked", { description: "Allow popups and try again." });
                                                 return;
                                             }
                                             markOpened([id]);
+                                            console.log("[LinkBulkTab] Single link opened and marked");
                                         }}
                                     >
                                         Open
