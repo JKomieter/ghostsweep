@@ -28,10 +28,6 @@ function getRenewalDate(priceId: string): string {
   return priceId === MONTHLY_PRICE_ID ? getNextMonthDate() : getNextYearDate()
 }
 
-interface ExtendedSubscription extends Stripe.Subscription {
-  current_period_end: number; // Add the missing property
-}
-
 export async function POST(req: Request) {
   let event: Stripe.Event;
 
@@ -66,9 +62,9 @@ export async function POST(req: Request) {
       // This fires when user completes checkout and subscription is created
       // ================================================================
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session
+        const session = event.data.object 
         const supabaseUserId = session.metadata?.supabase_user_id
-
+        
         if (!supabaseUserId) {
           console.warn("⚠️ checkout.session.completed missing supabase_user_id")
           break
@@ -157,7 +153,7 @@ export async function POST(req: Request) {
       // This includes: trial → paid, plan changes, cancellations scheduled
       // ================================================================
       case "customer.subscription.updated": {
-        const subscription = event.data.object as ExtendedSubscription
+        const subscription = event.data.object
         const customerId = subscription.customer as string
         
         const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
@@ -174,11 +170,10 @@ export async function POST(req: Request) {
 
         const subRow = { user_id: data.userId }
 
-        // When trial converts to paid, status becomes "active"
-        const isActive = subscription.status === "active"
-        const renewsAt = isActive
-          ? new Date(subscription.current_period_end * 1000).toISOString()
-          : null
+        const currentPeriodEnd = subscription.items.data[0].current_period_end
+        const priceId = subscription.items.data[0].price.id || subscription.items.data[0].plan.id
+
+        const renewsAt = currentPeriodEnd ? new Date(currentPeriodEnd * 1000).toISOString() : getRenewalDate(priceId)
 
         // Edge function will detect if user was on trial and convert them
         const { error: updateError } = await supabase.functions.invoke(
