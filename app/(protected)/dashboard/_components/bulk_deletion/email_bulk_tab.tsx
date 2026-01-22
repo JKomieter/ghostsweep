@@ -163,13 +163,18 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
             });
 
             if (!response.ok) {
+                console.error(`[EmailBulkTab] API returned ${response.status}`);
                 const error = await response.json().catch(() => ({ error: "Failed to start" }));
-                throw new Error(error.error || "Failed to start bulk send");
+                const errorMsg = error.error || error.message || `HTTP ${response.status}`;
+                console.error("[EmailBulkTab] API error:", errorMsg);
+                throw new Error(errorMsg);
             }
+            console.log("[EmailBulkTab] Bulk send request successful, streaming SSE");
 
             // Read SSE stream
             const reader = response.body?.getReader();
             if (!reader) {
+                console.error("[EmailBulkTab] No response body from server");
                 throw new Error("No response body");
             }
 
@@ -193,11 +198,13 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
                         switch (data.type) {
                             case "start":
+                                console.log(`[EmailBulkTab] Starting bulk send: ${data.total} emails`);
                                 setProgress({ current: 0, total: data.total });
                                 toast.success(`Starting to send ${data.total} emails...`);
                                 break;
 
                             case "progress":
+                                console.log(`[EmailBulkTab] Progress: ${data.current}/${data.total} - ${data.serviceName}`);
                                 setProgress({ current: data.current, total: data.total });
                                 setServiceStatuses((prev) => ({
                                     ...prev,
@@ -206,6 +213,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                 break;
 
                             case "success":
+                                console.log(`[EmailBulkTab] Success: ${data.serviceName} (${data.current}/${data.total})`);
                                 setProgress({ current: data.current, total: data.total });
                                 setCompleted((prev) => prev + 1);
                                 setServiceStatuses((prev) => ({
@@ -215,6 +223,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                 break;
 
                             case "error":
+                                console.error(`[EmailBulkTab] Error for ${data.serviceName}:`, data.error);
                                 setProgress({ current: data.current, total: data.total });
                                 setFailed((prev) => prev + 1);
                                 setServiceStatuses((prev) => ({
@@ -228,6 +237,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                 break;
 
                             case "complete":
+                                console.log(`[EmailBulkTab] Complete - Sent: ${data.completed}, Failed: ${data.failed}`);
                                 setIsRunning(false);
                                 toast.success(
                                     `Bulk send complete: ${data.completed} sent, ${data.failed} failed`
@@ -235,6 +245,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                 break;
 
                             case "cancelled":
+                                console.log(`[EmailBulkTab] Cancelled - Sent: ${data.completed}, Failed: ${data.failed}`);
                                 setIsRunning(false);
                                 toast.info(
                                     `Bulk send cancelled: ${data.completed} sent, ${data.failed} failed`
@@ -242,17 +253,22 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                 break;
                         }
                     } catch (e) {
-                        console.error("Failed to parse SSE event:", line, e);
+                        console.error("[EmailBulkTab] Failed to parse SSE event:", line, e);
                     }
                 }
             }
         } catch (error) {
             if (error instanceof Error) {
                 if (error.name === "AbortError") {
+                    console.log("[EmailBulkTab] Bulk send aborted by user");
                     toast.info("Bulk send cancelled");
                 } else {
+                    console.error("[EmailBulkTab] Bulk send error:", error);
                     toast.error("Bulk send failed", { description: error.message });
                 }
+            } else {
+                console.error("[EmailBulkTab] Unknown error:", error);
+                toast.error("Bulk send failed", { description: "An unknown error occurred" });
             }
             setIsRunning(false);
         } finally {

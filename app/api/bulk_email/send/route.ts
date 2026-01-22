@@ -2,6 +2,8 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import sendEmail from "@/utils/send_email";
+import { decryptToken } from "@/utils/token_crypto";
+import { tokenStillValid, refreshAccessToken } from "@/utils/refresh_access_token";
 
 function sendSSE(controller: ReadableStreamDefaultController, data: any) {
     const encoder = new TextEncoder();
@@ -103,11 +105,12 @@ export async function POST(req: NextRequest) {
     // 4) Gmail account
     const { data: gmailAccount, error: gmailErr } = await supabase
         .from("gmail_accounts")
-        .select("gmail_address, refresh_token_encrypted, access_token_encrypted, expires_at")
+        .select("gmail_address, refresh_token_encrypted, access_token_encrypted, token_expires_at")
         .eq("user_id", user.id)
         .maybeSingle();
 
     if (gmailErr) {
+        console.error("[bulk_email] Failed to load Gmail account:", gmailErr);
         return new Response(JSON.stringify({ error: "Failed to load Gmail connection" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
@@ -115,8 +118,38 @@ export async function POST(req: NextRequest) {
     }
 
     if (!gmailAccount?.gmail_address || !gmailAccount.refresh_token_encrypted) {
+        console.warn("[bulk_email] Gmail account not connected for user:", user.id);
         return new Response(JSON.stringify({ error: "Gmail not connected" }), {
             status: 400,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
+    // Decrypt and refresh tokens if needed
+    let accessToken: string;
+    try {
+        accessToken = decryptToken(gmailAccount.access_token_encrypted as string);
+        const refreshToken = decryptToken(gmailAccount.refresh_token_encrypted as string);
+
+        if (!tokenStillValid(gmailAccount.token_expires_at as string | null)) {
+            console.log("[bulk_email] Token expired, refreshing...");
+            const refreshed = await refreshAccessToken(refreshToken);
+            accessToken = refreshed.access_token;
+
+            const newExpiresAt = new Date(Date.now() + Number(refreshed.expires_in) * 1000).toISOString();
+            const { error: updateErr } = await supabase
+                .from("gmail_accounts")
+                .update({ token_expires_at: newExpiresAt })
+                .eq("user_id", user.id);
+
+            if (updateErr) {
+                console.error("[bulk_email] Failed to update token expiry:", updateErr);
+            }
+        }
+    } catch (err: any) {
+        console.error("[bulk_email] Token decryption/refresh failed:", err);
+        return new Response(JSON.stringify({ error: "Token error. Please reconnect Gmail." }), {
+            status: 401,
             headers: { "Content-Type": "application/json" },
         });
     }
@@ -146,6 +179,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!userServices?.length) {
+        console.warn("[bulk_email] No services found for user:", user.id, "IDs:", userServiceIds);
         return new Response(JSON.stringify({ error: "No services found" }), {
             status: 404,
             headers: { "Content-Type": "application/json" },
@@ -193,11 +227,14 @@ export async function POST(req: NextRequest) {
         .filter((x) => !!x.deletion_email);
 
     if (!emailCapable.length) {
+        console.warn("[bulk_email] No email-capable services found for user:", user.id);
         return new Response(JSON.stringify({ error: "No email-based services found for these selections" }), {
             status: 400,
             headers: { "Content-Type": "application/json" },
         });
     }
+
+    console.log("[bulk_email] Starting bulk email send for user:", user.id, "Services:", emailCapable.length);
 
     // 8) SSE stream: send emails, then upsert deletion_requests AFTER success
     const stream = new ReadableStream({
@@ -249,8 +286,9 @@ export async function POST(req: NextRequest) {
                         }
 
                         // Send email
+                        console.log(`[bulk_email] Sending email to ${item.deletion_email} for service: ${item.service_name}`);
                         const { id: gmailMessageId, threadId } = await sendEmail({
-                            accessToken: gmailAccount.access_token_encrypted,
+                            accessToken,
                             to: item.deletion_email!,
                             from: gmailAccount.gmail_address,
                             subject: renderedSubject,
@@ -282,7 +320,11 @@ export async function POST(req: NextRequest) {
                                 { onConflict: "user_id,user_service_id" }
                             );
 
-                        if (drErr) console.error("Failed to upsert deletion_request:", drErr);
+                        if (drErr) {
+                            console.error(`[bulk_email] Failed to upsert deletion_request for service ${item.service_name}:`, drErr);
+                        } else {
+                            console.log(`[bulk_email] Deletion request created for ${item.service_name}`);
+                        }
 
                         completed++;
                         sendSSE(controller, {
@@ -300,22 +342,25 @@ export async function POST(req: NextRequest) {
                         }
                     } catch (err: any) {
                         failed++;
+                        const errorMsg = err?.message ?? "Failed";
+                        console.error(`[bulk_email] Error sending email for ${item.service_name}:`, err);
                         sendSSE(controller, {
                             type: "error",
                             current: i + 1,
                             total,
                             user_service_id: item.user_service_id,
                             serviceName: item.service_name,
-                            error: err?.message ?? "Failed",
+                            error: errorMsg,
                         });
                     }
                 }
 
                 if (!cancelled) {
+                    console.log(`[bulk_email] Bulk send complete - Completed: ${completed}, Failed: ${failed}`);
                     sendSSE(controller, { type: "complete", completed, failed, total });
                 }
             } catch (err: any) {
-                console.error("Bulk send fatal error:", err);
+                console.error("[bulk_email] Fatal error:", err);
                 sendSSE(controller, { type: "fatal", error: err?.message ?? "System error" });
             } finally {
                 req.signal.removeEventListener("abort", onAbort);
