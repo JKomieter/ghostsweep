@@ -169,24 +169,24 @@ function InfoColumns({
     const diff = difficultyBadge(deletionDifficulty);
 
     return (
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-md border border-white/10 bg-black/60 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Data deletion info</p>
-                <div className="mt-2">
+        <div className="mt-6 grid gap-6 sm:grid-cols-3">
+            <div className="space-y-2">
+                <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Data deletion info</p>
+                <div>
                     <Badge className={cn("text-[11px] border px-2 py-1 rounded-full", info.cls)}>{info.label}</Badge>
                 </div>
             </div>
 
-            <div className="rounded-md border border-white/10 bg-black/60 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Deletion difficulty</p>
-                <div className="mt-2">
+            <div className="space-y-2">
+                <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Deletion difficulty</p>
+                <div>
                     <Badge className={cn("text-[11px] border px-2 py-1 rounded-full", diff.cls)}>{diff.label}</Badge>
                 </div>
             </div>
 
-            <div className="rounded-md border border-white/10 bg-black/60 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Retention notes</p>
-                <p className="mt-2 text-[11px] text-white/70 leading-relaxed">{notes?.trim() ? notes : "—"}</p>
+            <div className="space-y-2">
+                <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Retention notes</p>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">{notes?.trim() ? notes : "—"}</p>
             </div>
         </div>
     );
@@ -526,7 +526,7 @@ ${request?.sender_email ?? ""}
                                 {resolvedPrimaryLabel}
                             </Button>
 
-                            {hasLink && (
+                            {hasLink && playbookMethod !== "link" && (
                                 <Button size="sm" variant="outline" onClick={() => void openDeletionPage()}>
                                     Open deletion page
                                 </Button>

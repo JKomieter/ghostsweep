@@ -64,7 +64,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     // Gmail account (presence helps you render “tracking enabled” messaging)
     const { data: gmailAccountQueryResult } = useQuery({
         queryKey: ["gmail_account"],
-        queryFn: async (): Promise<{ gmail_address: string | null }> => {
+        queryFn: async (): Promise<{ accounts: { id: string; gmail_address: string }[] }> => {
             const res = await fetch("/api/gmail_account");
             if (!res.ok) throw new Error("Failed to fetch Gmail account");
             return res.json();
@@ -74,7 +74,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     // Microsoft account (presence helps you render "tracking enabled" messaging)
     const { data: microsoftAccountQueryResult } = useQuery({
         queryKey: ["microsoft_account"],
-        queryFn: async (): Promise<{ outlook_address: string | null }> => {
+        queryFn: async (): Promise<{ accounts: { id: string; outlook_address: string }[] }> => {
             const res = await fetch("/api/microsoft_account");
             if (!res.ok) throw new Error("Failed to fetch Microsoft account");
             return res.json();
@@ -107,10 +107,23 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     });
 
     const currentPlan = planQueryResult?.current_plan ?? "free";
-    const gmailConnected = Boolean(gmailAccountQueryResult?.gmail_address);
-    const outlookConnected = Boolean(microsoftAccountQueryResult?.outlook_address);
-    const emailConnected = gmailConnected || outlookConnected;
-    const connectedEmail = gmailAccountQueryResult?.gmail_address || microsoftAccountQueryResult?.outlook_address;
+
+    const userService = userServiceDetailsQueryResult?.userService;
+    const targetEmail = userService?.email;
+
+    // Check against the list to find if THIS specific email is connected
+    const matchedGmail = gmailAccountQueryResult?.accounts?.find((a) => a.gmail_address === targetEmail);
+    const matchedOutlook = microsoftAccountQueryResult?.accounts?.find((a) => a.outlook_address === targetEmail);
+
+    const gmailConnected = Boolean(matchedGmail);
+    const outlookConnected = Boolean(matchedOutlook);
+    const emailConnected = gmailConnected || outlookConnected; // Connected via any provider
+    const connectedEmail = matchedGmail?.gmail_address || matchedOutlook?.outlook_address || null;
+    
+    // Only Gmail allows sending via GhostSweep for now.
+    // If Outlook is connected, we consider "emailConnected" true (for score/badges), 
+    // but automated sending features should be disabled.
+    const canSendEmail = gmailConnected; 
 
     const serviceId = userServiceDetailsQueryResult?.userService?.service?.id;
 
@@ -351,7 +364,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                             setIsDeletionProfileModalOpen={setIsDeletionProfileModalOpen}
                                             primaryActionLabel={deletionActionLabel}
                                             currentPlan={currentPlan}
-                                            gmailConnected={emailConnected}
+                                            gmailConnected={canSendEmail}
                                             serviceDeletionPlaybook={playbook}
                                             followUpDays={7}
                                             userServiceId={userServiceDetailsQueryResult?.userService?.id}

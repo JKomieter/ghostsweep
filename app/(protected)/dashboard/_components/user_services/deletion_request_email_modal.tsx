@@ -48,6 +48,7 @@ export default function DeletionRequestEmailModal({
     const serviceName = userService?.service?.name || "this service";
     const domain = userService?.service?.domain || "";
     const category = userService?.service?.category || "Other";
+    const isOutlook = userService?.email_provider === "outlook";
 
     // ✅ playbook is source of truth now
     const toAddress = playbook?.deletion_email ?? "";
@@ -91,21 +92,27 @@ export default function DeletionRequestEmailModal({
     }, [open, template]);
 
     // Optional fallback: Gmail compose URL (use edited content)
-    const gmailComposeUrl =
+    const composeUrl =
         subject && body && toAddress
             ? (() => {
-                const params = new URLSearchParams({
-                    to: toAddress,
-                    su: subject,
-                    body: body,
-                });
-                return `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
-            })()
+                  // For Outlook/others, fallback to mailto or leave manual copy.
+                  // Outlook web link is also possible but mailto is standard.
+                  if (isOutlook) {
+                      return `mailto:${toAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                  }
+                  const params = new URLSearchParams({
+                      to: toAddress,
+                      su: subject,
+                      body: body,
+                  });
+                  return `https://mail.google.com/mail/?view=cm&fs=1&${params.toString()}`;
+              })()
             : "";
 
     // ✅ NEW: actually send email via your API (which also upserts deletion_requests)
     const sendMutation = useMutation({
         mutationFn: async () => {
+            if (isOutlook) throw new Error("Outlook sending is not supported via GhostSweep yet.");
             if (!userService?.id) throw new Error("Missing user service");
             if (!subject.trim() || !body.trim()) throw new Error("Subject/body required");
             if (!toAddress) throw new Error("No deletion email found in playbook");
@@ -153,7 +160,8 @@ export default function DeletionRequestEmailModal({
         !isLoadingTemplate &&
         !sendMutation.isPending &&
         !!subject.trim() &&
-        !!body.trim();
+        !!body.trim() &&
+        !isOutlook; // Block automated sending for Outlook
 
     return (
         <Dialog open={open} onOpenChange={onOpenChangeAction}>
@@ -190,13 +198,14 @@ export default function DeletionRequestEmailModal({
                         </div>
 
                         <p className="text-xs text-muted-foreground">
-                            GhostSweep will send this email from your connected Gmail account and
-                            create a deletion request so we can track replies.
+                            {isOutlook
+                                ? "This service is linked to your Outlook account. Since we can't send via Outlook API yet, please copy the template below and send manually."
+                                : "GhostSweep will send this email from your connected Gmail account and create a deletion request so we can track replies."}
                         </p>
 
                         {isErrorTemplate && (
                             <p className="text-[11px] text-red-400">
-                                Couldn&apos;t load template. Try again, or use “Open in Gmail”.
+                                Couldn&apos;t load template. Try again, or use “Open in email client”.
                             </p>
                         )}
 
@@ -276,28 +285,31 @@ export default function DeletionRequestEmailModal({
                 {/* Actions */}
                 <div className="mt-5 flex items-center justify-between gap-3">
                     <p className="text-[11px] text-muted-foreground max-w-xs">
-                        GhostSweep can send + track replies automatically. "Open in email client" is a
-                        fallback.
+                        {isOutlook
+                            ? "Use the button to open your default mail app, or copy/paste manually."
+                            : 'GhostSweep can send + track replies automatically. "Open in email client" is a fallback.'}
                     </p>
 
                     <div className="flex gap-2">
-                        <Button
-                            size="sm"
-                            className="shrink-0 bg-primary text-black hover:bg-primary/80"
-                            onClick={() => sendMutation.mutate()}
-                            disabled={!canSend}
-                        >
-                            {sendMutation.isPending ? (
-                                <div className="flex flex-row gap-2 items-center">
-                                    <Spinner /> <>Sending…</>
-                                </div>
-                            ) : (
-                                "Send with GhostSweep"
-                            )}
-                        </Button>
+                        {!isOutlook && (
+                            <Button
+                                size="sm"
+                                className="shrink-0 bg-primary text-black hover:bg-primary/80"
+                                onClick={() => sendMutation.mutate()}
+                                disabled={!canSend}
+                            >
+                                {sendMutation.isPending ? (
+                                    <div className="flex flex-row gap-2 items-center">
+                                        <Spinner /> <>Sending…</>
+                                    </div>
+                                ) : (
+                                    "Send with GhostSweep"
+                                )}
+                            </Button>
+                        )}
 
-                        <Link href={gmailComposeUrl || "#"} target="_blank" rel="noreferrer">
-                            <Button size="sm" variant="outline" disabled={!gmailComposeUrl}>
+                        <Link href={composeUrl || "#"} target="_blank" rel="noreferrer">
+                            <Button size="sm" variant="outline" disabled={!composeUrl}>
                                 Open in email client
                             </Button>
                         </Link>
