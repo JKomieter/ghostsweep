@@ -1,7 +1,7 @@
 // components/dashboard-title.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -21,6 +21,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import AccountSelect from "./account_select";
+import SweepDialog from "./sweep_dialog";
 import Link from "next/link";
 import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
@@ -211,11 +213,11 @@ export default function DashboardTitle() {
         }
     }, [latestSweep?.sweepId, latestSweep?.status, latestSweep?.servicesFound, latestSweep?.breachesFound, lastNotifiedStatus, queryClient, latestSweep?.errorMessage]);
 
-    const getElapsedMinutes = () => {
+    const getElapsedMinutes = useCallback(() => {
         if (!latestSweep?.startedAt) return 0;
         const elapsed = Date.now() - new Date(latestSweep.startedAt).getTime();
         return Math.floor(elapsed / 60000);
-    };
+    }, [latestSweep?.startedAt]);
 
     useEffect(() => {
         if (!isInProgress || !latestSweep?.startedAt) return;
@@ -232,7 +234,7 @@ export default function DashboardTitle() {
         if (latestSweep?.status === "completed" || latestSweep?.status === "failed") {
             setSweepLongNotified(false);
         }
-    }, [latestSweep?.startedAt, latestSweep?.status, isInProgress, sweepLongNotified]);
+    }, [latestSweep?.startedAt, latestSweep?.status, isInProgress, sweepLongNotified, getElapsedMinutes]);
 
     const onSweep = async () => {
         if (isInProgress) {
@@ -485,314 +487,29 @@ export default function DashboardTitle() {
             )}
 
             {/* SWEEP DIALOG */}
-            <Dialog open={sweepDialogOpen} onOpenChange={setSweepDialogOpen}>
-                <DialogContent className="bg-[#050505] border border-white/10 sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="text-base md:text-lg">
-                            {isInProgress ? "Sweep In Progress" : "Run a GhostSweep"}
-                        </DialogTitle>
-                        <DialogDescription className="text-xs text-white/60 md:text-sm">
-                            {isInProgress ? (
-                                <span>
-                                    Your sweep is currently{" "}
-                                    <span className="font-medium text-cyan-300">
-                                        {latestSweep?.status}
-                                    </span>
-                                    . Please wait for it to complete.
-                                </span>
-                            ) : (
-                                <>
-                                    We&#39;ll scan your inbox using{" "}
-                                    <span className="font-medium">read-only metadata</span> (sender,
-                                    subject, date) to detect services and known breaches.
-                                </>
-                            )}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="mt-3 space-y-3 text-xs md:text-sm">
-                        {/* Account selector */}
-                        {!isInProgress && connectedEmail && (
-                            <div className="space-y-2">
-                                <label className="text-xs font-medium text-white/80">
-                                    Select account to scan:
-                                </label>
-                                <Select
-                                    value={selectedEmail}
-                                    onValueChange={(value) => {
-                                        setSelectedEmail(value);
-                                        console.log(value);
-                                        const isGmail = gmailData?.accounts?.some(acc => acc.gmail_address === value);
-                                        setSelectedProvider(isGmail ? "gmail" : "outlook");
-                                    }}
-                                >
-                                    <SelectTrigger className="w-full bg-black/40 border-white/20 text-white">
-                                        <SelectValue>
-                                            {selectedDisplay && (
-                                                <div className="flex items-center gap-2">
-                                                    <EmailIcon type={selectedDisplay.provider} />
-                                                    <span className="truncate">{selectedDisplay.email}</span>
-                                                </div>
-                                            )}
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-[#0a0a0a] border-white/20">
-                                        {gmailData?.accounts?.map((account) => (
-                                            <SelectItem
-                                                key={account.id}
-                                                value={account.gmail_address}
-                                                className="text-white hover:bg-white/10"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <GmailLogo className="h-3.5 w-3.5" />
-                                                    <span>{account.gmail_address}</span>
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                        {microsoftData?.accounts?.map((account) => (
-                                            <SelectItem
-                                                key={account.id}
-                                                value={account.outlook_address}
-                                                className="text-white hover:bg-white/10"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <OutLookLogo className="h-3.5 w-3.5" />
-                                                    <span>{account.outlook_address}</span>
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        )}
-
-                        {isInProgress ? (
-                            <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3 space-y-2">
-                                <div className="flex items-center gap-2">
-                                    <Loader2 className="h-4 w-4 animate-spin text-cyan-300" />
-                                    <span className="font-medium text-cyan-100">
-                                        {latestSweep.phaseLabel ?? "Running GhostSweep…"}
-                                    </span>
-                                </div>
-
-                                <p className="text-[11px] text-cyan-200/80">
-                                    {latestSweep.phaseStep && latestSweep.phaseCount
-                                        ? `Phase ${latestSweep.phaseStep} of ${latestSweep.phaseCount}.`
-                                        : "Processing your inbox in multiple phases."}{" "}
-                                    This usually takes a few minutes.
-                                </p>
-
-                                {typeof latestSweep.messagesProcessed === "number" && (
-                                    <p className="text-[11px] text-cyan-200/80">
-                                        Messages processed:{" "}
-                                        <span className="font-semibold">
-                                            {latestSweep.messagesProcessed.toLocaleString()}
-                                        </span>
-                                    </p>
-                                )}
-
-                                {typeof latestSweep.progress === "number" && (
-                                    <div className="mt-1">
-                                        <div className="h-1.5 bg-cyan-900/50 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-cyan-400 transition-all duration-300"
-                                                style={{ width: `${latestSweep.progress}%` }}
-                                            />
-                                        </div>
-                                        <p className="mt-1 text-[11px] text-cyan-200">
-                                            {latestSweep.progress}% complete
-                                        </p>
-                                    </div>
-                                )}
-
-                                {getElapsedMinutes() > 0 && (
-                                    <p className="text-[11px] text-cyan-200/70">
-                                        Running for {getElapsedMinutes()} minute
-                                        {getElapsedMinutes() !== 1 ? "s" : ""}
-                                    </p>
-                                )}
-                            </div>
-                        ) : connectedEmail ? (
-                            <>
-                                {/* Show info about selected account */}
-                                {selectedDisplay && (
-                                    <p className="text-white/60 flex items-center gap-2">
-                                        <EmailIcon type={selectedDisplay.provider} />
-                                        <span>Will scan</span>
-                                        <span className="font-medium text-white truncate max-w-[200px] sm:max-w-[260px]">
-                                            {selectedDisplay.email}
-                                        </span>
-                                    </p>
-                                )}
-                                <p className="text-white/50">
-                                    The sweep runs in the background and typically takes 3-5 minutes.
-                                    You&apos;ll be notified when it completes.
-                                </p>
-                                {plan?.current_plan === "free" && (
-                                    <p className="text-xs text-yellow-200/80 border-l-2 border-yellow-500/30 pl-3">
-                                        Free plan: Up to 10 accounts shown.
-                                    </p>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <p className="text-yellow-200">
-                                    You haven&apos;t connected an email account yet.
-                                </p>
-                                <p className="text-white/50">
-                                    Connect Gmail or Outlook to let GhostSweep analyze your email metadata.
-                                </p>
-                            </>
-                        )}
-
-                        {/* Connection options */}
-                        {!isInProgress && (
-                            <div className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
-                                {!connectedEmail ? (
-                                    <>
-                                        <p className="font-medium text-cyan-300">Permissions Required:</p>
-                                        <div className="space-y-2 text-[11px] text-white/70">
-                                            <div className="flex gap-2">
-                                                <span className="text-emerald-400">✓</span>
-                                                <div>
-                                                    <span className="font-medium text-white">Read Email</span>
-                                                    <p className="text-white/60">Required to scan your inbox for accounts and breaches</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <span className="text-amber-400">◆</span>
-                                                <div>
-                                                    <span className="font-medium text-white">Send Email (Optional)</span>
-                                                    <p className="text-white/60">Allow this to send deletion requests directly from GhostSweep</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div>
-                                        <p className="text-xs font-medium text-cyan-300 mb-2">Connect more accounts:</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            <Link
-                                                href="/api/google/oauth/start"
-                                                onClick={() => setIsConnecting(true)}
-                                            >
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    disabled={isConnecting}
-                                                    className="inline-flex items-center gap-1.5 border-white/20 text-xs"
-                                                >
-                                                    <GmailLogo className="h-3.5 w-3.5" />
-                                                    {isConnecting ? "Connecting..." : "Add Gmail"}
-                                                </Button>
-                                            </Link>
-                                            <Link
-                                                href="/api/microsoft/oauth"
-                                                onClick={() => setIsConnecting(true)}
-                                            >
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    disabled={isConnecting}
-                                                    className="inline-flex items-center gap-1.5 border-white/20 text-xs"
-                                                >
-                                                    <OutLookLogo className="h-3.5 w-3.5" />
-                                                    {isConnecting ? "Connecting..." : "Add Outlook"}
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    <DialogFooter className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSweepDialogOpen(false)}
-                            className="w-full sm:w-auto"
-                        >
-                            {isInProgress ? "Close" : "Cancel"}
-                        </Button>
-
-                        {!isInProgress && (
-                            <>
-                                {connectedEmail ? (
-                                    <Button
-                                        size="sm"
-                                        onClick={onSweep}
-                                        disabled={!selectedEmail}
-                                        className="w-full sm:w-auto min-w-[140px]"
-                                    >
-                                        Start Sweep
-                                    </Button>
-                                ) : (
-                                    <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row">
-                                        <Link
-                                            href="/api/google/oauth/start"
-                                            onClick={() => setIsConnecting(true)}
-                                        >
-                                            <Button
-                                                size="sm"
-                                                disabled={isConnecting}
-                                                className="w-full sm:w-auto min-w-[130px] bg-red-600 hover:bg-red-700 text-white inline-flex items-center gap-1.5"
-                                            >
-                                                {isConnecting ? (
-                                                    <>
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                        Connecting…
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <GmailLogo className="h-3.5 w-3.5" />
-                                                        Connect Gmail
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </Link>
-                                        <Link
-                                            href="/api/microsoft/oauth"
-                                            onClick={() => setIsConnecting(true)}
-                                        >
-                                            <Button
-                                                size="sm"
-                                                disabled={isConnecting}
-                                                className="w-full sm:w-auto min-w-[130px] bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5"
-                                            >
-                                                {isConnecting ? (
-                                                    <>
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                        Connecting…
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <OutLookLogo className="h-3.5 w-3.5" />
-                                                        Connect Outlook
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                )}
-                            </>
-                        )}
-
-                        {isInProgress && (
-                            <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => onCancelSweep.mutate()}
-                                disabled={isCancelling || latestSweep?.status === "cancelled"}
-                                className="w-full sm:w-auto"
-                            >
-                                {latestSweep?.status === "cancelled" ? "Stopping…" : "Cancel sweep"}
-                            </Button>
-                        )}
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <SweepDialog
+                open={sweepDialogOpen}
+                onOpenChangeAction={setSweepDialogOpen}
+                isInProgress={isInProgress}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                latestSweep={latestSweep as any}
+                getElapsedMinutesAction={getElapsedMinutes}
+                connectedEmail={connectedEmail}
+                gmailAccounts={gmailData?.accounts || []}
+                microsoftAccounts={microsoftData?.accounts || []}
+                selectedEmail={selectedEmail}
+                selectedProvider={selectedProvider}
+                onChangeSelectedAction={(email, provider) => {
+                    setSelectedEmail(email);
+                    setSelectedProvider(provider);
+                }}
+                planIsFree={plan?.current_plan === "free"}
+                isConnecting={isConnecting}
+                onStartConnectAction={() => setIsConnecting(true)}
+                onSweepAction={onSweep}
+                onCancelAction={() => onCancelSweep.mutate()}
+                isCancelling={isCancelling}
+            />
         </>
     );
 }

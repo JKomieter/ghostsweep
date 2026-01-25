@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
-import { Settings } from "lucide-react";
+import { Loader2, Settings } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Profile from "./profile";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ConnectEmailModal from "./connected_email_account";
 import SubscriptionModal from "./subscription";
 import PrivacyToolsModal from "./privacy_modal";
@@ -20,6 +20,18 @@ import { SupportModal } from "./support-modal";
 import { toast } from "sonner";
 import SlidingSidebar from "./app_sidebar";
 import Notifications from "./notifications";
+import { usePathname } from "next/navigation";
+
+type LatestSweepResponse = {
+    sweepId: string | null;
+    status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;
+    progress?: number | null;
+    phaseLabel?: string | null;
+    phaseStep?: number | null;
+    phaseCount?: number | null;
+    messagesProcessed?: number | null;
+    startedAt?: string | null;
+};
 
 
 export default function Header() {
@@ -28,6 +40,9 @@ export default function Header() {
     const [openSubscription, setOpenSubscription] = useState(false)
     const [openPrivacy, setOpenPrivacy] = useState(false)
     const [openSupport, setOpenSupport] = useState(false)
+    const [currentTime, setCurrentTime] = useState(() => Date.now())
+
+    const pathname = usePathname();
 
     const { data, status } = useQuery({
         queryKey: ['plan'],
@@ -46,6 +61,42 @@ export default function Header() {
             return res.json();
         },
     })
+
+    // Latest sweep status (for header progress outside dashboard)
+    const { data: latestSweep } = useQuery({
+        queryKey: ["latestSweep", "header"],
+        queryFn: async (): Promise<LatestSweepResponse> => {
+            const res = await fetch("/api/sweep/status/latest");
+            if (!res.ok) throw new Error("Failed to fetch latest sweep");
+            return res.json();
+        },
+        refetchInterval: (query) => {
+            const data = query.state.data as LatestSweepResponse | undefined;
+            if (!data) return false;
+            return data.status === "pending" || data.status === "processing" || data.status === "cancelled"
+                ? 5000
+                : false;
+        },
+        refetchOnWindowFocus: true,
+    });
+
+    const isInProgress = latestSweep?.status === "pending" || latestSweep?.status === "processing";
+
+    const elapsedMinutes = useMemo(() => {
+        if (!latestSweep?.startedAt) return 0;
+        const elapsed = currentTime - new Date(latestSweep.startedAt).getTime();
+        return Math.floor(elapsed / 60000);
+    }, [latestSweep, currentTime]);
+
+    useEffect(() => {
+        if (!latestSweep?.startedAt) return;
+
+        const interval = setInterval(() => {
+            setCurrentTime(Date.now());
+        }, 10000); // Update every 10 seconds
+
+        return () => clearInterval(interval);
+    }, [latestSweep?.startedAt]);
 
     const handleLogout = async () => {
         try {
@@ -122,6 +173,38 @@ export default function Header() {
                     </div>
                 </div>
             </div>
+
+            {/* Sweep progress banner shown outside /dashboard */}
+            {pathname !== "/dashboard" && isInProgress && latestSweep && (
+                <div className="fixed left-0 top-14 w-full z-10">
+                    <div className="mx-auto flex items-center justify-between gap-3 border-t border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-xs text-cyan-100">
+                        <div className="flex items-center gap-2">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <span className="font-medium">
+                                {latestSweep.phaseLabel ?? "Scanning your inbox…"}
+                            </span>
+                            {typeof latestSweep.messagesProcessed === "number" && (
+                                <span className="text-cyan-200/80">• {latestSweep.messagesProcessed.toLocaleString()} msgs</span>
+                            )}
+                            {elapsedMinutes > 0 && (
+                                <span className="text-cyan-200/80">• {elapsedMinutes} min</span>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {typeof latestSweep.progress === "number" && (
+                                <div className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-cyan-900/50 sm:block">
+                                    <div className="h-full bg-cyan-400 transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
+                                </div>
+                            )}
+                            <Link href="/dashboard">
+                                <Button size="sm" variant="ghost" className="h-7 text-[11px] text-cyan-100 hover:bg-white/10">
+                                    View details
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
             <Profile open={openProfile} onOpenChangeAction={setOpenProfile} />
             <ConnectEmailModal open={openConnectEmail} onOpenChangeAction={setOpenConnectEmail} />
             <SubscriptionModal open={openSubscription} onOpenChangeAction={setOpenSubscription} />
