@@ -71,6 +71,7 @@ type TableMeta = {
 type BreachFilter = "all" | "breached" | "unbreached"
 type ActivityFilter = "all" | "active" | "inactive"
 type HasDeletionFilter = "all" | "yes" | "no"
+type EmailFilter = "all" | string
 
 type RowType = Partial<UserService> & {
     service: Service
@@ -313,6 +314,12 @@ interface ServiceTableProps {
 
     hasDeletionRequest: HasDeletionFilter
     setHasDeletionRequest: Dispatch<SetStateAction<HasDeletionFilter>>
+
+    emailFilter: EmailFilter
+    setEmailFilter: Dispatch<SetStateAction<EmailFilter>>
+
+    gmailAccounts: Array<{ id: string; gmail_address: string; created_at: string }>
+    microsoftAccounts: Array<{ id: string; outlook_address: string; created_at: string }>
 }
 
 export default function ServiceTable(props: ServiceTableProps) {
@@ -333,6 +340,10 @@ export default function ServiceTable(props: ServiceTableProps) {
         setMinEmails,
         hasDeletionRequest,
         setHasDeletionRequest,
+        emailFilter,
+        setEmailFilter,
+        gmailAccounts,
+        microsoftAccounts,
     } = props
 
     const router = useRouter()
@@ -414,10 +425,17 @@ export default function ServiceTable(props: ServiceTableProps) {
             key: "hdr",
             label: hasDeletionRequest === "yes" ? "Has deletion request" : "No deletion request",
             onClear: () => setHasDeletionRequest("all"),
-        })
-
+        });
+        if (emailFilter !== "all") {
+            const emailLabel = emailFilter.length > 25 ? `${emailFilter.slice(0, 25)}...` : emailFilter;
+            chips.push({
+                key: "email",
+                label: `Email: ${emailLabel}`,
+                onClear: () => setEmailFilter("all"),
+            });
+        }
         return chips
-    }, [category, breachedFilter, activityFilter, minEmails, hasDeletionRequest, setCategory, setBreachedFilter, setActivityFilter, setMinEmails, setHasDeletionRequest])
+    }, [category, breachedFilter, activityFilter, minEmails, hasDeletionRequest, emailFilter, setCategory, setBreachedFilter, setActivityFilter, setMinEmails, setHasDeletionRequest, setEmailFilter])
 
     const resetFilters = () => {
         setQuery("")
@@ -426,6 +444,7 @@ export default function ServiceTable(props: ServiceTableProps) {
         setActivityFilter("all")
         setMinEmails(undefined)
         setHasDeletionRequest("all")
+        setEmailFilter("all")
         setPage(1)
     }
 
@@ -783,6 +802,45 @@ export default function ServiceTable(props: ServiceTableProps) {
                                 </SelectContent>
                             </Select>
                         </div>
+
+                        {/* Email account filter */}
+                        {(gmailAccounts.length > 0 || microsoftAccounts.length > 0) && (
+                            <div className="space-y-2">
+                                <div className="text-xs text-white/70">Email account</div>
+                                <Select
+                                    value={emailFilter}
+                                    onValueChange={(v) => {
+                                        setEmailFilter(v as EmailFilter)
+                                        setPage(1)
+                                    }}
+                                >
+                                    <SelectTrigger className="bg-[#050505] border-white/15">
+                                        <SelectValue placeholder="All accounts" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem value="all">All accounts</SelectItem>
+                                            {gmailAccounts.map((account) => (
+                                                <SelectItem key={account.id} value={account.gmail_address}>
+                                                    <span className="flex items-center gap-2">
+                                                        <GmailLogo className="h-3.5 w-3.5" />
+                                                        {account.gmail_address}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
+                                            {microsoftAccounts.map((account) => (
+                                                <SelectItem key={account.id} value={account.outlook_address}>
+                                                    <span className="flex items-center gap-2">
+                                                        <OutLookLogo className="h-3.5 w-3.5" />
+                                                        {account.outlook_address}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
 
                         <div className="pt-2 flex gap-2">
                             <Button

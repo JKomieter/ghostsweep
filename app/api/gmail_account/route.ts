@@ -14,20 +14,18 @@ export async function GET() {
             }
 
             const {data, error} = await supabase.from('gmail_accounts')
-                .select('gmail_address, access_token_encrypted, refresh_token_encrypted')
+                .select('id, gmail_address, created_at')
                 .eq('user_id', user?.id)
                 .order('created_at', {ascending: false})
-                .single();
 
-            if (error && error.code !== 'PGRST116') { // PGRST116: No rows found
-                throw error;
+            if (error && error.code !== 'PGRST116') {
+                console.error('Error fetching Gmail account:', error);
+                return NextResponse.json({ accounts: [] });
             }
 
-            if (!data?.access_token_encrypted || !data?.refresh_token_encrypted) {
-                return NextResponse.json({ gmail_address: null });
-            }
-
-            return NextResponse.json({ gmail_address: data?.gmail_address || null });
+            return NextResponse.json({ 
+                accounts: data || []
+             });
 
         } catch (error) {
             console.error('Error fetching user data:', error);

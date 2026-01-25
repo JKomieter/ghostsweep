@@ -1,10 +1,15 @@
 // app/api/sweep/run/route.ts (in your Next.js app)
 import { createClient } from "@/utils/supabase/server";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
+
+    // Get email and provider from query params
+    const searchParams = request.nextUrl.searchParams;
+    const email = searchParams.get("email");
+    const emailProvider = searchParams.get("email_provider") as "gmail" | "outlook" | null;
 
     // ✅ Get user from session (this is automatic in Next.js)
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -18,6 +23,21 @@ export async function GET() {
 
     // ✅ User ID comes from the authenticated session
     const userId = user.id;
+
+    // Validate required parameters
+    if (!email || !emailProvider) {
+      return NextResponse.json(
+        { error: "Missing required parameters: email and email_provider", code: "MISSING_PARAMETERS" },
+        { status: 400 }
+      );
+    }
+
+    if (!["gmail", "outlook"].includes(emailProvider)) {
+      return NextResponse.json(
+        { error: "Invalid email_provider. Must be 'gmail' or 'outlook'", code: "INVALID_PROVIDER" },
+        { status: 400 }
+      );
+    }
 
     // ✅ ENFORCE: Check if sweep already in progress
     const { data: existingSweep, error: sweepCheckError } = await supabase
@@ -54,31 +74,47 @@ export async function GET() {
       );
     }
 
-    // Check if Gmail or Microsoft account connected
-    const { data: gmailAccount } = await supabase
+    // Check if Gmail or Microsoft accounts connected
+    const { data: gmailAccounts } = await supabase
       .from("gmail_accounts")
       .select("gmail_address")
       .eq("user_id", userId)
-      .maybeSingle();
+      .order("created_at", { ascending: false });
 
-    const { data: microsoftAccount } = await supabase
+    const { data: microsoftAccounts } = await supabase
       .from("microsoft_accounts")
       .select("outlook_address")
       .eq("user_id", userId)
-      .maybeSingle();
+      .order("created_at", { ascending: false });
 
-    if (!gmailAccount && !microsoftAccount) {
-      return NextResponse.json(
-        { error: "No email account connected", code: "EMAIL_ACCOUNT_NOT_FOUND" },
-        { status: 404 }
-      );
+    // Verify the specified email account exists and belongs to this user
+    let accountExists = false;
+    
+    if (emailProvider === "gmail") {
+      accountExists = gmailAccounts?.some(acc => acc.gmail_address === email) ?? false;
+      if (!accountExists) {
+        return NextResponse.json(
+          { error: "Gmail account not found or not connected", code: "GMAIL_NOT_FOUND" },
+          { status: 404 }
+        );
+      }
+    } else if (emailProvider === "outlook") {
+      accountExists = microsoftAccounts?.some(acc => acc.outlook_address === email) ?? false;
+      if (!accountExists) {
+        return NextResponse.json(
+          { error: "Outlook account not found or not connected", code: "OUTLOOK_NOT_FOUND" },
+          { status: 404 }
+        );
+      }
     }
 
-    // ✅ Create sweep job with user_id
+    // ✅ Create sweep job with user_id and email provider
     const { data: sweepEvent, error: sweepError } = await supabase
       .from("sweep_events")
       .insert({
-        user_id: userId,  // ← User ID stored here
+        user_id: userId,
+        email_provider: emailProvider,
+        email: email,
         status: "pending",
         started_at: new Date().toISOString(),
       })
@@ -99,6 +135,8 @@ export async function GET() {
         message: "Sweep queued successfully",
         sweepId: sweepEvent.id,
         status: "pending",
+        email: email,
+        provider: emailProvider,
       },
       { status: 202 }
     );

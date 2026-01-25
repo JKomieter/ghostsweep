@@ -55,22 +55,53 @@ export async function GET(request: NextRequest) {
         const accessTokenEnc = encryptToken(tokens.access_token || "");
         const refreshTokenEnc = encryptToken(tokens.refresh_token || "");
 
-        // 5. Store the tokens (encrypt these)
-        const {  error } = await supabase.functions.invoke('save-gmail-account', {
-            body: {
-                provider: 'google',
-                userId: user.id,
-                email: userInfo.email!,
-                accessTokenEnc,
-                refreshTokenEnc,
-                tokenExpiresAt: tokens.expiry_date
-                    ? new Date(tokens.expiry_date).toISOString()
-                    : new Date().toISOString(),
-            },
-            headers: {
-                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+        // 5. Check if this Gmail account already exists
+        const { data: existingAccount } = await supabase
+            .from("gmail_accounts")
+            .select("user_id")
+            .eq("gmail_address", userInfo.email!)
+            .single();
+
+        let error = null;
+
+        if (existingAccount) {
+            // Account exists - check if it belongs to this user
+            if (existingAccount.user_id === user.id) {
+                // Update tokens for the same user
+                const { error: updateError } = await supabase
+                    .from("gmail_accounts")
+                    .update({
+                        access_token_encrypted: accessTokenEnc,
+                        refresh_token_encrypted: refreshTokenEnc,
+                        token_expires_at: tokens.expiry_date
+                            ? new Date(tokens.expiry_date).toISOString()
+                            : new Date().toISOString(),
+                    })
+                    .eq("gmail_address", userInfo.email!);
+                error = updateError;
+            } else {
+                // Account belongs to another user
+                console.error("Gmail account already connected to another user");
+                const url = request.nextUrl.clone()
+                url.pathname = '/dashboard'
+                url.searchParams.set('google_oauth_error', '1');
+                return NextResponse.redirect(url)
             }
-        });
+        } else {
+            // New account - insert it
+            const { error: insertError } = await supabase
+                .from("gmail_accounts")
+                .insert({
+                    user_id: user.id,
+                    gmail_address: userInfo.email!,
+                    access_token_encrypted: accessTokenEnc,
+                    refresh_token_encrypted: refreshTokenEnc,
+                    token_expires_at: tokens.expiry_date
+                        ? new Date(tokens.expiry_date).toISOString()
+                        : new Date().toISOString(),
+                });
+            error = insertError;
+        }
 
         if (error) {
             console.error("Supabase upsert error:", error);
@@ -86,6 +117,22 @@ export async function GET(request: NextRequest) {
             maxAge: 0,
             path: "/",
         });
+
+        // Insert notification for Gmail
+        const { error: notifyError } = await supabase
+            .from("user_notifications")
+            .insert({
+                user_id: user.id,
+                type: "gmail_connected",
+                title: "Gmail connected",
+                message: `Your Gmail account (${userInfo.email!}) is now securely connected to GhostSweep.`,
+                metadata: {
+                    gmail: userInfo.email!,
+                },
+            });
+        if (notifyError) {
+            console.error("Error creating notification:", notifyError);
+        }
 
         return res;
     } catch (error) {

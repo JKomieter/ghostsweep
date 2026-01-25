@@ -21,8 +21,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Mail, RefreshCw, Unplug, Loader2 } from "lucide-react";
-import Input from "@/components/ui/input";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -34,40 +33,41 @@ export default function ConnectEmailModal({
     onOpenChangeAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [removeOpen, setRemoveOpen] = useState(false);
-    const [removing, setRemoving] = useState(false);
     const [removeError, setRemoveError] = useState<string | null>(null);
-    const [removingType, setRemovingType] = useState<"gmail" | "microsoft" | null>(null);
+    const [accountToRemove, setAccountToRemove] = useState<{ id: string; email: string; type: "gmail" | "microsoft" } | null>(null);
     const queryClient = useQueryClient();
+
+    type EmailAccount = { id: string; gmail_address?: string; outlook_address?: string; created_at: string };
 
     const { data, status } = useQuery({
         queryKey: ["emailAccounts"],
-        queryFn: async (): Promise<{ gmail_address: string | null; outlook_address: string | null }> => {
+        queryFn: async (): Promise<{ gmailAccounts: EmailAccount[]; microsoftAccounts: EmailAccount[] }> => {
             const [gmailRes, microsoftRes] = await Promise.all([
                 fetch("/api/gmail_account"),
                 fetch("/api/microsoft_account"),
             ]);
 
-            const gmail = gmailRes.ok ? await gmailRes.json() : { gmail_address: null };
-            const microsoft = microsoftRes.ok ? await microsoftRes.json() : { outlook_address: null };
+            const gmail = gmailRes.ok ? await gmailRes.json() : { accounts: [] };
+            const microsoft = microsoftRes.ok ? await microsoftRes.json() : { accounts: [] };
 
             return {
-                gmail_address: gmail.gmail_address,
-                outlook_address: microsoft.outlook_address,
+                gmailAccounts: gmail.accounts || [],
+                microsoftAccounts: microsoft.accounts || [],
             };
         },
         refetchOnWindowFocus: false,
     });
 
-    const handleRemoveConnection = async () => {
-        setRemoveError(null);
-        setRemoving(true);
+    const removeConnectionMutation = useMutation({
+        mutationFn: async ({ id, email, type }: { id: string; email: string; type: "gmail" | "microsoft" }) => {
+            const endpoint = type === "gmail" 
+                ? `/api/gmail_account/delete`
+                : `/api/microsoft_account/delete`;
 
-        const endpoint = "/api/gmail_account/delete";
-
-        try {
             const res = await fetch(endpoint, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ accountId: id }),
             });
 
             if (!res.ok) {
@@ -75,30 +75,40 @@ export default function ConnectEmailModal({
                 throw new Error(body.error || "Failed to remove connection");
             }
 
-            toast.success("Email account disconnected. GhostSweep can no longer access your email.");
+            return { email };
+        },
+        onSuccess: (data) => {
+            toast.success(`${data.email} disconnected. GhostSweep can no longer access this email.`);
             setRemoveOpen(false);
-        } catch (err) {
-            console.error(`Error removing ${removingType} connection:`, err);
+            setAccountToRemove(null);
+            setRemoveError(null);
+        },
+        onError: (error: Error) => {
+            console.error(`Error removing email connection:`, error);
             toast.error("Couldn't disconnect this email. Please try again.");
             setRemoveError("Couldn't disconnect this email. Please try again.");
-        } finally {
-            setRemoving(false);
+        },
+        onSettled: async () => {
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["emailAccounts"] }),
                 queryClient.invalidateQueries({ queryKey: ["gmailAccount"] }),
                 queryClient.invalidateQueries({ queryKey: ["microsoftAccount"] }),
-                queryClient.invalidateQueries({ queryKey: ["services"] }),
-                queryClient.invalidateQueries({ queryKey: ["breaches"] }),
                 queryClient.invalidateQueries({ queryKey: ["metrics"] }),
             ]);
-        }
+        },
+    });
+
+    const handleRemoveConnection = () => {
+        if (!accountToRemove) return;
+        removeConnectionMutation.mutate(accountToRemove);
     };
 
     const loading = status === "pending";
-    const gmailConnected = !!data?.gmail_address;
-    const microsoftConnected = !!data?.outlook_address;
-    const isConnected = gmailConnected || microsoftConnected;
-    const connectedEmail = data?.gmail_address || data?.outlook_address;
+    const removing = removeConnectionMutation.isPending;
+    const gmailAccounts = data?.gmailAccounts || [];
+    const microsoftAccounts = data?.microsoftAccounts || [];
+    const totalAccounts = gmailAccounts.length + microsoftAccounts.length;
+    const isConnected = totalAccounts > 0;
 
     return (
         <>
@@ -114,135 +124,128 @@ export default function ConnectEmailModal({
                     </DialogHeader>
 
                     <div className="mt-4 space-y-5">
-                        {/* Status + email field */}
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-medium text-muted-foreground">
-                                    Status
-                                </span>
-                                {isConnected ? (
-                                    <Badge className="bg-emerald-500/10 text-emerald-300">
-                                        Connected
-                                    </Badge>
-                                ) : (
-                                    <Badge className="bg-zinc-500/10 text-zinc-300">
-                                        Not connected
-                                    </Badge>
-                                )}
-                            </div>
-
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-muted-foreground">
-                                    Email account
-                                </label>
-                                <div className="relative">
-                                    <Mail className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="email"
-                                        readOnly
-                                        value={
-                                            loading
-                                                ? ""
-                                                : connectedEmail ||
-                                                (isConnected ? "" : "No email connected")
-                                        }
-                                        placeholder={
-                                            loading ? "Loading..." : "No email connected"
-                                        }
-                                        onChange={() => { }}
-                                    />
-                                </div>
-                                <p className="text-[11px] text-muted-foreground">
-                                    This email is used only for scans you start, and you can
-                                    disconnect at any time.
-                                </p>
-                            </div>
-
-                            {status === "error" && (
-                                <p className="text-[11px] text-red-400">
-                                    Problem fetching connected email account.
-                                </p>
+                        {/* Status */}
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-muted-foreground">
+                                Status
+                            </span>
+                            {isConnected ? (
+                                <Badge className="bg-emerald-500/10 text-emerald-300">
+                                    {totalAccounts} {totalAccounts === 1 ? "account" : "accounts"} connected
+                                </Badge>
+                            ) : (
+                                <Badge className="bg-zinc-500/10 text-zinc-300">
+                                    Not connected
+                                </Badge>
                             )}
                         </div>
+
+                        {/* Connected accounts list */}
+                        {isConnected && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-medium text-muted-foreground">
+                                    Connected accounts
+                                </label>
+                                <div className="space-y-2">
+                                    {gmailAccounts.map((account) => (
+                                        <div key={account.id} className="flex items-center justify-between rounded-md border border-white/10 bg-black/40 px-3 py-2">
+                                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                <Mail className="h-4 w-4 text-red-400 shrink-0" />
+                                                <span className="text-sm text-white truncate">{account.gmail_address}</span>
+                                            </div>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
+                                                onClick={() => {
+                                                    setAccountToRemove({ 
+                                                        id: account.id, 
+                                                        email: account.gmail_address || "", 
+                                                        type: "gmail" 
+                                                    });
+                                                    setRemoveOpen(true);
+                                                }}
+                                                disabled={removing}
+                                            >
+                                                {removing && accountToRemove?.id === account.id ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Unplug className="h-4 w-4" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    {microsoftAccounts.map((account) => (
+                                        <div key={account.id} className="flex items-center justify-between rounded-md border border-white/10 bg-black/40 px-3 py-2">
+                                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                <Mail className="h-4 w-4 text-blue-400 shrink-0" />
+                                                <span className="text-sm text-white truncate">{account.outlook_address}</span>
+                                            </div>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
+                                                onClick={() => {
+                                                    setAccountToRemove({ 
+                                                        id: account.id, 
+                                                        email: account.outlook_address || "", 
+                                                        type: "microsoft" 
+                                                    });
+                                                    setRemoveOpen(true);
+                                                }}
+                                                disabled={removing}
+                                            >
+                                                {removing && accountToRemove?.id === account.id ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Unplug className="h-4 w-4" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="text-[11px] text-muted-foreground">
+                                    These accounts are used only for scans you start. You can disconnect any account at any time.
+                                </p>
+                            </div>
+                        )}
+
+                        {status === "error" && (
+                            <p className="text-[11px] text-red-400">
+                                Problem fetching connected email accounts.
+                            </p>
+                        )}
+
+                        {!isConnected && (
+                            <p className="text-sm text-muted-foreground">
+                                Connect Gmail or Outlook to let GhostSweep scan for accounts and breaches.
+                            </p>
+                        )}
 
                         {/* Actions */}
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex flex-wrap gap-2">
-                                {!gmailConnected && (
-                                    <Link href="/api/google/oauth/start">
-                                        <Button
-                                            size="sm"
-                                            disabled={loading || removing}
-                                            className="inline-flex items-center gap-1"
-                                        >
-                                            <RefreshCw className="h-4 w-4" />
-                                            Connect Gmail
-                                        </Button>
-                                    </Link>
-                                )}
-
-                                {!microsoftConnected && (
-                                    <Link href="/api/microsoft/oauth">
-                                        <Button
-                                            size="sm"
-                                            disabled={loading || removing}
-                                            className="inline-flex items-center gap-1"
-                                        >
-                                            <RefreshCw className="h-4 w-4" />
-                                            Connect Outlook
-                                        </Button>
-                                    </Link>
-                                )}
-
-                                {gmailConnected && (
+                                <Link href="/api/google/oauth/start">
                                     <Button
                                         size="sm"
-                                        variant="outline"
-                                        className="border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 inline-flex items-center gap-1"
-                                        onClick={() => {
-                                            setRemovingType("gmail");
-                                            setRemoveOpen(true);
-                                        }}
-                                        disabled={removing}
+                                        disabled={loading || removing}
+                                        className="inline-flex items-center gap-1"
                                     >
-                                        {removing && removingType === "gmail" ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                Disconnecting...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Unplug className="h-4 w-4" />
-                                                Disconnect Gmail
-                                            </>
-                                        )}
+                                        <RefreshCw className="h-4 w-4" />
+                                        {gmailAccounts.length > 0 ? "Add" : "Connect"} Gmail
                                     </Button>
-                                )}
+                                </Link>
 
-                                {microsoftConnected && (
+                                <Link href="/api/microsoft/oauth">
                                     <Button
                                         size="sm"
-                                        variant="outline"
-                                        className="border-red-500/40 text-red-400 hover:bg-red-500/10 hover:text-red-300 inline-flex items-center gap-1"
-                                        onClick={() => {
-                                            setRemovingType("microsoft");
-                                            setRemoveOpen(true);
-                                        }}
-                                        disabled={removing}
+                                        disabled={loading || removing}
+                                        className="inline-flex items-center gap-1"
                                     >
-                                        {removing && removingType === "microsoft" ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                Disconnecting...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Unplug className="h-4 w-4" />
-                                                Disconnect Outlook
-                                            </>
-                                        )}
+                                        <RefreshCw className="h-4 w-4" />
+                                        {microsoftAccounts.length > 0 ? "Add" : "Connect"} Outlook
                                     </Button>
-                                )}
+                                </Link>
                             </div>
 
                             <Button
@@ -262,12 +265,10 @@ export default function ConnectEmailModal({
             <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>
                 <AlertDialogContent className="bg-[#0f0f0f] border border-white/10">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Disconnect this email?</AlertDialogTitle>
+                        <AlertDialogTitle>Disconnect {accountToRemove?.email}?</AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">
                             GhostSweep will disconnect this email account and delete its sweep
-                            results (services found and breach data). You won’t be able to run
-                            new sweeps or check for new breaches until you reconnect. You can
-                            reconnect this email at any time.
+                            results (services found and breach data). You can reconnect this email at any time.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

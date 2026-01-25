@@ -10,20 +10,20 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get Microsoft account for user
+    // Get Microsoft accounts for user
     const { data, error } = await supabase
       .from('microsoft_accounts')
-      .select('outlook_address')
+      .select('id, outlook_address, created_at')
       .eq('user_id', user.id)
-      .single();
+      .order('created_at', { ascending: false });
 
     if (error && error.code !== 'PGRST116') {
       console.error('Error fetching Microsoft account:', error);
-      return NextResponse.json({ outlook_address: null });
+      return NextResponse.json({ accounts: [] });
     }
 
     return NextResponse.json({
-      outlook_address: data?.outlook_address ?? null,
+      accounts: data || []
     });
   } catch (error) {
     console.error('Error in microsoft_account endpoint:', error);

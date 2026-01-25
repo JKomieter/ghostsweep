@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
         const searchQuery = searchParams.get("query")?.trim() || "";
         const category = searchParams.get("category")?.trim() || "";
         const breachedParam = searchParams.get("breached")?.trim() || "";
+        const emailParam = searchParams.get("email")?.trim() || "";
 
         // New filters
         const statusParam = searchParams.get("status");
@@ -104,6 +105,10 @@ export async function GET(request: NextRequest) {
 
             if (category) {
                 query = query.eq("services.category", category);
+            }
+
+            if (emailParam) {
+                query = query.eq("email", emailParam);
             }
 
             if (breachedFilter !== null) {

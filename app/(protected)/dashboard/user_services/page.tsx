@@ -12,6 +12,7 @@ import { DeletionRequestsQueryResult, UserBreachesQueryResult, UserServicesQuery
 type BreachFilter = "all" | "breached" | "unbreached";
 type ActivityFilter = "all" | "active" | "inactive";
 type HasDeletionFilter = "all" | "yes" | "no";
+type EmailFilter = "all" | string; // "all" or specific email address
 
 // 🔥 Extract component that uses useSearchParams
 function ServicesPageContent() {
@@ -22,6 +23,30 @@ function ServicesPageContent() {
     const [activityFilter, setActivityFilter] = useState<ActivityFilter>("all");
     const [minEmails, setMinEmails] = useState<number | undefined>(undefined);
     const [hasDeletionRequest, setHasDeletionRequest] = useState<HasDeletionFilter>("all");
+    const [emailFilter, setEmailFilter] = useState<EmailFilter>("all");
+
+    // Fetch Gmail and Microsoft accounts for email filtering
+    const { data: emailAccountsData } = useQuery({
+        queryKey: ["emailAccounts"],
+        queryFn: async (): Promise<{
+            gmailAccounts: Array<{ id: string; gmail_address: string; created_at: string }>;
+            microsoftAccounts: Array<{ id: string; outlook_address: string; created_at: string }>;
+        }> => {
+            const [gmailRes, microsoftRes] = await Promise.all([
+                fetch("/api/gmail_account"),
+                fetch("/api/microsoft_account"),
+            ]);
+
+            const gmail = gmailRes.ok ? await gmailRes.json() : { accounts: [] };
+            const microsoft = microsoftRes.ok ? await microsoftRes.json() : { accounts: [] };
+
+            return {
+                gmailAccounts: gmail.accounts || [],
+                microsoftAccounts: microsoft.accounts || [],
+            };
+        },
+        refetchOnWindowFocus: false,
+    });
 
     const { data: userServicesQueryResult, status: userServicesQueryResultStatus } = useQuery({
         queryKey: [
@@ -33,6 +58,7 @@ function ServicesPageContent() {
             activityFilter,
             minEmails ?? "",
             hasDeletionRequest,
+            emailFilter,
         ],
         queryFn: async (): Promise<UserServicesQueryResult> => {
             const params = new URLSearchParams();
@@ -58,6 +84,10 @@ function ServicesPageContent() {
 
             if (hasDeletionRequest !== "all") {
                 params.set("has_deletion_request", hasDeletionRequest);
+            }
+
+            if (emailFilter !== "all") {
+                params.set("email", emailFilter);
             }
 
             const res = await fetch(`/api/user_services?${params.toString()}`);
@@ -96,6 +126,7 @@ function ServicesPageContent() {
             activityFilter,
             minEmails ?? "",
             hasDeletionRequest,
+            emailFilter,
         ],
         queryFn: async (): Promise<{ forgotten: number }> => {
             const params = new URLSearchParams();
@@ -120,6 +151,10 @@ function ServicesPageContent() {
 
             if (hasDeletionRequest !== "all") {
                 params.set("has_deletion_request", hasDeletionRequest);
+            }
+
+            if (emailFilter !== "all") {
+                params.set("email", emailFilter);
             }
 
             const res = await fetch(`/api/user_services/forgotten_count?${params.toString()}`);
@@ -167,6 +202,10 @@ function ServicesPageContent() {
                     setMinEmails={setMinEmails}
                     hasDeletionRequest={hasDeletionRequest}
                     setHasDeletionRequest={setHasDeletionRequest}
+                    emailFilter={emailFilter}
+                    setEmailFilter={setEmailFilter}
+                    gmailAccounts={emailAccountsData?.gmailAccounts || []}
+                    microsoftAccounts={emailAccountsData?.microsoftAccounts || []}
                 />
             </div>
         </div>

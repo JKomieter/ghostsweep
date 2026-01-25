@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,18 @@ import {
     DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import Link from "next/link";
 import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
 import { OutLookLogo, GmailLogo } from "@/svgs";
 
-// Info: Sweeps may take several minutes to complete if you are queued. You can do something else and return later to check the results.
 const EmailIcon = ({ type }: { type: "gmail" | "outlook" | null }) => {
     if (type === "gmail") return <GmailLogo className="h-3.5 w-3.5" />;
     if (type === "outlook") return <OutLookLogo className="h-3.5 w-3.5" />;
@@ -30,14 +36,11 @@ type LatestSweepResponse = {
     sweepId: string | null;
     status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;
     progress?: number | null;
-
-    // 🔥 new bits
-    phase?: string | null;            // raw DB status (e.g. "listing_messages")
-    phaseLabel?: string | null;       // nice label (e.g. "Listing account-related emails")
-    phaseStep?: number | null;        // 1–5
-    phaseCount?: number | null;       // always 5
+    phase?: string | null;
+    phaseLabel?: string | null;
+    phaseStep?: number | null;
+    phaseCount?: number | null;
     messagesProcessed?: number | null;
-
     servicesFound?: number | null;
     breachesFound?: number | null;
     startedAt?: string | null;
@@ -53,6 +56,8 @@ export default function DashboardTitle() {
     const [sweepLongNotified, setSweepLongNotified] = useState(false);
     const queryClient = useQueryClient();
     const [isCancelling, setIsCancelling] = useState(false);
+    const [selectedEmail, setSelectedEmail] = useState<string>("");
+    const [selectedProvider, setSelectedProvider] = useState<"gmail" | "outlook" | null>(null);
 
     // ✅ Listen for OAuth errors in URL params
     useEffect(() => {
@@ -64,7 +69,6 @@ export default function DashboardTitle() {
             toast.error('Gmail connection failed', {
                 description: "There was an issue connecting your Gmail account. Please try again.",
             });
-            // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
@@ -72,32 +76,36 @@ export default function DashboardTitle() {
             toast.error('Outlook connection failed', {
                 description: "There was an issue connecting your Outlook account. Please try again.",
             });
-            // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     }, []);
 
-    // Gmail account
-    const { data: gmailData } = useQuery({
-        queryKey: ["gmailAccount"],
-        queryFn: async (): Promise<{ gmail_address: string | null }> => {
-            const res = await fetch("/api/gmail_account");
-            if (!res.ok) throw new Error("Failed to fetch Gmail account");
-            return res.json();
-        },
-        refetchOnWindowFocus: false,
+    // Fetch accounts
+    const [gmailQuery, microsoftQuery] = useQueries({
+        queries: [
+            {
+                queryKey: ["gmailAccount"],
+                queryFn: async (): Promise<{ accounts: Array<{ id: string; gmail_address: string; created_at: string }> }> => {
+                    const res = await fetch("/api/gmail_account");
+                    if (!res.ok) throw new Error("Failed to fetch Gmail account");
+                    return res.json();
+                },
+                refetchOnWindowFocus: false,
+            },
+            {
+                queryKey: ["microsoftAccount"],
+                queryFn: async (): Promise<{ accounts: Array<{ id: string; outlook_address: string; created_at: string }> }> => {
+                    const res = await fetch("/api/microsoft_account");
+                    if (!res.ok) throw new Error("Failed to fetch Microsoft account");
+                    return res.json();
+                },
+                refetchOnWindowFocus: false,
+            },
+        ],
     });
 
-    // Microsoft account
-    const { data: microsoftData } = useQuery({
-        queryKey: ["microsoftAccount"],
-        queryFn: async (): Promise<{ outlook_address: string | null }> => {
-            const res = await fetch("/api/microsoft_account");
-            if (!res.ok) throw new Error("Failed to fetch Microsoft account");
-            return res.json();
-        },
-        refetchOnWindowFocus: false,
-    });
+    const gmailData = gmailQuery.data;
+    const microsoftData = microsoftQuery.data;
 
     // Plan
     const { data: plan } = useQuery({
@@ -109,7 +117,7 @@ export default function DashboardTitle() {
         },
     });
 
-    // ✅ Always fetch latest sweep status
+    // Latest sweep
     const { data: latestSweep, refetch: refetchLatestSweep } = useQuery({
         queryKey: ["latestSweep"],
         queryFn: async (): Promise<LatestSweepResponse> => {
@@ -117,7 +125,6 @@ export default function DashboardTitle() {
             if (!res.ok) throw new Error("Failed to fetch latest sweep");
             return res.json();
         },
-        // ✅ Poll every 5 seconds if sweep is in progress
         refetchInterval: (query) => {
             const data = query.state.data;
             if (!data) return false;
@@ -125,28 +132,39 @@ export default function DashboardTitle() {
                 ? 5000
                 : false;
         },
-        refetchOnWindowFocus: true, // ✅ Refetch when user returns to tab
+        refetchOnWindowFocus: true,
     });
 
-    const gmailAddress = gmailData?.gmail_address ?? null;
-    const outlookAddress = microsoftData?.outlook_address ?? null;
+    const gmailAddress = gmailData?.accounts?.[0]?.gmail_address ?? null;
+    const outlookAddress = microsoftData?.accounts?.[0]?.outlook_address ?? null;
     const connectedEmail = gmailAddress || outlookAddress;
     const isInProgress =
         latestSweep?.status === "pending" || latestSweep?.status === "processing";
 
-    // ✅ Show toasts for completed/failed sweeps (only once)
+    // Set default selected email when accounts load
+    useEffect(() => {
+        if (!selectedEmail) {
+            if (gmailData?.accounts && gmailData.accounts.length > 0) {
+                setSelectedEmail(gmailData.accounts[0].gmail_address);
+                setSelectedProvider("gmail");
+            } else if (microsoftData?.accounts && microsoftData.accounts.length > 0) {
+                setSelectedEmail(microsoftData.accounts[0].outlook_address);
+                setSelectedProvider("outlook");
+            }
+        }
+    }, [gmailData?.accounts, microsoftData?.accounts, selectedEmail]);
+
+    // Toast notifications for completed/failed sweeps
     useEffect(() => {
         if (!latestSweep?.sweepId) return;
 
         const sweepKey = `${latestSweep.sweepId}-${latestSweep.status}`;
 
-        // Don't show notification if we've already shown it for this sweep+status
         if (lastNotifiedStatus === sweepKey) return;
 
         if (latestSweep.status === "completed") {
             setLastNotifiedStatus(sweepKey);
 
-            // Invalidate data queries
             Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["user_services"] }),
                 queryClient.invalidateQueries({ queryKey: ["user_breaches"] }),
@@ -156,10 +174,10 @@ export default function DashboardTitle() {
                 queryClient.invalidateQueries({ queryKey: ["plan"] }),
             ]);
 
-            toast.success("Sweep complete — here’s what has your data", {
+            toast.success("Sweep complete — here's what has your data", {
                 description: `Detected ${latestSweep.servicesFound || 0} accounts${latestSweep.breachesFound
-                        ? `, including ${latestSweep.breachesFound} breached`
-                        : ""
+                    ? `, including ${latestSweep.breachesFound} breached`
+                    : ""
                     }. The riskiest ones are waiting in your dashboard.`,
             });
         }
@@ -167,7 +185,6 @@ export default function DashboardTitle() {
         if (latestSweep.status === "cancelled") {
             setLastNotifiedStatus(sweepKey);
 
-            // optional: invalidate anything that might have partially changed
             Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["latestSweep"] }),
                 queryClient.invalidateQueries({ queryKey: ["metrics"] }),
@@ -194,30 +211,17 @@ export default function DashboardTitle() {
         }
     }, [latestSweep?.sweepId, latestSweep?.status, latestSweep?.servicesFound, latestSweep?.breachesFound, lastNotifiedStatus, queryClient, latestSweep?.errorMessage]);
 
-    useEffect(() => {
-        console.log("Sweep progress:", latestSweep?.progress);
-    }, [latestSweep?.progress]);
-
-    // ✅ Calculate minutes elapsed for in-progress sweeps
     const getElapsedMinutes = () => {
         if (!latestSweep?.startedAt) return 0;
         const elapsed = Date.now() - new Date(latestSweep.startedAt).getTime();
         return Math.floor(elapsed / 60000);
     };
 
-    // ✅ Notify user if sweep is taking a long time
     useEffect(() => {
         if (!isInProgress || !latestSweep?.startedAt) return;
 
-        const getElapsedMinutesLocal = () => {
-            if (!latestSweep?.startedAt) return 0;
-            const elapsed = Date.now() - new Date(latestSweep.startedAt).getTime();
-            return Math.floor(elapsed / 60000);
-        };
+        const elapsedMinutes = getElapsedMinutes();
 
-        const elapsedMinutes = getElapsedMinutesLocal();
-
-        // Show notification after 3 minutes if not shown yet
         if (elapsedMinutes >= 3 && !sweepLongNotified) {
             setSweepLongNotified(true);
             toast.info("Sweep in progress", {
@@ -225,14 +229,12 @@ export default function DashboardTitle() {
             });
         }
 
-        // Reset notification flag when sweep completes
         if (latestSweep?.status === "completed" || latestSweep?.status === "failed") {
             setSweepLongNotified(false);
         }
     }, [latestSweep?.startedAt, latestSweep?.status, isInProgress, sweepLongNotified]);
 
     const onSweep = async () => {
-        // If sweep already in progress, just show status
         if (isInProgress) {
             toast.info("Sweep already running", {
                 description: `Your sweep is ${latestSweep?.status}. Check the banner above for progress.`,
@@ -241,12 +243,24 @@ export default function DashboardTitle() {
             return;
         }
 
+        if (!selectedEmail || !selectedProvider) {
+            toast.error("No account selected", {
+                description: "Please select an email account to scan.",
+            });
+            return;
+        }
+
         toast.info("Starting your GhostSweep in the background…", {
             description: "Processing your inbox. This typically takes 2-5 minutes depending on your email volume. You can close this window and we'll keep working.",
         });
 
         try {
-            const res = await fetch("/api/sweep/run", { method: "GET" });
+            const params = new URLSearchParams({
+                email: selectedEmail,
+                email_provider: selectedProvider,
+            });
+            const url = `/api/sweep/run?${params.toString()}`;
+            const res = await fetch(url, { method: "GET" });
             const json = await res.json();
 
             if (!res.ok) {
@@ -270,7 +284,6 @@ export default function DashboardTitle() {
                     toast.warning("Sweep already in progress", {
                         description: json.message,
                     });
-                    // Refetch to get the latest status
                     refetchLatestSweep();
                     return;
                 } else {
@@ -278,7 +291,6 @@ export default function DashboardTitle() {
                 }
             }
 
-            // Immediately refetch latest sweep to show new status
             refetchLatestSweep();
             setSweepDialogOpen(false);
         } catch (error) {
@@ -289,7 +301,6 @@ export default function DashboardTitle() {
         }
     };
 
-    // ✅ Dynamic button text based on latest sweep status
     const getButtonText = () => {
         if (!latestSweep?.status) return "Run Sweep";
 
@@ -325,7 +336,6 @@ export default function DashboardTitle() {
             toast.success("Sweep cancellation requested", {
                 description: "The sweep will stop shortly.",
             });
-            // Refetch latest sweep status
             queryClient.invalidateQueries({ queryKey: ["latestSweep"] });
         },
         onError: (error) => {
@@ -337,7 +347,20 @@ export default function DashboardTitle() {
         onSettled: () => {
             setIsCancelling(false);
         },
-    })
+    });
+
+    // Helper to get display info for selected email
+    const getSelectedEmailDisplay = (): { email: string; provider: "gmail" | "outlook" } | null => {
+        if (!selectedEmail) return null;
+
+        const isGmail = gmailData?.accounts?.some(acc => acc.gmail_address === selectedEmail);
+        return {
+            email: selectedEmail,
+            provider: isGmail ? "gmail" : "outlook"
+        };
+    };
+
+    const selectedDisplay = getSelectedEmailDisplay();
 
     return (
         <>
@@ -370,6 +393,11 @@ export default function DashboardTitle() {
                                 <span className="max-w-[140px] truncate sm:max-w-[200px]">
                                     {connectedEmail}
                                 </span>
+                                {gmailAddress && outlookAddress && (
+                                    <span className="ml-1 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-medium">
+                                        +1
+                                    </span>
+                                )}
                             </>
                         ) : (
                             "Email not connected"
@@ -395,7 +423,7 @@ export default function DashboardTitle() {
                 </div>
             </div>
 
-            {/* ✅ Background sweep banner */}
+            {/* Background sweep banner */}
             {isInProgress && latestSweep && (
                 <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1">
@@ -483,6 +511,61 @@ export default function DashboardTitle() {
                     </DialogHeader>
 
                     <div className="mt-3 space-y-3 text-xs md:text-sm">
+                        {/* Account selector */}
+                        {!isInProgress && connectedEmail && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-medium text-white/80">
+                                    Select account to scan:
+                                </label>
+                                <Select
+                                    value={selectedEmail}
+                                    onValueChange={(value) => {
+                                        setSelectedEmail(value);
+                                        console.log(value);
+                                        const isGmail = gmailData?.accounts?.some(acc => acc.gmail_address === value);
+                                        setSelectedProvider(isGmail ? "gmail" : "outlook");
+                                    }}
+                                >
+                                    <SelectTrigger className="w-full bg-black/40 border-white/20 text-white">
+                                        <SelectValue>
+                                            {selectedDisplay && (
+                                                <div className="flex items-center gap-2">
+                                                    <EmailIcon type={selectedDisplay.provider} />
+                                                    <span className="truncate">{selectedDisplay.email}</span>
+                                                </div>
+                                            )}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-[#0a0a0a] border-white/20">
+                                        {gmailData?.accounts?.map((account) => (
+                                            <SelectItem
+                                                key={account.id}
+                                                value={account.gmail_address}
+                                                className="text-white hover:bg-white/10"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <GmailLogo className="h-3.5 w-3.5" />
+                                                    <span>{account.gmail_address}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                        {microsoftData?.accounts?.map((account) => (
+                                            <SelectItem
+                                                key={account.id}
+                                                value={account.outlook_address}
+                                                className="text-white hover:bg-white/10"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <OutLookLogo className="h-3.5 w-3.5" />
+                                                    <span>{account.outlook_address}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+
                         {isInProgress ? (
                             <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3 space-y-2">
                                 <div className="flex items-center gap-2">
@@ -531,13 +614,16 @@ export default function DashboardTitle() {
                             </div>
                         ) : connectedEmail ? (
                             <>
-                                <p className="text-white/60 flex items-center gap-2">
-                                    <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
-                                    <span>Connected as</span>
-                                    <span className="font-medium text-white truncate max-w-[200px] sm:max-w-[260px]">
-                                        {connectedEmail}
-                                    </span>
-                                </p>
+                                {/* Show info about selected account */}
+                                {selectedDisplay && (
+                                    <p className="text-white/60 flex items-center gap-2">
+                                        <EmailIcon type={selectedDisplay.provider} />
+                                        <span>Will scan</span>
+                                        <span className="font-medium text-white truncate max-w-[200px] sm:max-w-[260px]">
+                                            {selectedDisplay.email}
+                                        </span>
+                                    </p>
+                                )}
                                 <p className="text-white/50">
                                     The sweep runs in the background and typically takes 3-5 minutes.
                                     You&apos;ll be notified when it completes.
@@ -556,26 +642,68 @@ export default function DashboardTitle() {
                                 <p className="text-white/50">
                                     Connect Gmail or Outlook to let GhostSweep analyze your email metadata.
                                 </p>
-                                <div className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
-                                    <p className="font-medium text-cyan-300">Permissions Required:</p>
-                                    <div className="space-y-2 text-[11px] text-white/70">
-                                        <div className="flex gap-2">
-                                            <span className="text-emerald-400">✓</span>
-                                            <div>
-                                                <span className="font-medium text-white">Read Email</span>
-                                                <p className="text-white/60">Required to scan your inbox for accounts and breaches</p>
+                            </>
+                        )}
+
+                        {/* Connection options */}
+                        {!isInProgress && (
+                            <div className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
+                                {!connectedEmail ? (
+                                    <>
+                                        <p className="font-medium text-cyan-300">Permissions Required:</p>
+                                        <div className="space-y-2 text-[11px] text-white/70">
+                                            <div className="flex gap-2">
+                                                <span className="text-emerald-400">✓</span>
+                                                <div>
+                                                    <span className="font-medium text-white">Read Email</span>
+                                                    <p className="text-white/60">Required to scan your inbox for accounts and breaches</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <span className="text-amber-400">◆</span>
+                                                <div>
+                                                    <span className="font-medium text-white">Send Email (Optional)</span>
+                                                    <p className="text-white/60">Allow this to send deletion requests directly from GhostSweep</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                            <span className="text-amber-400">◆</span>
-                                            <div>
-                                                <span className="font-medium text-white">Send Email (Optional)</span>
-                                                <p className="text-white/60">Allow this to send deletion requests directly from GhostSweep</p>
-                                            </div>
+                                    </>
+                                ) : (
+                                    <div>
+                                        <p className="text-xs font-medium text-cyan-300 mb-2">Connect more accounts:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <Link
+                                                href="/api/google/oauth/start"
+                                                onClick={() => setIsConnecting(true)}
+                                            >
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    disabled={isConnecting}
+                                                    className="inline-flex items-center gap-1.5 border-white/20 text-xs"
+                                                >
+                                                    <GmailLogo className="h-3.5 w-3.5" />
+                                                    {isConnecting ? "Connecting..." : "Add Gmail"}
+                                                </Button>
+                                            </Link>
+                                            <Link
+                                                href="/api/microsoft/oauth"
+                                                onClick={() => setIsConnecting(true)}
+                                            >
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    disabled={isConnecting}
+                                                    className="inline-flex items-center gap-1.5 border-white/20 text-xs"
+                                                >
+                                                    <OutLookLogo className="h-3.5 w-3.5" />
+                                                    {isConnecting ? "Connecting..." : "Add Outlook"}
+                                                </Button>
+                                            </Link>
                                         </div>
                                     </div>
-                                </div>
-                            </>
+                                )}
+                            </div>
                         )}
                     </div>
 
@@ -588,38 +716,18 @@ export default function DashboardTitle() {
                         >
                             {isInProgress ? "Close" : "Cancel"}
                         </Button>
+
                         {!isInProgress && (
                             <>
                                 {connectedEmail ? (
-                                    <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
-                                        <Link
-                                            href={gmailAddress ? "/api/google/oauth/start" : "/api/microsoft/oauth"}
-                                            onClick={() => setIsConnecting(true)}
-                                        >
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                disabled={isConnecting}
-                                                className="w-full sm:w-auto min-w-40"
-                                            >
-                                                {isConnecting ? (
-                                                    <span className="flex items-center justify-center gap-2">
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                        Redirecting…
-                                                    </span>
-                                                ) : (
-                                                    `Reconnect ${gmailAddress ? "Gmail" : "Outlook"}`
-                                                )}
-                                            </Button>
-                                        </Link>
-                                        <Button
-                                            size="sm"
-                                            onClick={onSweep}
-                                            className="w-full sm:w-auto min-w-[140px]"
-                                        >
-                                            Start Sweep
-                                        </Button>
-                                    </div>
+                                    <Button
+                                        size="sm"
+                                        onClick={onSweep}
+                                        disabled={!selectedEmail}
+                                        className="w-full sm:w-auto min-w-[140px]"
+                                    >
+                                        Start Sweep
+                                    </Button>
                                 ) : (
                                     <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row">
                                         <Link
@@ -629,16 +737,18 @@ export default function DashboardTitle() {
                                             <Button
                                                 size="sm"
                                                 disabled={isConnecting}
-                                                color="#DB4437"
-                                                className="w-full sm:w-auto min-w-[130px] bg-red-600 hover:bg-red-700 text-white"
+                                                className="w-full sm:w-auto min-w-[130px] bg-red-600 hover:bg-red-700 text-white inline-flex items-center gap-1.5"
                                             >
                                                 {isConnecting ? (
-                                                    <span className="flex items-center justify-center gap-2">
+                                                    <>
                                                         <Loader2 className="h-4 w-4 animate-spin" />
                                                         Connecting…
-                                                    </span>
+                                                    </>
                                                 ) : (
-                                                    "Gmail"
+                                                    <>
+                                                        <GmailLogo className="h-3.5 w-3.5" />
+                                                        Connect Gmail
+                                                    </>
                                                 )}
                                             </Button>
                                         </Link>
@@ -649,16 +759,18 @@ export default function DashboardTitle() {
                                             <Button
                                                 size="sm"
                                                 disabled={isConnecting}
-                                                color="blue"
-                                                className="w-full sm:w-auto min-w-[130px] bg-blue-600 hover:bg-blue-700 text-white"
+                                                className="w-full sm:w-auto min-w-[130px] bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5"
                                             >
                                                 {isConnecting ? (
-                                                    <span className="flex items-center justify-center gap-2">
+                                                    <>
                                                         <Loader2 className="h-4 w-4 animate-spin" />
                                                         Connecting…
-                                                    </span>
+                                                    </>
                                                 ) : (
-                                                    "Outlook"
+                                                    <>
+                                                        <OutLookLogo className="h-3.5 w-3.5" />
+                                                        Connect Outlook
+                                                    </>
                                                 )}
                                             </Button>
                                         </Link>
@@ -666,7 +778,7 @@ export default function DashboardTitle() {
                                 )}
                             </>
                         )}
-                        
+
                         {isInProgress && (
                             <Button
                                 size="sm"

@@ -88,24 +88,55 @@ export async function GET(req: NextRequest) {
         const email = microsoftUser.mail || microsoftUser.userPrincipalName;
         const displayName = microsoftUser.displayName;
 
-        // store the tokens and user info in your database
-        const { error } = await supabase.functions.invoke('save-gmail-account', {
-            body: {
-                provider: 'microsoft',
-                userId: user.id,
-                email,
-                accessTokenEnc,
-                refreshTokenEnc,
-                tokenExpiresAt: tokens.expires_in
+        // Check if this Microsoft account already exists
+        const { data: existingAccount } = await supabase
+            .from('microsoft_accounts')
+            .select('user_id')
+            .eq('outlook_address', email)
+            .single();
+
+        let error = null;
+
+        if (existingAccount) {
+            // Account exists - check if it belongs to this user
+            if (existingAccount.user_id === user.id) {
+                // Update tokens for the same user
+                const { error: updateError } = await supabase
+                    .from('microsoft_accounts')
+                    .update({
+                        access_token_encrypted: accessTokenEnc,
+                        refresh_token_encrypted: refreshTokenEnc,
+                        token_expires_at: tokens.expires_in
+                            ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
+                            : new Date().toISOString(),
+                        display_name: displayName,
+                        microsoft_user_id: microsoftUser.id,
+                    })
+                    .eq('outlook_address', email);
+                error = updateError;
+            } else {
+                // Account belongs to another user
+                console.error('Microsoft account already connected to another user');
+                const url = req.nextUrl.clone();
+                url.pathname = '/dashboard';
+                url.searchParams.set('microsoft_oauth_error', '1');
+                return NextResponse.redirect(url);
+            }
+        } else {
+            // New account - insert it
+            const { error: insertError } = await supabase.from('microsoft_accounts').insert({
+                user_id: user.id,
+                outlook_address: email,
+                access_token_encrypted: accessTokenEnc,
+                refresh_token_encrypted: refreshTokenEnc,
+                token_expires_at: tokens.expires_in
                     ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
                     : new Date().toISOString(),
-                displayName,
-                microsoftUserId: microsoftUser.id,
-            },
-            headers: {
-                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
-            }
-        });
+                display_name: displayName,
+                microsoft_user_id: microsoftUser.id,
+            });
+            error = insertError;
+        }
 
         if (error) {
             console.error('Error saving Microsoft account:', error);
@@ -113,6 +144,23 @@ export async function GET(req: NextRequest) {
             url.pathname = '/dashboard';
             url.searchParams.set('microsoft_oauth_error', '1');
             return NextResponse.redirect(url);
+        }
+
+        const { error: notifyError } = await supabase
+            .from("user_notifications")
+            .insert({
+                user_id: user.id,
+                type: "microsoft_connected",
+                title: "Microsoft account connected",
+                message: `Your Microsoft account (${email}) is now securely connected to GhostSweep.`,
+                metadata: {
+                    email: email,
+                    provider: "microsoft",
+                },
+            });
+
+        if (notifyError) {
+            console.error("Error creating notification:", notifyError);
         }
 
         // Redirect to dashboard or another page
