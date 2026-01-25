@@ -271,9 +271,9 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                     <Button variant="outline" size="sm" onClick={refetchEverything}>
                         Refresh
                     </Button>
-                    <Button size="sm" onClick={openDeletionModal} className="md:min-w-[170px]">
+                    {/* <Button size="sm" onClick={openDeletionModal} className="md:min-w-[170px]">
                         {deletionActionLabel}
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
 
@@ -465,8 +465,11 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                     </div>
                                 )}
 
-                                <Button size="sm" onClick={openDeletionModal} className="w-full">
-                                    {deletionActionLabel}
+                                <Button size="sm" onClick={() => {
+                                    const tabsTrigger = document.querySelector('[value="deletion_requests"]') as HTMLElement;
+                                    tabsTrigger?.click();
+                                }} className="w-full">
+                                    View deletion options
                                 </Button>
                             </div>
                         </div>
