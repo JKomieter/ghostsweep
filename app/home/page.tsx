@@ -373,7 +373,7 @@ function SectionTitle({
 
 export default function HomePage() {
     const [showExitPopup, setShowExitPopup] = useState(false);
-    const [hasShownPopup, setHasShownPopup] = useState(false);
+    // const [hasShownPopup, setHasShownPopup] = useState(false);
 
     // useEffect(() => {
     //     const handleMouseLeave = (e: MouseEvent) => {
@@ -420,7 +420,7 @@ export default function HomePage() {
                                 </div>
                                 <span className="text-zinc-200">
                                     <strong className="text-white">305 people · 13,524 accounts found</strong>
-                                </span>
+                                </span>÷
                             </div>
                         </div>
 
