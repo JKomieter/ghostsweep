@@ -51,8 +51,6 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     const [isDeletionEmailModalOpen, setIsDeletionEmailModalOpen] = useState(false);
     const [isDeletionProfileModalOpen, setIsDeletionProfileModalOpen] = useState(false);
 
-    const deletionTabBtnRef = React.useRef<HTMLButtonElement>(null);
-
     // Plan
     const queries = useQueries({
         queries: [
@@ -346,7 +344,6 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                     <TabsTrigger
                                         value="deletion_requests"
                                         className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10 ml-6"
-                                        ref={deletionTabBtnRef}
                                     >
                                         Deletion
                                     </TabsTrigger>
@@ -491,11 +488,11 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                     </div>
                                 )}
 
-                                <Button size="sm" onClick={() => {
-                                    deletionTabBtnRef.current?.click();
-                                }} className="w-full">
-                                    View deletion options
-                                </Button>
+                                <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs space-y-2">
+                                    <p className="text-muted-foreground">
+                                        View the <span className="font-medium text-foreground">Deletion tab</span> to start removing your account.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
