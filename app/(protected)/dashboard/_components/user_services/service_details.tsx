@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ExternalLink, Copy, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
@@ -51,60 +51,72 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     const [isDeletionEmailModalOpen, setIsDeletionEmailModalOpen] = useState(false);
     const [isDeletionProfileModalOpen, setIsDeletionProfileModalOpen] = useState(false);
 
+    const deletionTabBtnRef = React.useRef<HTMLButtonElement>(null);
+
     // Plan
-    const { data: planQueryResult } = useQuery({
-        queryKey: ["plan"],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
-            const res = await fetch("/api/plan", { method: "GET" });
-            if (!res.ok) throw new Error("Failed to fetch plan data");
-            return res.json();
-        },
-    });
+    const queries = useQueries({
+        queries: [
+            {
+            queryKey: ["plan"],
+            queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+                const res = await fetch("/api/plan", { method: "GET" });
+                if (!res.ok) throw new Error("Failed to fetch plan data");
+                return res.json();
+            },
+            },
+            {
+            queryKey: ["gmail_account"],
+            queryFn: async (): Promise<{ accounts: { id: string; gmail_address: string }[] }> => {
+                const res = await fetch("/api/gmail_account");
+                if (!res.ok) throw new Error("Failed to fetch Gmail account");
+                return res.json();
+            },
+            refetchOnWindowFocus: false,
+            },
+            {
+            queryKey: ["microsoft_account"],
+            queryFn: async (): Promise<{ accounts: { id: string; outlook_address: string }[] }> => {
+                const res = await fetch("/api/microsoft_account");
+                if (!res.ok) throw new Error("Failed to fetch Microsoft account");
+                return res.json();
+            },
+            refetchOnWindowFocus: false,
+            },
+            {
+            queryKey: ["deletion_profile"],
+            queryFn: async (): Promise<DeletionProfileQueryResult> => {
+                const res = await fetch("/api/deletion_profile");
+                if (!res.ok) throw new Error("Failed to fetch deletion profile");
+                return res.json();
+            },
+            },
+            {
+            queryKey: ["user_service_details", userServiceId],
+            queryFn: async (): Promise<UserServiceDetailsQueryResult> => {
+                const res = await fetch(`/api/user_services/${userServiceId}`);
+                if (!res.ok) throw new Error("Failed to fetch service details");
+                return res.json();
+            },
+            enabled: !!userServiceId,
+            },
+        ],
+        });
 
-    // Gmail account (presence helps you render “tracking enabled” messaging)
-    const { data: gmailAccountQueryResult } = useQuery({
-        queryKey: ["gmail_account"],
-        queryFn: async (): Promise<{ accounts: { id: string; gmail_address: string }[] }> => {
-            const res = await fetch("/api/gmail_account");
-            if (!res.ok) throw new Error("Failed to fetch Gmail account");
-            return res.json();
-        },
-        refetchOnWindowFocus: false,
-    });
-    // Microsoft account (presence helps you render "tracking enabled" messaging)
-    const { data: microsoftAccountQueryResult } = useQuery({
-        queryKey: ["microsoft_account"],
-        queryFn: async (): Promise<{ accounts: { id: string; outlook_address: string }[] }> => {
-            const res = await fetch("/api/microsoft_account");
-            if (!res.ok) throw new Error("Failed to fetch Microsoft account");
-            return res.json();
-        },
-        refetchOnWindowFocus: false,
-    });
-    // Deletion profile
-    const { data: deletionProfileQueryResult } = useQuery({
-        queryKey: ["deletion_profile"],
-        queryFn: async (): Promise<DeletionProfileQueryResult> => {
-            const res = await fetch("/api/deletion_profile");
-            if (!res.ok) throw new Error("Failed to fetch deletion profile");
-            return res.json();
-        },
-    });
+        const [
+        planQuery,
+        gmailAccountQuery,
+        microsoftAccountQuery,
+        deletionProfileQuery,
+        userServiceDetailsQuery,
+        ] = queries;
 
-    // Service details
-    const {
-        data: userServiceDetailsQueryResult,
-        status: userServiceDetailsQueryResultStatus,
-        error,
-    } = useQuery({
-        queryKey: ["user_service_details", userServiceId],
-        queryFn: async (): Promise<UserServiceDetailsQueryResult> => {
-            const res = await fetch(`/api/user_services/${userServiceId}`);
-            if (!res.ok) throw new Error("Failed to fetch service details");
-            return res.json();
-        },
-        enabled: !!userServiceId,
-    });
+        const planQueryResult = planQuery.data;
+        const gmailAccountQueryResult = gmailAccountQuery.data;
+        const microsoftAccountQueryResult = microsoftAccountQuery.data;
+        const deletionProfileQueryResult = deletionProfileQuery.data;
+        const userServiceDetailsQueryResult = userServiceDetailsQuery.data;
+        const userServiceDetailsQueryResultStatus = userServiceDetailsQuery.status;
+        const error = userServiceDetailsQuery.error;
 
     const currentPlan = planQueryResult?.current_plan ?? "free";
 
@@ -334,6 +346,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                     <TabsTrigger
                                         value="deletion_requests"
                                         className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10 ml-6"
+                                        ref={deletionTabBtnRef}
                                     >
                                         Deletion
                                     </TabsTrigger>
@@ -479,8 +492,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                 )}
 
                                 <Button size="sm" onClick={() => {
-                                    const tabsTrigger = document.querySelector('[value="deletion_requests"]') as HTMLElement;
-                                    tabsTrigger?.click();
+                                    deletionTabBtnRef.current?.click();
                                 }} className="w-full">
                                     View deletion options
                                 </Button>
