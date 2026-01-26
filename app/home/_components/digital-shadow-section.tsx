@@ -12,7 +12,7 @@ import {
 
 function Badge({ children }: { children: React.ReactNode }) {
     return (
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] text-emerald-300">
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 backdrop-blur-sm">
             {children}
         </div>
     );
@@ -28,13 +28,13 @@ function FeatureItem({
     description: string;
 }) {
     return (
-        <div className="flex gap-4 group hover:bg-white/5 p-4 rounded-lg transition-colors">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors flex-shrink-0">
+        <div className="flex gap-3 sm:gap-4 group hover:bg-emerald-500/10 p-3 sm:p-4 rounded-lg transition-all duration-200">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300 group-hover:bg-emerald-500/30 group-hover:scale-110 transition-all duration-200">
                 {Icon}
             </div>
             <div>
-                <h3 className="font-semibold text-white mb-1">{title}</h3>
-                <p className="text-sm text-white/60">{description}</p>
+                <h3 className="font-semibold text-white text-sm">{title}</h3>
+                <p className="text-xs sm:text-sm text-white/60 mt-0.5">{description}</p>
             </div>
         </div>
     );
@@ -42,9 +42,9 @@ function FeatureItem({
 
 function StatCard({ value, label }: { value: string; label: string }) {
     return (
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-            <div className="text-2xl font-bold text-white">{value}</div>
-            <div className="text-xs text-white/60 mt-1">{label}</div>
+        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/15 p-4 sm:p-5 text-center transition-all duration-200 group cursor-default">
+            <div className="text-2xl sm:text-3xl font-bold text-emerald-300 group-hover:text-emerald-200 transition-colors">{value}</div>
+            <div className="text-xs text-emerald-200/60 mt-2 font-medium">{label}</div>
         </div>
     );
 }
@@ -348,7 +348,7 @@ function NetworkGraphPreview() {
     return (
         <div className="relative w-full h-[350px] rounded-2xl border border-emerald-500/20 bg-black/60 backdrop-blur-sm overflow-hidden flex flex-col">
             {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-violet-500/5" />
+            <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-violet-500/5" />
 
             <canvas
             ref={canvasRef}
@@ -391,76 +391,106 @@ function NetworkGraphPreview() {
 
 export function DigitalShadowSection() {
     return (
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-hidden space-y-12">
             {/* Container */}
-            <div className="relative max-w-6xl mx-auto px-4">
+            <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Main Content Grid */}
-                <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                     {/* Left: Content */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 sm:space-y-8">
                         {/* Badge */}
                         <Badge>
                             <Sparkles className="h-3.5 w-3.5" />
-                            <span>New Feature</span>
+                            <span>Your Digital Footprint</span>
                         </Badge>
 
                         {/* Headline */}
-                        <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-                            See Who&apos;s Really <br />
-                            Tracking You
-                        </h2>
+                        <div className="space-y-3">
+                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight">
+                                See Your Complete Digital Shadow
+                            </h2>
+                            <p className="text-sm sm:text-base text-emerald-300/90 font-medium">
+                                From your email to 100+ data brokers
+                            </p>
+                        </div>
 
                         {/* Description */}
-                        <p className="text-base text-white/70 leading-relaxed">
-                            Most people don&apos;t know 40+ data brokers are selling their information.
-                            Our Digital Shadow Map shows you the complete network—who has your
-                            data, how they got it, and how to remove yourself.
+                        <p className="text-base text-white/60 leading-relaxed max-w-md">
+                            Most people don&apos;t realize 40-100+ data brokers have copies of their personal data. We show you the exact network—what data they have, where it came from, and exactly how to remove it.
                         </p>
 
+                        {/* Stats Highlight */}
+                        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">By the numbers</p>
+                            <p className="text-2xl font-bold text-white">43 brokers</p>
+                            <p className="text-xs text-white/60">average per person in the US</p>
+                        </div>
+
                         {/* Features */}
-                        <div className="space-y-3">
+                        <div className="space-y-3 pt-2">
                             <FeatureItem
                                 icon={<Search className="h-5 w-5" />}
-                                title="Visual Network Map"
-                                description="See every data broker connected to your accounts"
+                                title="Network Visualization"
+                                description="See exactly how your data flows from accounts to brokers"
                             />
                             <FeatureItem
                                 icon={<Mail className="h-5 w-5" />}
-                                title="One-Click Opt-Outs"
-                                description="Generate CCPA/GDPR deletion requests automatically"
+                                title="Automated Removals"
+                                description="Send CCPA/GDPR deletion requests to all brokers at once"
                             />
                             <FeatureItem
                                 icon={<TrendingUp className="h-5 w-5" />}
-                                title="Progress Tracking"
-                                description="Monitor removal requests and watch exposure decrease"
+                                title="Watch It Work"
+                                description="Monitor progress as your data is removed from brokers"
                             />
                         </div>
 
                         {/* CTA */}
                         <Link
                             href="/login"
-                            className="inline-flex items-center gap-2 rounded-full bg-white text-black px-6 py-2.5 text-sm font-semibold hover:bg-zinc-100 transition"
+                            className="inline-flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/25"
                         >
-                            See Your Digital Shadow
+                            Start Your Digital Audit
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
 
                     {/* Right: Visual */}
-                    <div className="relative">
-                        <NetworkGraphPreview />
+                    <div className="relative lg:order-last">
+                        {/* Glow effects */}
+                        <div className="absolute -inset-4 bg-linear-to-b from-emerald-500/20 via-emerald-500/5 to-transparent blur-3xl -z-10 rounded-2xl" />
+                        <div className="absolute -inset-4 bg-linear-to-t from-violet-500/10 via-transparent to-transparent blur-3xl -z-10 rounded-2xl" />
 
-                        {/* Subtle glow effect behind graph */}
-                        <div className="absolute inset-0 bg-emerald-500/10 blur-3xl -z-10 rounded-full" />
+                        {/* Graph container */}
+                        <div className="relative">
+                            <NetworkGraphPreview />
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Stats Row */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard value="500+" label="Known Brokers" />
-                    <StatCard value="43" label="Avg Per Person" />
-                    <StatCard value="67" label="Forgotten Accounts" />
-                    <StatCard value="45" label="Days Response" />
+            {/* Enhanced Stats Section */}
+            <div className="relative">
+                <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/30 to-transparent" />
+                
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                        <div className="group">
+                            <StatCard value="500+" label="Data Brokers" />
+                        </div>
+                        <div className="group">
+                            <StatCard value="43" label="Per Person" />
+                        </div>
+                        <div className="group">
+                            <StatCard value="100+" label="Types of Data" />
+                        </div>
+                        <div className="group">
+                            <StatCard value="7" label="Days Average" />
+                        </div>
+                    </div>
+                    <p className="text-xs text-white/40 text-center mt-4">
+                        Data based on analysis of 10,000+ scans across the US
+                    </p>
                 </div>
             </div>
         </section>
