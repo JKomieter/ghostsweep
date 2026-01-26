@@ -86,10 +86,10 @@ const faqSchema = {
         },
         {
             "@type": "Question",
-            "name": "What's included in the 7-day free trial?",
+            "name": "What's included in the 1-day free trial?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "You get full access to all Pro features for 7 days—unlimited accounts, deletion playbooks, tracking dashboard, and breach monitoring. No credit card required. After the trial, you can upgrade or continue with the free plan.",
+                "text": "You get full access to all Pro features for 1 day—unlimited accounts, deletion playbooks, tracking dashboard, and breach monitoring. No credit card required. After the trial, you can upgrade or continue with the free plan.",
             },
         },
     ],
@@ -905,6 +905,17 @@ export default function HomePage() {
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>Data broker tracking</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
+                                    <span>
+                                        Weekly email privacy reports{" "}
+                                        <span className="text-xs text-zinc-300">(privacy summary & insights)</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
                                     <span>Export privacy report (PDF)</span>
                                 </li>
                                 <li className="flex items-start gap-2">
@@ -918,7 +929,7 @@ export default function HomePage() {
                                     href="/dashboard/billing?plan=monthly"
                                     className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
                                 >
-                                    Start 7-Day Free Trial
+                                    Start 1-Day Free Trial
                                 </Link>
                                 <p className="text-center text-xs text-zinc-400">
                                     No credit card required • Cancel anytime
@@ -981,11 +992,11 @@ export default function HomePage() {
 
                         <details className="text-sm group">
                             <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
-                                What&apos;s included in the 7-day free trial?
+                                What&apos;s included in the 1-day free trial?
                                 <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
                             </summary>
                             <p className="mt-2 text-zinc-400 text-xs pl-4">
-                                You get full access to all Pro features for 7 days—unlimited accounts, deletion playbooks, tracking dashboard, and breach monitoring. No credit card required. After the trial, you can upgrade or continue with the free plan.
+                                You get full access to all Pro features for 1 day—unlimited accounts, deletion playbooks, tracking dashboard, and breach monitoring. No credit card required. After the trial, you can upgrade or continue with the free plan.
                             </p>
                         </details>
 

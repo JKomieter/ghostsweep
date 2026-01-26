@@ -9,7 +9,7 @@ import CheckoutForm from "../_components/checkout";
 import { ShieldCheck, CalendarClock } from "lucide-react";
 
 const PRO_MONTHLY_PRICE_CENTS = 999; // $9.99
-const PRO_YEARLY_PRICE_CENTS = 9588; // $95.88
+const PRO_YEARLY_PRICE_CENTS = 7900; // $79.00
 
 type BillingInterval = "monthly" | "yearly";
 
@@ -69,9 +69,9 @@ export default async function BillingPage({ searchParams }: PageProps) {
             : {
                 label: "GhostSweep Professional — Yearly",
                 priceCents: PRO_YEARLY_PRICE_CENTS,
-                priceLabel: "$95.88 / year",
+                priceLabel: "$79.00 / year",
                 interval: "yearly" as BillingInterval,
-                subline: "Save ~20% vs paying monthly.",
+                subline: "Save ~34% vs paying monthly.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
                 priceId: "price_1SVNecK2SUgcYUhjSkW1DnwS",
             };
