@@ -447,7 +447,7 @@ export default function HomePage() {
                                 <TriangleAlert className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-300" />
                                 <div className="space-y-2 text-left">
                                     <p className="text-sm font-semibold text-white">
-                                        33 accounts were breached this month
+                                        62 accounts were breached this month
                                     </p>
                                     <p className="text-xs text-zinc-300">
                                         Check if yours are exposed. See every account tied to your email — old forums, shopping sites, free trials you never canceled, and services that got breached.
