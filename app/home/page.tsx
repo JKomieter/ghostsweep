@@ -1044,7 +1044,7 @@ export default function HomePage() {
                             Stop paying for data brokers to sell your info
                         </h2>
                         <p className="mx-auto max-w-2xl text-base text-zinc-300">
-                            You've found where your data is. Now take control. Start your 7-day free trial to delete accounts and reclaim your privacy.
+                            You've found where your data is. Now take control. Start your 1-day free trial to delete accounts and reclaim your privacy.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -1065,10 +1065,10 @@ export default function HomePage() {
                         </div>
 
                         <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-300 pt-2">
-                            <span className="inline-flex items-center gap-1">
+                            {/* <span className="inline-flex items-center gap-1">
                                 <Check className="h-4 w-4 text-emerald-400" />
                                 No credit card
-                            </span>
+                            </span> */}
                             <span className="inline-flex items-center gap-1">
                                 <Check className="h-4 w-4 text-emerald-400" />
                                 Cancel anytime
