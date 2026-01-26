@@ -932,7 +932,7 @@ export default function HomePage() {
                                     Start 1-Day Free Trial
                                 </Link>
                                 <p className="text-center text-xs text-zinc-400">
-                                    No credit card required • Cancel anytime
+                                    Cancel anytime
                                 </p>
                             </div>
                         </div>
