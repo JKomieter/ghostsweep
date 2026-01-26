@@ -186,7 +186,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         : "text-muted-foreground hover:text-white"
                                 )}
                             >
-                                Yearly · $95.88
+                                Yearly · $79.00
                             </Link>
                         </div>
 

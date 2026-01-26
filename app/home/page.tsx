@@ -943,17 +943,17 @@ export default function HomePage() {
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div>
                                 <p className="text-sm font-semibold text-white">Annual Plan</p>
-                                <p className="text-xs text-zinc-400">Save 20% with yearly billing</p>
+                                <p className="text-xs text-zinc-400">Save 34% with yearly billing</p>
                             </div>
                             <div className="text-center sm:text-right">
-                                <p className="text-2xl font-semibold text-white">$95.88<span className="text-sm text-zinc-400">/year</span></p>
-                                <p className="text-xs text-emerald-400">Just $7.99/month</p>
+                                <p className="text-2xl font-semibold text-white">$79.00<span className="text-sm text-zinc-400">/year</span></p>
+                                <p className="text-xs text-emerald-400">Just $6.58/month</p>
                             </div>
                             <Link
-                                href="/dashboard/billing?plan=annual"
+                                href="/dashboard/billing?plan=yearly"
                                 className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
                             >
-                                Save $23.88
+                                Save $40.88 annually
                             </Link>
                         </div>
                     </div>
