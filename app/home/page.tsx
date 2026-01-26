@@ -419,8 +419,8 @@ export default function HomePage() {
                                     <div className="h-6 w-6 rounded-full border-2 border-black bg-linear-to-br from-purple-400 to-purple-600" />
                                 </div>
                                 <span className="text-zinc-200">
-                                    <strong className="text-white">305 people · 13,524 accounts found</strong>
-                                </span>÷
+                                    <strong className="text-white">320 people · 15,857 accounts found</strong>
+                                </span>
                             </div>
                         </div>
 
