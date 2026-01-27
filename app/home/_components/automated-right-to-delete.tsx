@@ -63,17 +63,16 @@ export function AutomatedRightToDelete() {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-4 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-medium text-green-300">
-          <Zap className="h-3 w-3" />
-          Automation Engine
+      <div className="space-y-3 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-zinc-300">
+          <Zap className="h-3 w-3 text-zinc-400" />
+          Right-to-delete workflow
         </div>
-        <h2 className="text-3xl sm:text-4xl font-bold text-white">
-          Automated &quot;Right to Delete&quot;
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+          Deletion templates, without the chaos
         </h2>
-        <p className="mx-auto max-w-2xl text-lg text-zinc-400">
-          We automatically send CCPA/CPRA-compliant deletion requests to the top
-          100 US data brokers. You just click approve.
+        <p className="mx-auto max-w-xl text-sm text-zinc-400">
+          We prepare CCPA/CPRA-compliant drafts for US data brokers. You review, approve, and send from your own inbox.
         </p>
       </div>
 
@@ -86,17 +85,17 @@ export function AutomatedRightToDelete() {
 
         {/* Progress Stats */}
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4">
-            <p className="text-2xl font-bold text-emerald-400">{successCount}</p>
-            <p className="text-xs text-emerald-300 mt-1">Deletion Sent</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+            <p className="text-xl font-semibold text-emerald-300">{successCount}</p>
+            <p className="text-xs text-zinc-400 mt-1">Requests sent</p>
           </div>
-          <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4">
-            <p className="text-2xl font-bold text-yellow-400">{pendingCount}</p>
-            <p className="text-xs text-yellow-300 mt-1">In Progress</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+            <p className="text-xl font-semibold text-amber-200">{pendingCount}</p>
+            <p className="text-xs text-zinc-400 mt-1">In progress</p>
           </div>
-          <div className="rounded-lg border border-white/20 bg-white/5 p-4">
-            <p className="text-2xl font-bold text-white">{totalCount}</p>
-            <p className="text-xs text-zinc-400 mt-1">Total Brokers</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+            <p className="text-xl font-semibold text-white">{totalCount}</p>
+            <p className="text-xs text-zinc-400 mt-1">Total brokers</p>
           </div>
         </div>
 
@@ -143,15 +142,15 @@ export function AutomatedRightToDelete() {
                 <span
                   className={`text-xs font-medium ${
                     request.status === "success"
-                      ? "text-emerald-400"
+                      ? "text-emerald-300"
                       : request.status === "pending"
-                        ? "text-yellow-400"
+                        ? "text-amber-200"
                         : "text-zinc-500"
                   }`}
                 >
-                  {request.status === "success" && "✓ SUCCESS"}
-                  {request.status === "pending" && "PENDING"}
-                  {request.status === "idle" && "QUEUED"}
+                  {request.status === "success" && "Sent"}
+                  {request.status === "pending" && "In progress"}
+                  {request.status === "idle" && "Queued"}
                 </span>
                 {request.timestamp && (
                   <p className="text-xs text-zinc-500 mt-0.5">
@@ -167,7 +166,7 @@ export function AutomatedRightToDelete() {
       {/* How It Works */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5 space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 text-green-400 font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-xs text-zinc-200">
             1
           </div>
           <h3 className="font-semibold text-white text-sm">Map Your Identity</h3>
@@ -178,7 +177,7 @@ export function AutomatedRightToDelete() {
         </div>
 
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5 space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 text-green-400 font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-xs text-zinc-200">
             2
           </div>
           <h3 className="font-semibold text-white text-sm">
@@ -191,7 +190,7 @@ export function AutomatedRightToDelete() {
         </div>
 
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5 space-y-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 text-green-400 font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-xs text-zinc-200">
             3
           </div>
           <h3 className="font-semibold text-white text-sm">
@@ -207,8 +206,8 @@ export function AutomatedRightToDelete() {
       {/* Top Brokers Covered */}
       <div className="rounded-xl border border-white/10 bg-[#050509] p-6 space-y-4">
         <h3 className="font-semibold text-white flex items-center gap-2">
-          <Mail className="h-5 w-5 text-green-400" />
-          Top 100 US Data Brokers Covered
+          <Mail className="h-5 w-5 text-zinc-300" />
+          Examples of brokers covered
         </h3>
         <div className="grid gap-2 sm:grid-cols-2">
           {topBrokers.slice(0, 8).map((broker) => (
@@ -222,8 +221,7 @@ export function AutomatedRightToDelete() {
           ))}
         </div>
         <p className="text-xs text-zinc-500">
-          ...plus 92 more brokers including LexisNexis, Equifax, TransUnion,
-          and others.
+          Plus additional US data brokers, including LexisNexis, Equifax, TransUnion and others.
         </p>
       </div>
 
@@ -232,22 +230,20 @@ export function AutomatedRightToDelete() {
         <div className="rounded-xl border border-white/10 bg-white/2 p-6">
           <p className="text-sm font-semibold text-white mb-3">Manual Deletion</p>
           <div className="space-y-2 text-xs text-zinc-400">
-            <p>⏱️ 100+ hours of research and emailing</p>
-            <p>📧 Each broker has different processes</p>
-            <p>❌ No tracking or follow-up</p>
-            <p>💸 Effectively: $10,000+ in your time</p>
+            <p>Many hours of research and emailing</p>
+            <p>Each broker has different processes</p>
+            <p>No unified tracking or follow-up</p>
+            <p>High time cost if done manually</p>
           </div>
         </div>
 
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6">
-          <p className="text-sm font-semibold text-emerald-400 mb-3">
-            GhostSweep Automation
-          </p>
-          <div className="space-y-2 text-xs text-emerald-300">
-            <p>✓ 5 minutes to set up</p>
-            <p>✓ Unified, legal-compliant process</p>
-            <p>✓ Real-time tracking dashboard</p>
-            <p>✓ Cost: $9.99/month</p>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+          <p className="text-sm font-semibold text-white mb-3">With GhostSweep</p>
+          <div className="space-y-2 text-xs text-zinc-300">
+            <p>Typical setup in a few minutes</p>
+            <p>Templates designed to be legally consistent</p>
+            <p>Central place to track responses</p>
+            <p>Current price: $9.99/month</p>
           </div>
         </div>
       </div>

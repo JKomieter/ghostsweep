@@ -22,13 +22,13 @@ export function ComparisonMatrix() {
     },
     {
       name: "Data Broker Opt-Out",
-      description: "Automated deletion requests to 900+ brokers",
+      description: "Deletion templates for 100+ data brokers",
       manual: true,
       manual_detail: "100+ Hours",
       deleteMe: true,
       deleteMe_detail: "Yearly Subscription",
       ghostsweep: true,
-      ghostsweepDetail: "Automated & Instant",
+      ghostsweepDetail: "Templates & tracking",
     },
     {
       name: "Credential Audit",
@@ -48,13 +48,13 @@ export function ComparisonMatrix() {
     },
     {
       name: "CCPA Compliance",
-      description: "Legal right-to-delete automation",
+      description: "Legal right-to-delete workflow",
       manual: true,
       manual_detail: "DIY",
       deleteMe: true,
       deleteMe_detail: "Basic",
       ghostsweep: true,
-      ghostsweepDetail: "Full Automation",
+      ghostsweepDetail: "Guided workflow",
     },
     {
       name: "Privacy-First",
@@ -79,12 +79,12 @@ export function ComparisonMatrix() {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-4 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-white">
-          How GhostSweep Compares
+      <div className="space-y-2 text-center">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+          How GhostSweep compares
         </h2>
-        <p className="mx-auto max-w-2xl text-lg text-zinc-400">
-          We built the features that DeleteMe and Onerep are missing.
+        <p className="mx-auto max-w-2xl text-sm text-zinc-400">
+          A side-by-side view of manual work, traditional services, and GhostSweep.
         </p>
       </div>
 
@@ -211,15 +211,15 @@ export function ComparisonMatrix() {
                 )}
               </div>
 
-              <div className="rounded bg-emerald-500/10 border border-emerald-500/30 p-2">
-                <p className="text-xs text-emerald-400 mb-1 font-medium">
+              <div className="rounded border border-white/10 bg-white/5 p-2">
+                <p className="text-xs text-zinc-200 mb-1 font-medium">
                   GhostSweep
                 </p>
                 {feature.ghostsweep ? (
                   <div className="space-y-1">
                     <CheckCircle className="h-4 w-4 text-emerald-400 mx-auto" />
                     {feature.ghostsweepDetail && (
-                      <p className="text-[10px] text-emerald-300">
+                      <p className="text-[10px] text-zinc-400">
                         {feature.ghostsweepDetail}
                       </p>
                     )}
@@ -236,10 +236,10 @@ export function ComparisonMatrix() {
       {/* Bottom Note */}
       <div className="rounded-xl border border-white/10 bg-white/2 p-6 text-center space-y-3">
         <p className="text-sm text-zinc-400">
-          Ready to see what GhostSweep can do for you?
+          This is a simplified view. Your inbox and risk profile are unique.
         </p>
         <p className="text-xs text-zinc-500">
-          Try the full suite free for 1 day.
+          You can try Pro features free for 1 day to see how it feels in practice.
         </p>
       </div>
     </section>

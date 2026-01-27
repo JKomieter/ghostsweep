@@ -37,17 +37,16 @@ export function PrivacyTrustSection() {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-4 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300">
-          <Shield className="h-3 w-3" />
-          Address #1 Reason People Bounce
+      <div className="space-y-3 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-zinc-300">
+          <Shield className="h-3 w-3 text-zinc-400" />
+          How GhostSweep treats your data
         </div>
-        <h2 className="text-3xl sm:text-4xl font-bold text-white">
-          Privacy Shield: Why We're Different
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+          Privacy, explained simply
         </h2>
-        <p className="mx-auto max-w-2xl text-lg text-zinc-400">
-          You don't need to trust us blindly. Here's exactly how we protect your
-          data.
+        <p className="mx-auto max-w-xl text-sm text-zinc-400">
+          A clear overview of what GhostSweep can see, what it can't, and how we handle email metadata.
         </p>
       </div>
 
@@ -94,29 +93,29 @@ export function PrivacyTrustSection() {
       {/* Trust Badges */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-2xl font-bold text-white mb-2">No Selling</div>
-          <p className="text-xs text-zinc-400">
+          <div className="text-sm font-medium text-white mb-1">No selling</div>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             We don't sell your data, run ads, or track you across other
             websites. Your privacy is the product, not the price.
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-2xl font-bold text-white mb-2">Revoke Anytime</div>
-          <p className="text-xs text-zinc-400">
+          <div className="text-sm font-medium text-white mb-1">Revoke anytime</div>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Disconnect Gmail or Outlook from GhostSweep settings anytime. We
             lose access immediately.
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-2xl font-bold text-white mb-2">Encrypted</div>
-          <p className="text-xs text-zinc-400">
+          <div className="text-sm font-medium text-white mb-1">Encrypted</div>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Data in transit and at rest uses AES-256 encryption. Even our team
             can't decrypt your account mappings.
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-2xl font-bold text-white mb-2">GDPR Ready</div>
-          <p className="text-xs text-zinc-400">
+          <div className="text-sm font-medium text-white mb-1">GDPR ready</div>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Full compliance with GDPR, CCPA, and other data protection laws. You
             own your data.
           </p>

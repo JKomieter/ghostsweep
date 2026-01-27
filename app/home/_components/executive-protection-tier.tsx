@@ -7,12 +7,12 @@ export function ExecutiveProtectionTier() {
   return (
     <section className="space-y-6">
       <div className="space-y-2 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300">
-          <BarChart3 className="h-3 w-3" />
-          For Teams
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-zinc-300">
+          <BarChart3 className="h-3 w-3 text-zinc-400" />
+          For security and admin teams
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white">
-          Executive Admin Suite
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+          Executive protection, handled quietly
         </h2>
       </div>
 
@@ -54,7 +54,7 @@ export function ExecutiveProtectionTier() {
                   Executive Data Wiping
                 </h3>
                 <p className="text-sm text-zinc-400 mt-1">
-                  Automated deletion requests to 100+ data brokers, keeping sensitive executive information private.
+                  Coordinated deletion requests to 100+ data brokers, keeping sensitive executive information private.
                 </p>
               </div>
             </div>
@@ -62,14 +62,14 @@ export function ExecutiveProtectionTier() {
 
           <div className="border-t border-white/10 pt-4">
             <Link
-              href="mailto:support@ghostsweep.com?subject=Inquiry: GhostSweep Executive Admin Suite"
-              className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-amber-600 transition"
+              href="mailto:support@ghostsweep.com?subject=Inquiry:%20GhostSweep%20Executive%20Admin%20Suite"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-medium text-zinc-50 hover:bg-white/10 transition"
             >
-              Request Custom Suite
-              <ArrowRight className="h-4 w-4" />
+              Talk with the founder
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <p className="text-xs text-zinc-500 mt-3">
-              Custom pricing and features for enterprise teams
+              Discreet rollout and pricing for leadership and admin teams.
             </p>
           </div>
         </div>
