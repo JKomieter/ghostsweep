@@ -433,10 +433,10 @@ export default function HomePage() {
                                 <Check className="h-3 w-3 text-emerald-400" />
                                 2-minute scan
                             </span>
-                            <span className="inline-flex items-center gap-1">
+                            {/* <span className="inline-flex items-center gap-1">
                                 <Check className="h-3 w-3 text-emerald-400" />
                                 No credit card
-                            </span>
+                            </span> */}
                             <span className="inline-flex items-center gap-1">
                                 <Check className="h-3 w-3 text-emerald-400" />
                                 Revoke anytime
@@ -920,7 +920,7 @@ export default function HomePage() {
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                             <p className="text-center text-xs text-zinc-400">
-                                No credit card. Cancel anytime. Trial expires in 1 day.
+                                Cancel anytime. Trial expires in 1 day.
                             </p>
                         </div>
                     </div>

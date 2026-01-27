@@ -239,7 +239,7 @@ export function ComparisonMatrix() {
           Ready to see what GhostSweep can do for you?
         </p>
         <p className="text-xs text-zinc-500">
-          Try the full suite free for 1 day. No credit card required.
+          Try the full suite free for 1 day.
         </p>
       </div>
     </section>
