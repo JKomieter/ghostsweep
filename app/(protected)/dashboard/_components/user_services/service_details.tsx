@@ -236,6 +236,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
     const domain = userServiceDetailsQueryResult?.userService?.service?.domain || "";
     const category = userServiceDetailsQueryResult?.userService?.service?.category || "Unknown";
     const breached = userServiceDetailsQueryResult?.userService?.service?.is_breached === true;
+    const logoUrl = userServiceDetailsQueryResult?.userService?.service?.logo_url || null;
 
     const websiteUrl = domain ? `https://${domain}` : null;
 
@@ -338,6 +339,13 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                             <span className="hidden sm:inline text-sm">Back</span>
                         </Button>
                     </Link>
+
+                    {logoUrl && (
+                        <div className="relative h-12 w-12 overflow-hidden rounded-lg border border-white/10 bg-white/5 shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={logoUrl} alt={serviceName} className="h-full w-full object-cover" />
+                        </div>
+                    )}
 
                     <div className="min-w-0 space-y-2">
                         <h1 className="text-2xl font-light tracking-tight text-white">
