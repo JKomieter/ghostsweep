@@ -3,7 +3,8 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ServiceTable from "../_components/user_services/service_table";
 import ServicePageTitle from "../_components/user_services/service_page_title";
-import {  useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Category } from "@/types";
 import ServicesMetrics from "../_components/user_services/services_metrics";
 import { DeletionRequestsQueryResult, UserBreachesQueryResult, UserServicesQueryResult } from "@/queryTypes";
@@ -17,15 +18,51 @@ type WhitelistFilter = "all" | "whitelisted" | "not_whitelisted";
 
 // 🔥 Extract component that uses useSearchParams
 function ServicesPageContent() {
-    const [query, setQuery] = useState("");
-    const [category, setCategory] = useState<Category | undefined | "all">("all");
-    const [breachedFilter, setBreachedFilter] = useState<BreachFilter>("all");
-    const [page, setPage] = useState(1);
-    const [activityFilter, setActivityFilter] = useState<ActivityFilter>("all");
-    const [minEmails, setMinEmails] = useState<number | undefined>(undefined);
-    const [hasDeletionRequest, setHasDeletionRequest] = useState<HasDeletionFilter>("all");
-    const [emailFilter, setEmailFilter] = useState<EmailFilter>("all");
-    const [whitelistFilter, setWhitelistFilter] = useState<WhitelistFilter>("all");
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    // Initialize state from URL params
+    const [query, setQuery] = useState(searchParams.get("query") || "");
+    const [category, setCategory] = useState<Category | undefined | "all">(
+        (searchParams.get("category") as Category | "all") || "all"
+    );
+    const [breachedFilter, setBreachedFilter] = useState<BreachFilter>(
+        (searchParams.get("breached") as BreachFilter) || "all"
+    );
+    const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+    const [activityFilter, setActivityFilter] = useState<ActivityFilter>(
+        (searchParams.get("activity") as ActivityFilter) || "all"
+    );
+    const [minEmails, setMinEmails] = useState<number | undefined>(
+        searchParams.get("min_emails") ? Number(searchParams.get("min_emails")) : undefined
+    );
+    const [hasDeletionRequest, setHasDeletionRequest] = useState<HasDeletionFilter>(
+        (searchParams.get("has_deletion_request") as HasDeletionFilter) || "all"
+    );
+    const [emailFilter, setEmailFilter] = useState<EmailFilter>(
+        searchParams.get("email") || "all"
+    );
+    const [whitelistFilter, setWhitelistFilter] = useState<WhitelistFilter>(
+        (searchParams.get("whitelisted") as WhitelistFilter) || "not_whitelisted"
+    );
+
+    // Sync filter changes to URL
+    useEffect(() => {
+        const params = new URLSearchParams();
+
+        if (query) params.set("query", query);
+        if (category && category !== "all") params.set("category", category);
+        if (breachedFilter !== "all") params.set("breached", breachedFilter);
+        if (page > 1) params.set("page", String(page));
+        if (activityFilter !== "all") params.set("activity", activityFilter);
+        if (typeof minEmails === "number") params.set("min_emails", String(minEmails));
+        if (hasDeletionRequest !== "all") params.set("has_deletion_request", hasDeletionRequest);
+        if (emailFilter !== "all") params.set("email", emailFilter);
+        if (whitelistFilter !== "all") params.set("whitelisted", whitelistFilter);
+
+        const queryString = params.toString();
+        router.push(queryString ? `?${queryString}` : "/dashboard/user_services");
+    }, [query, category, breachedFilter, page, activityFilter, minEmails, hasDeletionRequest, emailFilter, whitelistFilter, router]);
 
     // Fetch Gmail and Microsoft accounts for email filtering
     const { data: emailAccountsData } = useQuery({

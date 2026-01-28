@@ -398,8 +398,10 @@ export default function ServiceTable(props: ServiceTableProps) {
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
         meta: {
-            onView: (userServiceId: string) =>
-                router.push(`/dashboard/user_services/${userServiceId}/details`),
+            onView: (userServiceId: string) => {
+                const url = `/dashboard/user_services/${userServiceId}/details`
+                window.open(url, '_blank')
+            },
             gated: apiGated,
             onToggleWhitelist: (
                 userServiceId: string | undefined,
@@ -422,10 +424,11 @@ export default function ServiceTable(props: ServiceTableProps) {
         return rows
             .map((r) => r.original.id)
             .filter((id): id is string => typeof id === "string" && id.length > 0)
-    }, [table])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [rowSelection, table])
 
     const selectedCount = selectedIds.length
-
+    
     const appliedFilters = useMemo(() => {
         const chips: { key: string; label: string; onClear: () => void }[] = []
 
@@ -482,7 +485,10 @@ export default function ServiceTable(props: ServiceTableProps) {
     }
 
     const startBulkDeletion = async () => {
-        if (selectedIds.length === 0) return
+        if (selectedIds.length === 0) {
+            toast.error("Please select one or more services first")
+            return
+        }
         try {
             setBulkLoading(true)
             const idsJoin = encodeURIComponent(selectedIds.join(","))
@@ -490,6 +496,42 @@ export default function ServiceTable(props: ServiceTableProps) {
         } finally {
             setBulkLoading(false)
         }
+    }
+
+    const bulkWhitelist = useMutation({
+        mutationFn: async ({ ids, isWhitelisting }: { ids: string[]; isWhitelisting: boolean }) => {
+            const promises = ids.map(id =>
+                fetch(`/api/user_services/${id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ is_whitelisted: isWhitelisting }),
+                })
+            )
+            const results = await Promise.all(promises)
+            for (const res of results) {
+                if (!res.ok) {
+                    throw new Error("Failed to update one or more services")
+                }
+            }
+            return { count: ids.length, isWhitelisting }
+        },
+        onSuccess: (data) => {
+            toast.success(`${data.count} service${data.count !== 1 ? "s" : ""} ${data.isWhitelisting ? "whitelisted" : "removed from whitelist"}.`)
+            queryClient.invalidateQueries({ queryKey: ["user_services"] })
+            queryClient.invalidateQueries({ queryKey: ["forgotten_count"] })
+            setRowSelection({})
+        },
+        onError: () => {
+            toast.error("Failed to update whitelist status")
+        },
+    })
+
+    const handleBulkWhitelist = (isWhitelisting: boolean) => {
+        if (selectedIds.length === 0) {
+            toast.error("Please select one or more services first")
+            return
+        }
+        bulkWhitelist.mutate({ ids: selectedIds, isWhitelisting })
     }
 
     return (
@@ -519,10 +561,29 @@ export default function ServiceTable(props: ServiceTableProps) {
                         Filters
                     </Button>
 
+                    
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-white/15 bg-[#050505]"
+                            disabled={bulkWhitelist.isPending}
+                            onClick={() => handleBulkWhitelist(true)}
+                            title="Add selected services to whitelist"
+                        >
+                            {bulkWhitelist.isPending ? (
+                                <span className="flex items-center gap-2">
+                                    <Spinner className="h-4 w-4" /> Whitelisting…
+                                </span>
+                            ) : (
+                                `Whitelist (${selectedCount})`
+                            )}
+                        </Button>
+                    
+
                     <Button
                         size="sm"
                         className="bg-primary text-black hover:bg-primary/80"
-                        disabled={apiGated || selectedCount === 0 || bulkLoading}
+                        disabled={apiGated || bulkLoading}
                         onClick={startBulkDeletion}
                         title={apiGated ? "Upgrade to use bulk delete" : selectedCount === 0 ? "Select services first" : "Start bulk deletion"}
                     >

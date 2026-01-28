@@ -453,6 +453,27 @@ export default function HomePage() {
                     </div>
                 </section>
 
+                {/* TESTIMONIAL SECTION */}
+                <section className="mx-auto max-w-2xl py-4">
+                    <div className="space-y-4 pl-6 border-l border-emerald-500/30">
+                        <svg className="h-5 w-5 text-emerald-400/60" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-4.25-2-7-2s-7 .75-7 2v10c0 1 0 7 7 8z" />
+                            <path d="M15 19c3.5-1 7-4 7-10V5c0-1.25-4.25-2-7-2s-7 .75-7 2v10c0 1 0 7 7 8z" />
+                        </svg>
+
+                        <p className="text-base leading-relaxed text-white/90 font-light">
+                            GhostSweep was a real eye-opener. It revealed just how many accounts I'd accumulated over the years, including many I'd completely forgotten about. The scan and clean-up process are incredibly intuitive, making it quick and easy to review everything in one place and deciding what to keep or delete. It's a great solution for anyone who wants a clearer picture of their digital footprint and more control over their online presence.
+                        </p>
+
+                        <div className="flex items-center gap-3 pt-2">
+                            <div>
+                                <p className="text-sm font-light text-white">Anon</p>
+                                <p className="text-xs text-white/50">Software Engineer</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* HOW IT WORKS - SIMPLIFIED */}
                 <section className="space-y-8" id="how">
                     <div className="text-center space-y-2">
