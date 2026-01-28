@@ -13,6 +13,7 @@ type BreachFilter = "all" | "breached" | "unbreached";
 type ActivityFilter = "all" | "active" | "inactive";
 type HasDeletionFilter = "all" | "yes" | "no";
 type EmailFilter = "all" | string; // "all" or specific email address
+type WhitelistFilter = "all" | "whitelisted" | "not_whitelisted";
 
 // 🔥 Extract component that uses useSearchParams
 function ServicesPageContent() {
@@ -24,6 +25,7 @@ function ServicesPageContent() {
     const [minEmails, setMinEmails] = useState<number | undefined>(undefined);
     const [hasDeletionRequest, setHasDeletionRequest] = useState<HasDeletionFilter>("all");
     const [emailFilter, setEmailFilter] = useState<EmailFilter>("all");
+    const [whitelistFilter, setWhitelistFilter] = useState<WhitelistFilter>("all");
 
     // Fetch Gmail and Microsoft accounts for email filtering
     const { data: emailAccountsData } = useQuery({
@@ -59,6 +61,7 @@ function ServicesPageContent() {
             minEmails ?? "",
             hasDeletionRequest,
             emailFilter,
+            whitelistFilter,
         ],
         queryFn: async (): Promise<UserServicesQueryResult> => {
             const params = new URLSearchParams();
@@ -88,6 +91,10 @@ function ServicesPageContent() {
 
             if (emailFilter !== "all") {
                 params.set("email", emailFilter);
+            }
+
+            if (whitelistFilter !== "all") {
+                params.set("whitelisted", whitelistFilter);
             }
 
             const res = await fetch(`/api/user_services?${params.toString()}`);
@@ -127,6 +134,7 @@ function ServicesPageContent() {
             minEmails ?? "",
             hasDeletionRequest,
             emailFilter,
+            whitelistFilter,
         ],
         queryFn: async (): Promise<{ forgotten: number }> => {
             const params = new URLSearchParams();
@@ -155,6 +163,10 @@ function ServicesPageContent() {
 
             if (emailFilter !== "all") {
                 params.set("email", emailFilter);
+            }
+
+            if (whitelistFilter !== "all") {
+                params.set("whitelisted", whitelistFilter);
             }
 
             const res = await fetch(`/api/user_services/forgotten_count?${params.toString()}`);
@@ -206,6 +218,8 @@ function ServicesPageContent() {
                     setEmailFilter={setEmailFilter}
                     gmailAccounts={emailAccountsData?.gmailAccounts || []}
                     microsoftAccounts={emailAccountsData?.microsoftAccounts || []}
+                    whitelistFilter={whitelistFilter}
+                    setWhitelistFilter={setWhitelistFilter}
                 />
             </div>
         </div>
@@ -216,16 +230,16 @@ function ServicesPageContent() {
 export default function Page() {
     return (
         <Suspense fallback={
-            <div className="min-h-[calc(100vh-3.5rem)] px-4 py-6 md:px-8 md:py-8 space-y-6">
-                <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="h-24 bg-gray-200 rounded"></div>
-                        <div className="h-24 bg-gray-200 rounded"></div>
-                        <div className="h-24 bg-gray-200 rounded"></div>
-                        <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="min-h-[calc(100vh-3.5rem)] px-4 py-6 md:px-8 md:py-8 space-y-8">
+                <div className="animate-pulse max-w-6xl mx-auto">
+                    <div className="h-8 bg-white/5 rounded-lg w-1/4 mb-8"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div className="h-24 bg-white/5 rounded-lg border border-white/5"></div>
+                        <div className="h-24 bg-white/5 rounded-lg border border-white/5"></div>
+                        <div className="h-24 bg-white/5 rounded-lg border border-white/5"></div>
+                        <div className="h-24 bg-white/5 rounded-lg border border-white/5"></div>
                     </div>
-                    <div className="h-96 bg-gray-200 rounded"></div>
+                    <div className="h-96 bg-white/5 rounded-lg border border-white/5"></div>
                 </div>
             </div>
         }>

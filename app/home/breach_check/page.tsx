@@ -85,27 +85,27 @@ export default function BreachCheckPage() {
     const hasResults = breaches.length > 0;
 
     return (
-        <main className="min-h-screen bg-[#020204] text-foreground px-4 py-8">
+        <main className="min-h-screen bg-[#050505] text-white px-4 py-8">
             <div className="mx-auto max-w-3xl space-y-6">
                 <header className="space-y-2">
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                    <h1 className="text-2xl font-light tracking-tight text-white">
                         Quick Breach Check
                     </h1>
-                    <p className="text-sm text-muted-foreground max-w-xl">
+                    <p className="text-sm text-white/60 max-w-xl">
                         Check if an email or domain appears in known data breaches. This is
                         a one-off check powered by the same breach engine GhostSweep uses
                         during a full inbox sweep.
                     </p>
                 </header>
 
-                <Card className="bg-[#050505] border border-white/10">
+                <Card className="bg-white/2 border border-white/5 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle className="text-base">
+                        <CardTitle className="text-base font-light text-white">
                             Enter an email or domain
                         </CardTitle>
-                        <CardDescription className="text-xs text-muted-foreground">
-                            Example: <code className="text-[11px]">you@example.com</code> or{" "}
-                            <code className="text-[11px]">example.com</code>
+                        <CardDescription className="text-xs text-white/60">
+                            Example: <code className="text-[11px] bg-white/10 px-1 rounded">you@example.com</code> or{" "}
+                            <code className="text-[11px] bg-white/10 px-1 rounded">example.com</code>
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -119,11 +119,11 @@ export default function BreachCheckPage() {
                                 placeholder="you@example.com or example.com"
                                 value={query}
                                 onChange={setQuery}
-                                className="flex-1 bg-background/80"
+                                className="flex-1 bg-white/5 border-white/5"
                             />
                             <Button
                                 type="submit"
-                                className="sm:w-auto w-full"
+                                className="sm:w-auto w-full bg-white text-black hover:bg-white/90 font-light"
                                 disabled={status === "loading" || !query.trim()}
                             >
                                 {status === "loading" ? (
@@ -138,21 +138,21 @@ export default function BreachCheckPage() {
                         </form>
 
                         {status === "error" && error && (
-                            <Alert variant="destructive" className="mt-2">
-                                <AlertTitle>Something went wrong</AlertTitle>
-                                <AlertDescription className="text-xs">
+                            <Alert variant="destructive" className="mt-2 border-red-500/20 bg-red-500/10">
+                                <AlertTitle className="text-red-300 font-light">Something went wrong</AlertTitle>
+                                <AlertDescription className="text-xs text-red-300/80">
                                     {error}
                                 </AlertDescription>
                             </Alert>
                         )}
 
                         {status === "success" && !hasResults && (
-                            <Alert className="mt-2 border-emerald-500/40 bg-emerald-500/5">
-                                <AlertTitle className="flex items-center gap-2 text-emerald-300">
+                            <Alert className="mt-2 border-emerald-500/20 bg-emerald-500/10">
+                                <AlertTitle className="flex items-center gap-2 text-emerald-300 font-light">
                                     <ShieldCheck className="h-4 w-4" />
                                     No known breaches found
                                 </AlertTitle>
-                                <AlertDescription className="text-xs text-emerald-100/80">
+                                <AlertDescription className="text-xs text-emerald-300/80">
                                     This email or domain doesn&apos;t appear in the breach records
                                     GhostSweep is currently tracking. This doesn&apos;t guarantee
                                     complete safety, but it&apos;s a good sign.
@@ -166,10 +166,10 @@ export default function BreachCheckPage() {
                 {hasResults && (
                     <section className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-medium">
+                            <h2 className="text-sm font-light text-white">
                                 Breaches found ({breaches.length})
                             </h2>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-white/60">
                                 These are known incidents where this email or domain appeared.
                             </p>
                         </div>
@@ -194,44 +194,44 @@ export default function BreachCheckPage() {
                                 return (
                                     <Card
                                         key={breach.Id ?? `${breach.Name}-${breach.Domain}-${breach.BreachDate}`}
-                                        className="bg-[#050505] border border-red-500/30"
+                                        className="bg-white/2 border border-red-500/20 backdrop-blur-sm"
                                     >
                                         <CardHeader className="pb-2">
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
-                                                    <CardTitle className="text-sm">
+                                                    <CardTitle className="text-sm font-light text-white">
                                                         {title}
                                                     </CardTitle>
-                                                    <CardDescription className="text-xs text-red-200/80">
+                                                    <CardDescription className="text-xs text-red-300/80">
                                                         {breach.Domain || "Unknown domain"} •{" "}
                                                         {dateLabel}
                                                     </CardDescription>
                                                 </div>
-                                                <span className="inline-flex items-center rounded-full bg-red-500/15 px-2 py-1 text-[11px] font-medium text-red-300">
+                                                <span className="inline-flex items-center rounded-full bg-red-500/15 px-2 py-1 text-[11px] font-light text-red-300">
                                                     {isSensitive ? "Sensitive" : "Breach"}
                                                 </span>
                                             </div>
                                         </CardHeader>
                                         <CardContent className="space-y-2">
                                             <p
-                                                className="text-xs text-muted-foreground leading-relaxed"
+                                                className="text-xs text-white/60 leading-relaxed"
                                                 dangerouslySetInnerHTML={{ __html: safeHtml }}
                                             />
 
                                             {Array.isArray(breach.DataClasses) &&
                                                 breach.DataClasses.length > 0 && (
-                                                    <p className="text-[11px] text-muted-foreground">
+                                                    <p className="text-[11px] text-white/60">
                                                         Data types exposed:{" "}
-                                                        <span className="font-medium">
+                                                        <span className="font-light text-white">
                                                             {breach.DataClasses.join(", ")}
                                                         </span>
                                                     </p>
                                                 )}
 
                                             {typeof pwnCount === "number" && (
-                                                <p className="text-[11px] text-red-200/80">
+                                                <p className="text-[11px] text-red-300/80">
                                                     Approx.{" "}
-                                                    <span className="font-semibold">
+                                                    <span className="font-light text-red-300">
                                                         {pwnCount.toLocaleString()}
                                                     </span>{" "}
                                                     accounts impacted.

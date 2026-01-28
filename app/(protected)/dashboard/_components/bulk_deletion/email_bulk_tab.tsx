@@ -280,18 +280,18 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
         progress.total > 0 ? Math.min(100, Math.round((progress.current / progress.total) * 100)) : 0;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-white/70" />
-                        <h2 className="text-base font-semibold">Email deletions</h2>
-                        <Badge variant="outline" className="text-[11px] border-white/10 bg-white/5 text-white/80">
-                            {emailCount.toLocaleString()} eligible
-                        </Badge>
+                        <Mail className="h-4 w-4 text-white/60" />
+                        <h2 className="text-base font-light text-white">Email deletions</h2>
+                        <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/2 px-2 py-1">
+                            <span className="text-[11px] text-white/60">{emailCount.toLocaleString()} eligible</span>
+                        </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-white/60">
                         Choose which services to email. Edit the master template below — it will be used for each
                         service.
                     </p>
@@ -299,9 +299,9 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="border-white/15 bg-white/5"
+                        className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
                         onClick={resetSelection}
                         disabled={isRunning || excludedIds.size === 0}
                     >
@@ -312,7 +312,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                     {isRunning ? (
                         <Button
                             size="sm"
-                            variant="destructive"
+                            className="bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30"
                             onClick={handleCancel}
                         >
                             <XCircle className="mr-2 h-4 w-4" />
@@ -321,7 +321,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                     ) : (
                         <Button
                             size="sm"
-                            className="bg-primary text-black hover:bg-primary/80"
+                            className="bg-white text-black hover:bg-white/90"
                             onClick={handleSend}
                             disabled={includedIds.length === 0}
                         >
@@ -333,9 +333,9 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
             {/* Progress */}
             {isRunning && (
-                <div className="rounded-lg border border-white/10 bg-[#050505] p-4 space-y-3">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-5 space-y-4">
                     <div className="flex items-center justify-between">
-                        <div className="text-sm font-medium text-white/90">Sending in progress...</div>
+                        <div className="text-sm font-light text-white">Sending in progress...</div>
                         <div className="text-xs text-white/60">
                             {progress.current}/{progress.total}
                         </div>
@@ -343,20 +343,20 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
                     <Progress value={pct} />
 
-                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                        <div className="rounded border border-green-500/20 bg-green-500/5 p-2">
-                            <div className="text-green-400 font-semibold">{completed}</div>
-                            <div className="text-white/50">Sent</div>
+                    <div className="grid grid-cols-3 gap-3 text-center text-xs">
+                        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                            <div className="text-emerald-400 font-light text-lg">{completed}</div>
+                            <div className="text-white/40 text-[11px] uppercase tracking-widest">Sent</div>
                         </div>
-                        <div className="rounded border border-blue-500/20 bg-blue-500/5 p-2">
-                            <div className="text-blue-400 font-semibold">
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-3">
+                            <div className="text-white font-light text-lg">
                                 {progress.total - progress.current}
                             </div>
-                            <div className="text-white/50">Remaining</div>
+                            <div className="text-white/40 text-[11px] uppercase tracking-widest">Remaining</div>
                         </div>
-                        <div className="rounded border border-red-500/20 bg-red-500/5 p-2">
-                            <div className="text-red-400 font-semibold">{failed}</div>
-                            <div className="text-white/50">Failed</div>
+                        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
+                            <div className="text-red-400 font-light text-lg">{failed}</div>
+                            <div className="text-white/40 text-[11px] uppercase tracking-widest">Failed</div>
                         </div>
                     </div>
                 </div>
@@ -364,10 +364,10 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
             {/* Show completion summary */}
             {!isRunning && progress.total > 0 && (
-                <div className="rounded-lg border border-white/10 bg-[#050505] p-4">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-5">
                     <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle className="h-5 w-5 text-green-400" />
-                        <div className="text-sm font-medium text-white/90">Bulk send complete</div>
+                        <CheckCircle className="h-5 w-5 text-emerald-400" />
+                        <div className="text-sm font-light text-white">Bulk send complete</div>
                     </div>
                     <div className="text-xs text-white/60">
                         {completed} emails sent successfully
@@ -378,37 +378,37 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
             {/* Master template */}
             <Accordion type="single" collapsible defaultValue="master">
-                <AccordionItem value="master" className="border-white/10">
-                    <AccordionTrigger className="rounded-lg border border-white/10 bg-[#050505] px-4 py-3 hover:no-underline">
+                <AccordionItem value="master" className="border-white/5">
+                    <AccordionTrigger className="rounded-lg border border-white/5 bg-white/2 px-5 py-4 hover:no-underline hover:bg-white/3">
                         <div className="flex w-full items-center justify-between">
-                            <div className="text-sm font-medium text-white/90">Master email template</div>
-                            <div className="text-[11px] text-white/60">Subject + body used for each service</div>
+                            <div className="text-sm font-light text-white">Master email template</div>
+                            <div className="text-[11px] text-white/40">Subject + body used for each service</div>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="pt-3">
-                        <div className="rounded-lg border border-white/10 bg-[#050505] p-4 space-y-3">
-                            <div className="space-y-1">
-                                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Subject</div>
+                    <AccordionContent className="pt-4">
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-5 space-y-4">
+                            <div className="space-y-2">
+                                <div className="text-[11px] uppercase tracking-widest text-white/40">Subject</div>
                                 <Input
                                     id="subject"
                                     value={subject}
                                     onChange={setSubject}
-                                    className="bg-black/50 border-white/10"
+                                    className="bg-white/2 border-white/5"
                                     placeholder="Email subject"
                                     disabled={isRunning}
                                 />
                             </div>
 
-                            <div className="space-y-1">
-                                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Body</div>
+                            <div className="space-y-2">
+                                <div className="text-[11px] uppercase tracking-widest text-white/40">Body</div>
                                 <Textarea
                                     value={body}
                                     onChange={(e) => setBody(e.target.value)}
-                                    className="min-h-40 bg-black/50 border-white/10 font-mono text-[12px]"
+                                    className="min-h-40 bg-white/2 border-white/5 font-mono text-[12px]"
                                     placeholder="Email body"
                                     disabled={isRunning}
                                 />
-                                <p className="text-[11px] text-white/50">
+                                <p className="text-[11px] text-white/40">
                                     Use variables: {"{SERVICE_NAME}"}, {"{USER_EMAIL}"}, {"{SERVICE_DOMAIN}"}
                                 </p>
                             </div>
@@ -418,9 +418,9 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
             </Accordion>
 
             {/* Services list with live status */}
-            <div className="rounded-xl border border-white/10 bg-[#050505] overflow-hidden">
-                <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-sm font-medium text-white/90">Services to email</div>
+            <div className="rounded-lg border border-white/5 bg-white/2 overflow-hidden">
+                <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
+                    <div className="text-sm font-light text-white">Services to email</div>
                     <div className="text-[11px] text-white/60">
                         {included.length}/{email.length} selected
                     </div>
@@ -428,9 +428,9 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
                 <div className="max-h-[520px] overflow-y-auto">
                     {email.length === 0 ? (
-                        <div className="p-6 text-sm text-muted-foreground">No email-based deletions available.</div>
+                        <div className="p-6 text-sm text-white/60">No email-based deletions available.</div>
                     ) : (
-                        <ul className="divide-y divide-white/10">
+                        <ul className="divide-y divide-white/5">
                             {email.map((row) => {
                                 const svc = getService(row);
                                 const isExcluded = excludedIds.has(row.id);
@@ -442,7 +442,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                     <li
                                         key={row.id}
                                         className={cn(
-                                            "px-4 py-3 flex items-start justify-between gap-3",
+                                            "px-5 py-4 flex items-start justify-between gap-3",
                                             isExcluded && "opacity-60"
                                         )}
                                     >
@@ -454,7 +454,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                                 className="mt-1"
                                             />
 
-                                            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-white/10 bg-white/5 shrink-0">
+                                            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-white/5 bg-white/2 shrink-0">
                                                 {svc?.logo_url ? (
                                                     <Image
                                                         src={svc.logo_url}
@@ -468,7 +468,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
 
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="text-sm font-medium text-white truncate">
+                                                    <div className="text-sm font-light text-white truncate">
                                                         {svc?.name || "Unknown service"}
                                                     </div>
 
@@ -477,14 +477,14 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                                         <Loader2 className="h-3 w-3 animate-spin text-blue-400" />
                                                     )}
                                                     {status === "sent" && (
-                                                        <CheckCircle className="h-3 w-3 text-green-400" />
+                                                        <CheckCircle className="h-3 w-3 text-emerald-400" />
                                                     )}
                                                     {status === "failed" && (
                                                         <XCircle className="h-3 w-3 text-red-400" />
                                                     )}
                                                 </div>
 
-                                                <div className="mt-1 text-[11px] text-white/55">
+                                                <div className="mt-1 text-[11px] text-white/60">
                                                     To: <span className="font-mono text-white/70">{toEmail || "N/A"}</span>
                                                 </div>
 
@@ -503,7 +503,7 @@ export default function EmailBulkTab({ emailCount, email }: BulkEmailTabProps) {
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-8 text-white/70 hover:text-white"
+                                                    className="h-8 text-white/60 hover:text-white border border-white/5 bg-white/2 hover:bg-white/3"
                                                     onClick={() => toggleInclude(row.id, false)}
                                                 >
                                                     <X className="h-4 w-4" />

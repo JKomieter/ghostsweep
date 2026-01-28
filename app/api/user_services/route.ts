@@ -71,6 +71,8 @@ export async function GET(request: NextRequest) {
         const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
         const emailParam = searchParams.get("email")?.trim() || "";
 
+        const whitelistedParam = searchParams.get("whitelisted")?.trim() || "";
+
         // New filters
         const statusParam = searchParams.get("status");
         const startedParam = searchParams.get("started");
@@ -91,6 +93,14 @@ export async function GET(request: NextRequest) {
 
         // Started filter
         const startedFilter = parseBool(startedParam);
+
+        // Whitelisted filter
+        let whitelistedFilter: boolean | null = null;
+        if (["whitelisted", "true", "1", "yes"].includes(whitelistedParam.toLowerCase())) {
+            whitelistedFilter = true;
+        } else if (["not_whitelisted", "false", "0", "no"].includes(whitelistedParam.toLowerCase())) {
+            whitelistedFilter = false;
+        }
 
         const from = (page - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE - 1;
@@ -114,6 +124,13 @@ export async function GET(request: NextRequest) {
             // Email filter
             if (emailParam) {
                 query = query.eq("email", emailParam);
+            }
+
+            // Whitelisted filter
+            if (whitelistedFilter === true) {
+                query = query.eq("is_whitelisted", true);
+            } else if (whitelistedFilter === false) {
+                query = query.or("is_whitelisted.eq.false,is_whitelisted.is.null");
             }
 
             // Started filter
@@ -225,6 +242,7 @@ export async function GET(request: NextRequest) {
                 confidence_score,
                 email,
                 email_provider,
+                is_whitelisted,
                 service:services!inner (*),
                 deletion_request:deletion_requests!deletion_requests_user_service_id_fkey (*)
             `

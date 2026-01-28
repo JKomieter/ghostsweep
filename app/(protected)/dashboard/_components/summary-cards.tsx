@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "@/utils/format_date";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, SquareArrowOutUpRight } from "lucide-react";
+import { Info, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { DashboardMetricsQueryResult } from "@/queryTypes";
 
@@ -9,35 +9,64 @@ type StatCardProps = {
     label: string;
     value: string | number;
     accent?: "default" | "danger" | "warning" | "success";
-    action?: React.ReactElement
+    href?: string;
 };
 
 function StatCard({
     label,
     value,
     accent = "default",
-    action
+    href
 }: StatCardProps) {
-    const accentClasses = {
-        default: "text-foreground",
-        danger: "text-destructive",
-        warning: "text-yellow-500/80",
-        success: "text-emerald-500/80",
+    const accentConfig = {
+        default: {
+            text: "text-white",
+            indicator: "bg-zinc-500"
+        },
+        danger: {
+            text: "text-white",
+            indicator: "bg-red-500"
+        },
+        warning: {
+            text: "text-white",
+            indicator: "bg-amber-500"
+        },
+        success: {
+            text: "text-white",
+            indicator: "bg-emerald-500"
+        },
     }[accent];
 
-    return (
-        <div className="space-y-1">
-            <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {label}
-                </p>
-                {action}
+    const content = (
+        <div className="group relative h-full">
+            <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-white/5 bg-white/2 p-6 transition-all hover:border-white/10 hover:bg-white/3">
+                <div className="flex items-start justify-between">
+                    <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+                        {label}
+                    </span>
+                    {href && (
+                        <ArrowUpRight className="h-3.5 w-3.5 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/40" />
+                    )}
+                </div>
+                <div className="flex items-end justify-between">
+                    <span className={`text-4xl font-light tracking-tight ${accentConfig.text}`}>
+                        {value}
+                    </span>
+                    <div className={`h-1 w-1 rounded-full ${accentConfig.indicator}`} />
+                </div>
             </div>
-            <h2 className={`text-3xl font-semibold ${accentClasses}`}>
-                {value}
-            </h2>
         </div>
     );
+
+    if (href) {
+        return (
+            <Link href={href} className="block">
+                {content}
+            </Link>
+        );
+    }
+
+    return content;
 }
 
 export default function SummaryCards() {
@@ -79,80 +108,72 @@ export default function SummaryCards() {
                             : "text-red-400";
 
     return (
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6">
-            {/* Services Found */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <StatCard
                 label="Services"
-                value={isLoading ? "…" : serviceCount}
-                action={(
-                    <Link href="/dashboard/user_services">
-                        <SquareArrowOutUpRight size={14} className="text-muted-foreground" />
-                    </Link>
-                )}
+                value={isLoading ? "—" : serviceCount}
+                href="/dashboard/user_services"
             />
 
-            {/* Breaches Detected */}
             <StatCard
                 label="Breaches"
-                value={isLoading ? "…" : breachCount}
+                value={isLoading ? "—" : breachCount}
                 accent="danger"
             />
 
-            {/* Last Sweep */}
             <StatCard
                 label="Last Sweep"
-                value={isLoading ? "…" : lastScanLabel}
+                value={isLoading ? "—" : lastScanLabel}
             />
 
-            {/* Pending Deletion Requests */}
             <StatCard
                 label="Pending"
-                value={isLoading ? "…" : pending}
+                value={isLoading ? "—" : pending}
                 accent="warning"
-                action={(
-                    <Link href="/dashboard/deletion_requests">
-                        <SquareArrowOutUpRight size={14} className="text-muted-foreground" />
-                    </Link>
-                )}
+                href="/dashboard/deletion_requests"
             />
 
-            {/* Companies Responded */}
             <StatCard
                 label="Responded"
-                value={isLoading ? "…" : responded}
+                value={isLoading ? "—" : responded}
                 accent="success"
             />
 
             {/* Security Score */}
-            <div className="space-y-1">
-                <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Score
-                    </p>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <button
-                                type="button"
-                                className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-border text-[10px] text-muted-foreground hover:text-foreground"
-                                aria-label="Security score info"
-                            >
-                                <Info className="h-3 w-3" />
-                            </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p className="text-xs">Based on accounts, breaches & completed requests</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
-                <div className="flex items-baseline gap-2">
-                    <h2 className={`text-3xl font-semibold ${scoreTextClass}`}>
-                        {isLoading ? "…" : score ?? "—"}
-                    </h2>
-                    {!isLoading && grade && (
-                        <span className="text-xs font-medium text-muted-foreground">
-                            {grade}
+            <div className="group relative h-full">
+                <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-white/5 bg-white/2 p-6 transition-all hover:border-white/10 hover:bg-white/3">
+                    <div className="flex items-start justify-between">
+                        <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+                            Score
                         </span>
-                    )}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    type="button"
+                                    className="flex h-4 w-4 items-center justify-center text-white/20 transition-colors hover:text-white/40"
+                                    aria-label="Security score info"
+                                >
+                                    <Info className="h-3 w-3" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs">
+                                Based on accounts, breaches & requests
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <div className="flex items-baseline gap-2">
+                            <span className={`text-4xl font-light tracking-tight ${scoreTextClass}`}>
+                                {isLoading ? "—" : score ?? "—"}
+                            </span>
+                            {!isLoading && grade && (
+                                <span className="text-sm font-medium text-white/30">
+                                    {grade}
+                                </span>
+                            )}
+                        </div>
+                        <div className={`h-1 w-1 rounded-full ${score === null ? 'bg-zinc-500' : score >= 75 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,8 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ExternalLink, Copy, ShieldAlert } from "lucide-react";
+import { useQueries, useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { ArrowLeft, ExternalLink, Copy, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -151,6 +151,86 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
 
     const playbook = serviceDeletionPlaybookQueryResult?.playbook ?? null;
 
+    // Whitelist mutation
+    const toggleWhitelist = useMutation({
+        mutationFn: async ({ isWhitelisted }: { isWhitelisted: boolean }) => {
+            const res = await fetch(`/api/user_services/${userServiceId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ is_whitelisted: isWhitelisted }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data?.error || "Failed to update whitelist");
+            }
+
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success(
+                userService?.is_whitelisted
+                    ? `${userService?.service?.name} removed from whitelist`
+                    : `${userService?.service?.name} whitelisted`
+            );
+            queryClient.invalidateQueries({ queryKey: ["user_service_details", userServiceId] });
+            queryClient.invalidateQueries({ queryKey: ["user_services"] });
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || `Failed to update whitelist`);
+        },
+    });
+
+    // Manual deletion completion mutation
+    const markAsDeleted = useMutation({
+        mutationFn: async () => {
+            const deletionRequest = userServiceDetailsQueryResult?.deletionRequest;
+
+            // If no deletion request exists, create one with completed status
+            if (!deletionRequest) {
+                const res = await fetch("/api/deletion_requests/post", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        user_service_id: userServiceId,
+                        deletion_method: "manual",
+                        status: "completed",
+                        user_notes: "Marked as manually deleted by user",
+                    }),
+                });
+
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data?.error || "Failed to mark as deleted");
+                }
+
+                return res.json();
+            } else {
+                // Update existing deletion request to completed
+                const res = await fetch(`/api/deletion_requests/patch/${deletionRequest.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: "completed" }),
+                });
+
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data?.error || "Failed to mark as completed");
+                }
+
+                return res.json();
+            }
+        },
+        onSuccess: () => {
+            toast.success("Service marked as deleted!");
+            queryClient.invalidateQueries({ queryKey: ["user_service_details", userServiceId] });
+            queryClient.invalidateQueries({ queryKey: ["deletion_requests"] });
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || "Failed to mark as deleted");
+        },
+    });
+
     const serviceName =
         userServiceDetailsQueryResult?.userService?.service?.name || "Unknown service";
     const domain = userServiceDetailsQueryResult?.userService?.service?.domain || "";
@@ -253,36 +333,41 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                 {/* Left: back + title/meta */}
                 <div className="flex items-start gap-3">
                     <Link href="/dashboard/user_services" className="shrink-0">
-                        <Button variant="ghost" size="sm" className="gap-2 px-2">
+                        <Button variant="ghost" size="sm" className="gap-2 px-2 border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline text-sm">Back</span>
                         </Button>
                     </Link>
 
                     <div className="min-w-0 space-y-2">
-                        <h1 className="text-2xl font-semibold tracking-tight">
+                        <h1 className="text-2xl font-light tracking-tight text-white">
                             {serviceName}
                         </h1>
 
                         <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
+                            <span className="text-xs text-white/60">
                                 {category}
-                            </Badge>
+                            </span>
 
                             {breached ? (
-                                <Badge className="bg-destructive/15 text-destructive border-destructive/30 text-xs">
-                                    <ShieldAlert className="mr-1 h-3 w-3" />
-                                    Breached
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                                    <span className="text-xs text-red-400">
+                                        Breached
+                                    </span>
+                                </div>
                             ) : (
-                                <Badge className="bg-emerald-500/15 text-emerald-500 border-emerald-500/30 text-xs">
-                                    Secure
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                    <span className="text-xs text-emerald-400">
+                                        Secure
+                                    </span>
+                                </div>
                             )}
                         </div>
 
                         {domain && (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-white/40">
                                 {domain}
                             </p>
                         )}
@@ -291,7 +376,7 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
 
                 {/* Right: actions */}
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={refetchEverything}>
+                    <Button variant="ghost" size="sm" onClick={refetchEverything} className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
                         Refresh
                     </Button>
                     {/* <Button size="sm" onClick={openDeletionModal} className="md:min-w-[170px]">
@@ -302,54 +387,54 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
 
             {/* Loading / Error */}
             {userServiceDetailsQueryResultStatus === "pending" ? (
-                <div className="flex h-96 items-center justify-center rounded-lg border border-border">
-                    <Spinner className="text-primary size-8" />
+                <div className="flex h-96 items-center justify-center rounded-lg border border-white/5 bg-white/2">
+                    <Spinner className="text-white size-8" />
                 </div>
             ) : userServiceDetailsQueryResultStatus === "error" ? (
-                <div className="rounded-lg border border-border p-6 space-y-3">
-                    <h2 className="font-semibold">Error loading service</h2>
-                    <p className="text-sm text-muted-foreground">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-3">
+                    <h2 className="font-light text-white">Error loading service</h2>
+                    <p className="text-sm text-white/60">
                         {(error as Error)?.message || "Something went wrong."}
                     </p>
-                    <Button variant="outline" size="sm" onClick={refetchEverything}>
+                    <Button variant="ghost" size="sm" onClick={refetchEverything} className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
                         Try again
                     </Button>
                 </div>
             ) : !userServiceDetailsQueryResult ? (
-                <div className="rounded-lg border border-border p-6">
-                    <h2 className="font-semibold">Service not found</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">This record may have been deleted.</p>
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
+                    <h2 className="font-light text-white">Service not found</h2>
+                    <p className="mt-1 text-sm text-white/60">This record may have been deleted.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
                     {/* Main content */}
                     <div className="lg:col-span-8">
-                        <div className="rounded-lg border border-border">
+                        <div className="rounded-lg border border-white/5 bg-white/2">
                             <Tabs defaultValue="summary" className="w-full">
-                                <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none px-4 h-10">
+                                <TabsList className="w-full justify-start bg-transparent border-b border-white/5 rounded-none px-6 h-12">
                                     <TabsTrigger
                                         value="summary"
-                                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10"
+                                        className="data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white rounded-none px-0 pb-0 text-sm text-white/60 h-12"
                                     >
                                         Summary
                                     </TabsTrigger>
 
                                     <TabsTrigger
                                         value="breaches"
-                                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10 ml-6"
+                                        className="data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white rounded-none px-0 pb-0 text-sm text-white/60 h-12 ml-6"
                                     >
                                         Breaches
                                     </TabsTrigger>
 
                                     <TabsTrigger
                                         value="deletion_requests"
-                                        className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-0 text-sm h-10 ml-6"
+                                        className="data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white rounded-none px-0 pb-0 text-sm text-white/60 h-12 ml-6"
                                     >
                                         Deletion
                                     </TabsTrigger>
                                 </TabsList>
 
-                                <div className="p-4">
+                                <div className="p-6">
                                     <TabsContent value="summary" className="mt-0">
                                         <SummaryTab
                                             lastSeen={lastSeen}
@@ -389,77 +474,118 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                     <div className="lg:col-span-4">
                         <div className="space-y-6">
                             {/* Quick info */}
-                            <div className="rounded-lg border border-border p-4 space-y-3">
-                                <h3 className="text-sm font-semibold">Quick info</h3>
+                            <div className="rounded-lg border border-white/5 bg-white/2 p-5 space-y-4">
+                                <h3 className="text-[11px] font-medium uppercase tracking-widest text-white/40">Quick info</h3>
 
-                                <div className="space-y-2 text-sm">
+                                <div className="space-y-3 text-sm">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">First seen</span>
-                                        <span>{firstSeen}</span>
+                                        <span className="text-white/40">First seen</span>
+                                        <span className="text-white/80">{firstSeen}</span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">Last seen</span>
-                                        <span>{lastSeen}</span>
+                                        <span className="text-white/40">Last seen</span>
+                                        <span className="text-white/80">{lastSeen}</span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">Emails</span>
-                                        <span>
+                                        <span className="text-white/40">Emails</span>
+                                        <span className="text-white/80">
                                             {(userServiceDetailsQueryResult?.userService?.email_count ?? 0).toLocaleString()}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground">Status</span>
-                                        <span className="capitalize text-xs">
+                                        <span className="text-white/40">Status</span>
+                                        <span className="capitalize text-xs text-white/60">
                                             {userServiceDetailsQueryResult?.deletionRequest?.status ?? "none"}
                                         </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-white/40">Whitelisted</span>
+                                        {userService?.is_whitelisted ? (
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-1 w-1 rounded-full bg-emerald-500" />
+                                                <span className="text-xs text-white/60">Yes</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-white/60">No</span>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col gap-2 pt-2">
                                     {websiteUrl && (
                                         <a href={websiteUrl} target="_blank" rel="noreferrer" className="w-full">
-                                            <Button variant="outline" size="sm" className="gap-2 w-full">
+                                            <Button variant="ghost" size="sm" className="gap-2 w-full border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
                                                 Visit website <ExternalLink className="h-3 w-3" />
                                             </Button>
                                         </a>
                                     )}
                                     {domain && (
-                                        <Button variant="outline" size="sm" className="gap-2 w-full" onClick={copyDomain}>
+                                        <Button variant="ghost" size="sm" className="gap-2 w-full border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" onClick={copyDomain}>
                                             Copy domain <Copy className="h-3 w-3" />
+                                        </Button>
+                                    )}
+
+                                    <Button
+                                        variant={userService?.is_whitelisted ? "ghost" : "default"}
+                                        size="sm"
+                                        className={userService?.is_whitelisted ? "gap-2 w-full border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" : "gap-2 w-full bg-white text-black hover:bg-white/90"}
+                                        onClick={() => toggleWhitelist.mutate({ isWhitelisted: !userService?.is_whitelisted })}
+                                        disabled={toggleWhitelist.isPending}
+                                    >
+                                        {toggleWhitelist.isPending ?
+                                        <Spinner className="text-white size-4" /> :
+                                        userService?.is_whitelisted ? "Remove from whitelist" : "Add to whitelist"}
+                                    </Button>
+
+                                    {userServiceDetailsQueryResult?.deletionRequest?.status !== "completed" && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="gap-2 w-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/40"
+                                            onClick={() => markAsDeleted.mutate()}
+                                            disabled={markAsDeleted.isPending}
+                                        >
+                                            {markAsDeleted.isPending ?
+                                            <Spinner className="text-white size-4" /> :
+                                            <>
+                                                <CheckCircle2 className="h-4 w-4" />
+                                                Mark as deleted
+                                            </>}
                                         </Button>
                                     )}
                                 </div>
                             </div>
 
                             {/* Deletion setup */}
-                            <div className="rounded-lg border border-border p-4 space-y-3">
+                            <div className="rounded-lg border border-white/5 bg-white/2 p-5 space-y-4">
                                 <div>
-                                    <h3 className="text-sm font-semibold">Deletion setup</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">
+                                    <h3 className="text-[11px] font-medium uppercase tracking-widest text-white/40">Deletion setup</h3>
+                                    <p className="text-xs text-white/60 mt-1">
                                         Available actions for this service.
                                     </p>
                                 </div>
 
                                 <div>
                                     <div className="flex items-center justify-between text-sm">
-                                        <span className="text-muted-foreground">Score</span>
-                                        <span className="font-semibold">{deletionSetupScore}/100</span>
+                                        <span className="text-white/40">Score</span>
+                                        <span className="font-light text-white">{deletionSetupScore}/100</span>
                                     </div>
 
-                                    <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
-                                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${deletionSetupScore}%` }} />
+                                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+                                        <div className="h-full bg-white/80 transition-all duration-300" style={{ width: `${deletionSetupScore}%` }} />
                                     </div>
                                 </div>
 
-                                <div className="space-y-1 text-xs text-muted-foreground">
+                                <div className="space-y-1.5 text-xs text-white/60">
                                     {playbook?.deletion_url && <p>✓ Deletion link available</p>}
                                     {playbook?.steps?.length && <p>✓ Deletion steps available</p>}
                                     {playbook?.deletion_email && <p>✓ Deletion email available</p>}
                                     {emailConnected && (
-                                        <div className="flex items-center gap-2 text-foreground pt-1">
+                                        <div className="flex items-center gap-2 text-white/80 pt-1">
                                             {gmailConnected && (
                                                 <>
                                                     <GmailLogo className="h-3 w-3" />
@@ -478,19 +604,19 @@ export default function ServiceDetailsPage({ userServiceId }: Props) {
                                 </div>
 
                                 {currentPlan !== "pro" && (
-                                    <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs space-y-2">
-                                        <p className="text-muted-foreground">
-                                            <span className="font-medium text-foreground">Upgrade to Pro</span> for auto-send emails and reminders.
+                                    <div className="rounded-lg border border-white/5 bg-white/2 p-3 text-xs space-y-2">
+                                        <p className="text-white/60">
+                                            <span className="font-medium text-white/80">Upgrade to Pro</span> for auto-send emails and reminders.
                                         </p>
-                                        <Link href="/dashboard/billing?plan=monthly" className="text-primary hover:underline text-xs">
+                                        <Link href="/dashboard/billing?plan=monthly" className="text-white/90 hover:underline text-xs">
                                             View plans →
                                         </Link>
                                     </div>
                                 )}
 
-                                <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs space-y-2">
-                                    <p className="text-muted-foreground">
-                                        View the <span className="font-medium text-foreground">Deletion tab</span> to start removing your account.
+                                <div className="rounded-lg border border-white/5 bg-white/2 p-3 text-xs space-y-2">
+                                    <p className="text-white/60">
+                                        View the <span className="font-medium text-white/80">Deletion tab</span> to start removing your account.
                                     </p>
                                 </div>
                             </div>

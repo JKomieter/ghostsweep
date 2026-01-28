@@ -70,6 +70,8 @@ export async function GET(request: NextRequest) {
         const breachedParam = searchParams.get("breached")?.trim() || "";
         const emailParam = searchParams.get("email")?.trim() || "";
 
+        const whitelistedParam = searchParams.get("whitelisted")?.trim() || "";
+
         // New filters
         const statusParam = searchParams.get("status");
         const startedParam = searchParams.get("started");
@@ -91,6 +93,14 @@ export async function GET(request: NextRequest) {
         // Started filter
         const startedFilter = parseBool(startedParam);
 
+        // Whitelisted filter
+        let whitelistedFilter: boolean | null = null;
+        if (["whitelisted", "true", "1", "yes"].includes(whitelistedParam.toLowerCase())) {
+            whitelistedFilter = true;
+        } else if (["not_whitelisted", "false", "0", "no"].includes(whitelistedParam.toLowerCase())) {
+            whitelistedFilter = false;
+        }
+
         // ===========================
         // Build base query filters
         // ===========================
@@ -109,6 +119,12 @@ export async function GET(request: NextRequest) {
 
             if (emailParam) {
                 query = query.eq("email", emailParam);
+            }
+
+            if (whitelistedFilter === true) {
+                query = query.eq("is_whitelisted", true);
+            } else if (whitelistedFilter === false) {
+                query = query.or("is_whitelisted.eq.false,is_whitelisted.is.null");
             }
 
             if (breachedFilter !== null) {

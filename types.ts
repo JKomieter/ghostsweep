@@ -28,6 +28,7 @@ export interface UserService {
     updated_at: string | null;
     is_account: boolean | null;
     is_spam: boolean | null;
+    is_whitelisted: boolean | null;
     email: string | null;
     email_provider: "gmail" | "outlook" | null;
 }

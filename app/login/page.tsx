@@ -39,9 +39,9 @@ function GoogleIcon() {
 function OAuthDivider() {
     return (
         <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-white/10" />
+            <div className="h-px flex-1 bg-white/5" />
             <span className="text-[11px] text-white/40">or</span>
-            <div className="h-px flex-1 bg-white/10" />
+            <div className="h-px flex-1 bg-white/5" />
         </div>
     );
 }
@@ -83,7 +83,7 @@ function ContinueWithGoogleButton({ label }: { label: string }) {
         <Button
             type="button"
             variant="outline"
-            className="h-11 w-full rounded-lg border-white/10 bg-white/5 text-white hover:bg-white/10"
+            className="h-11 w-full rounded-lg border-white/5 bg-white/2 text-white hover:bg-white/3 hover:border-white/10"
             onClick={handleGoogle}
             disabled={loading}
         >
@@ -164,7 +164,7 @@ function SignInForm({
             {/* ✅ Existing email+password form */}
             <form className="space-y-5" onSubmit={handleLogin}>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/90" htmlFor="email">
+                    <label className="text-sm font-light text-white/70" htmlFor="email">
                         Email
                     </label>
                     <Input
@@ -174,13 +174,13 @@ function SignInForm({
                         value={email}
                         onChange={setEmail}
                         required
-                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-white/90" htmlFor="password">
+                        <label className="text-sm font-light text-white/70" htmlFor="password">
                             Password
                         </label>
                         <Link
@@ -200,7 +200,7 @@ function SignInForm({
                             onChange={setPassword}
                             required
                             disableCopyPaste
-                            className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                            className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
                         />
                         <button
                             className="absolute inset-y-0 right-0 flex items-center pr-3"
@@ -218,7 +218,7 @@ function SignInForm({
 
                 <Button
                     type="submit"
-                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
                     disabled={isLoading}
                 >
                     {isLoading ? <Spinner /> : "Sign In"}
@@ -321,15 +321,15 @@ function SignUpForm({
 
             {/* ✅ Error Message Display */}
             {errorMessage && (
-                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-                    <p className="text-sm text-red-400">{errorMessage}</p>
+                <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+                    <p className="text-sm text-red-300">{errorMessage}</p>
                 </div>
             )}
 
             {/* ✅ Existing signup form */}
             <form className="space-y-5" onSubmit={handleSignup}>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/90" htmlFor="email">
+                    <label className="text-sm font-light text-white/70" htmlFor="email">
                         Email
                     </label>
                     <Input
@@ -339,12 +339,12 @@ function SignUpForm({
                         value={email}
                         onChange={setEmail}
                         required
-                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/90" htmlFor="password">
+                    <label className="text-sm font-light text-white/70" htmlFor="password">
                         Password
                     </label>
                     <div className="relative">
@@ -356,7 +356,7 @@ function SignUpForm({
                             onChange={setPassword}
                             required
                             disableCopyPaste
-                            className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                            className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
                         />
                         <button
                             className="absolute inset-y-0 right-0 flex items-center pr-3"
@@ -373,7 +373,7 @@ function SignUpForm({
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/90" htmlFor="confirmPassword">
+                    <label className="text-sm font-light text-white/70" htmlFor="confirmPassword">
                         Confirm password
                     </label>
                     <Input
@@ -384,7 +384,7 @@ function SignUpForm({
                         onChange={setConfirmPassword}
                         required
                         disableCopyPaste
-                        className="h-11 rounded-lg border-white/10 bg-white/5/50 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
@@ -392,7 +392,7 @@ function SignUpForm({
 
                 <Button
                     type="submit"
-                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
                     disabled={isLoading}
                 >
                     {isLoading ? <Spinner /> : "See My Forgotten Accounts"}
@@ -422,10 +422,10 @@ function SignUpForm({
 
 function PasswordWarning({ feedback }: { feedback: string[] }) {
     return (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
             <ul className="space-y-1">
                 {feedback.map((msg, index) => (
-                    <li key={index} className="flex items-start gap-2 text-xs text-red-400">
+                    <li key={index} className="flex items-start gap-2 text-xs text-red-300">
                         <span className="mt-0.5">•</span>
                         <span>{msg}</span>
                     </li>
@@ -438,18 +438,18 @@ function PasswordWarning({ feedback }: { feedback: string[] }) {
 function ConfirmEmail({ email = "email address" }: { email?: string }) {
     return (
         <div className="flex flex-col items-center justify-center text-center space-y-6">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/15 border border-primary/30 backdrop-blur-sm">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/15 border border-primary/20 backdrop-blur-sm">
                 <MailIcon className="h-10 w-10 text-primary" />
             </div>
             <div className="space-y-3">
-                <h2 className="text-2xl font-bold text-white">Check your email</h2>
+                <h2 className="text-2xl font-light text-white">Check your email</h2>
                 <p className="text-sm text-white/60 max-w-md leading-relaxed">
                     We've sent a confirmation link to{" "}
-                    <span className="font-semibold text-white">{email}</span>. Click the link
+                    <span className="font-light text-white">{email}</span>. Click the link
                     to verify your account and get started.
                 </p>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm p-4 max-w-md text-left">
+            <div className="rounded-lg border border-white/5 bg-white/2 backdrop-blur-sm p-4 max-w-md text-left">
                 <p className="text-xs text-white/50">
                     Didn&apos;t receive the email? Check your spam folder or{" "}
                     <button className="text-primary hover:text-primary/80 transition underline underline-offset-2">
@@ -467,7 +467,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
 
     return (
-        <div className="relative flex min-h-screen w-full overflow-hidden bg-linear-to-b from-black via-zinc-950 to-black">
+        <div className="relative flex min-h-screen w-full overflow-hidden bg-[#050505]">
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -left-40 top-[-10%] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
                 <div className="absolute right-[-10%] bottom-[-10%] h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -497,7 +497,7 @@ export default function LoginPage() {
                             <div className="flex items-center gap-3">
                                 <Logo className="h-11 w-11" />
                                 <div>
-                                    <h2 className="text-2xl font-bold text-white">GhostSweep</h2>
+                                    <h2 className="text-2xl font-light text-white">GhostSweep</h2>
                                     <p className="text-xs text-white/60">
                                         Privacy, visibility, and control.
                                     </p>
@@ -506,10 +506,10 @@ export default function LoginPage() {
 
                             {/* Hero copy */}
                             <div className="space-y-5 max-w-lg">
-                                <h1 className="text-4xl xl:text-5xl font-semibold leading-tight bg-linear-to-b from-white to-white/70 bg-clip-text text-transparent">
+                                <h1 className="text-4xl xl:text-5xl font-light leading-tight bg-linear-to-b from-white to-white/70 bg-clip-text text-transparent">
                                     Sweep your digital footprint clean.
                                 </h1>
-                                <p className="text-sm md:text-base text-white/70 leading-relaxed">
+                                <p className="text-sm md:text-base text-white/60 leading-relaxed">
                                     Connect your inbox, see every company that has your data, and
                                     send deletion requests in minutes—without hunting through old
                                     emails.
@@ -520,11 +520,11 @@ export default function LoginPage() {
                         {/* Trust / security badges */}
                         <div className="space-y-4 max-w-sm">
                             <div className="flex items-center gap-3 text-white/80">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/40 border border-white/10 backdrop-blur-sm">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black/40 border border-white/5 backdrop-blur-sm">
                                     <Shield className="h-5 w-5 text-emerald-400" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-sm font-medium text-white">
+                                    <p className="text-sm font-light text-white">
                                         Read-only inbox access
                                     </p>
                                     <p className="text-[11px] text-white/55">
@@ -535,11 +535,11 @@ export default function LoginPage() {
                             </div>
 
                             <div className="flex items-center gap-3 text-white/80">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/40 border border-white/10 backdrop-blur-sm">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black/40 border border-white/5 backdrop-blur-sm">
                                     <Lock className="h-5 w-5 text-emerald-400" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-sm font-medium text-white">
+                                    <p className="text-sm font-light text-white">
                                         Your data, your control
                                     </p>
                                     <p className="text-[11px] text-white/55">
@@ -557,20 +557,20 @@ export default function LoginPage() {
                     <div className="absolute left-5 top-5 lg:hidden">
                         <div className="flex items-center gap-2">
                             <Logo className="h-7 w-7" />
-                            <h4 className="text-lg font-semibold text-white">GhostSweep</h4>
+                            <h4 className="text-lg font-light text-white">GhostSweep</h4>
                         </div>
                     </div>
 
                     <div className="w-full max-w-md">
-                        <div className="mt-16 sm:mt-10 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
+                        <div className="mt-16 sm:mt-10 rounded-lg border border-white/5 bg-white/2 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
                             {mode === "confirm" ? (
                                 <ConfirmEmail email={email} />
                             ) : (
                                 <>
-                                    <div className="flex rounded-full border border-white/10 bg-white/5 backdrop-blur-sm p-1">
+                                    <div className="flex rounded-full border border-white/5 bg-white/2 backdrop-blur-sm p-1">
                                         <button
                                             type="button"
-                                            className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-medium transition-all duration-200 ${mode === "signin"
+                                            className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signin"
                                                     ? "bg-white text-black shadow shadow-emerald-400/30"
                                                     : "text-white/60 hover:text-white"
                                                 }`}
@@ -580,7 +580,7 @@ export default function LoginPage() {
                                         </button>
                                         <button
                                             type="button"
-                                            className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-medium transition-all duration-200 ${mode === "signup"
+                                            className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signup"
                                                     ? "bg-white text-black shadow shadow-emerald-400/30"
                                                     : "text-white/60 hover:text-white"
                                                 }`}
@@ -591,10 +591,10 @@ export default function LoginPage() {
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
+                                        <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
                                             {mode === "signin" ? "Welcome back" : "Create your account"}
                                         </h2>
-                                        <p className="text-sm text-white/55">
+                                        <p className="text-sm text-white/60">
                                             {mode === "signin"
                                                 ? "Sign in to manage your digital footprint and privacy requests."
                                                 : "Get a clear map of who has your data—and start cleaning it up."}

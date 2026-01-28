@@ -73,22 +73,22 @@ export default function SummaryTab({
     return (
         <div className="space-y-6">
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-3 rounded-lg border border-white/10 bg-black/40 p-3 text-sm">
+            <div className="grid grid-cols-2 gap-3 rounded-lg border border-white/5 bg-white/2 p-4 text-sm">
                 <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">Last seen</div>
-                    <div className="font-medium">{lastSeen}</div>
+                    <div className="text-[11px] uppercase tracking-widest text-white/40">Last seen</div>
+                    <div className="font-light text-white">{lastSeen}</div>
                 </div>
                 <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">First seen</div>
-                    <div className="font-medium">{firstSeen}</div>
+                    <div className="text-[11px] uppercase tracking-widest text-white/40">First seen</div>
+                    <div className="font-light text-white">{firstSeen}</div>
                 </div>
                 <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">Emails detected</div>
-                    <div className="font-medium">{emailCount.toLocaleString()}</div>
+                    <div className="text-[11px] uppercase tracking-widest text-white/40">Emails detected</div>
+                    <div className="font-light text-white">{emailCount.toLocaleString()}</div>
                 </div>
                 <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">Status</div>
-                    <div className="font-medium">{riskLabel}</div>
+                    <div className="text-[11px] uppercase tracking-widest text-white/40">Status</div>
+                    <div className="font-light text-white">{riskLabel}</div>
                 </div>
             </div>
 
@@ -109,9 +109,9 @@ export default function SummaryTab({
             </div>
 
             {/* Recommended next steps */}
-            <div className="space-y-2">
-                <h3 className="text-sm font-semibold">Recommended next steps</h3>
-                <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1.5">
+            <div className="space-y-3">
+                <h3 className="text-[11px] font-medium uppercase tracking-widest text-white/40">Recommended next steps</h3>
+                <ul className="list-disc pl-4 text-xs text-white/60 space-y-1.5">
                     {defaultNextSteps.map((s) => (
                         <li key={s}>{s}</li>
                     ))}
@@ -124,7 +124,7 @@ export default function SummaryTab({
                     <Button
                         asChild
                         size="sm"
-                        className="justify-between bg-primary/10 text-primary border border-primary/40 hover:bg-primary/20"
+                        className="justify-between bg-white text-black hover:bg-white/90"
                     >
                         <a href={websiteUrl} target="_blank" rel="noreferrer">
                             Open website
@@ -135,20 +135,20 @@ export default function SummaryTab({
 
                 {contact && (
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="justify-between border-white/20 bg-white/5"
+                        className="justify-between border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
                         onClick={() => copyToClipboard(contact, "Privacy email")}
                     >
                         Copy privacy email
-                        <span className="text-xs text-muted-foreground truncate max-w-[180px]">
+                        <span className="text-xs text-white/60 truncate max-w-[180px]">
                             {contact}
                         </span>
                     </Button>
                 )}
             </div>
 
-            <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground border-t border-white/5 pt-4">
+            <p className="mt-6 text-[11px] leading-relaxed text-white/40 border-t border-white/5 pt-4">
                 GhostSweep analyzes your email metadata (From, Subject, Date) to detect services linked to your inbox.
                 We never read or store the bodies of your emails.
             </p>

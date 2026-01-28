@@ -81,15 +81,89 @@ export async function GET(
         return NextResponse.json({ error: "Problem getting deletion request" }, { status: 500 });
     }
 
-    // If you’re adding AI suggested actions, this is the right place to attach it:
-    // const { data: ai, error: aiError } = await supabase.from("service_ai").select("*")...
-
     return NextResponse.json(
         {
             userService,
             userBreaches,
             deletionRequest,
 
+        },
+        { status: 200 }
+    );
+}
+
+export async function PATCH(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    if (!id) {
+        return NextResponse.json({ error: "Service ID is required" }, { status: 400 });
+    }
+
+    const supabase = await createClient();
+
+    const {
+        data: { user },
+        error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+        console.error("Auth error:", userError);
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    let body: unknown;
+    try {
+        body = await request.json();
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const { is_whitelisted } = (body ?? {}) as { is_whitelisted?: unknown };
+
+    if (typeof is_whitelisted !== "boolean") {
+        return NextResponse.json(
+            { error: "is_whitelisted must be a boolean" },
+            { status: 400 }
+        );
+    }
+
+    console.log(`Updating user_service ${id} for user ${user.id} with is_whitelisted=${is_whitelisted}`);
+
+    const { data: updated, error: updateError } = await supabase
+        .from("user_services")
+        .update({ is_whitelisted })
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .select(
+            `
+            *,
+            service:services (*)
+        `
+        )
+        .maybeSingle();
+
+    if (updateError) {
+        console.error("Error updating user service whitelist:", updateError);
+        return NextResponse.json(
+            { error: "Problem updating whitelist flag" },
+            { status: 500 }
+        );
+    }
+
+    if (!updated) {
+        console.log(`No user_service found with id=${id} for user ${user.id} - may not exist or user doesn't own it`);
+        return NextResponse.json({ error: "Service not found or you don't have permission to modify it" }, { status: 404 });
+    }
+
+    console.log(`Successfully updated user_service ${id}`);
+
+
+    return NextResponse.json(
+        {
+            userService: updated,
         },
         { status: 200 }
     );

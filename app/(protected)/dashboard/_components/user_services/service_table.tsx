@@ -1,6 +1,7 @@
 "use client"
 
 import React, { Dispatch, SetStateAction, useMemo, useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import {
     ColumnDef,
     flexRender,
@@ -12,7 +13,6 @@ import {
 import { RefreshCw, Lock, SlidersHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -26,52 +26,21 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetDescription,
-} from "@/components/ui/sheet"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-
 import { Category, DeletionRequest, DeletionStatus, Service, UserService } from "@/types"
 import { formatDate } from "@/utils/format_date"
 import { calcPriorityScore, priorityLabel } from "@/utils/priority_score"
 import { UserServicesQueryResult } from "@/queryTypes"
 import { GmailLogo, OutLookLogo } from "@/svgs";
-
-const categories: Category[] = [
-    "Social Media",
-    "Streaming & Entertainment",
-    "Shopping & E-commerce",
-    "Financial & Payments",
-    "Productivity & Work",
-    "Travel & Transportation",
-    "Food & Delivery",
-    "Gaming",
-    "Health & Fitness",
-    "News & Media",
-    "Email & Communication",
-    "Other",
-]
+import { toast } from "sonner"
+import { ServiceFiltersSheet, BreachFilter, ActivityFilter, HasDeletionFilter, EmailFilter, WhitelistFilter } from "./service_filters_sheet"
 
 type TableMeta = {
     onView: (userServiceId: string | undefined) => void
     gated?: boolean
+    onToggleWhitelist?: (userServiceId: string | undefined, name: string | undefined, current: boolean | null | undefined) => void
 }
 
-type BreachFilter = "all" | "breached" | "unbreached"
-type ActivityFilter = "all" | "active" | "inactive"
-type HasDeletionFilter = "all" | "yes" | "no"
-type EmailFilter = "all" | string
+// Filter type aliases are imported from service_filters_sheet.tsx
 
 type RowType = Partial<UserService> & {
     service: Service
@@ -118,6 +87,7 @@ export const columns: ColumnDef<RowType>[] = [
             const name = svc?.name ?? "Unknown"
             const domain = svc?.domain ?? null
             const logoUrl = svc?.logo_url ?? null
+            const isWhitelisted = row.original.is_whitelisted ?? false
 
             return (
                 // <div className={gated ? "blur-[6px] select-none pointer-events-none" : ""}>
@@ -132,6 +102,11 @@ export const columns: ColumnDef<RowType>[] = [
                         <div className="flex flex-col leading-tight min-w-0">
                             <span className="font-medium truncate">{name}</span>
                             {domain ? <span className="text-xs text-muted-foreground truncate">{domain}</span> : null}
+                            {isWhitelisted ? (
+                                <span className="mt-1 inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+                                    Whitelisted
+                                </span>
+                            ) : null}
                         </div>
                     </div>
                 </div>
@@ -263,28 +238,28 @@ export const columns: ColumnDef<RowType>[] = [
         enableHiding: false,
         cell: ({ row, table }) => {
             const meta = table.options.meta as TableMeta | undefined
-            // const gated = meta?.gated
-
-            // if (gated) {
-            //     return (
-            //         <Link href="/dashboard/billing">
-            //             <Button variant="link" size="sm" className="px-0 text-muted-foreground">
-            //                 <Lock className="h-3 w-3 mr-1" />
-            //                 Upgrade
-            //             </Button>
-            //         </Link>
-            //     )
-            // }
-
+            const isWhitelisted = row.original.is_whitelisted ?? false
+            const serviceName = row.original.service?.name ?? "Service"
+            
             return (
-                <Button
-                    variant="link"
-                    size="sm"
-                    className="px-0"
-                    onClick={() => meta?.onView(row.original.id)}
-                >
-                    View
-                </Button>
+                <div className="flex flex-col items-start gap-1">
+                    <Button
+                        variant="link"
+                        size="sm"
+                        className="px-0"
+                        onClick={() => meta?.onView(row.original.id)}
+                    >
+                        View
+                    </Button>
+                    <Button
+                        variant="link"
+                        size="sm"
+                        className="px-0 text-xs text-muted-foreground"
+                        onClick={() => meta?.onToggleWhitelist?.(row.original.id, serviceName, isWhitelisted)}
+                    >
+                        {isWhitelisted ? "Remove whitelist" : "Whitelist"}
+                    </Button>
+                </div>
             )
         },
     },
@@ -320,6 +295,9 @@ interface ServiceTableProps {
 
     gmailAccounts: Array<{ id: string; gmail_address: string; created_at: string }>
     microsoftAccounts: Array<{ id: string; outlook_address: string; created_at: string }>
+
+    whitelistFilter: WhitelistFilter
+    setWhitelistFilter: Dispatch<SetStateAction<WhitelistFilter>>
 }
 
 export default function ServiceTable(props: ServiceTableProps) {
@@ -344,9 +322,43 @@ export default function ServiceTable(props: ServiceTableProps) {
         setEmailFilter,
         gmailAccounts,
         microsoftAccounts,
+        whitelistFilter,
+        setWhitelistFilter,
     } = props
 
     const router = useRouter()
+
+    const queryClient = useQueryClient()
+
+    const toggleWhitelist = useMutation({
+        mutationFn: async ({ id, name, isWhitelisted }: { id: string; name: string; isWhitelisted: boolean }) => {
+            const res = await fetch(`/api/user_services/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ is_whitelisted: isWhitelisted }),
+            })
+
+            if (!res.ok) {
+                let message = "Failed to update whitelist"
+                try {
+                    const data = await res.json()
+                    if (data?.error && typeof data.error === "string") {
+                        message = data.error
+                    }
+                    toast(message)
+                } catch {
+                    // ignore
+                }
+                throw new Error(message)
+            }
+            return { id, name, isWhitelisted }
+        },
+        onSuccess: (data) => {
+            toast.success(`${data.name || "Service"} has been ${data.isWhitelisted ? "whitelisted" : "removed from whitelist"}.`)
+            queryClient.invalidateQueries({ queryKey: ["user_services"] })
+            queryClient.invalidateQueries({ queryKey: ["forgotten_count"] })
+        },
+    })
 
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -386,8 +398,21 @@ export default function ServiceTable(props: ServiceTableProps) {
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
         meta: {
-            onView: (userServiceId: string) => router.push(`/dashboard/user_services/${userServiceId}/details`),
-            gated: apiGated, // ✅ gates selection + row actions + blurs (already implemented in columns)
+            onView: (userServiceId: string) =>
+                router.push(`/dashboard/user_services/${userServiceId}/details`),
+            gated: apiGated,
+            onToggleWhitelist: (
+                userServiceId: string | undefined,
+                serviceName: string | undefined,
+                current: boolean | null | undefined,
+            ) => {
+                if (!userServiceId) return
+                toggleWhitelist.mutate({
+                    id: userServiceId,
+                    isWhitelisted: !current,
+                    name: serviceName || "Service",
+                })
+            },
         },
     })
 
@@ -397,8 +422,7 @@ export default function ServiceTable(props: ServiceTableProps) {
         return rows
             .map((r) => r.original.id)
             .filter((id): id is string => typeof id === "string" && id.length > 0)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [table, rowSelection])
+    }, [table])
 
     const selectedCount = selectedIds.length
 
@@ -425,17 +449,25 @@ export default function ServiceTable(props: ServiceTableProps) {
             key: "hdr",
             label: hasDeletionRequest === "yes" ? "Has deletion request" : "No deletion request",
             onClear: () => setHasDeletionRequest("all"),
-        });
+        })
         if (emailFilter !== "all") {
-            const emailLabel = emailFilter.length > 25 ? `${emailFilter.slice(0, 25)}...` : emailFilter;
+            const emailLabel = emailFilter.length > 25 ? `${emailFilter.slice(0, 25)}...` : emailFilter
             chips.push({
                 key: "email",
                 label: `Email: ${emailLabel}`,
                 onClear: () => setEmailFilter("all"),
-            });
+            })
         }
+        if (whitelistFilter !== "all") {
+            chips.push({
+                key: "whitelist",
+                label: whitelistFilter === "whitelisted" ? "Whitelisted only" : "Not whitelisted",
+                onClear: () => setWhitelistFilter("all"),
+            })
+        }
+
         return chips
-    }, [category, breachedFilter, activityFilter, minEmails, hasDeletionRequest, emailFilter, setCategory, setBreachedFilter, setActivityFilter, setMinEmails, setHasDeletionRequest, setEmailFilter])
+    }, [category, breachedFilter, activityFilter, minEmails, hasDeletionRequest, emailFilter, whitelistFilter, setCategory, setBreachedFilter, setActivityFilter, setMinEmails, setHasDeletionRequest, setEmailFilter, setWhitelistFilter])
 
     const resetFilters = () => {
         setQuery("")
@@ -445,6 +477,7 @@ export default function ServiceTable(props: ServiceTableProps) {
         setMinEmails(undefined)
         setHasDeletionRequest("all")
         setEmailFilter("all")
+        setWhitelistFilter("all")
         setPage(1)
     }
 
@@ -532,7 +565,7 @@ export default function ServiceTable(props: ServiceTableProps) {
                 </div>
             ) : null}
 
-            {/* ✅ Gate banner (uses query payload fields) */}
+            {/* Gate banner */}
             {!isLoading && apiGated ? (
                 <div className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-white/70">
@@ -560,7 +593,6 @@ export default function ServiceTable(props: ServiceTableProps) {
                         accounts matching your filters.
                     </div>
 
-                    {/* nice-to-have: show limit hint even if backend doesn't set gated but total==shown */}
                     {!isLoading && !apiGated && totalCountForUi <= freeLimit ? (
                         <div className="text-white/40">
                             Tip: Pro unlocks full history, tracking, and follow-ups.
@@ -673,193 +705,30 @@ export default function ServiceTable(props: ServiceTableProps) {
             </div>
 
             {/* Filters Sheet */}
-            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-                <SheetContent className="bg-[#050505] border-white/10 text-white w-full sm:max-w-md">
-                    <SheetHeader>
-                        <SheetTitle>Filters</SheetTitle>
-                        <SheetDescription className="text-white/60 text-xs">
-                            Narrow down accounts before selecting them for bulk deletion.
-                        </SheetDescription>
-                    </SheetHeader>
-
-                    <div className="mt-6 space-y-4 px-4">
-                        {/* Category */}
-                        <div className="space-y-2">
-                            <div className="text-xs text-white/70">Category</div>
-                            <Select
-                                value={(category ?? "all") as string}
-                                onValueChange={(v) => {
-                                    setCategory((v === "all" ? "all" : (v as Category)))
-                                    setPage(1)
-                                }}
-                            >
-                                <SelectTrigger className="bg-[#050505] border-white/15">
-                                    <SelectValue placeholder="All categories" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectItem value="all">All categories</SelectItem>
-                                        {categories.map((cat) => (
-                                            <SelectItem key={cat} value={cat}>
-                                                {cat}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Breach */}
-                        <div className="space-y-2">
-                            <div className="text-xs text-white/70">Breach</div>
-                            <Select
-                                value={breachedFilter}
-                                onValueChange={(v) => {
-                                    setBreachedFilter(v as BreachFilter)
-                                    setPage(1)
-                                }}
-                            >
-                                <SelectTrigger className="bg-[#050505] border-white/15">
-                                    <SelectValue placeholder="All services" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectItem value="all">All services</SelectItem>
-                                        <SelectItem value="breached">Breached only</SelectItem>
-                                        <SelectItem value="unbreached">Not breached</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Activity */}
-                        <div className="space-y-2">
-                            <div className="text-xs text-white/70">Activity</div>
-                            <Select
-                                value={activityFilter}
-                                onValueChange={(v) => {
-                                    setActivityFilter(v as ActivityFilter)
-                                    setPage(1)
-                                }}
-                            >
-                                <SelectTrigger className="bg-[#050505] border-white/15">
-                                    <SelectValue placeholder="Any activity" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectItem value="all">Any activity</SelectItem>
-                                        <SelectItem value="active">Active (recent)</SelectItem>
-                                        <SelectItem value="inactive">Inactive (old)</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Min emails */}
-                        <div className="space-y-2">
-                            <div className="text-xs text-white/70">Minimum emails</div>
-                            <Select
-                                value={typeof minEmails === "number" ? String(minEmails) : "any"}
-                                onValueChange={(v) => {
-                                    setMinEmails(v === "any" ? undefined : Number(v))
-                                    setPage(1)
-                                }}
-                            >
-                                <SelectTrigger className="bg-[#050505] border-white/15">
-                                    <SelectValue placeholder="Any" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectItem value="any">Any</SelectItem>
-                                        <SelectItem value="1">1+</SelectItem>
-                                        <SelectItem value="5">5+</SelectItem>
-                                        <SelectItem value="10">10+</SelectItem>
-                                        <SelectItem value="50">50+</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Has deletion request */}
-                        <div className="space-y-2">
-                            <div className="text-xs text-white/70">Deletion request</div>
-                            <Select
-                                value={hasDeletionRequest}
-                                onValueChange={(v) => {
-                                    setHasDeletionRequest(v as HasDeletionFilter)
-                                    setPage(1)
-                                }}
-                            >
-                                <SelectTrigger className="bg-[#050505] border-white/15">
-                                    <SelectValue placeholder="Any" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectItem value="all">Any</SelectItem>
-                                        <SelectItem value="yes">Has request</SelectItem>
-                                        <SelectItem value="no">No request</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Email account filter */}
-                        {(gmailAccounts.length > 0 || microsoftAccounts.length > 0) && (
-                            <div className="space-y-2">
-                                <div className="text-xs text-white/70">Email account</div>
-                                <Select
-                                    value={emailFilter}
-                                    onValueChange={(v) => {
-                                        setEmailFilter(v as EmailFilter)
-                                        setPage(1)
-                                    }}
-                                >
-                                    <SelectTrigger className="bg-[#050505] border-white/15">
-                                        <SelectValue placeholder="All accounts" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="all">All accounts</SelectItem>
-                                            {gmailAccounts.map((account) => (
-                                                <SelectItem key={account.id} value={account.gmail_address}>
-                                                    <span className="flex items-center gap-2">
-                                                        <GmailLogo className="h-3.5 w-3.5" />
-                                                        {account.gmail_address}
-                                                    </span>
-                                                </SelectItem>
-                                            ))}
-                                            {microsoftAccounts.map((account) => (
-                                                <SelectItem key={account.id} value={account.outlook_address}>
-                                                    <span className="flex items-center gap-2">
-                                                        <OutLookLogo className="h-3.5 w-3.5" />
-                                                        {account.outlook_address}
-                                                    </span>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        )}
-
-                        <div className="pt-2 flex gap-2">
-                            <Button
-                                variant="outline"
-                                className="border-white/15 bg-[#050505] flex-1"
-                                onClick={resetFilters}
-                            >
-                                Reset
-                            </Button>
-                            <Button
-                                className="bg-primary text-black hover:bg-primary/80 flex-1"
-                                onClick={() => setFiltersOpen(false)}
-                            >
-                                Apply
-                            </Button>
-                        </div>
-                    </div>
-                </SheetContent>
-            </Sheet>
+            <ServiceFiltersSheet
+                open={filtersOpen}
+                onOpenChange={(open) => {
+                    setFiltersOpen(open)
+                    if (!open) setPage(1)
+                }}
+                category={category}
+                setCategory={setCategory}
+                breachedFilter={breachedFilter}
+                setBreachedFilter={setBreachedFilter}
+                activityFilter={activityFilter}
+                setActivityFilter={setActivityFilter}
+                minEmails={minEmails}
+                setMinEmails={setMinEmails}
+                hasDeletionRequest={hasDeletionRequest}
+                setHasDeletionRequest={setHasDeletionRequest}
+                emailFilter={emailFilter}
+                setEmailFilter={setEmailFilter}
+                whitelistFilter={whitelistFilter}
+                setWhitelistFilter={setWhitelistFilter}
+                gmailAccounts={gmailAccounts}
+                microsoftAccounts={microsoftAccounts}
+                resetFilters={resetFilters}
+            />
         </div>
     )
 }

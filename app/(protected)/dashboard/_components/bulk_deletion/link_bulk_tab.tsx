@@ -198,13 +198,13 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-wrap gap-2">
-                        <Button size="sm" variant="outline" className="border-white/15 bg-white/5" onClick={includeAll}>
+                        <Button size="sm" variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" onClick={includeAll}>
                             Include all
                         </Button>
-                        <Button size="sm" variant="outline" className="border-white/15 bg-white/5" onClick={excludeAll}>
+                        <Button size="sm" variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" onClick={excludeAll}>
                             Exclude all
                         </Button>
-                        <Button size="sm" variant="ghost" className="text-white/70" onClick={reset}>
+                        <Button size="sm" variant="ghost" className="text-white/60 hover:text-white/80" onClick={reset}>
                             <RotateCcw className="h-4 w-4 mr-2" />
                             Reset
                         </Button>
@@ -212,7 +212,7 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
                     <Button
                         size="sm"
-                        className={cn("bg-primary text-black hover:bg-primary/80", opening && "opacity-80")}
+                        className={cn("bg-white text-black hover:bg-white/90", opening && "opacity-80")}
                         onClick={openNextBatch}
                         disabled={opening || remaining.length === 0}
                         title={remaining.length === 0 ? "No remaining selected links" : "Open next batch"}
@@ -223,14 +223,14 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
                 </div>
 
                 {skipped.length > 0 ? (
-                    <p className="mt-2 text-[11px] text-white/55">
-                        Skipped: <span className="text-white/80">{skipped.length}</span> (you can add them back anytime).
+                    <p className="mt-2 text-[11px] text-white/40">
+                        Skipped: <span className="text-white/60">{skipped.length}</span> (you can add them back anytime).
                     </p>
                 ) : null}
             </div>
 
             {/* List */}
-            <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
+            <div className="rounded-lg border border-white/5 bg-white/2 p-4">
                 <div className="text-xs text-white/60 mb-3">
                     Tip: If popups are blocked, allow popups for this site to open multiple deletion pages.
                 </div>
@@ -246,14 +246,14 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
                             <div
                                 key={id}
                                 className={cn(
-                                    "flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-2",
+                                    "flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/2 px-3 py-2",
                                     !isIncluded && "opacity-60"
                                 )}
                             >
                                 <div className="flex items-center gap-3 min-w-0">
                                     <Checkbox checked={isIncluded} onCheckedChange={() => toggleOne(id)} />
 
-                                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/10 shrink-0">
+                                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/5 shrink-0">
                                         {item.service.logo_url ? (
                                             <Image
                                                 src={item.service.logo_url}
@@ -266,10 +266,10 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
                                     </div>
 
                                     <div className="min-w-0">
-                                        <div className="text-sm font-medium text-white truncate">
+                                        <div className="text-sm font-light text-white truncate">
                                             {item.service.name || "Unknown service"}
                                         </div>
-                                        <div className="text-xs text-white/55 truncate">
+                                        <div className="text-xs text-white/40 truncate">
                                             {item.service.domain || "—"} {url ? `• ${new URL(url).hostname}` : ""}
                                         </div>
                                     </div>
@@ -277,24 +277,24 @@ export default function LinkBulkTab({ linkCount, linkServices }: LinkBulkTabProp
 
                                 <div className="flex items-center gap-2 shrink-0">
                                     {state === "opened" ? (
-                                        <Badge className="bg-emerald-500/15 text-emerald-200 border border-emerald-500/30 text-[11px]">
+                                        <span className="text-xs text-emerald-400">
                                             Opened
-                                        </Badge>
+                                        </span>
                                     ) : isIncluded ? (
-                                        <Badge variant="outline" className="border-white/10 bg-white/5 text-white/70 text-[11px]">
+                                        <span className="text-xs text-white/60">
                                             Ready
-                                        </Badge>
+                                        </span>
                                     ) : (
-                                        <Badge variant="outline" className="border-white/10 bg-white/5 text-white/60 text-[11px]">
+                                        <span className="text-xs text-white/40">
                                             Skipped
-                                        </Badge>
+                                        </span>
                                     )}
 
                                     {/* Optional: open single */}
                                     <Button
                                         size="sm"
-                                        variant="outline"
-                                        className="h-7 px-2 text-[11px] border-white/15 bg-white/5"
+                                        variant="ghost"
+                                        className="h-7 px-2 text-[11px] border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
                                         disabled={!url}
                                         onClick={async () => {
                                             if (!url) return;

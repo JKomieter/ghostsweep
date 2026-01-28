@@ -125,37 +125,37 @@ export default async function BlogPostPage(rawParams: PageParams) {
     const components: Components = {
         h1: (props) => (
             <h1
-                className="mt-6 mb-3 text-2xl font-semibold tracking-tight"
+                className="mt-6 mb-3 text-2xl font-light tracking-tight text-white"
                 {...props}
             />
         ),
         h2: (props) => (
             <h2
-                className="mt-6 mb-3 text-xl font-semibold tracking-tight"
+                className="mt-6 mb-3 text-xl font-light tracking-tight text-white"
                 {...props}
             />
         ),
         h3: (props) => (
             <h3
-                className="mt-5 mb-2 text-lg font-semibold"
+                className="mt-5 mb-2 text-lg font-light text-white"
                 {...props}
             />
         ),
         p: (props) => (
             <p
-                className="my-3 text-sm leading-relaxed text-muted-foreground"
+                className="my-3 text-sm leading-relaxed text-white/60"
                 {...props}
             />
         ),
         ul: (props) => (
             <ul
-                className="my-3 list-disc pl-5 text-sm text-muted-foreground space-y-1"
+                className="my-3 list-disc pl-5 text-sm text-white/60 space-y-1"
                 {...props}
             />
         ),
         ol: (props) => (
             <ol
-                className="my-3 list-decimal pl-5 text-sm text-muted-foreground space-y-1"
+                className="my-3 list-decimal pl-5 text-sm text-white/60 space-y-1"
                 {...props}
             />
         ),
@@ -165,7 +165,7 @@ export default async function BlogPostPage(rawParams: PageParams) {
                 href={href}
                 target={href?.startsWith("http") ? "_blank" : undefined}
                 rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                className="font-light text-white underline underline-offset-4 hover:text-white/80"
                 {...rest}
             >
                 {children}
@@ -173,24 +173,24 @@ export default async function BlogPostPage(rawParams: PageParams) {
         ),
         blockquote: (props) => (
             <blockquote
-                className="my-4 border-l-2 border-primary/60 pl-4 text-sm italic text-muted-foreground"
+                className="my-4 border-l-2 border-white/20 pl-4 text-sm italic text-white/60"
                 {...props}
             />
         ),
         code: (props) => (
             <code
-                className="rounded bg-zinc-900/70 px-1.5 py-0.5 text-[11px] font-mono text-zinc-100"
+                className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] font-mono text-white"
                 {...props}
             />
         ),
         pre: (props) => (
             <pre
-                className="my-4 overflow-x-auto rounded-lg bg-zinc-950/80 p-3 text-[11px] font-mono text-zinc-100"
+                className="my-4 overflow-x-auto rounded-lg bg-white/5 border border-white/10 p-3 text-[11px] font-mono text-white"
                 {...props}
             />
         ),
         img: ({ src = "", alt = "", ...rest }) => (
-            <span className="my-4 block overflow-hidden rounded-xl border border-white/10">
+            <span className="my-4 block overflow-hidden rounded-lg border border-white/5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={src}
@@ -203,13 +203,13 @@ export default async function BlogPostPage(rawParams: PageParams) {
     };
 
     return (
-        <main className="min-h-screen bg-background text-foreground">
+        <main className="min-h-screen bg-[#050505] text-white">
             <div className="mx-auto max-w-3xl px-4 pb-16 pt-10 space-y-8">
                 {/* Back link */}
                 <div className="flex items-center justify-between">
                     <Link
                         href="/home/blogs"
-                        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                        className="inline-flex items-center gap-1 text-[11px] text-white/60 hover:text-white transition-colors"
                     >
                         <ArrowLeft className="h-3 w-3" />
                         Back to blog
@@ -218,9 +218,9 @@ export default async function BlogPostPage(rawParams: PageParams) {
 
                 {/* Header */}
                 <header className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/60">
                         {post.category && (
-                            <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide">
+                            <span className="rounded-full border border-white/5 bg-white/2 px-2 py-0.5 text-[10px] uppercase tracking-wide">
                                 {post.category}
                             </span>
                         )}
@@ -228,18 +228,18 @@ export default async function BlogPostPage(rawParams: PageParams) {
                         {post.reading_time && <span>· {post.reading_time} min read</span>}
                     </div>
 
-                    <h1 className="text-3xl font-semibold tracking-tight">
+                    <h1 className="text-3xl font-light tracking-tight text-white">
                         {post.title}
                     </h1>
 
                     {post.excerpt && (
-                        <p className="max-w-2xl text-sm text-muted-foreground">
+                        <p className="max-w-2xl text-sm text-white/60">
                             {post.excerpt}
                         </p>
                     )}
 
                     {post.cover_image_url && (
-                        <div className="mt-3 overflow-hidden rounded-xl border border-white/10 h-64 w-full">
+                        <div className="mt-3 overflow-hidden rounded-lg border border-white/5 h-64 w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.cover_image_url}
@@ -262,24 +262,24 @@ export default async function BlogPostPage(rawParams: PageParams) {
                             {post.content_md}
                         </ReactMarkdown>
                     ) : (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-white/60">
                             No content yet for this article.
                         </p>
                     )}
                 </article>
 
                 {/* Footer CTA */}
-                <section className="mt-8 rounded-xl border border-white/10 bg-black/40 p-4 space-y-2">
-                    <h2 className="text-sm font-semibold tracking-tight">
+                <section className="mt-8 rounded-lg border border-white/5 bg-white/2 p-4 space-y-2 backdrop-blur-sm">
+                    <h2 className="text-sm font-light tracking-tight text-white">
                         See your own digital footprint with GhostSweep
                     </h2>
-                    <p className="text-xs text-muted-foreground max-w-xl">
+                    <p className="text-xs text-white/60 max-w-xl">
                         Connect your Gmail in read-only mode and see which companies still
                         hold your data, what’s been breached, and where to start cleaning up.
                     </p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
+                        className="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-1.5 text-xs font-light shadow-sm hover:bg-white/90 transition"
                     >
                         Start a free scan
                         <ArrowRight className="h-3 w-3" />

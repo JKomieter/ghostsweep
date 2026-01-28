@@ -342,13 +342,14 @@ export default function FootprintPage() {
         : `${totalCount.toLocaleString()} services found`;
 
     return (
-        <div className="p-6">
-            <div className="mb-6">
-                <h1 className="text-2xl font-semibold text-white mb-1">Digital Footprint Map</h1>
-                <p className="text-sm text-white/60">Interactive visualization of your online presence across {headerCountLabel.split(" ")[0]} services</p>
-            </div>
+        <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
+            <div className="max-w-7xl mx-auto space-y-8">
+                <div className="space-y-2">
+                    <h1 className="text-3xl font-light tracking-tight text-white">Digital Footprint Map</h1>
+                    <p className="text-sm text-white/60">Interactive visualization of your online presence across {headerCountLabel.split(" ")[0]} services</p>
+                </div>
 
-            <div className="rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] overflow-hidden">
+                <div className="rounded-lg border border-white/5 bg-white/2 overflow-hidden">
                 <div className="p-6">
                     {/* Upgrade indicator (top) */}
                     {!isPending && !isError && isGated ? (
@@ -384,33 +385,33 @@ export default function FootprintPage() {
 
                     {isPending ? (
                         <div className="flex items-center justify-center py-24">
-                            <Spinner className="text-white/40" />
+                            <Spinner className="text-white" />
                         </div>
                     ) : isError ? (
                         <div className="text-center py-16">
-                            <div className="text-sm text-white/80 mb-2">Unable to load footprint</div>
-                            <div className="text-xs text-white/50 mb-4">
+                            <div className="text-sm font-light text-white mb-2">Unable to load footprint</div>
+                            <div className="text-xs text-white/60 mb-4">
                                 {(error as any)?.message ?? "Please try again"}
                             </div>
-                            <Button size="sm" variant="outline" onClick={() => refetch()}>
+                            <Button size="sm" variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" onClick={() => refetch()}>
                                 Retry
                             </Button>
                         </div>
                     ) : !services || services.length === 0 ? (
-                        <div className="text-sm text-white/50 text-center py-16">
+                        <div className="text-sm text-white/60 text-center py-16">
                             No services found yet. Connect Gmail and run a scan to get started.
                         </div>
                     ) : (
                         <>
                             {/* Instructions - Minimal */}
-                            <div className="mb-4 p-3 bg-white/5 border border-white/5 rounded-lg text-xs text-white/60">
-                                <p className="font-medium text-white/80 mb-2">How to use:</p>
+                            <div className="mb-6 p-4 bg-white/2 border border-white/5 rounded-lg text-xs text-white/60">
+                                <p className="text-[11px] uppercase tracking-widest text-white/40 mb-3">How to use</p>
                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                                    <div><span className="text-white/70">Scroll</span> to zoom</div>
-                                    <div><span className="text-white/70">Drag</span> to pan</div>
-                                    <div><span className="text-white/70">Drag nodes</span> to move</div>
-                                    <div><span className="text-white/70">Double-click</span> reset</div>
-                                    <div><span className="text-white/70">Hover</span> details</div>
+                                    <div><span className="text-white/80">Scroll</span> to zoom</div>
+                                    <div><span className="text-white/80">Drag</span> to pan</div>
+                                    <div><span className="text-white/80">Drag nodes</span> to move</div>
+                                    <div><span className="text-white/80">Double-click</span> reset</div>
+                                    <div><span className="text-white/80">Hover</span> details</div>
                                 </div>
                             </div>
 
@@ -418,8 +419,8 @@ export default function FootprintPage() {
                                 {/* Subtle gating overlay */}
                                 {isGated ? (
                                     <div className="pointer-events-none absolute inset-0 z-10">
-                                        <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-                                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-black/60 px-3 py-1 text-[11px] text-white/80 backdrop-blur">
+                                        <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/5 bg-black/80 px-4 py-2 text-[11px] text-white/60 backdrop-blur">
                                             Showing first {visibleLimit} services — upgrade to see all
                                         </div>
                                     </div>
@@ -442,7 +443,7 @@ export default function FootprintPage() {
                                                 1.3,
                                             );
                                         }}
-                                        className="w-9 h-9 bg-black/60 hover:bg-black/80 border border-white/10 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur"
+                                        className="w-9 h-9 bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white/80 transition-all backdrop-blur"
                                         title="Zoom In"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -459,7 +460,7 @@ export default function FootprintPage() {
                                                 0.7,
                                             );
                                         }}
-                                        className="w-9 h-9 bg-black/60 hover:bg-black/80 border border-white/10 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur"
+                                        className="w-9 h-9 bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white/80 transition-all backdrop-blur"
                                         title="Zoom Out"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -476,7 +477,7 @@ export default function FootprintPage() {
                                                 d3.zoomIdentity,
                                             );
                                         }}
-                                        className="w-9 h-9 bg-black/60 hover:bg-black/80 border border-white/10 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all backdrop-blur"
+                                        className="w-9 h-9 bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white/80 transition-all backdrop-blur"
                                         title="Reset View"
                                     >
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -492,24 +493,24 @@ export default function FootprintPage() {
 
                                 {/* Zoom Level - Minimal */}
                                 {zoomTransform && (
-                                    <div className="absolute bottom-4 right-4 bg-black/60 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white/60 backdrop-blur">
+                                    <div className="absolute bottom-4 right-4 bg-white/2 border border-white/5 rounded-lg px-3 py-1.5 text-xs text-white/60 backdrop-blur">
                                         {Math.round(zoomTransform.k * 100)}%
                                     </div>
                                 )}
 
                                 {/* Hover Tooltip - Cleaner */}
                                 {hoveredNode && (
-                                    <div className="absolute top-4 right-4 bg-black/95 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-2xl w-[260px] z-10">
-                                        <h4 className="font-semibold text-white truncate text-sm">{hoveredNode.name}</h4>
+                                    <div className="absolute top-4 right-4 bg-black/95 backdrop-blur-md border border-white/5 rounded-lg p-4 shadow-2xl w-[260px] z-10">
+                                        <h4 className="font-light text-white truncate text-sm">{hoveredNode.name}</h4>
                                         <div className="mt-3 space-y-2.5 text-xs">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-white/60">Category</span>
-                                                <span className="text-white font-medium">{hoveredNode.categoryLabel}</span>
+                                                <span className="text-white/40">Category</span>
+                                                <span className="text-white/80 font-light">{hoveredNode.categoryLabel}</span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-white/60">Risk</span>
+                                                <span className="text-white/40">Risk</span>
                                                 <span
-                                                    className={`font-semibold ${hoveredNode.risk === "high"
+                                                    className={`font-light ${hoveredNode.risk === "high"
                                                             ? "text-red-400"
                                                             : hoveredNode.risk === "medium"
                                                                 ? "text-amber-400"
@@ -520,9 +521,9 @@ export default function FootprintPage() {
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-white/60">Status</span>
+                                                <span className="text-white/40">Status</span>
                                                 <span
-                                                    className={`font-semibold ${hoveredNode.status === "deleted"
+                                                    className={`font-light ${hoveredNode.status === "deleted"
                                                             ? "text-white/40"
                                                             : hoveredNode.status === "pending"
                                                                 ? "text-amber-400"
@@ -534,7 +535,7 @@ export default function FootprintPage() {
                                             </div>
 
                                             {hoveredNode.breached && (
-                                                <div className="pt-2 border-t border-white/10 flex items-center gap-2 text-red-400">
+                                                <div className="pt-2 border-t border-white/5 flex items-center gap-2 text-red-400">
                                                     <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path
                                                             strokeLinecap="round"
@@ -543,7 +544,7 @@ export default function FootprintPage() {
                                                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                                                         />
                                                     </svg>
-                                                    <span className="text-xs font-medium">Breach detected</span>
+                                                    <span className="text-xs font-light">Breach detected</span>
                                                 </div>
                                             )}
                                         </div>
@@ -551,22 +552,22 @@ export default function FootprintPage() {
                                 )}
 
                                 {/* Legend - Minimal */}
-                                <div className="mt-5 pt-4 border-t border-white/5">
+                                <div className="mt-6 pt-4 border-t border-white/5">
                                     <div className="flex flex-wrap gap-x-6 gap-y-2.5 text-xs">
-                                        <LegendDot label="High Risk" className="bg-red-500/80" />
-                                        <LegendDot label="Medium Risk" className="bg-amber-500/80" />
-                                        <LegendDot label="Low Risk" className="bg-emerald-500/80" />
-                                        <LegendDot label="Breached" className="bg-red-500/80 ring-2 ring-red-400/50" />
-                                        <LegendDot label="Pending" className="bg-amber-400/80" />
+                                        <LegendDot label="High Risk" className="bg-red-500" />
+                                        <LegendDot label="Medium Risk" className="bg-amber-500" />
+                                        <LegendDot label="Low Risk" className="bg-emerald-500" />
+                                        <LegendDot label="Breached" className="bg-red-500 ring-2 ring-red-400/40" />
+                                        <LegendDot label="Pending" className="bg-amber-400" />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Bottom CTA */}
                             {isGated ? (
-                                <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/70 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="mt-6 rounded-lg border border-white/5 bg-white/2 p-4 text-xs text-white/60 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
-                                        <span className="text-white font-medium">{returnedCount}</span> of <span className="text-white font-medium">{totalCount.toLocaleString()}</span> services. Upgrade for the full map.
+                                        <span className="text-white font-light">{returnedCount}</span> of <span className="text-white font-light">{totalCount.toLocaleString()}</span> services. Upgrade for the full map.
                                     </div>
                                     <Link href="/dashboard/billing">
                                         <Button size="sm" className="bg-white text-black hover:bg-white/90">
@@ -579,15 +580,16 @@ export default function FootprintPage() {
                     )}
                 </div>
             </div>
+            </div>
         </div>
     );
 }
 
 function LegendDot({ label, className }: { label: string; className: string }) {
     return (
-        <div className="flex items-center gap-2.5">
-            <div className={`w-2.5 h-2.5 rounded-full ${className}`} />
-            <span className="text-white/60 text-xs">{label}</span>
+        <div className="flex items-center gap-2">
+            <div className={`w-1.5 h-1.5 rounded-full ${className}`} />
+            <span className="text-white/40 text-xs">{label}</span>
         </div>
     );
 }

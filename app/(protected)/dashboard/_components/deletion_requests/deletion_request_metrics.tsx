@@ -13,19 +13,22 @@ function StatCard({
     value,
     accent = "default",
 }: StatCardProps) {
-    const accentClasses = {
-        default: "text-foreground",
-        warning: "text-yellow-500/80",
-        success: "text-emerald-500/80",
-        danger: "text-destructive/80",
+    const dotColor = {
+        default: "bg-white/20",
+        warning: "bg-amber-500",
+        success: "bg-emerald-500",
+        danger: "bg-red-500",
     }[accent];
 
     return (
-        <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                {label}
-            </p>
-            <h2 className={cn("text-2xl font-semibold", accentClasses)}>
+        <div className="rounded-lg border border-white/5 bg-white/2 p-4">
+            <div className="flex items-start justify-between">
+                <div className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+                    {label}
+                </div>
+                <div className={`h-1 w-1 rounded-full ${dotColor}`} />
+            </div>
+            <h2 className="mt-2 text-2xl font-light text-white">
                 {value}
             </h2>
         </div>
@@ -49,7 +52,7 @@ export default function DeletionRequestsMetrics({
 }: DeletionRequestsMetricsProps) {
 
     return (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">
             <StatCard
                 label="Total Sent"
                 value={isLoading ? "…" : total}

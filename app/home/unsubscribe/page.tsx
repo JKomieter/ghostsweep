@@ -15,9 +15,9 @@ export default async function UnsubscribePage({
   const list = params?.list || "product-updates";
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#02040a] px-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#050505] p-6 shadow-lg">
-        <h1 className="text-xl font-semibold text-white tracking-tight">
+    <main className="min-h-screen flex items-center justify-center bg-[#050505] px-4">
+      <div className="w-full max-w-md rounded-lg border border-white/5 bg-white/2 p-6 shadow-lg backdrop-blur-sm">
+        <h1 className="text-xl font-light text-white tracking-tight">
           Manage your GhostSweep emails
         </h1>
         <p className="mt-2 text-sm text-white/60">

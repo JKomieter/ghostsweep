@@ -5,17 +5,13 @@ import Link from "next/link";
 import {
     ArrowRight,
     ShieldCheck,
-    EyeOff,
-    Lock,
     CheckCircle,
     X,
     Check,
-    Bell,
     Send,
     Search,
     FileWarning,
     Fingerprint,
-    TriangleAlert,
     Sparkles,
     ListChecks,
     Mail,
@@ -107,25 +103,25 @@ function ExitIntentPopup({ onClose }: { onClose: () => void }) {
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                 onClick={onClose}
             />
-            <div className="relative z-10 max-w-md rounded-2xl border border-white/10 bg-[#050509] p-8 text-center shadow-2xl">
-                <h3 className="text-xl font-bold text-white">
+            <div className="relative z-10 max-w-md rounded-lg border border-white/5 bg-white/2 p-8 text-center shadow-2xl">
+                <h3 className="text-xl font-light text-white">
                     Wait — before you go
                 </h3>
-                <p className="mt-3 text-sm text-zinc-400">
+                <p className="mt-3 text-sm text-white/60">
                     Takes 2 minutes to find accounts you forgot about.
                     <br />
-                    <span className="text-white font-medium">Completely free. No credit card.</span>
+                    <span className="text-white font-light">Completely free. No credit card.</span>
                 </p>
                 <Link
                     href="/login"
-                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-light text-black hover:bg-white/90 transition"
                 >
                     Okay, scan my email
                     <ArrowRight className="h-4 w-4" />
                 </Link>
                 <button
                     onClick={onClose}
-                    className="mt-3 text-xs text-zinc-500 hover:text-zinc-300 transition"
+                    className="mt-3 text-xs text-white/40 hover:text-white/60 transition"
                 >
                     No thanks, I'll stay insecure
                 </button>
@@ -154,12 +150,12 @@ function VideoModal({
                 onClick={onClose}
                 aria-label="Close video"
             />
-            <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-[#050507] shadow-[0_30px_120px_rgba(0,0,0,0.75)]">
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-                    <div className="text-sm font-semibold text-white">{title}</div>
+            <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-lg border border-white/5 bg-white/2 shadow-[0_30px_120px_rgba(0,0,0,0.75)]">
+                <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+                    <div className="text-sm font-light text-white">{title}</div>
                     <button
                         onClick={onClose}
-                        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/80 hover:bg-white/10"
+                        className="rounded-lg border border-white/5 bg-white/2 px-2 py-1 text-xs text-white/70 hover:bg-white/3 hover:border-white/10"
                     >
                         Close
                     </button>
@@ -199,7 +195,7 @@ function FounderVideoSection() {
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#050509] text-left"
+                    className="group relative overflow-hidden rounded-lg border border-white/5 bg-white/2 text-left"
                     aria-label="Play video"
                 >
                     <div className="relative aspect-video w-full">
@@ -213,7 +209,7 @@ function FounderVideoSection() {
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition group-hover:scale-[1.03]">
+                            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-4 py-2 text-sm font-light text-white backdrop-blur-sm transition group-hover:scale-[1.03]">
                                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black">
                                     <Play className="h-4 w-4" />
                                 </span>
@@ -223,31 +219,31 @@ function FounderVideoSection() {
                     </div>
 
                     <div className="p-4">
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-light text-white">
                             "I couldn't remember what I signed up for…"
                         </div>
-                        <div className="mt-1 text-xs text-zinc-400">
+                        <div className="mt-1 text-xs text-white/60">
                             Click to play — shows my real workflow using GhostSweep.
                         </div>
                     </div>
                 </button>
 
-                <div className="rounded-2xl border border-white/10 bg-[#050509] p-5">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-5">
                     <div className="space-y-3">
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-sm font-light text-white">
                             This video shows my actual results
                         </p>
-                        <p className="text-sm text-zinc-400 leading-relaxed">
+                        <p className="text-sm text-white/60 leading-relaxed">
                             I kept finding old accounts I forgot existed — which later became spam,
                             breach exposure, and security risk. This video shows how GhostSweep
                             scans email metadata from Gmail and Outlook, builds your footprint, and helps you clean it up.
                         </p>
 
-                        <div className="rounded-xl border border-white/10 bg-black/30 p-4 text-xs text-zinc-400">
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-4 text-xs text-white/60">
                             <div className="flex items-start gap-2">
                                 <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
                                 <div>
-                                    <p className="text-zinc-200 font-medium">Privacy-first by design</p>
+                                    <p className="text-white/80 font-light">Privacy-first by design</p>
                                     <p className="mt-1">
                                         Metadata only · OAuth · revoke anytime · you approve every deletion email
                                     </p>
@@ -258,7 +254,7 @@ function FounderVideoSection() {
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-light text-black hover:bg-white/90 transition"
                             >
                                 Scan My Digital Shadow <ArrowRight className="h-4 w-4" />
                             </Link>
@@ -298,7 +294,7 @@ const faqs = [
 
 function Badge({ children }: { children: React.ReactNode }) {
     return (
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-zinc-300">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/2 px-3 py-1.5 text-[11px] text-white/70">
             {children}
         </div>
     );
@@ -325,8 +321,8 @@ function SectionTitle({
                     </Badge>
                 </div>
             ) : null}
-            <h2 className="text-xl font-semibold text-white sm:text-2xl">{title}</h2>
-            {desc ? <p className="mx-auto max-w-2xl text-sm text-zinc-400">{desc}</p> : null}
+            <h2 className="text-xl font-light text-white sm:text-2xl">{title}</h2>
+            {desc ? <p className="mx-auto max-w-2xl text-sm text-white/60">{desc}</p> : null}
         </div>
     );
 }
@@ -348,7 +344,7 @@ export default function HomePage() {
     // }, [hasShownPopup]);
 
     return (
-        <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608] text-foreground">
+        <main className="min-h-screen bg-[#050505] text-foreground">
             {showExitPopup && <ExitIntentPopup onClose={() => setShowExitPopup(false)} />}
 
             {/* JSON-LD Structured Data */}
@@ -363,7 +359,7 @@ export default function HomePage() {
 
             <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 space-y-16 md:space-y-20">
                 {/* HERO - REDESIGNED */}
-                <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/2 p-6 sm:p-10">
+                <section className="relative overflow-hidden rounded-lg border border-white/5 bg-white/2 p-6 sm:p-10">
                     <div className="pointer-events-none absolute inset-0">
                         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
                         <div className="absolute -bottom-24 right-10 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
@@ -372,8 +368,8 @@ export default function HomePage() {
                     <div className="relative space-y-6">
                         {/* Subtle proof */}
                         <div className="flex justify-center">
-                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
-                                <span className="text-sm font-medium text-emerald-300">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2">
+                                <span className="text-sm font-light text-emerald-300">
                                     332 users discovered 17,013 services
                                 </span>
                             </div>
@@ -381,26 +377,26 @@ export default function HomePage() {
 
                         {/* Main headline - PROBLEM FOCUSED */}
                         <div className="mx-auto max-w-3xl space-y-3 text-center">
-                            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
+                            <h1 className="text-3xl font-light tracking-tight text-white sm:text-4xl md:text-5xl">
                                 You are exposed in 200+ places.
                                 <br />
-                                <span className="text-zinc-400">
+                                <span className="text-white/60">
                                     It's time to disappear.
                                 </span>
                             </h1>
 
-                            <p className="text-sm sm:text-base text-zinc-300">
+                            <p className="text-sm sm:text-base text-white/60">
                                 GhostSweep maps your forgotten digital footprint and helps you automate the deletion of your data from brokers and "zombie" accounts. Stop the leaks before they become identity theft.
                             </p>
                         </div>
 
                         {/* Soft risk callout */}
-                        <div className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-black/40 p-5">
+                        <div className="mx-auto max-w-2xl rounded-lg border border-white/5 bg-white/2 p-5">
                             <div className="space-y-2 text-left">
-                                <p className="text-sm font-medium text-white">
+                                <p className="text-sm font-light text-white">
                                     Forgotten accounts still hold your data.
                                 </p>
-                                <p className="text-xs text-zinc-300">
+                                <p className="text-xs text-white/60">
                                     Old signups, free trials, and dormant profiles quietly persist in dozens of systems. We surface them so you can decide what stays and what goes.
                                 </p>
                             </div>
@@ -410,7 +406,7 @@ export default function HomePage() {
                         <div className="flex justify-center">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black shadow-[0_0_25px_rgba(16,185,129,0.45)] ring-1 ring-emerald-400/40 hover:bg-zinc-100 hover:shadow-[0_0_35px_rgba(16,185,129,0.6)] transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-light text-black shadow-[0_0_25px_rgba(16,185,129,0.45)] ring-1 ring-emerald-400/40 hover:bg-white/90 hover:shadow-[0_0_35px_rgba(16,185,129,0.6)] transition"
                             >
                                 Scan My Digital Shadow
                                 <ArrowRight className="h-4 w-4" />
@@ -418,7 +414,7 @@ export default function HomePage() {
                         </div>
 
                         {/* Trust bullets */}
-                        <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-400">
+                        <div className="flex flex-wrap justify-center gap-4 text-xs text-white/60">
                             <span className="inline-flex items-center gap-1">
                                 <Check className="h-3 w-3 text-emerald-400" />
                                 2-minute scan
@@ -434,14 +430,14 @@ export default function HomePage() {
                         </div>
 
                         {/* Concrete result preview */}
-                        <div className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-black/30 p-5">
+                        <div className="mx-auto max-w-2xl rounded-lg border border-white/5 bg-white/2 p-5">
                             <div className="flex items-start gap-3">
                                 <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-300" />
                                 <div className="space-y-2 text-left">
-                                    <p className="text-sm font-semibold text-white">
+                                    <p className="text-sm font-light text-white">
                                         Here's what you'll discover:
                                     </p>
-                                    <ul className="space-y-1 text-xs text-zinc-300">
+                                    <ul className="space-y-1 text-xs text-white/60">
                                         <li>• Old forums you joined in 2011</li>
                                         <li>• Shopping sites you used once</li>
                                         <li>• Free trials you never canceled</li>
@@ -464,10 +460,10 @@ export default function HomePage() {
                             <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
                             <span>How it works</span>
                         </Badge>
-                        <h2 className="text-2xl font-bold text-white sm:text-3xl">
+                        <h2 className="text-2xl font-light text-white sm:text-3xl">
                             Find every account in 3 clicks
                         </h2>
-                        <p className="text-sm text-zinc-400">
+                        <p className="text-sm text-white/60">
                             No setup. No email reading. Just results.
                         </p>
                     </div>
@@ -493,13 +489,13 @@ export default function HomePage() {
                                 body: "Get your full list + steps to delete each account",
                             },
                         ].map((s) => (
-                            <div key={s.step} className="rounded-2xl border border-white/10 bg-[#050509] p-6 text-center">
-                                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-xl font-bold text-emerald-300">
+                            <div key={s.step} className="rounded-lg border border-white/5 bg-white/2 p-6 text-center">
+                                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-xl font-light text-emerald-300">
                                     {s.step}
                                 </div>
-                                <s.icon className="mx-auto mb-3 h-6 w-6 text-zinc-400" />
-                                <p className="mb-2 text-base font-semibold text-white">{s.title}</p>
-                                <p className="text-sm text-zinc-400">{s.body}</p>
+                                <s.icon className="mx-auto mb-3 h-6 w-6 text-white/60" />
+                                <p className="mb-2 text-base font-light text-white">{s.title}</p>
+                                <p className="text-sm text-white/60">{s.body}</p>
                             </div>
                         ))}
                     </div>
@@ -507,7 +503,7 @@ export default function HomePage() {
                     <div className="flex justify-center">
                         <Link
                             href="/login"
-                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-light text-black hover:bg-white/90 transition"
                         >
                             Scan My Digital Shadow
                             <ArrowRight className="h-4 w-4" />
@@ -516,16 +512,16 @@ export default function HomePage() {
 
                     {/* SUPPORTED PROVIDERS */}
                     <div className="mt-12 flex flex-col items-center gap-4">
-                        <p className="text-sm text-zinc-400">We support</p>
+                        <p className="text-sm text-white/60">We support</p>
                         <div className="flex items-center gap-8">
                             <div className="flex items-center gap-2">
                                 <GmailLogo className="h-8 w-8" />
-                                <span className="text-sm font-medium text-zinc-300">Gmail</span>
+                                <span className="text-sm font-light text-white/70">Gmail</span>
                             </div>
-                            <div className="text-zinc-500">•</div>
+                            <div className="text-white/40">•</div>
                             <div className="flex items-center gap-2">
                                 <OutLookLogo className="h-8 w-8" />
-                                <span className="text-sm font-medium text-zinc-300">Outlook</span>
+                                <span className="text-sm font-light text-white/70">Outlook</span>
                             </div>
                         </div>
                     </div>
@@ -535,50 +531,50 @@ export default function HomePage() {
                 <DigitalShadowSection />
 
                 {/* WHY GO PRO - CLEAR VALUE PROP */}
-                <section className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-6 sm:p-10">
+                <section className="relative overflow-hidden rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-6 sm:p-10">
                     <div className="pointer-events-none absolute inset-0">
                         <div className="absolute -top-32 right-10 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
                     </div>
 
                     <div className="relative space-y-8">
                         <div className="space-y-3 text-center">
-                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 backdrop-blur-sm">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-xs font-light text-emerald-300 backdrop-blur-sm">
                                 <Zap className="h-3.5 w-3.5" />
                                 <span>Upgrade Anytime</span>
                             </div>
-                            <h2 className="text-3xl sm:text-4xl font-bold text-white">
+                            <h2 className="text-3xl sm:text-4xl font-light text-white">
                                 Free shows what's exposed.<br />Pro handles the cleanup.
                             </h2>
-                            <p className="mx-auto max-w-2xl text-base text-emerald-100/80">
+                            <p className="mx-auto max-w-2xl text-base text-emerald-100/70">
                                 Free plan reveals your digital shadow. Pro gives you templates and tracking to reclaim it.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                            <div className="rounded-xl border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
-                                <div className="text-emerald-300 font-semibold text-sm">All Accounts</div>
+                            <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
+                                <div className="text-emerald-300 font-light text-sm">All Accounts</div>
                                 <p className="text-xs text-emerald-100/60">vs 10 on Free</p>
                             </div>
-                            <div className="rounded-xl border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
-                                <div className="text-emerald-300 font-semibold text-sm">Deletion Templates</div>
+                            <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
+                                <div className="text-emerald-300 font-light text-sm">Deletion Templates</div>
                                 <p className="text-xs text-emerald-100/60">100+ brokers</p>
                             </div>
-                            <div className="rounded-xl border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
-                                <div className="text-emerald-300 font-semibold text-sm">Weekly Monitoring</div>
+                            <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
+                                <div className="text-emerald-300 font-light text-sm">Weekly Monitoring</div>
                                 <p className="text-xs text-emerald-100/60">Catch new accounts</p>
                             </div>
-                            <div className="rounded-xl border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
-                                <div className="text-emerald-300 font-semibold text-sm">Breach Alerts</div>
+                            <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
+                                <div className="text-emerald-300 font-light text-sm">Breach Alerts</div>
                                 <p className="text-xs text-emerald-100/60">Email notifications</p>
                             </div>
-                            <div className="rounded-xl border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
-                                <div className="text-emerald-300 font-semibold text-sm">Track Progress</div>
+                            <div className="rounded-lg border border-emerald-500/20 bg-black/30 p-4 space-y-2 group hover:bg-emerald-500/10 transition">
+                                <div className="text-emerald-300 font-light text-sm">Track Progress</div>
                                 <p className="text-xs text-emerald-100/60">See deletions happen</p>
                             </div>
                         </div>
 
                         <div className="text-center">
-                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-light text-emerald-300">
                                 <span>Only $9.99/month</span>
                                 <span className="text-emerald-400">($79/year)</span>
                             </div>
@@ -594,28 +590,28 @@ export default function HomePage() {
                             <Fingerprint className="h-3.5 w-3.5 text-emerald-300" />
                             <span>What you'll see</span>
                         </Badge>
-                        <h2 className="text-2xl font-bold text-white sm:text-3xl">
+                        <h2 className="text-2xl font-light text-white sm:text-3xl">
                             Real examples from real scans
                         </h2>
-                        <p className="text-sm text-zinc-400">
+                        <p className="text-sm text-white/60">
                             Most people discover 50-200 accounts they completely forgot about
                         </p>
                     </div>
 
                     {/* VISUAL MOCK OF RESULTS */}
-                    <div className="rounded-2xl border border-white/10 bg-[#050509] p-6">
+                    <div className="rounded-lg border border-white/5 bg-white/2 p-6">
                         <div className="mb-6 grid gap-4 sm:grid-cols-3">
-                            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-                                <p className="text-3xl font-bold text-white">127</p>
-                                <p className="text-xs text-zinc-400 mt-1">Accounts found</p>
+                            <div className="rounded-lg border border-white/5 bg-white/2 p-4 text-center">
+                                <p className="text-3xl font-light text-white">127</p>
+                                <p className="text-xs text-white/60 mt-1">Accounts found</p>
                             </div>
-                            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-center">
-                                <p className="text-3xl font-bold text-amber-300">23</p>
-                                <p className="text-xs text-zinc-400 mt-1">Breached</p>
+                            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-center">
+                                <p className="text-3xl font-light text-amber-300">23</p>
+                                <p className="text-xs text-white/60 mt-1">Breached</p>
                             </div>
-                            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-                                <p className="text-3xl font-bold text-emerald-300">89</p>
-                                <p className="text-xs text-zinc-400 mt-1">Can be deleted</p>
+                            <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4 text-center">
+                                <p className="text-3xl font-light text-emerald-300">89</p>
+                                <p className="text-xs text-white/60 mt-1">Can be deleted</p>
                             </div>
                         </div>
 
@@ -628,11 +624,11 @@ export default function HomePage() {
                             ].map((item, i) => (
                                 <div
                                     key={i}
-                                    className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                                    className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/2 px-4 py-3"
                                 >
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-white">{item.name}</p>
-                                        <p className="text-xs text-zinc-400">{item.risk}</p>
+                                        <p className="text-sm font-light text-white">{item.name}</p>
+                                        <p className="text-xs text-white/60">{item.risk}</p>
                                     </div>
                                     <span
                                         className={`rounded-full px-3 py-1 text-xs font-medium ${item.color === "red"
@@ -648,7 +644,7 @@ export default function HomePage() {
                             ))}
                         </div>
 
-                        <p className="mt-4 text-center text-xs text-zinc-500">
+                        <p className="mt-4 text-center text-xs text-white/40">
                             This is what your dashboard will look like (with your real accounts)
                         </p>
                     </div>
@@ -656,7 +652,7 @@ export default function HomePage() {
                     <div className="flex justify-center">
                         <Link
                             href="/login"
-                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black hover:bg-zinc-100 transition"
+                            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-light text-black hover:bg-white/90 transition"
                         >
                             See My Real Results
                             <ArrowRight className="h-4 w-4" />
@@ -696,13 +692,13 @@ export default function HomePage() {
                                 foot: "No more \"where was that link?\"",
                             },
                         ].map((f) => (
-                            <div key={f.title} className="rounded-2xl border border-white/10 bg-[#050509] p-5">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5">
-                                    <f.icon className="h-4 w-4 text-zinc-200" />
+                            <div key={f.title} className="rounded-lg border border-white/5 bg-white/2 p-5">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
+                                    <f.icon className="h-4 w-4 text-white/80" />
                                 </div>
-                                <p className="mt-3 text-sm font-semibold text-white">{f.title}</p>
-                                <p className="mt-2 text-xs leading-relaxed text-zinc-400">{f.body}</p>
-                                <p className="mt-3 text-[11px] text-zinc-500">{f.foot}</p>
+                                <p className="mt-3 text-sm font-light text-white">{f.title}</p>
+                                <p className="mt-2 text-xs leading-relaxed text-white/60">{f.body}</p>
+                                <p className="mt-3 text-[11px] text-white/40">{f.foot}</p>
                             </div>
                         ))}
                     </div>
@@ -726,71 +722,71 @@ export default function HomePage() {
                 {/* TRUST & CREDIBILITY */}
                 <section className="space-y-8">
                     <div className="space-y-4 text-center">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-white">
+                        <h2 className="text-3xl sm:text-4xl font-light text-white">
                             Trusted by privacy-conscious users
                         </h2>
-                        <p className="mx-auto max-w-2xl text-base text-zinc-400">
+                        <p className="mx-auto max-w-2xl text-base text-white/60">
                             Founded by a privacy engineer. Built with security first. Used by thousands.
                         </p>
                     </div>
 
                     {/* Certifications & Trust Indicators */}
-                    <div className="rounded-2xl border border-white/10 bg-white/2 p-6">
-                        <p className="text-center text-sm font-semibold text-zinc-300 mb-4">Verified & Certified</p>
+                    <div className="rounded-lg border border-white/5 bg-white/2 p-6">
+                        <p className="text-center text-sm font-light text-white/70 mb-4">Verified & Certified</p>
                         <div className="flex flex-wrap items-center justify-center gap-8">
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-500/30">
                                     <span className="text-xl">🔐</span>
                                 </div>
-                                <span className="text-xs text-zinc-400 text-center">Google Sign-In<br/>Verified</span>
+                                <span className="text-xs text-white/60 text-center">Google Sign-In<br/>Verified</span>
                             </div>
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/20 border border-blue-500/30">
                                     <span className="text-xl">🛡️</span>
                                 </div>
-                                <span className="text-xs text-zinc-400 text-center">CASA<br/>Certified</span>
+                                <span className="text-xs text-white/60 text-center">CASA<br/>Certified</span>
                             </div>
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/30">
                                     <span className="text-xl">🔒</span>
                                 </div>
-                                <span className="text-xs text-zinc-400 text-center">AES-256<br/>Encrypted</span>
+                                <span className="text-xs text-white/60 text-center">AES-256<br/>Encrypted</span>
                             </div>
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/30">
                                     <span className="text-xl">⚖️</span>
                                 </div>
-                                <span className="text-xs text-zinc-400 text-center">GDPR &<br/>CCPA Ready</span>
+                                <span className="text-xs text-white/60 text-center">GDPR &<br/>CCPA Ready</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-4">
-                        <div className="rounded-xl border border-white/10 bg-[#050509] p-6 text-center space-y-3">
-                            <div className="text-3xl font-bold text-emerald-400">87</div>
-                            <p className="text-sm text-white font-medium">Forgotten Accounts</p>
-                            <p className="text-xs text-zinc-400">Joel found personally</p>
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-center space-y-3">
+                            <div className="text-3xl font-light text-emerald-400">87</div>
+                            <p className="text-sm text-white font-light">Forgotten Accounts</p>
+                            <p className="text-xs text-white/60">Joel found personally</p>
                         </div>
-                        <div className="rounded-xl border border-white/10 bg-[#050509] p-6 text-center space-y-3">
-                            <div className="text-3xl font-bold text-emerald-400">🚀</div>
-                            <p className="text-sm text-white font-medium">Privacy-First</p>
-                            <p className="text-xs text-zinc-400">Built with security</p>
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-center space-y-3">
+                            <div className="text-3xl font-light text-emerald-400">🚀</div>
+                            <p className="text-sm text-white font-light">Privacy-First</p>
+                            <p className="text-xs text-white/60">Built with security</p>
                         </div>
-                        <div className="rounded-xl border border-white/10 bg-[#050509] p-6 text-center space-y-3">
-                            <div className="text-3xl font-bold text-emerald-400">99.9%</div>
-                            <p className="text-sm text-white font-medium">Data Security</p>
-                            <p className="text-xs text-zinc-400">AES-256 encrypted</p>
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-center space-y-3">
+                            <div className="text-3xl font-light text-emerald-400">99.9%</div>
+                            <p className="text-sm text-white font-light">Data Security</p>
+                            <p className="text-xs text-white/60">AES-256 encrypted</p>
                         </div>
-                        <div className="rounded-xl border border-white/10 bg-[#050509] p-6 text-center space-y-3">
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-center space-y-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20 mx-auto">
                                 <BadgeCheck className="h-5 w-5 text-emerald-400" />
                             </div>
-                            <p className="text-sm text-white font-medium">Privacy First</p>
-                            <p className="text-xs text-zinc-400">GDPR & CCPA Ready</p>
+                            <p className="text-sm text-white font-light">Privacy First</p>
+                            <p className="text-xs text-white/60">GDPR & CCPA Ready</p>
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 space-y-4">
+                    <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-6 space-y-4">
                         <div className="flex items-center gap-4">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10">
                                 <Image
@@ -802,11 +798,11 @@ export default function HomePage() {
                                 />
                             </div>
                             <div>
-                                <p className="font-semibold text-white">Built by Joel Komieter</p>
+                                <p className="font-light text-white">Built by Joel Komieter</p>
                                 <p className="text-sm text-emerald-100/70">Privacy engineer. Founder.</p>
                             </div>
                         </div>
-                        <p className="text-sm text-emerald-100/80 leading-relaxed">
+                        <p className="text-sm text-emerald-100/70 leading-relaxed">
                             "I found 187 forgotten accounts tied to my email. Most tools make it hard to delete them or compromise your privacy. This doesn't."
                         </p>
                     </div>
@@ -820,26 +816,26 @@ export default function HomePage() {
                         desc="Start with free discovery. Try Pro features free for 1 day. No credit card required."
                     />
 
-                    <div className="grid gap-4 md:grid-cols-2 md:[&>div:first-child]:order-2 md:[&>div:nth-child(2)]:order-1">
+                    <div className="grid gap-4 md:grid-cols-3">
                         {/* Free */}
-                        <div className="rounded-2xl border border-white/10 bg-[#050509] p-6 space-y-5">
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-5">
                             <div className="space-y-2">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Free</p>
+                                <p className="text-xs font-light uppercase tracking-wide text-white/60">Free</p>
                                 <div className="flex items-baseline gap-1">
-                                    <p className="text-3xl font-semibold text-white">$0</p>
-                                    <span className="text-xs text-zinc-400">forever</span>
+                                    <p className="text-3xl font-light text-white">$0</p>
+                                    <span className="text-xs text-white/60">forever</span>
                                 </div>
-                                <p className="text-xs text-zinc-400">See your digital shadow. Limited to 10 accounts.</p>
+                                <p className="text-xs text-white/60">See your digital shadow. Limited to 10 accounts.</p>
                             </div>
 
-                            <ul className="space-y-2 text-sm text-zinc-300">
+                            <ul className="space-y-2 text-sm text-white/70">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
                                     <span>One email scan</span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
-                                    <span>View up to 10 accounts <span className="text-zinc-500">(Average: 180+)</span></span>
+                                    <span>View up to 10 accounts <span className="text-white/40">(Average: 180+)</span></span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
@@ -849,70 +845,70 @@ export default function HomePage() {
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400" />
                                     <span>Privacy score dashboard</span>
                                 </li>
-                                <li className="flex items-start gap-2 text-zinc-400">
-                                    <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
+                                <li className="flex items-start gap-2 text-white/40">
+                                    <X className="mt-0.5 h-3.5 w-3.5 text-white/30" />
                                     <span>Can't see full account list</span>
                                 </li>
-                                <li className="flex items-start gap-2 text-zinc-400">
-                                    <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
+                                <li className="flex items-start gap-2 text-white/40">
+                                    <X className="mt-0.5 h-3.5 w-3.5 text-white/30" />
                                     <span>No deletion guidance</span>
                                 </li>
-                                <li className="flex items-start gap-2 text-zinc-400">
-                                    <X className="mt-0.5 h-3.5 w-3.5 text-zinc-500" />
+                                <li className="flex items-start gap-2 text-white/40">
+                                    <X className="mt-0.5 h-3.5 w-3.5 text-white/30" />
                                     <span>No monitoring for new breaches</span>
                                 </li>
                             </ul>
 
                             <Link
                                 href="/login"
-                                className="inline-flex w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-medium text-zinc-50 hover:bg-white/10 transition"
+                                className="inline-flex w-full items-center justify-center rounded-full border border-white/10 bg-white/2 px-4 py-2.5 text-xs font-light text-white hover:bg-white/3 hover:border-white/15 transition"
                             >
                                 Continue with free
                             </Link>
                         </div>
 
                         {/* Pro */}
-                        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-6 space-y-5 relative">
+                        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-6 space-y-5 relative">
 
                             <div className="space-y-2">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Professional</p>
+                                <p className="text-xs font-light uppercase tracking-wide text-emerald-300">Professional</p>
                                 <div className="flex items-baseline gap-2">
-                                    <p className="text-4xl font-bold text-white">$9.99</p>
-                                    <span className="text-sm text-zinc-300">/month</span>
+                                    <p className="text-4xl font-light text-white">$9.99</p>
+                                    <span className="text-sm text-white/70">/ month</span>
                                 </div>
-                                <p className="text-xs text-emerald-100/80 font-medium">Includes deletion templates, monitoring, and progress tracking.</p>
+                                <p className="text-xs text-emerald-100/70 font-light">Includes deletion templates, monitoring, and progress tracking.</p>
                                 <p className="text-xs text-emerald-300 pt-1">1-day trial available.</p>
                             </div>
 
-                            <ul className="space-y-2.5 text-sm text-zinc-100">
+                            <ul className="space-y-2.5 text-sm text-emerald-100/80">
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                                     <span>
-                                        <strong>See all accounts</strong> (vs 10 on Free)
+                                        <span className="font-light">See all accounts</span> (vs 10 on Free)
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                                     <span>
-                                        <strong>One-click deletion templates</strong> for 100+ brokers
+                                        <span className="font-light">One-click deletion templates</span> for 100+ brokers
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                                     <span>
-                                        <strong>Weekly monitoring</strong> (catch new accounts)
+                                        <span className="font-light">Weekly monitoring</span> (catch new accounts)
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                                     <span>
-                                        <strong>Breach alerts</strong> with email notifications
+                                        <span className="font-light">Breach alerts</span> with email notifications
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-2">
                                     <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                                     <span>
-                                        <strong>Track all deletions</strong> in real time
+                                        <span className="font-light">Track all deletions</span> in real time
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-2">
@@ -936,25 +932,92 @@ export default function HomePage() {
                         <div className="space-y-2">
                             <Link
                                 href="/login?plan=pro"
-                                className="inline-flex w-full items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-xs font-medium text-white hover:bg-emerald-600 transition"
+                                className="inline-flex w-full items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-xs font-light text-white hover:bg-emerald-600 transition"
                             >
                                 Try Pro for 1 day
                                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
                             </Link>
-                            <p className="text-center text-[11px] text-zinc-500">
+                            <p className="text-center text-[11px] text-white/40">
                                 No commitment. Cancel anytime during trial.
                             </p>
                         </div>
                     </div>
-                </div>
+
+                        {/* Enterprise */}
+                        <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-6 space-y-5 relative">
+                            <div className="space-y-2">
+                                <p className="text-xs font-light uppercase tracking-wide text-blue-300">Enterprise</p>
+                                <div className="flex items-baseline gap-2">
+                                    <p className="text-4xl font-light text-white">Custom</p>
+                                </div>
+                                <p className="text-xs text-blue-100/70 font-light">Tailored solutions for organizations protecting executive teams.</p>
+                            </div>
+
+                            <ul className="space-y-2.5 text-sm text-blue-100/80">
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>Everything in Pro</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>
+                                        <span className="font-light">Multi-user management</span> for teams
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>
+                                        <span className="font-light">Custom integrations</span> & API access
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>
+                                        <span className="font-light">Dedicated account manager</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>
+                                        <span className="font-light">SSO & advanced security</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>
+                                        SLA guarantees & compliance support
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-blue-400 flex-shrink-0" />
+                                    <span>
+                                        White-label options available
+                                    </span>
+                                </li>
+                            </ul>
+
+                            <div className="space-y-2">
+                                <a
+                                    href="mailto:support@ghostsweep.com?subject=Enterprise%20Plan%20Inquiry"
+                                    className="inline-flex w-full items-center justify-center rounded-full bg-blue-500 px-5 py-2.5 text-xs font-light text-white hover:bg-blue-600 transition"
+                                >
+                                    Contact Sales
+                                    <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                                </a>
+                                <p className="text-center text-[11px] text-white/40">
+                                    Let's discuss your organization's needs.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                 {/* Value Comparison */}
-                <div className="rounded-2xl border border-white/10 bg-[#050509] p-6">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
                     <div className="space-y-2">
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-sm font-light text-white">
                             Designed to be fair and predictable.
                         </p>
-                        <div className="space-y-1 text-sm text-zinc-400">
+                        <div className="space-y-1 text-sm text-white/60">
                             <p>• Priced below most privacy services.</p>
                             <p>• Saves hours compared to manual clean-up.</p>
                             <p>• Built for ongoing monitoring, not one-off reports.</p>
@@ -963,19 +1026,19 @@ export default function HomePage() {
                 </div>
 
                 {/* Annual Plan */}
-                <div className="rounded-xl border border-white/10 bg-[#050509]/50 p-4">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-4">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div>
-                            <p className="text-sm font-semibold text-white">Already decided? Annual saves more</p>
-                            <p className="text-xs text-zinc-400">Get full year for less than 1 month of coffee</p>
+                            <p className="text-sm font-light text-white">Already decided? Annual saves more</p>
+                            <p className="text-xs text-white/60">Get full year for less than 1 month of coffee</p>
                         </div>
                         <div className="text-center sm:text-right">
-                            <p className="text-2xl font-bold text-emerald-400">$79/year</p>
-                            <p className="text-xs text-zinc-300">$6.58/month equivalent</p>
+                            <p className="text-2xl font-light text-emerald-400">$79/year</p>
+                            <p className="text-xs text-white/70">$6.58/month equivalent</p>
                         </div>
                         <Link
                             href="/login?plan=pro-annual"
-                            className="inline-flex items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/40 px-6 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/30 transition"
+                            className="inline-flex items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/30 px-6 py-2 text-sm font-light text-emerald-300 hover:bg-emerald-500/30 transition"
                         >
                             Go Annual
                         </Link>
@@ -983,23 +1046,23 @@ export default function HomePage() {
                 </div>
 
                 {/* FAQ below pricing */}
-                <div className="mt-8 pt-8 border-t border-white/10 space-y-4">
+                <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
                         <details className="text-sm group">
-                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                            <summary className="cursor-pointer text-white/70 hover:text-white font-light flex items-center justify-between">
                                 What happens if I find more than 10 accounts?
                                 <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
                             </summary>
-                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                            <p className="mt-2 text-white/60 text-xs pl-4">
                                 Free users can see the total number of accounts found (e.g., &quot;37 accounts&quot;), but can only view details for the first 10. Upgrade to Pro to see all accounts and get step-by-step deletion instructions for each one.
                             </p>
                         </details>
 
                         <details className="text-sm group">
-                            <summary className="cursor-pointer text-zinc-300 hover:text-white font-medium flex items-center justify-between">
+                            <summary className="cursor-pointer text-white/70 hover:text-white font-light flex items-center justify-between">
                                 Do I still see breach alerts on the free plan?
                                 <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
                             </summary>
-                            <p className="mt-2 text-zinc-400 text-xs pl-4">
+                            <p className="mt-2 text-white/60 text-xs pl-4">
                                 Yes! All users (free and Pro) can see which accounts have been involved in data breaches. Pro users get continuous monitoring and instant email alerts when new breaches are detected.
                             </p>
                         </details>
@@ -1044,46 +1107,46 @@ export default function HomePage() {
                     />
                     <div className="grid gap-4 md:grid-cols-2">
                         {faqs.map((item) => (
-                            <div key={item.q} className="rounded-2xl border border-white/10 bg-[#050509] p-5 space-y-2">
-                                <p className="text-sm font-semibold text-white">{item.q}</p>
-                                <p className="text-xs text-zinc-400">{item.a}</p>
+                            <div key={item.q} className="rounded-lg border border-white/5 bg-white/2 p-5 space-y-2">
+                                <p className="text-sm font-light text-white">{item.q}</p>
+                                <p className="text-xs text-white/60">{item.a}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 {/* FINAL CTA */}
-                <section className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-black to-black p-6 sm:p-12 text-center space-y-6">
+                <section className="relative overflow-hidden rounded-lg border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-black to-black p-6 sm:p-12 text-center space-y-6">
                     <div className="pointer-events-none absolute inset-0">
                         <div className="absolute -top-32 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
                     </div>
 
                     <div className="relative space-y-4">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-white">
+                        <h2 className="text-3xl sm:text-4xl font-light text-white">
                             Stop paying for data brokers to sell your info
                         </h2>
-                        <p className="mx-auto max-w-2xl text-base text-zinc-300">
+                        <p className="mx-auto max-w-2xl text-base text-white/70">
                             You've found where your data is. Now take control. Start your 1-day free trial to delete accounts and reclaim your privacy.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                             <Link
                                 href="/login?plan=pro"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-8 py-4 text-base font-semibold text-white hover:bg-emerald-600 transition shadow-lg hover:shadow-emerald-500/40"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-8 py-4 text-base font-light text-white hover:bg-emerald-600 transition shadow-lg hover:shadow-emerald-500/40"
                             >
                                 Try Pro Free (1 Day)
                                 <ArrowRight className="h-5 w-5" />
                             </Link>
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-4 text-base font-semibold text-white hover:bg-white/10 transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/2 px-8 py-4 text-base font-light text-white hover:bg-white/3 hover:border-white/20 transition"
                             >
                                 Or start with Free
                                 <ArrowRight className="h-5 w-5" />
                             </Link>
                         </div>
 
-                        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-300 pt-2">
+                        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-white/70 pt-2">
                             {/* <span className="inline-flex items-center gap-1">
                                 <Check className="h-4 w-4 text-emerald-400" />
                                 No credit card
@@ -1101,11 +1164,11 @@ export default function HomePage() {
                 </section>
 
                 {/* FOOTER */}
-                <footer className="border-t border-white/10 pt-6 text-[11px] text-zinc-500">
+                <footer className="border-t border-white/5 pt-6 text-[11px] text-white/40">
                     <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                         <p>© {new Date().getFullYear()} GhostSweep. Built with privacy in mind.</p>
                         <div className="flex flex-wrap justify-center gap-4">
-                            <Link href="/home/privacy" className="hover:text-zinc-300 transition">
+                            <Link href="/home/privacy" className="hover:text-white/60 transition">
                                 Privacy
                             </Link>
                             <Link href="/home/terms" className="hover:text-zinc-300 transition">

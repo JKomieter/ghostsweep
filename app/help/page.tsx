@@ -4,17 +4,17 @@ import { ShieldCheck, Mail, HelpCircle, AlertTriangle, Lock } from "lucide-react
 
 export default function HelpPage() {
     return (
-        <main className="min-h-screen bg-background text-foreground">
+        <main className="min-h-screen bg-[#050505] text-white">
             <div className="mx-auto max-w-4xl px-4 py-10 space-y-10">
                 {/* Header */}
                 <header className="space-y-2">
-                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-[11px] font-light uppercase tracking-widest text-white/40">
                         Help Center
                     </p>
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                    <h1 className="text-2xl font-light tracking-tight text-white">
                         Need help with GhostSweep?
                     </h1>
-                    <p className="max-w-2xl text-sm text-muted-foreground">
+                    <p className="max-w-2xl text-sm text-white/60">
                         Here you&apos;ll find answers to the most common questions about sweeps, your
                         data, privacy, and subscriptions. If you&apos;re still stuck, you can always
                         contact support.
@@ -25,34 +25,34 @@ export default function HelpPage() {
                 <section className="grid gap-4 md:grid-cols-3 text-sm">
                     <Link
                         href="#getting-started"
-                        className="rounded-lg border border-white/10 bg-[#050505] p-4 hover:border-primary/60 hover:bg-white/5 transition"
+                        className="rounded-lg border border-white/5 bg-white/2 p-4 hover:border-white/10 hover:bg-white/3 transition backdrop-blur-sm"
                     >
-                        <p className="text-xs font-semibold text-muted-foreground">
+                        <p className="text-xs font-light text-white">
                             Getting started
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground/80">
+                        <p className="mt-1 text-xs text-white/60">
                             Learn how GhostSweep works and what a sweep does.
                         </p>
                     </Link>
                     <Link
                         href="#privacy-security"
-                        className="rounded-lg border border-white/10 bg-[#050505] p-4 hover:border-primary/60 hover:bg-white/5 transition"
+                        className="rounded-lg border border-white/5 bg-white/2 p-4 hover:border-white/10 hover:bg-white/3 transition backdrop-blur-sm"
                     >
-                        <p className="text-xs font-semibold text-muted-foreground">
+                        <p className="text-xs font-light text-white">
                             Privacy & security
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground/80">
+                        <p className="mt-1 text-xs text-white/60">
                             Understand what we access, store, and how you stay in control.
                         </p>
                     </Link>
                     <Link
                         href="#billing"
-                        className="rounded-lg border border-white/10 bg-[#050505] p-4 hover:border-primary/60 hover:bg-white/5 transition"
+                        className="rounded-lg border border-white/5 bg-white/2 p-4 hover:border-white/10 hover:bg-white/3 transition backdrop-blur-sm"
                     >
-                        <p className="text-xs font-semibold text-muted-foreground">
+                        <p className="text-xs font-light text-white">
                             Billing & plans
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground/80">
+                        <p className="mt-1 text-xs text-white/60">
                             Free vs Pro, upgrading, and managing your subscription.
                         </p>
                     </Link>
@@ -61,12 +61,12 @@ export default function HelpPage() {
                 {/* Getting started */}
                 <section id="getting-started" className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <HelpCircle className="h-4 w-4 text-primary" />
-                        <h2 className="text-lg font-semibold tracking-tight">
+                        <HelpCircle className="h-4 w-4 text-white" />
+                        <h2 className="text-lg font-light tracking-tight text-white">
                             Getting started
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
+                    <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 text-sm backdrop-blur-sm">
                         <div>
                             <p className="text-xs font-medium text-muted-foreground">
                                 What does GhostSweep do?
@@ -105,37 +105,37 @@ export default function HelpPage() {
                 {/* Privacy & Security */}
                 <section id="privacy-security" className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <ShieldCheck className="h-4 w-4 text-primary" />
-                        <h2 className="text-lg font-semibold tracking-tight">
+                        <ShieldCheck className="h-4 w-4 text-white" />
+                        <h2 className="text-lg font-light tracking-tight text-white">
                             Privacy & security
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
+                    <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 text-sm backdrop-blur-sm">
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 Do you read the content of my emails?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 No. GhostSweep is designed as a privacy-first tool. We analyze
                                 metadata (for example, senders and subject lines) to detect accounts
                                 and services. We do not read or store full email bodies.
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 What permissions do you request from Google and Microsoft?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 We use official OAuth flows with read-only access to your
                                 email and basic profile details (email address and name). GhostSweep
                                 cannot send, delete, or modify emails in your inbox.
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 What do you store, and can I delete it?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 We store a summary of detected services, breaches linked to your
                                 email, and basic scan history. You can delete your sweep data at any
                                 time from within the app. If you disconnect your email account, we also recommend
@@ -143,10 +143,10 @@ export default function HelpPage() {
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 How are tokens and credentials handled?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 OAuth tokens are stored encrypted and are only used to perform sweeps
                                 you request. You can revoke access at any time from your Google
                                 account security settings or within GhostSweep by disconnecting your
@@ -159,17 +159,17 @@ export default function HelpPage() {
                 {/* Account & billing */}
                 <section id="billing" className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <Lock className="h-4 w-4 text-primary" />
-                        <h2 className="text-lg font-semibold tracking-tight">
+                        <Lock className="h-4 w-4 text-white" />
+                        <h2 className="text-lg font-light tracking-tight text-white">
                             Account, plans & billing
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
+                    <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 text-sm backdrop-blur-sm">
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 What&apos;s the difference between Free and Pro?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 The Free plan gives you a limited view of detected services and
                                 basic breach awareness. Professional unlocks full service discovery, complete
                                 breach history, more generous sweep limits, and access to data
@@ -177,10 +177,10 @@ export default function HelpPage() {
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 How do I upgrade or cancel?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 You can upgrade to Professional or manage your existing subscription from the
                                 Subscription &amp; Billing section inside the app. Billing is handled
                                 securely via Stripe, and you can cancel anytime from the customer
@@ -188,10 +188,10 @@ export default function HelpPage() {
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 What happens to my data if I cancel?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 Cancelling Professional stops future billing but doesn&apos;t automatically
                                 delete your sweep history. You can manually delete sweep data and, if
                                 you wish, delete your entire account from the Privacy Tools section.
@@ -203,17 +203,17 @@ export default function HelpPage() {
                 {/* Troubleshooting */}
                 <section id="troubleshooting" className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-primary" />
-                        <h2 className="text-lg font-semibold tracking-tight">
+                        <AlertTriangle className="h-4 w-4 text-white" />
+                        <h2 className="text-lg font-light tracking-tight text-white">
                             Troubleshooting
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
+                    <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 text-sm backdrop-blur-sm">
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 My sweep shows no services. Is that normal?
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 If you recently created your email, or if you rarely sign up for new
                                 services, it&apos;s possible that there&apos;s very little to detect.
                                 If you think something&apos;s off, try running another sweep or
@@ -221,24 +221,24 @@ export default function HelpPage() {
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 I disconnected my email account, but sweep data is still visible.
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                                Disconnecting removes future access, but doesn't
+                            <p className="mt-1 text-sm text-white/60">
+                                Disconnecting removes future access, but doesn&apos;t
                                 automatically delete past sweep summaries. You can remove all saved
                                 sweep data from the Privacy Tools section inside the app.
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-muted-foreground">
+                            <p className="text-xs font-light text-white">
                                 I think a service was detected incorrectly.
                             </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 text-sm text-white/60">
                                 Misclassifications can happen if different services share domains
                                 or email templates. You can report incorrect detections directly from
                                 the dashboard or from the{" "}
-                                <Link href="/support/report" className="text-primary underline">
+                                <Link href="/support/report" className="text-white hover:underline font-light">
                                     Report an issue
                                 </Link>{" "}
                                 page.
@@ -248,14 +248,14 @@ export default function HelpPage() {
                 </section>
 
                 {/* Contact support */}
-                <section className="space-y-3 rounded-xl border border-white/10 bg-[#050505] p-5 text-sm">
+                <section className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 text-sm backdrop-blur-sm">
                     <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-primary" />
-                        <h2 className="text-base font-semibold tracking-tight">
+                        <Mail className="h-4 w-4 text-white" />
+                        <h2 className="text-base font-light tracking-tight text-white">
                             Still need help?
                         </h2>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-white/60">
                         If you couldn&apos;t find what you&apos;re looking for, you can contact
                         support or report a specific issue. We&apos;ll do our best to respond as
                         quickly as possible.
@@ -263,13 +263,13 @@ export default function HelpPage() {
                     <div className="flex flex-wrap gap-3">
                         <a
                             href="mailto:support@ghostsweep.com?subject=GhostSweep%20Support"
-                            className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium hover:bg-white/5 transition"
+                            className="inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/2 px-4 py-1.5 text-xs font-light hover:bg-white/3 hover:border-white/10 transition text-white"
                         >
                             Contact support
                         </a>
                         <Link
                             href="/support/report"
-                            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm hover:opacity-90 transition"
+                            className="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-1.5 text-xs font-light shadow-sm hover:bg-white/90 transition"
                         >
                             Report an issue
                         </Link>

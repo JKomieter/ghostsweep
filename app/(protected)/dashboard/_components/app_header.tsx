@@ -126,11 +126,17 @@ export default function Header() {
                         </Link>
                     </div>
                     {/* Plan Badge */}
-                    <div>
+                    <div className="hidden sm:block">
                         {status === 'pending' ? (
-                            <span className="h-7 w-11 bg-neutral-quaternary"></span>
+                            <div className="h-7 w-20 bg-neutral-200 rounded-full animate-pulse" />
                         ) : (
-                            <span className={`px-3 py-1 rounded-full ${data?.current_plan === "free" ? "bg-gray-800" : "bg-primary/10"} text-primary text-sm font-medium uppercase`}>{plan}</span>
+                            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
+                                data?.current_plan === "pro" 
+                                    ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30" 
+                                    : "bg-gray-900 text-gray-300 border border-gray-700"
+                            }`}>
+                                {plan}
+                            </span>
                         )}
                     </div>
 
@@ -138,7 +144,9 @@ export default function Header() {
                         <div>
                             {data?.current_plan !== "pro" && (
                                 <Link href="/dashboard/billing">
-                                    <Button variant={"ghost"} size="sm">Upgrade</Button>
+                                    <Button variant={"default"} size="sm" className="bg-linear-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 font-semibold animate-pulse">
+                                        Upgrade
+                                    </Button>
                                 </Link>
                             )}
                             <DropdownMenu>

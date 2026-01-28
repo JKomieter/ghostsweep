@@ -77,22 +77,22 @@ export default async function BillingPage({ searchParams }: PageProps) {
             };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
-            <div className="w-full max-w-xl mx-auto rounded-2xl border border-white/10 bg-[#050505] p-6 shadow-lg space-y-6">
+        <main className="min-h-screen flex items-center justify-center bg-[#050505] px-4 py-8">
+            <div className="w-full max-w-xl mx-auto rounded-lg border border-white/5 bg-white/2 p-6 md:p-8 shadow-lg space-y-8">
                 {/* Header */}
-                <header className="space-y-1">
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                <header className="space-y-2">
+                    <h1 className="text-3xl font-light tracking-tight text-white">
                         GhostSweep Billing
                     </h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-white/60">
                         Manage your Professional plan and billing details.
                     </p>
                 </header>
 
                 {/* ADD THIS: Canceled message */}
                 {wasCanceled && !isPro && (
-                    <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-3">
-                        <p className="text-sm text-yellow-200">
+                    <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
+                        <p className="text-sm text-amber-300">
                             Checkout was canceled. You can try again whenever you&apos;re ready.
                         </p>
                     </div>
@@ -100,32 +100,32 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                 {/* ✅ Already Pro UI */}
                 {isPro ? (
-                    <section className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-3">
+                    <section className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-4">
                         <div className="flex items-start gap-3">
-                            <div className="mt-0.5 rounded-full bg-emerald-500/10 p-2 text-emerald-300">
+                            <div className="mt-0.5 rounded-full bg-emerald-500/20 p-2.5 text-emerald-400">
                                 <ShieldCheck className="h-5 w-5" />
                             </div>
 
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-emerald-200">
+                                <p className="text-sm font-light text-white">
                                     You’re already on GhostSweep Professional
                                 </p>
 
                                 {renewsAt ? (
-                                    <p className="mt-1 text-xs text-emerald-200/80 flex items-center gap-2">
+                                    <p className="mt-2 text-xs text-white/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
-                                        Renews on <span className="font-medium">{formatDate(renewsAt)}</span>
+                                        Renews on <span className="font-light text-white">{formatDate(renewsAt)}</span>
                                     </p>
                                 ) : (
-                                    <p className="mt-1 text-xs text-emerald-200/80 flex items-center gap-2">
+                                    <p className="mt-2 text-xs text-white/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
                                         No renewal date on file (one-time purchase or manual subscription).
                                     </p>
                                 )}
 
-                                <div className="mt-3 grid gap-2 text-xs text-emerald-200/80">
-                                    <p className="font-medium text-emerald-100/90">
-                                        What you can do here:
+                                <div className="mt-4 grid gap-2 text-xs text-white/60">
+                                    <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+                                        What you can do here
                                     </p>
                                     <ul className="space-y-1">
                                         <li>• Keep using Professional features right now</li>
@@ -138,7 +138,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         href="/dashboard"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
-                                            "bg-white/5 hover:bg-white/10 border border-white/10"
+                                            "bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 text-white"
                                         )}
                                     >
                                         Back to dashboard
@@ -148,7 +148,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         href="/dashboard/support"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
-                                            "bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 text-emerald-200"
+                                            "bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 text-emerald-400"
                                         )}
                                     >
                                         Billing help
@@ -156,7 +156,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 </div>
 
                                 {/* Optional note if you *don’t* have portal yet */}
-                                <p className="mt-3 text-[11px] text-emerald-200/60">
+                                <p className="mt-3 text-[11px] text-white/40">
                                     Tip: If you want cancellations/plan changes, add Stripe Billing Portal later.
                                 </p>
                             </div>
@@ -165,14 +165,14 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 ) : (
                     <>
                         {/* Plan toggle */}
-                        <div className="inline-flex rounded-full border border-white/10 bg-[#080808] p-1 text-xs">
+                        <div className="inline-flex rounded-lg border border-white/5 bg-white/2 p-1 text-xs">
                             <Link
                                 href="/dashboard/billing?plan=monthly"
                                 className={cn(
-                                    "px-3 py-1.5 rounded-full transition-colors",
+                                    "px-3 py-1.5 rounded-md transition-colors",
                                     selectedPlan === "monthly"
-                                        ? "bg-white text-black font-medium"
-                                        : "text-muted-foreground hover:text-white"
+                                        ? "bg-white text-black font-light"
+                                        : "text-white/60 hover:text-white/80"
                                 )}
                             >
                                 Monthly · $9.99
@@ -180,10 +180,10 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             <Link
                                 href="/dashboard/billing?plan=yearly"
                                 className={cn(
-                                    "px-3 py-1.5 rounded-full transition-colors",
+                                    "px-3 py-1.5 rounded-md transition-colors",
                                     selectedPlan === "yearly"
-                                        ? "bg-white text-black font-medium"
-                                        : "text-muted-foreground hover:text-white"
+                                        ? "bg-white text-black font-light"
+                                        : "text-white/60 hover:text-white/80"
                                 )}
                             >
                                 Yearly · $79.00
@@ -191,28 +191,28 @@ export default async function BillingPage({ searchParams }: PageProps) {
                         </div>
 
                         {/* Selected plan summary */}
-                        <section className="rounded-xl border border-white/10 bg-[#080808] p-4 space-y-3">
+                        <section className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-4">
                             <div className="flex items-baseline justify-between gap-3">
                                 <div>
-                                    <p className="text-sm font-medium text-primary">
+                                    <p className="text-sm font-light text-white/80">
                                         {planConfig.label}
                                     </p>
-                                    <p className="mt-1 text-3xl font-semibold">
+                                    <p className="mt-1 text-3xl font-light text-white">
                                         {planConfig.priceLabel}
                                     </p>
-                                    <p className="mt-1 text-xs text-muted-foreground">
+                                    <p className="mt-1 text-xs text-white/60">
                                         {planConfig.subline}
                                     </p>
                                 </div>
-                                <span className="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-medium text-primary">
+                                <span className="rounded-lg border border-white/5 bg-white/2 px-3 py-1 text-[11px] font-medium text-white/80">
                                     Professional plan
                                 </span>
                             </div>
 
                             <div className="h-px bg-white/5" />
 
-                            <div className="grid gap-2 text-xs text-muted-foreground">
-                                <p className="font-medium text-white/80">What you get:</p>
+                            <div className="grid gap-2 text-xs text-white/60">
+                                <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">What you get</p>
                                     <ul className="space-y-1">
                                         <li>• Everything in Free</li>
                                         <li>• Automatic breach monitoring & alerts</li>
@@ -225,10 +225,10 @@ export default async function BillingPage({ searchParams }: PageProps) {
                         </section>
 
                         {/* Checkout */}
-                        <section className="space-y-2 max-w-md">
-                            <p className="text-sm text-muted-foreground">
+                        <section className="space-y-3 max-w-md">
+                            <p className="text-sm text-white/60">
                                 You&apos;re upgrading to{" "}
-                                <span className="font-medium text-primary">
+                                <span className="font-light text-white">
                                     {planConfig.priceLabel}
                                 </span>
                                 .
@@ -237,7 +237,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             <CheckoutForm priceId={planConfig.priceId} />
                         </section>
 
-                        <footer className="space-y-1 text-[11px] text-muted-foreground">
+                        <footer className="space-y-1 text-[11px] text-white/40">
                             <p>
                                 Payments are securely processed by Stripe. GhostSweep never stores
                                 your card details.

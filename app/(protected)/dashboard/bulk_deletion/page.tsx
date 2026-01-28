@@ -56,25 +56,26 @@ export default function BulkDeletionsPage() {
     const hasSelection = userServiceIds.length > 0;
 
     return (
-        <div className="min-h-[calc(100vh-3.5rem)] px-4 py-6 md:px-8 md:py-8 space-y-6">
+        <div className="min-h-[calc(100vh-3.5rem)] px-4 py-6 md:px-8 md:py-8 space-y-8">
             {/* Header */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
-                    <h1 className="text-lg font-semibold text-white">Bulk deletion</h1>
-                    <p className="text-xs text-muted-foreground">
+                    <h1 className="text-2xl font-light text-white">Bulk deletion</h1>
+                    <p className="text-xs text-white/60">
                         Group selected services into email, link, and manual flows. Start with Email first.
                     </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs border-white/10 bg-white/5">
-                        Selected: {userServiceIds.length}
-                    </Badge>
+                    <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/2 px-3 py-1.5">
+                        <span className="text-[11px] uppercase tracking-widest text-white/40">Selected</span>
+                        <span className="text-sm font-light text-white">{userServiceIds.length}</span>
+                    </div>
 
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="border-white/15 bg-[#050505]"
+                        className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
                         onClick={() => router.push("/dashboard/user_services")}
                     >
                         Back to services
@@ -84,29 +85,29 @@ export default function BulkDeletionsPage() {
 
             {/* Loading state */}
             {status === "pending" && (
-                <div className="rounded-xl border border-white/10 bg-[#050505] p-5">
-                    <Spinner className="bg-primary" fontSize={40} />
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6 flex items-center justify-center">
+                    <Spinner className="text-white" fontSize={40} />
                 </div>
             )}
 
             {/* Error state */}
             {status === "error" && (
-                <div className="rounded-xl border border-red-500 bg-red-900/10 p-5">
-                    <p className="text-sm text-red-500">Failed to load services.</p>
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-6">
+                    <p className="text-sm text-red-300">Failed to load services.</p>
                     <p className="mt-1 text-xs text-red-400">{(error as Error)?.message}</p>
                 </div>
             )}
 
             {/* Empty selection state */}
             {status === "success" && !hasSelection && (
-                <div className="rounded-xl border border-white/10 bg-[#050505] p-5">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
                     <p className="text-sm text-white/80">No services selected.</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-xs text-white/60">
                         Go to the Services page, select accounts, then click Bulk Deletion.
                     </p>
 
                     <div className="mt-4">
-                        <Button onClick={() => router.push("/dashboard/user_services")}>
+                        <Button onClick={() => router.push("/dashboard/user_services")} className="bg-white text-black hover:bg-white/90">
                             Go to Services
                         </Button>
                     </div>
@@ -115,16 +116,16 @@ export default function BulkDeletionsPage() {
 
             {/* Main content */}
             {status === "success" && hasSelection && (
-                <div className="rounded-xl border border-white/10 bg-[#050505] p-4 md:p-5">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
                     <Tabs defaultValue="email" className="w-full">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <TabsList className="bg-black/40 border border-white/10">
-                                <TabsTrigger value="email">Email</TabsTrigger>
-                                <TabsTrigger value="link">Link</TabsTrigger>
-                                <TabsTrigger value="manual">Manual</TabsTrigger>
+                            <TabsList className="bg-white/2 border border-white/5">
+                                <TabsTrigger value="email" className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-white/60">Email</TabsTrigger>
+                                <TabsTrigger value="link" className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-white/60">Link</TabsTrigger>
+                                <TabsTrigger value="manual" className="data-[state=active]:bg-white/5 data-[state=active]:text-white text-white/60">Manual</TabsTrigger>
                             </TabsList>
 
-                            <p className="text-[11px] text-muted-foreground">
+                            <p className="text-[11px] text-white/40">
                                 Tip: Email is the only flow that actually sends messages. Link/Manual only help you complete deletion.
                             </p>
                         </div>

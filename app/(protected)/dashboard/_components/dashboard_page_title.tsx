@@ -181,6 +181,18 @@ export default function DashboardTitle() {
                     ? `, including ${latestSweep.breachesFound} breached`
                     : ""
                     }. The riskiest ones are waiting in your dashboard.`,
+                action: plan?.current_plan === "free" ? {
+                    label: "Upgrade",
+                    onClick: () => {
+                        window.location.href = "/dashboard/billing?plan=monthly";
+                    },
+                } : undefined,
+            });
+
+            pixel.event("Search", {
+                content_category: "email_scan",
+                accounts_found: latestSweep.servicesFound || 0,
+                breaches_found: latestSweep.breachesFound || 0,
             });
         }
 
@@ -379,37 +391,32 @@ export default function DashboardTitle() {
 
                 <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
                     {/* Email status pill */}
-                    <span
-                        className={[
-                            "inline-flex items-center rounded-full border px-3 py-1 text-xs",
-                            "justify-center sm:justify-start",
-                            connectedEmail
-                                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
-                                : "border-yellow-500/30 bg-yellow-500/10 text-yellow-200",
-                        ].join(" ")}
-                    >
+                    <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors">
                         {connectedEmail ? (
                             <>
-                                <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
-                                <span className="hidden sm:inline">Connected:&nbsp;</span>
-                                <span className="max-w-[140px] truncate sm:max-w-[200px]">
-                                    {connectedEmail}
-                                </span>
-                                {gmailAddress && outlookAddress && (
-                                    <span className="ml-1 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-medium">
-                                        +1
+                                <div className="flex items-center gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-100">
+                                    <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
+                                    <span className="hidden sm:inline text-emerald-200">
+                                        {connectedEmail}
                                     </span>
-                                )}
+                                    {gmailAddress && outlookAddress && (
+                                        <span className="ml-0.5 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-100">
+                                            +1 more
+                                        </span>
+                                    )}
+                                </div>
                             </>
                         ) : (
-                            "Email not connected"
+                            <span className="border-yellow-500/30 bg-yellow-500/10 text-yellow-200">
+                                Connect email
+                            </span>
                         )}
-                    </span>
+                    </div>
 
                     {/* Run Sweep button */}
                     <Button
                         size="sm"
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 text-white font-medium transition-colors"
                         onClick={() => setSweepDialogOpen(true)}
                         disabled={isInProgress}
                     >

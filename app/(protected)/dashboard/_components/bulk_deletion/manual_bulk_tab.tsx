@@ -142,75 +142,80 @@ export default function ManualBulkTab({
     const badgeFor = (id: string) => {
         if (!included[id]) {
             return (
-                <Badge variant="outline" className="border-white/10 bg-white/5 text-white/60 text-[11px]">
+                <span className="text-xs text-white/40">
                     Skipped
-                </Badge>
+                </span>
             );
         }
         const st = rowState[id] ?? "ready";
         if (st === "done") {
             return (
-                <Badge className="bg-emerald-500/15 text-emerald-200 border border-emerald-500/30 text-[11px]">
+                <span className="text-xs text-emerald-400">
                     Done
-                </Badge>
+                </span>
             );
         }
         if (st === "in_progress") {
             return (
-                <Badge className="bg-purple-500/15 text-purple-200 border border-purple-500/30 text-[11px]">
+                <span className="text-xs text-purple-400">
                     In progress
-                </Badge>
+                </span>
             );
         }
         return (
-            <Badge variant="outline" className="border-white/10 bg-white/5 text-white/70 text-[11px]">
+            <span className="text-xs text-white/60">
                 Ready
-            </Badge>
+            </span>
         );
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="rounded-xl border border-white/10 bg-[#050505] p-4">
+            <div className="rounded-lg border border-white/5 bg-white/2 p-4">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <div className="text-sm font-semibold text-white">Manual deletions</div>
-                        <div className="text-xs text-white/60">
+                        <div className="text-[11px] font-medium uppercase tracking-widest text-white/40">Manual deletions</div>
+                        <div className="text-xs text-white/60 mt-1">
                             These services don’t have a reliable deletion link or email playbook yet. Track your progress here.
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="outline" className="border-white/15 bg-white/5 text-white/80 text-xs">
-                            Found: {manualCount}
-                        </Badge>
-                        <Badge variant="outline" className="border-white/15 bg-white/5 text-white/80 text-xs">
-                            Selected: {selected.length}
-                        </Badge>
-                        <Badge variant="outline" className="border-white/15 bg-white/5 text-white/80 text-xs">
-                            Ready: {counts.ready}
-                        </Badge>
-                        <Badge variant="outline" className="border-white/15 bg-white/5 text-white/80 text-xs">
-                            In progress: {counts.in_progress}
-                        </Badge>
-                        <Badge variant="outline" className="border-white/15 bg-white/5 text-white/80 text-xs">
-                            Done: {counts.done}
-                        </Badge>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-1 w-1 rounded-full bg-white/20" />
+                            <span className="text-xs text-white/60">Found: {manualCount}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-1 w-1 rounded-full bg-white/20" />
+                            <span className="text-xs text-white/60">Selected: {selected.length}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-1 w-1 rounded-full bg-white/20" />
+                            <span className="text-xs text-white/60">Ready: {counts.ready}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-1 w-1 rounded-full bg-purple-500" />
+                            <span className="text-xs text-purple-400">In progress: {counts.in_progress}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-1 w-1 rounded-full bg-emerald-500" />
+                            <span className="text-xs text-emerald-400">Done: {counts.done}</span>
+                        </div>
                     </div>
                 </div>
 
-                <Separator className="my-3 bg-white/10" />
+                <Separator className="my-3 bg-white/5" />
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-wrap gap-2">
-                        <Button size="sm" variant="outline" className="border-white/15 bg-white/5" onClick={includeAll}>
+                        <Button size="sm" variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" onClick={includeAll}>
                             Include all
                         </Button>
-                        <Button size="sm" variant="outline" className="border-white/15 bg-white/5" onClick={excludeAll}>
+                        <Button size="sm" variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3" onClick={excludeAll}>
                             Exclude all
                         </Button>
-                        <Button size="sm" variant="ghost" className="text-white/70" onClick={reset}>
+                        <Button size="sm" variant="ghost" className="text-white/60 hover:text-white/80" onClick={reset}>
                             <RotateCcw className="h-4 w-4 mr-2" />
                             Reset
                         </Button>
@@ -219,8 +224,8 @@ export default function ManualBulkTab({
                     <div className="flex flex-wrap gap-2">
                         <Button
                             size="sm"
-                            variant="outline"
-                            className="border-white/15 bg-white/5"
+                            variant="ghost"
+                            className="border border-white/5 bg-white/2 text-purple-400 hover:border-white/10 hover:bg-white/3"
                             onClick={() => setManyStatus("in_progress")}
                             disabled={selected.length === 0}
                         >
@@ -228,7 +233,7 @@ export default function ManualBulkTab({
                         </Button>
                         <Button
                             size="sm"
-                            className="bg-primary text-black hover:bg-primary/80"
+                            className="bg-white text-black hover:bg-white/90"
                             onClick={() => setManyStatus("done")}
                             disabled={selected.length === 0}
                         >
@@ -238,8 +243,8 @@ export default function ManualBulkTab({
                 </div>
 
                 {counts.skipped > 0 ? (
-                    <p className="mt-2 text-[11px] text-white/55">
-                        Skipped: <span className="text-white/80">{counts.skipped}</span>
+                    <p className="mt-2 text-[11px] text-white/40">
+                        Skipped: <span className="text-white/60">{counts.skipped}</span>
                     </p>
                 ) : null}
             </div>
@@ -318,8 +323,8 @@ export default function ManualBulkTab({
 
                                     <Button
                                         size="sm"
-                                        variant="outline"
-                                        className="h-7 px-2 text-[11px] border-white/15 bg-white/5"
+                                        variant="ghost"
+                                        className="h-7 px-2 text-[11px] border border-white/5 bg-white/2 text-purple-400 hover:border-white/10 hover:bg-white/3"
                                         disabled={!isIncluded}
                                         onClick={() => setOneStatus(id, "in_progress")}
                                     >
@@ -328,7 +333,7 @@ export default function ManualBulkTab({
 
                                     <Button
                                         size="sm"
-                                        className="h-7 px-2 text-[11px] bg-primary text-black hover:bg-primary/80"
+                                        className="h-7 px-2 text-[11px] bg-white text-black hover:bg-white/90"
                                         disabled={!isIncluded}
                                         onClick={() => setOneStatus(id, "done")}
                                     >

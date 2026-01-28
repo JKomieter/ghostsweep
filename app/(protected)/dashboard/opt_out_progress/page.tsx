@@ -6,7 +6,7 @@
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -147,8 +147,8 @@ export default function OptOutProgressPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608] flex items-center justify-center">
-                <Spinner className="h-8 w-8 text-emerald-500" />
+            <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+                <Spinner className="h-8 w-8 text-white" />
             </div>
         );
     }
@@ -189,18 +189,19 @@ export default function OptOutProgressPage() {
         stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : "0%";
 
     return (
-        <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608]">
-            <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
+        <main className="min-h-screen bg-[#050505]">
+            <div className="mx-auto max-w-6xl p-4 md:p-8 space-y-8">
                 {/* Header */}
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div className="space-y-2">
-                        <h1 className="text-2xl font-bold text-white">Opt-Out Progress</h1>
+                        <h1 className="text-3xl font-light tracking-tight text-white">Opt-Out Progress</h1>
                         <p className="text-sm text-white/60">Track your data removal requests and their status</p>
                     </div>
 
                     <Button
                         size="sm"
-                        className="w-fit border-white/15 bg-white/5 text-white hover:bg-white/10"
+                        variant="ghost"
+                        className="w-fit border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
                         onClick={() => refetch()}
                     >
                         <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
@@ -209,10 +210,13 @@ export default function OptOutProgressPage() {
                 </div>
 
                 {/* Overall Progress Card */}
-                <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
                     <div className="flex items-center justify-between mb-3">
-                        <h2 className="font-semibold text-white">Progress</h2>
-                        <Badge className="bg-emerald-500 text-white">{progress.percentage}%</Badge>
+                        <h2 className="text-[11px] font-medium uppercase tracking-widest text-white/40">Progress</h2>
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-1 w-1 rounded-full bg-emerald-500" />
+                            <span className="text-sm font-light text-white">{progress.percentage}%</span>
+                        </div>
                     </div>
                     <Progress value={progress.percentage} className="h-2" />
                     <p className="text-xs text-white/60 mt-2">{progress.completed} of {progress.total} completed</p>
@@ -247,13 +251,13 @@ export default function OptOutProgressPage() {
                 </div>
 
                 {/* Filters & Sort */}
-                <div className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-4 space-y-3">
                     {/* Search */}
                     <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search brokers…"
-                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="w-full rounded-lg border border-white/5 bg-white/2 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white/10 focus:outline-none focus:ring-1 focus:ring-white/10"
                     />
 
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -268,7 +272,7 @@ export default function OptOutProgressPage() {
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as any)}
-                            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            className="rounded-lg border border-white/5 bg-white/2 px-3 py-1.5 text-sm text-white focus:border-white/10 focus:outline-none focus:ring-1 focus:ring-white/10"
                         >
                             <option value="date">Recently Updated</option>
                             <option value="status">By Status</option>
@@ -280,9 +284,9 @@ export default function OptOutProgressPage() {
                 {/* Request List */}
                 <div className="space-y-3">
                     {filteredRequests.length === 0 ? (
-                        <div className="rounded-2xl border border-white/10 bg-linear-to-br from-[#050509] to-black p-12 text-center">
-                            <AlertCircle className="h-12 w-12 text-white/30 mx-auto mb-4" />
-                            <div className="text-lg font-semibold text-white mb-2">No requests found</div>
+                        <div className="rounded-lg border border-white/5 bg-white/2 p-12 text-center">
+                            <AlertCircle className="h-12 w-12 text-white/40 mx-auto mb-4" />
+                            <div className="text-lg font-light text-white mb-2">No requests found</div>
                             <div className="text-sm text-white/60">Try changing your filter or search.</div>
                         </div>
                     ) : (
@@ -311,13 +315,13 @@ function StatCard({
     iconColor: string;
 }) {
     return (
-        <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+        <div className="rounded-lg border border-white/5 bg-white/2 p-4">
             <div className="flex items-center justify-between">
                 <div className="flex-1">
-                    <div className="text-xs text-white/60 mb-1">
+                    <div className="text-[11px] font-medium uppercase tracking-widest text-white/40 mb-2">
                         {label}
                     </div>
-                    <div className="text-xl font-semibold text-white">{value}</div>
+                    <div className="text-2xl font-light text-white">{value}</div>
                 </div>
                 <div className={`h-8 w-8 flex items-center justify-center ${iconColor}`}>
                     {icon}
@@ -365,26 +369,26 @@ function RequestRow({ request }: { request: OptOutRequest }) {
         completed: {
             icon: <CheckCircle2 className="h-4 w-4" />,
             badge: "Completed",
-            color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+            color: "text-emerald-400",
             dot: "bg-emerald-500",
         },
         in_progress: {
             icon: <Clock className="h-4 w-4" />,
             badge: "In Progress",
-            color: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+            color: "text-amber-400",
             dot: "bg-amber-500",
         },
         failed: {
             icon: <XCircle className="h-4 w-4" />,
             badge: "Failed",
-            color: "bg-red-500/20 text-red-400 border-red-500/30",
+            color: "text-red-400",
             dot: "bg-red-500",
         },
         not_started: {
             icon: <AlertCircle className="h-4 w-4" />,
             badge: "Not Started",
-            color: "bg-slate-500/20 text-slate-400 border-slate-500/30",
-            dot: "bg-slate-500",
+            color: "text-white/40",
+            dot: "bg-white/20",
         },
     };
 
@@ -396,24 +400,23 @@ function RequestRow({ request }: { request: OptOutRequest }) {
     }, [request.created_at, currentTime]);
 
     return (
-        <div className="rounded-lg border border-white/10 bg-white/5 overflow-hidden hover:border-white/20 transition-all hover:bg-white/8">
+        <div className="rounded-lg border border-white/5 bg-white/2 overflow-hidden hover:border-white/10 transition-all hover:bg-white/3">
             <button
                 onClick={() => setExpanded(!expanded)}
                 className="w-full px-5 py-4 flex items-center justify-between text-left group"
             >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     {/* Status Dot with Pulse */}
-                    <div className={`h-2 w-2 rounded-full ${config.dot} shrink-0 ${request.status === 'in_progress' ? 'animate-pulse' : ''}`} />
+                    <div className={`h-1.5 w-1.5 rounded-full ${config.dot} shrink-0 ${request.status === 'in_progress' ? 'animate-pulse' : ''}`} />
 
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className="font-semibold text-sm text-white truncate">
+                            <span className="font-light text-sm text-white truncate">
                                 {request.broker.name}
                             </span>
-                            <Badge className={`${config.color} text-xs border`}>
-                                {config.icon}
-                                <span className="ml-1">{config.badge}</span>
-                            </Badge>
+                            <span className={`${config.color} text-xs`}>
+                                {config.badge}
+                            </span>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2 text-xs text-white/60">
@@ -516,12 +519,12 @@ function RequestDetails({ request }: { request: OptOutRequest }) {
     }, []);
 
     return (
-        <div className="px-4 pb-4 border-t border-white/10 bg-black/10 space-y-4">
+        <div className="px-4 pb-4 border-t border-white/5 bg-white/2 space-y-4">
             <div className="grid md:grid-cols-2 gap-4 py-3 text-sm">
                 {/* Left Column */}
                 <div className="space-y-2">
                     <div>
-                        <h4 className="text-xs font-semibold text-white/60 mb-2">
+                        <h4 className="text-[11px] font-medium uppercase tracking-widest text-white/40 mb-2">
                             Timeline
                         </h4>
                         <div className="space-y-2">
@@ -552,7 +555,7 @@ function RequestDetails({ request }: { request: OptOutRequest }) {
                 {/* Right Column */}
                 <div className="space-y-2">
                     <div>
-                        <h4 className="text-xs font-semibold text-white/60 mb-2">
+                        <h4 className="text-[11px] font-medium uppercase tracking-widest text-white/40 mb-2">
                             Details
                         </h4>
                         {request.broker.contact_email && (
@@ -568,32 +571,32 @@ function RequestDetails({ request }: { request: OptOutRequest }) {
             </div>
 
             {/* Notes Section */}
-            <div className="pt-3 border-t border-white/10 space-y-2">
-                <h4 className="text-xs font-semibold text-white/60">Notes</h4>
+            <div className="pt-3 border-t border-white/5 space-y-2">
+                <h4 className="text-[11px] font-medium uppercase tracking-widest text-white/40">Notes</h4>
                 <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any notes about this opt-out request..."
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder:text-white/40 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-white/5 bg-white/2 px-3 py-2 text-xs text-white placeholder:text-white/40 focus:border-white/10 focus:outline-none focus:ring-1 focus:ring-white/10"
                     rows={3}
                 />
                 <Button
                     size="sm"
                     onClick={handleSaveNotes}
                     disabled={isSaving}
-                    className="bg-emerald-500 text-white hover:bg-emerald-600"
+                    className="bg-white text-black hover:bg-white/90"
                 >
                     {isSaving ? "Saving..." : "Save Notes"}
                 </Button>
             </div>
 
             {/* Actions */}
-            <div className="flex flex-wrap gap-2 pt-3 border-t border-white/10">
+            <div className="flex flex-wrap gap-2 pt-3 border-t border-white/5">
                 {request.broker.removal_url && (
                     <Button
                         size="sm"
-                        variant="outline"
-                        className="border-white/15 bg-white/5 text-white hover:bg-white/10"
+                        variant="ghost"
+                        className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
                         onClick={() => window.open(request.broker.removal_url!, "_blank")}
                     >
                         Visit Opt-Out Page
@@ -603,7 +606,8 @@ function RequestDetails({ request }: { request: OptOutRequest }) {
                     <>
                         <Button
                             size="sm"
-                            className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30"
+                            variant="ghost"
+                            className="border border-white/5 bg-white/2 text-emerald-400 hover:border-white/10 hover:bg-white/3"
                             onClick={handleMarkCompleted}
                             disabled={isSaving}
                         >
@@ -611,8 +615,8 @@ function RequestDetails({ request }: { request: OptOutRequest }) {
                         </Button>
                         <Button
                             size="sm"
-                            variant="outline"
-                            className="border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                            variant="ghost"
+                            className="border border-white/5 bg-white/2 text-red-400 hover:border-white/10 hover:bg-white/3"
                             onClick={handleMarkFailed}
                             disabled={isSaving}
                         >
@@ -659,12 +663,15 @@ function TimelineItem({
 
 function AchievementBanner({ stats }: { stats: { completed: number } }) {
     return (
-        <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
+        <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-center">
             <div className="space-y-3">
-                <h2 className="text-lg font-bold text-white">
-                    You&apos;ve completed removing yourself from {stats.completed} brokers!
-                </h2>
-                <p className="text-sm text-white/70">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <h2 className="text-lg font-light text-white">
+                        You&apos;ve completed removing yourself from {stats.completed} brokers!
+                    </h2>
+                </div>
+                <p className="text-sm text-white/60">
                     Great work on protecting your privacy.
                 </p>
             </div>
@@ -674,19 +681,19 @@ function AchievementBanner({ stats }: { stats: { completed: number } }) {
 
 function EmptyState() {
     return (
-        <main className="min-h-screen bg-linear-to-b from-[#020308] via-black to-[#050608]">
+        <main className="min-h-screen bg-[#050505]">
             <div className="mx-auto max-w-3xl px-4 py-16">
-                <div className="rounded-lg border border-white/10 bg-white/5 p-8 text-center space-y-4">
-                    <Target className="h-12 w-12 text-emerald-400 mx-auto" />
-                    <h2 className="text-xl font-bold text-white">
+                <div className="rounded-lg border border-white/5 bg-white/2 p-8 text-center space-y-4">
+                    <Target className="h-12 w-12 text-white/40 mx-auto" />
+                    <h2 className="text-xl font-light text-white">
                         No opt-out requests yet
                     </h2>
-                    <p className="text-sm text-white/70">
+                    <p className="text-sm text-white/60">
                         Start your data removal journey by visiting your Digital Shadow Map.
                     </p>
                     <Button
                         size="sm"
-                        className="bg-white text-black hover:bg-zinc-100 font-semibold mx-auto"
+                        className="bg-white text-black hover:bg-white/90 mx-auto"
                         onClick={() => (window.location.href = "/dashboard/digital_shadow")}
                     >
                         View Digital Shadow Map

@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
      * - deletion_method (required): "email" | "link" | "manual"
      *
      * Optional:
+     * - status: override default status (e.g., "completed" for already-deleted services)
      * - receiver_email (recommended for email; should come from playbook)
      * - sender_email (gmail address)
      * - template_used (email body you sent)
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     const {
         user_service_id,
         deletion_method,
+        status: statusOverride,
         receiver_email,
         sender_email,
         template_used,
@@ -78,10 +80,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Status logic:
+    // - If statusOverride provided, use it (e.g., "completed" for already-deleted services)
     // - email: if this endpoint is called AFTER sending => sent
     // - link/manual: starting action => in_progress
     const now = new Date().toISOString();
-    const status = deletion_method === "email" ? "sent" : "in_progress";
+    const status = statusOverride || (deletion_method === "email" ? "sent" : "in_progress");
 
     const payload: Record<string, any> = {
         user_id: user.id,
@@ -102,6 +105,11 @@ export async function POST(req: NextRequest) {
 
     if (status === "sent") {
         payload.sent_at = now;
+    }
+
+    // If status is completed, also set completed_at
+    if (status === "completed") {
+        payload.completed_at = now;
     }
 
     const { data, error } = await supabase
