@@ -18,7 +18,8 @@ import {
     BadgeCheck,
     ChevronDown,
     Zap,
-    Play
+    Play,
+    ExternalLink
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -807,7 +808,12 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-6 space-y-4">
+                    <a 
+                        href="https://www.linkedin.com/in/joel-komieter-6a0b14250/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-6 space-y-4 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition cursor-pointer group"
+                    >
                         <div className="flex items-center gap-4">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10">
                                 <Image
@@ -818,15 +824,18 @@ export default function HomePage() {
                                     className="rounded-full"
                                 />
                             </div>
-                            <div>
-                                <p className="font-light text-white">Built by Joel Komieter</p>
-                                <p className="text-sm text-emerald-100/70">Privacy engineer. Founder.</p>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                    <p className="font-light text-white">Built by Joel Komieter</p>
+                                    <ExternalLink className="h-4 w-4 text-emerald-300/60 group-hover:text-emerald-300 transition" />
+                                </div>
+                                <p className="text-sm text-emerald-100/70">Privacy engineer. Founder. · View on LinkedIn</p>
                             </div>
                         </div>
                         <p className="text-sm text-emerald-100/70 leading-relaxed">
                             "I found 187 forgotten accounts tied to my email. Most tools make it hard to delete them or compromise your privacy. This doesn't."
                         </p>
-                    </div>
+                    </a>
                 </section>
 
                 {/* PRICING */}
