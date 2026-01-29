@@ -120,13 +120,47 @@ export async function login({email, password, captchaToken}: { email: string, pa
             }
         }
 
+        // Verify CAPTCHA token if provided (Manual verification because Supabase CAPTCHA setting is disabled)
+        if (captchaToken) {
+            try {
+                const formData = new URLSearchParams()
+                formData.append('secret', process.env.HCAPTCHA_SECRET!)
+                formData.append('response', captchaToken)
+
+                const captchaVerification = await fetch('https://hcaptcha.com/siteverify', {
+                    method: 'POST',
+                    body: formData,
+                })
+
+                const captchaResult = await captchaVerification.json() as { success?: boolean; score?: number }
+
+                if (!captchaResult.success) {
+                    return {
+                        success: false,
+                        error: 'CAPTCHA verification failed. Please try again.',
+                        shouldShowCaptcha: true,
+                        remainingAttempts: rateLimitCheck.remainingAttempts,
+                    }
+                }
+            } catch (captchaError) {
+                console.error('CAPTCHA verification error:', captchaError)
+                return {
+                    success: false,
+                    error: 'Failed to verify CAPTCHA. Please try again.',
+                    shouldShowCaptcha: true,
+                    remainingAttempts: rateLimitCheck.remainingAttempts,
+                }
+            }
+        }
+
         const supabase = await createClient()
 
         const data = {
             email: email.trim().toLowerCase(),
             password,
             options: {
-                captchaToken: captchaToken || undefined,
+                // We verify captcha manually above, so we don't pass it to Supabase
+                // to avoid "Captcha verification failed" error if Supabase protection is OFF.
             }
         }
 
@@ -194,14 +228,37 @@ export async function signup({ email, password, captchaToken }: { email: string,
             throw new Error('Password must be at least 8 characters long.')
         }
 
+        // Verify CAPTCHA token for signup (Always required)
+        if (!captchaToken) {
+            throw new Error('Please complete the CAPTCHA verification.')
+        }
+
+        try {
+            const formData = new URLSearchParams()
+            formData.append('secret', process.env.HCAPTCHA_SECRET!)
+            formData.append('response', captchaToken)
+
+            const captchaVerification = await fetch('https://hcaptcha.com/siteverify', {
+                method: 'POST',
+                body: formData,
+            })
+
+            const captchaResult = await captchaVerification.json() as { success: boolean }
+
+            if (!captchaResult.success) {
+                throw new Error('CAPTCHA verification failed. Please try again.')
+            }
+        } catch (error) {
+            console.error('CAPTCHA validation error:', error)
+            throw new Error('Unable to verify CAPTCHA. Please try again.')
+        }
+
+
         const supabase = await createClient()
 
         const { error } = await supabase.auth.signUp({
             email: email.trim().toLowerCase(),
             password,
-            options: {
-                captchaToken: captchaToken || undefined,
-            }
         })
 
         if (error) {
