@@ -58,7 +58,7 @@ export default function LoginError({
 
           {process.env.NODE_ENV === "development" && (
             <div className="mt-6 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-left">
-              <p className="text-xs font-mono text-red-300 break-words">
+              <p className="text-xs font-mono text-red-300 wrap-break-word">
                 {error.message}
               </p>
             </div>

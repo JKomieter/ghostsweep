@@ -1,9 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
+import { checkLoginRateLimit, clearFailedLoginAttempts, recordFailedLoginAttempt } from '@/utils/login-rate-limit'
+import { logLoginSecurityEvent } from '@/utils/security-logging'
+import { headers } from 'next/headers'
 
 interface AuthError {
     message: string
@@ -78,7 +80,7 @@ function formatAuthError(error: unknown): AuthError {
     return { message: 'An unexpected error occurred. Please try again.' }
 }
 
-export async function login({email, password}: { email: string, password: string }) {
+export async function login({email, password, captchaToken}: { email: string, password: string, captchaToken: string | null }) {
     try {
         // Validate inputs
         if (!email || !password) {
@@ -89,19 +91,62 @@ export async function login({email, password}: { email: string, password: string
             throw new Error('Please enter a valid email address.')
         }
 
+        // Get client IP from headers
+        const headersList = await headers()
+        const ip = headersList.get('x-forwarded-for')?.split(',')[0] ||
+                   headersList.get('x-real-ip') ||
+                   headersList.get('cf-connecting-ip') ||
+                   'unknown'
+
+        // Check rate limiting and account lockout
+        const rateLimitCheck = await checkLoginRateLimit(email.toLowerCase(), ip)
+
+        if (!rateLimitCheck.allowed) {
+            return {
+                success: false,
+                error: rateLimitCheck.reason || 'Too many login attempts. Please try again later.',
+            }
+        }
+
         const supabase = await createClient()
 
         const data = {
             email: email.trim().toLowerCase(),
             password,
+            options: {
+                captchaToken: captchaToken || undefined,
+            }
         }
 
         const { error } = await supabase.auth.signInWithPassword(data)
 
         if (error) {
+            // Record failed attempt
+            await recordFailedLoginAttempt(email.toLowerCase())
+            
+            // Log security event
+            await logLoginSecurityEvent({
+                timestamp: new Date().toISOString(),
+                email: email.toLowerCase(),
+                ip,
+                eventType: 'failed_attempt',
+                reason: error.message,
+            })
+            
             const formattedError = formatAuthError(error)
             throw new Error(formattedError.message)
         }
+
+        // Clear failed attempts on successful login
+        await clearFailedLoginAttempts(email.toLowerCase())
+
+        // Log successful login
+        await logLoginSecurityEvent({
+            timestamp: new Date().toISOString(),
+            email: email.toLowerCase(),
+            ip,
+            eventType: 'successful_login',
+        })
 
         revalidatePath('/', 'layout')
         // Return a success result instead of throwing redirect
@@ -113,7 +158,7 @@ export async function login({email, password}: { email: string, password: string
     }
 }
 
-export async function signup({ email, password }: { email: string, password: string }) {
+export async function signup({ email, password, captchaToken }: { email: string, password: string, captchaToken: string | null   }) {
     try {
         // Validate inputs
         if (!email || !password) {
@@ -133,6 +178,9 @@ export async function signup({ email, password }: { email: string, password: str
         const { error } = await supabase.auth.signUp({
             email: email.trim().toLowerCase(),
             password,
+            options: {
+                captchaToken: captchaToken || undefined,
+            }
         })
 
         if (error) {

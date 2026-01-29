@@ -6,6 +6,7 @@ import {
     type FormEvent,
     type Dispatch,
     type SetStateAction,
+    useRef,
 } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, MailIcon, Lock, Shield } from "lucide-react";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { login, signup } from "./action";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 // ✅ add your supabase client import (adjust path to your project)
 import { createClient } from "@/utils/supabase/client";
@@ -113,6 +115,8 @@ function SignInForm({
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const captchaRef = useRef<HCaptcha>(null);
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -120,8 +124,8 @@ function SignInForm({
         setErrorMessage(null);
 
         try {
-            const result = await login({ email, password });
-            
+            const result = await login({ email, password, captchaToken });
+            captchaRef.current?.resetCaptcha()
             if (!result.success) {
                 setErrorMessage(result.error || "An unexpected error occurred. Please try again.");
                 toast.error(result.error || "Login failed");
@@ -215,7 +219,13 @@ function SignInForm({
                         </button>
                     </div>
                 </div>
-
+                <HCaptcha
+                ref={captchaRef}
+                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY!}
+                    onVerify={(token) => {
+                        setCaptchaToken(token)
+                    }}
+                />
                 <Button
                     type="submit"
                     className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
@@ -262,6 +272,8 @@ function SignUpForm({
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const captchaRef = useRef<HCaptcha>(null);
 
     const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -289,8 +301,8 @@ function SignUpForm({
         setIsLoading(true);
 
         try {
-            const result = await signup({ email, password });
-            
+            const result = await signup({ email, password, captchaToken });
+            captchaRef.current?.resetCaptcha()
             if (!result.success) {
                 setErrorMessage(result.error || "An error occurred during signup. Please try again.");
                 toast.error(result.error || "Signup failed");
@@ -388,8 +400,15 @@ function SignUpForm({
                     />
                 </div>
 
+
                 {showPasswordWarning && <PasswordWarning feedback={passwordFeedback} />}
 
+                <HCaptcha
+                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ""}
+                    onVerify={(token) => setCaptchaToken(token)}
+                    ref={captchaRef}
+                />
+                
                 <Button
                     type="submit"
                     className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
