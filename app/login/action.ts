@@ -179,7 +179,7 @@ export async function login({email, password, captchaToken}: { email: string, pa
     }
 }
 
-export async function signup({ email, password, captchaToken }: { email: string, password: string, captchaToken: string | null   }) {
+export async function signup({ email, password, captchaToken }: { email: string, password: string, captchaToken?: string | null   }) {
     try {
         // Validate inputs
         if (!email || !password) {

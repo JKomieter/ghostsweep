@@ -427,7 +427,7 @@ function SignUpForm({
                 {showPasswordWarning && <PasswordWarning feedback={passwordFeedback} />}
 
                 <HCaptcha
-                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ""}
+                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY!}
                     onVerify={(token) => setCaptchaToken(token)}
                     ref={captchaRef}
                 />
