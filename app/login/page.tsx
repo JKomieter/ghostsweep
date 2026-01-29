@@ -115,6 +115,7 @@ function SignInForm({
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [shouldShowCaptcha, setShouldShowCaptcha] = useState(false);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const captchaRef = useRef<HCaptcha>(null);
 
@@ -124,13 +125,30 @@ function SignInForm({
         setErrorMessage(null);
 
         try {
+            // Only attempt login if CAPTCHA is not required or if CAPTCHA is completed
+            if (shouldShowCaptcha && !captchaToken) {
+                setErrorMessage("Please complete the CAPTCHA verification.");
+                setIsLoading(false);
+                return;
+            }
+
             const result = await login({ email, password, captchaToken });
             captchaRef.current?.resetCaptcha()
             if (!result.success) {
                 setErrorMessage(result.error || "An unexpected error occurred. Please try again.");
                 toast.error(result.error || "Login failed");
+
+                // Show CAPTCHA if backend indicates it's needed
+                if (result.shouldShowCaptcha) {
+                    setShouldShowCaptcha(true);
+                    setCaptchaToken(null);
+                }
             } else {
                 toast.success("Login successful");
+                // Reset CAPTCHA state on success
+                setShouldShowCaptcha(false);
+                setCaptchaToken(null);
+
                 // Redirect after a brief delay to allow toast to show
                 setTimeout(() => {
                     router.push("/dashboard");
@@ -219,17 +237,22 @@ function SignInForm({
                         </button>
                     </div>
                 </div>
-                <HCaptcha
-                ref={captchaRef}
-                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY!}
-                    onVerify={(token) => {
-                        setCaptchaToken(token)
-                    }}
-                />
+                {/* Show CAPTCHA after multiple failed attempts */}
+                {shouldShowCaptcha && (
+                    <div className="flex justify-center">
+                        <HCaptcha
+                            ref={captchaRef}
+                            sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY!}
+                            onVerify={(token) => {
+                                setCaptchaToken(token)
+                            }}
+                        />
+                    </div>
+                )}
                 <Button
                     type="submit"
                     className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
-                    disabled={isLoading}
+                    disabled={isLoading || (shouldShowCaptcha && !captchaToken)}
                 >
                     {isLoading ? <Spinner /> : "Sign In"}
                 </Button>

@@ -105,6 +105,18 @@ export async function login({email, password, captchaToken}: { email: string, pa
             return {
                 success: false,
                 error: rateLimitCheck.reason || 'Too many login attempts. Please try again later.',
+                shouldShowCaptcha: rateLimitCheck.shouldShowCaptcha,
+                remainingAttempts: rateLimitCheck.remainingAttempts,
+            }
+        }
+
+        // If CAPTCHA should be shown, require token
+        if (rateLimitCheck.shouldShowCaptcha && !captchaToken) {
+            return {
+                success: false,
+                error: 'Please complete the CAPTCHA verification.',
+                shouldShowCaptcha: true,
+                remainingAttempts: rateLimitCheck.remainingAttempts,
             }
         }
 
@@ -134,7 +146,16 @@ export async function login({email, password, captchaToken}: { email: string, pa
             })
             
             const formattedError = formatAuthError(error)
-            throw new Error(formattedError.message)
+
+            // Re-check rate limit to get updated captcha status
+            const updatedRateLimit = await checkLoginRateLimit(email.toLowerCase(), ip)
+
+            return {
+                success: false,
+                error: formattedError.message,
+                shouldShowCaptcha: updatedRateLimit.shouldShowCaptcha,
+                remainingAttempts: updatedRateLimit.remainingAttempts,
+            }
         }
 
         // Clear failed attempts on successful login
