@@ -22,11 +22,18 @@ function formatAuthError(error: unknown): AuthError {
     if (typeof error === 'object' && 'message' in error) {
         const err = error as { message: string; status?: number; code?: string }
         const message = err.message || ''
-        
+
         // Map specific Supabase error messages to user-friendly messages
         if (message.includes('Invalid login credentials')) {
             return {
                 message: 'Incorrect email or password. Please try again.',
+                status: err.status,
+                code: err.code,
+            }
+        }
+        if (message.toLowerCase().includes('captcha')) {
+            return {
+                message: 'CAPTCHA verification failed. Please try again.',
                 status: err.status,
                 code: err.code,
             }
@@ -59,7 +66,7 @@ function formatAuthError(error: unknown): AuthError {
                 code: err.code,
             }
         }
-        
+
         return {
             message,
             status: err.status,
@@ -80,7 +87,7 @@ function formatAuthError(error: unknown): AuthError {
     return { message: 'An unexpected error occurred. Please try again.' }
 }
 
-export async function login({email, password, captchaToken}: { email: string, password: string, captchaToken: string | null }) {
+export async function login({ email, password, captchaToken }: { email: string, password: string, captchaToken: string | null }) {
     try {
         // Validate inputs
         if (!email || !password) {
@@ -94,9 +101,9 @@ export async function login({email, password, captchaToken}: { email: string, pa
         // Get client IP from headers
         const headersList = await headers()
         const ip = headersList.get('x-forwarded-for')?.split(',')[0] ||
-                   headersList.get('x-real-ip') ||
-                   headersList.get('cf-connecting-ip') ||
-                   'unknown'
+            headersList.get('x-real-ip') ||
+            headersList.get('cf-connecting-ip') ||
+            'unknown'
 
         // Check rate limiting and account lockout
         const rateLimitCheck = await checkLoginRateLimit(email.toLowerCase(), ip)
@@ -111,28 +118,31 @@ export async function login({email, password, captchaToken}: { email: string, pa
         }
 
         // If CAPTCHA should be shown, require token
-        if (rateLimitCheck.shouldShowCaptcha && !captchaToken) {
-            return {
-                success: false,
-                error: 'Please complete the CAPTCHA verification.',
-                shouldShowCaptcha: true,
-                remainingAttempts: rateLimitCheck.remainingAttempts,
+        if (rateLimitCheck.shouldShowCaptcha) {
+            if (!captchaToken) {
+                return {
+                    success: false,
+                    error: 'Please complete the CAPTCHA verification.',
+                    shouldShowCaptcha: true,
+                    remainingAttempts: rateLimitCheck.remainingAttempts,
+                }
             }
-        }
 
-        // Verify CAPTCHA token if provided (Manual verification because Supabase CAPTCHA setting is disabled)
-        if (captchaToken) {
+            // Verify CAPTCHA token manually
             try {
                 const formData = new URLSearchParams()
                 formData.append('secret', process.env.HCAPTCHA_SECRET!)
                 formData.append('response', captchaToken)
+                if (ip) {
+                    formData.append('remoteip', ip)
+                }
 
                 const captchaVerification = await fetch('https://hcaptcha.com/siteverify', {
                     method: 'POST',
                     body: formData,
                 })
 
-                const captchaResult = await captchaVerification.json() as { success?: boolean; score?: number }
+                const captchaResult = await captchaVerification.json() as { success?: boolean }
 
                 if (!captchaResult.success) {
                     return {
@@ -153,15 +163,16 @@ export async function login({email, password, captchaToken}: { email: string, pa
             }
         }
 
+        // We verify captcha manually above if required by our rate limit logic.
+        // We do NOT pass the token to Supabase to avoid conflict if Supabase CAPTCHA is also enabled/disabled.
+        // NOTE: Ensure "Enable CAPTCHA protection" is DISABLED for Sign In in Supabase Dashboard
+        // for this custom threshold logic to work for the first 3 attempts.
+
         const supabase = await createClient()
 
         const data = {
             email: email.trim().toLowerCase(),
             password,
-            options: {
-                // We verify captcha manually above, so we don't pass it to Supabase
-                // to avoid "Captcha verification failed" error if Supabase protection is OFF.
-            }
         }
 
         const { error } = await supabase.auth.signInWithPassword(data)
@@ -169,7 +180,7 @@ export async function login({email, password, captchaToken}: { email: string, pa
         if (error) {
             // Record failed attempt
             await recordFailedLoginAttempt(email.toLowerCase())
-            
+
             // Log security event
             await logLoginSecurityEvent({
                 timestamp: new Date().toISOString(),
@@ -178,7 +189,7 @@ export async function login({email, password, captchaToken}: { email: string, pa
                 eventType: 'failed_attempt',
                 reason: error.message,
             })
-            
+
             const formattedError = formatAuthError(error)
 
             // Re-check rate limit to get updated captcha status
@@ -213,7 +224,7 @@ export async function login({email, password, captchaToken}: { email: string, pa
     }
 }
 
-export async function signup({ email, password, captchaToken }: { email: string, password: string, captchaToken?: string | null   }) {
+export async function signup({ email, password, captchaToken }: { email: string, password: string, captchaToken?: string | null }) {
     try {
         // Validate inputs
         if (!email || !password) {
@@ -228,6 +239,13 @@ export async function signup({ email, password, captchaToken }: { email: string,
             throw new Error('Password must be at least 8 characters long.')
         }
 
+        // Get client IP from headers
+        const headersList = await headers()
+        const ip = headersList.get('x-forwarded-for')?.split(',')[0] ||
+                   headersList.get('x-real-ip') ||
+                   headersList.get('cf-connecting-ip') ||
+                   'unknown'
+
         // Verify CAPTCHA token for signup (Always required)
         if (!captchaToken) {
             throw new Error('Please complete the CAPTCHA verification.')
@@ -237,6 +255,9 @@ export async function signup({ email, password, captchaToken }: { email: string,
             const formData = new URLSearchParams()
             formData.append('secret', process.env.HCAPTCHA_SECRET!)
             formData.append('response', captchaToken)
+            if (ip) {
+                formData.append('remoteip', ip)
+            }
 
             const captchaVerification = await fetch('https://hcaptcha.com/siteverify', {
                 method: 'POST',
