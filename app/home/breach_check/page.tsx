@@ -89,12 +89,11 @@ export default function BreachCheckPage() {
             <div className="mx-auto max-w-3xl space-y-6">
                 <header className="space-y-2">
                     <h1 className="text-2xl font-light tracking-tight text-white">
-                        Quick Breach Check
+                        Digital Shadow & Breach Check
                     </h1>
                     <p className="text-sm text-white/60 max-w-xl">
-                        Check if an email or domain appears in known data breaches. This is
-                        a one-off check powered by the same breach engine GhostSweep uses
-                        during a full inbox sweep.
+                        A breached account isn't just a privacy risk—it's a financial liability. 
+                        Check if your email or domains appear in known data leaks that expose payment methods or personal data.
                     </p>
                 </header>
 

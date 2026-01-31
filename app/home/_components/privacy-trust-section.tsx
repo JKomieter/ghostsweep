@@ -11,10 +11,10 @@ export function PrivacyTrustSection() {
     {
       id: "privilege",
       icon: Eye,
-      title: "Principle of Least Privilege",
-      description: "We only read email metadata (headers, from, to, subject).",
+      title: "Transient Scanning, Zero Storage",
+      description: "We read emails to find value, but we never store the body content.",
       details:
-        "We never access the body of your emails, attachments, passwords, or any sensitive content. This approach is called 'metadata-only scanning' and is the gold standard for privacy-first email apps.",
+        "We scan the body of your emails transiently to identify gift cards, subscriptions, and receipts. Once the value is extracted, the raw email content is discarded immediately. We never store your personal letters or attachments.",
     },
     {
       id: "processing",
@@ -31,7 +31,7 @@ export function PrivacyTrustSection() {
       title: "OAuth 2.0 Security",
       description: "We never see or store your Google/Microsoft password.",
       details:
-        "We use OAuth 2.0, the industry-standard protocol. You authenticate directly with Google or Microsoft, and they issue us a temporary, limited-scope token that only grants access to read email metadata. You can revoke this token anytime from your account settings.",
+        "We use OAuth 2.0, the industry-standard protocol. You authenticate directly with Google or Microsoft, and they issue us a temporary, limited-scope token. You can revoke this token anytime from your account settings.",
     },
   ];
 
@@ -46,7 +46,7 @@ export function PrivacyTrustSection() {
           Privacy, explained simply
         </h2>
         <p className="mx-auto max-w-xl text-sm text-zinc-400">
-          A clear overview of what GhostSweep can see, what it can't, and how we handle email metadata.
+          A clear overview of what GhostSweep can see, what it can't, and how we handle your data.
         </p>
       </div>
 

@@ -86,10 +86,10 @@ export default function PrivacyPolicyPage() {
                     <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-5 backdrop-blur-sm">
                         <div className="mb-3 flex items-center gap-2">
                             <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                            <p className="text-sm font-light text-white">Metadata-first</p>
+                            <p className="text-sm font-light text-white">Zero-storage Scanning</p>
                         </div>
                         <p className="text-xs text-emerald-300/80">
-                            We scan email metadata (sender, subject, date) to detect services. Full email bodies are never read or stored.
+                            We scan email bodies transiently to find value (gift cards, receipts), but we never store them.
                         </p>
                     </div>
 
@@ -121,7 +121,7 @@ export default function PrivacyPolicyPage() {
                         GhostSweep is a web application that helps you:
                     </p>
                     <ul className="space-y-2 list-disc pl-5 text-sm text-white/60">
-                        <li>Find services linked to your email address (via inbox metadata signals).</li>
+                        <li>Find services linked to your email address (via transient inbox analysis).</li>
                         <li>Identify potential breach exposure using breach sources you choose to query.</li>
                         <li>Generate and track account deletion requests across services.</li>
                     </ul>
@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
                                         <p className="text-xs font-light text-white">Inbox scanning (sweeps)</p>
                                     </div>
                                     <p className="text-xs text-white/60">
-                                        Sweeps access email metadata (sender, subject, timestamps) to detect services. We do not read or store full email bodies.
+                                        Sweeps scan emails transiently to identify gift cards, subscriptions, and receipts. We never store full email bodies or attachments.
                                     </p>
                                 </div>
 

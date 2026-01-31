@@ -56,7 +56,7 @@ const howItWorksSchema = {
     {
       "@type": "HowToStep",
       "name": "Scan for Accounts",
-      "text": "GhostSweep scans email metadata to find accounts linked to your email."
+      "text": "GhostSweep scans emails transiently to find accounts and value linked to your email."
     },
     {
       "@type": "HowToStep",

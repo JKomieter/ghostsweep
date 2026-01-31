@@ -20,7 +20,7 @@ import {
 
 export const metadata: Metadata = {
     title: "Security & Privacy | How GhostSweep Protects Your Data",
-    description: "Learn how GhostSweep securely scans your email using metadata-only analysis, Google OAuth, and privacy-first design. CASA certified and Google verified.",
+    description: "Learn how GhostSweep securely scans your email using transient, zero-storage analysis, Google OAuth, and privacy-first design. CASA certified and Google verified.",
     keywords: [
         "email security",
         "privacy protection",
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
         "CCPA compliant",
         "GDPR compliant",
         "data encryption",
-        "metadata analysis",
+        "transient analysis",
         "privacy certification",
     ],
     openGraph: {
         title: "Security & Privacy | How GhostSweep Protects Your Data",
-        description: "Discover how GhostSweep securely protects your privacy with metadata-only scanning and Google OAuth verification.",
+        description: "Discover how GhostSweep securely protects your privacy with transient, zero-storage scanning and Google OAuth verification.",
         url: "https://ghostsweep.com/home/security",
         type: "website",
     },
@@ -49,7 +49,7 @@ const securityPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Security & Privacy | How GhostSweep Protects Your Data",
-    "description": "Learn how GhostSweep securely scans your email using metadata-only analysis, Google OAuth, and privacy-first design.",
+    "description": "Learn how GhostSweep securely scans your email using transient, zero-storage analysis, Google OAuth, and privacy-first design.",
     "url": "https://ghostsweep.com/home/security",
     "publisher": {
         "@type": "Organization",
@@ -80,26 +80,26 @@ export default function SecurityPage() {
                     <div className="text-center space-y-5 max-w-3xl mx-auto">
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/2 px-4 py-1.5 text-[11px] text-white/60 backdrop-blur-sm">
                             <Shield className="h-3 w-3" />
-                            Google OAuth · Metadata-only scanning · You control all actions
+                            Google OAuth · Zero-storage scanning · You control all actions
                         </div>
 
                         <div className="space-y-3">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight leading-tight text-white">
-                                How GhostSweep Protects Your Data
+                                Bank-Grade Security. <br/> Zero-Knowledge Privacy.
                             </h1>
                             <p className="text-sm sm:text-base text-white/60 leading-relaxed">
-                                GhostSweep helps you understand which services are linked to your email and
-                                gives you tools to clean up. This page explains what we can access, what we
-                                store, and how you stay in control.
+                                Because we help you find money, we treat your security like a bank would. 
+                                We use transient, zero-storage scanning, we never see your banking credentials, 
+                                and we never sell your data.
                             </p>
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-2.5 text-xs sm:text-sm font-light text-black shadow-sm hover:bg-white/90 transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-7 py-2.5 text-xs sm:text-sm font-light text-black shadow-sm hover:bg-emerald-400 transition"
                             >
-                                Start a free scan
+                                Start Secure Scan
                                 <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
 
@@ -117,14 +117,14 @@ export default function SecurityPage() {
                     <div className="grid gap-4 md:grid-cols-3 text-xs sm:text-sm">
                         <div className="rounded-lg border border-white/5 bg-white/2 p-4 space-y-1.5 backdrop-blur-sm">
                             <p className="font-light flex items-center gap-2 text-white">
-                                <EyeOff className="h-3.5 w-3.5 text-white" />
-                                We don&apos;t store email bodies
+                                <EyeOff className="h-3.5 w-3.5 text-emerald-400" />
+                                We do NOT scan bank logins
                             </p>
                             <p className="text-white/60">
-                                Scans are designed to minimize access and avoid storing full email content or attachments
-                                in GhostSweep.
+                                We analyze receipts and confirmation emails. Your bank credentials and password never touch our servers.
                             </p>
                         </div>
+
 
                         <div className="rounded-lg border border-white/5 bg-white/2 p-4 space-y-1.5 backdrop-blur-sm">
                             <p className="font-light flex items-center gap-2 text-white">
@@ -216,7 +216,7 @@ export default function SecurityPage() {
                             <div className="space-y-4">
                                 <div>
                                     <h4 className="text-xs font-light text-white mb-1.5 uppercase tracking-wide">
-                                        For scanning (account discovery)
+                                        For value scanning (account discovery)
                                     </h4>
                                     <ul className="space-y-1.5 text-xs sm:text-sm text-white/60">
                                         <li className="flex items-start gap-2">
@@ -225,14 +225,15 @@ export default function SecurityPage() {
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <CheckCircle className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>Subject lines (e.g., "Welcome", "Receipt", "Verify your email")</span>
+                                            <span>Subject lines (e.g., "Receipt for order", "Gift Card Balance")</span>
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <CheckCircle className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>Timestamps and basic message metadata</span>
+                                            <span>Body content (transiently scanned for values/codes, never stored)</span>
                                         </li>
                                     </ul>
                                 </div>
+
 
                                 <div>
                                     <h4 className="text-xs font-light text-white mb-1.5 uppercase tracking-wide">
@@ -282,7 +283,7 @@ export default function SecurityPage() {
                                     <div>
                                         <p className="font-medium">Sell data or run ads</p>
                                         <p className="text-[11px] text-muted-foreground mt-1">
-                                            We do not sell, rent, or share your email data for advertising.
+                                            You are the customer, not the product. We charge a fair price so we never have to sell your data.
                                         </p>
                                     </div>
                                 </li>

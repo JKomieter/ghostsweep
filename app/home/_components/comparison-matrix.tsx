@@ -58,7 +58,7 @@ export function ComparisonMatrix() {
     },
     {
       name: "Privacy-First",
-      description: "Metadata-only scanning, no password access",
+      description: "Zero-storage scanning, no password access",
       manual: true,
       manual_detail: "Your control",
       deleteMe: false,
