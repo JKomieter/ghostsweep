@@ -321,7 +321,7 @@ export default function NewslettersPage() {
           <AlertTitle>How batch unsubscribe works</AlertTitle>
           <AlertDescription>
             We'll open each unsubscribe page in a new tab. You'll need to click the final "Unsubscribe" button on each one. 
-            This takes 2-5 minutes instead of hours searching emails.
+            This takes 10-20 minutes instead of hours searching emails.
           </AlertDescription>
         </Alert>
 

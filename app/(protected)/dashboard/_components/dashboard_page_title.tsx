@@ -34,6 +34,24 @@ type LatestSweepResponse = {
     errorMessage?: string | null;
 };
 
+// Human-readable phase labels
+const PHASE_LABELS: Record<string, string> = {
+    account_discovery: "Discovering your accounts…",
+    metadata_extraction: "Extracting email metadata…",
+    service_normalisation: "Identifying services…",
+    account_classification: "Classifying accounts…",
+    data_ingestion: "Processing your data…",
+    newsletter_extraction: "Finding newsletters…",
+    value_extraction: "Detecting hidden value…",
+};
+
+const getPhaseLabel = (phase?: string | null, fallbackLabel?: string | null): string => {
+    if (phase && PHASE_LABELS[phase]) {
+        return PHASE_LABELS[phase];
+    }
+    return fallbackLabel ?? "Scanning your inbox…";
+};
+
 export default function DashboardTitle() {
     const [isConnecting, setIsConnecting] = useState(false);
     const [sweepDialogOpen, setSweepDialogOpen] = useState(false);
@@ -459,7 +477,7 @@ export default function DashboardTitle() {
                         <div className="flex items-center gap-2">
                             <Loader2 className="h-3 w-3 animate-spin" />
                             <span className="font-medium">
-                                {latestSweep.phaseLabel ?? "Scanning your inbox…"}
+                                {getPhaseLabel(latestSweep.phase, latestSweep.phaseLabel)}
                             </span>
                         </div>
                         <div className="text-[11px] text-cyan-200/80">
