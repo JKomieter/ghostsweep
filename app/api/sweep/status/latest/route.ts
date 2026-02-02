@@ -2,35 +2,55 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
+// Phase key type for all sweep phases
+type PhaseKey =
+    | "account_discovery"
+    | "metadata_extraction"
+    | "service_normalisation"
+    | "account_classification"
+    | "data_ingestion"
+    | "newsletter_extraction"
+    | "value_extraction";
+
 // Map worker statuses -> nice labels + steps
 const PHASE_META: Record<
-    string,
+    PhaseKey,
     { label: string; step: number; count: number }
 > = {
     account_discovery: {
-        label: "Discovering account-related emails",
+        label: "Discovering your accounts…",
         step: 1,
-        count: 5,
+        count: 7,
     },
     metadata_extraction: {
-        label: "Extracting email metadata",
+        label: "Extracting email metadata…",
         step: 2,
-        count: 5,
+        count: 7,
     },
     service_normalisation: {
-        label: "Analyzing services & domains",
+        label: "Identifying services…",
         step: 3,
-        count: 5,
+        count: 7,
     },
     account_classification: {
-        label: "Classifying accounts & spam",
+        label: "Classifying accounts…",
         step: 4,
-        count: 5,
+        count: 7,
     },
     data_ingestion: {
-        label: "Saving accounts, breaches & metrics",
+        label: "Processing your data…",
         step: 5,
-        count: 5,
+        count: 7,
+    },
+    newsletter_extraction: {
+        label: "Finding newsletters…",
+        step: 6,
+        count: 7,
+    },
+    value_extraction: {
+        label: "Detecting hidden value…",
+        step: 7,
+        count: 7,
     },
 };
 
@@ -113,6 +133,11 @@ export async function GET(request: Request) {
 
         const rawStatus = sweep.status as string;
 
+        // Type guard for PhaseKey
+        const isPhaseKey = (status: string): status is PhaseKey => {
+            return status in PHASE_META;
+        };
+
         // Map DB status -> high-level status + phase fields
         let status: "pending" | "processing" | "completed" | "failed" | null = null;
         let phase: string | null = null;
@@ -124,7 +149,7 @@ export async function GET(request: Request) {
             status = "pending";
         } else if (rawStatus === "completed" || rawStatus === "failed") {
             status = rawStatus;
-        } else if (PHASE_META[rawStatus]) {
+        } else if (isPhaseKey(rawStatus)) {
             // Any of the phase statuses => treat as processing
             status = "processing";
             phase = rawStatus;

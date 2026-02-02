@@ -34,8 +34,18 @@ type LatestSweepResponse = {
     errorMessage?: string | null;
 };
 
+// Phase key type
+type PhaseKey =
+    | "account_discovery"
+    | "metadata_extraction"
+    | "service_normalisation"
+    | "account_classification"
+    | "data_ingestion"
+    | "newsletter_extraction"
+    | "value_extraction";
+
 // Human-readable phase labels
-const PHASE_LABELS: Record<string, string> = {
+const PHASE_LABELS: Record<PhaseKey, string> = {
     account_discovery: "Discovering your accounts…",
     metadata_extraction: "Extracting email metadata…",
     service_normalisation: "Identifying services…",
@@ -45,8 +55,12 @@ const PHASE_LABELS: Record<string, string> = {
     value_extraction: "Detecting hidden value…",
 };
 
+const isPhaseKey = (phase: string): phase is PhaseKey => {
+    return phase in PHASE_LABELS;
+};
+
 const getPhaseLabel = (phase?: string | null, fallbackLabel?: string | null): string => {
-    if (phase && PHASE_LABELS[phase]) {
+    if (phase && isPhaseKey(phase)) {
         return PHASE_LABELS[phase];
     }
     return fallbackLabel ?? "Scanning your inbox…";
