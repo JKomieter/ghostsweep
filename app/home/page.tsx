@@ -274,7 +274,7 @@ function SocialProofBanner() {
                                 </div>
                                 <div>
                                     <div className="text-xl font-semibold text-emerald-400">
-                                        ${displayTotal.toLocaleString()}
+                                        ${(displayTotal / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
                                     <div className="text-[10px] uppercase tracking-wider text-white/40">
                                         Recovered This Week
@@ -296,7 +296,7 @@ function SocialProofBanner() {
                             </div>
                             <div className={`text-sm text-white/70 transition-opacity duration-500 ${isLoading ? "opacity-50" : "opacity-100"}`}>
                                 <span className="text-white/40">Just now:</span>{" "}
-                                <span className="text-emerald-400 font-medium">${find.amount}</span>{" "}
+                                <span className="text-emerald-400 font-medium">${(find.amount / 100).toFixed(2)}</span>{" "}
                                 <span>{find.item}</span>{" "}
                                 <span className="text-white/40">• {find.location}</span>
                             </div>
