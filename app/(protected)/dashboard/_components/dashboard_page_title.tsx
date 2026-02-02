@@ -4,24 +4,8 @@
 import { useEffect, useCallback } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
-} from "@/components/ui/dialog";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import AccountSelect from "./account_select";
 import SweepDialog from "./sweep_dialog";
 import Link from "next/link";
 import { useState } from "react";
@@ -219,11 +203,46 @@ export default function DashboardTitle() {
         if (latestSweep.status === "failed") {
             setLastNotifiedStatus(sweepKey);
 
-            toast.error("Sweep failed", {
-                description: latestSweep.errorMessage || "Your inbox sweep encountered an error. Please try again later.",
-            });
+            // Check if it's an OAuth/token error
+            const isOAuthError = latestSweep.errorMessage?.toLowerCase().includes('token') ||
+                                 latestSweep.errorMessage?.toLowerCase().includes('expired') ||
+                                 latestSweep.errorMessage?.toLowerCase().includes('revoked') ||
+                                 latestSweep.errorMessage?.toLowerCase().includes('oauth') ||
+                                 latestSweep.errorMessage?.toLowerCase().includes('reconnect');
+            
+            if (isOAuthError) {
+                toast.error("Account reconnection required", {
+                    description: "Your email access has expired. Please reconnect your account to continue.",
+                    duration: 10000,
+                    action: {
+                        label: "Reconnect",
+                        onClick: () => {
+                            // Redirect to appropriate OAuth based on error message
+                            if (latestSweep.errorMessage?.toLowerCase().includes('outlook') || 
+                                latestSweep.errorMessage?.toLowerCase().includes('microsoft')) {
+                                window.location.href = "/api/microsoft/oauth";
+                            } else {
+                                window.location.href = "/api/google/oauth/start";
+                            }
+                        },
+                    },
+                });
+            } else {
+                toast.error("Sweep failed", {
+                    description: latestSweep.errorMessage || "Your inbox sweep encountered an error. Please try again later.",
+                });
+            }
         }
-    }, [latestSweep?.sweepId, latestSweep?.status, latestSweep?.servicesFound, latestSweep?.breachesFound, lastNotifiedStatus, queryClient, latestSweep?.errorMessage]);
+    }, [
+        latestSweep?.sweepId,
+        latestSweep?.status,
+        latestSweep?.servicesFound,
+        latestSweep?.breachesFound,
+        lastNotifiedStatus,
+        queryClient,
+        latestSweep?.errorMessage,
+        plan?.current_plan
+    ]);
 
     const getElapsedMinutes = useCallback(() => {
         if (!latestSweep?.startedAt) return 0;
@@ -364,17 +383,17 @@ export default function DashboardTitle() {
     });
 
     // Helper to get display info for selected email
-    const getSelectedEmailDisplay = (): { email: string; provider: "gmail" | "outlook" } | null => {
-        if (!selectedEmail) return null;
+    // const getSelectedEmailDisplay = (): { email: string; provider: "gmail" | "outlook" } | null => {
+    //     if (!selectedEmail) return null;
 
-        const isGmail = gmailData?.accounts?.some(acc => acc.gmail_address === selectedEmail);
-        return {
-            email: selectedEmail,
-            provider: isGmail ? "gmail" : "outlook"
-        };
-    };
+    //     const isGmail = gmailData?.accounts?.some(acc => acc.gmail_address === selectedEmail);
+    //     return {
+    //         email: selectedEmail,
+    //         provider: isGmail ? "gmail" : "outlook"
+    //     };
+    // };
 
-    const selectedDisplay = getSelectedEmailDisplay();
+    // const selectedDisplay = getSelectedEmailDisplay();
 
     return (
         <>
@@ -491,6 +510,43 @@ export default function DashboardTitle() {
                                     ? "Stopping…"
                                     : "Cancel sweep"}
                         </Button>
+                    </div>
+                </div>
+            )}
+
+            {/* OAuth Error Banner - shows when last sweep failed due to token issue */}
+            {latestSweep?.status === "failed" && latestSweep?.errorMessage && 
+             (latestSweep.errorMessage.toLowerCase().includes('token') ||
+              latestSweep.errorMessage.toLowerCase().includes('expired') ||
+              latestSweep.errorMessage.toLowerCase().includes('revoked') ||
+              latestSweep.errorMessage.toLowerCase().includes('reconnect')) && (
+                <div className="mb-4 flex flex-col gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+                        <div>
+                            <p className="font-medium text-amber-100">Account Reconnection Required</p>
+                            <p className="text-xs text-amber-200/80 mt-0.5">
+                                Your email access token has expired. Please reconnect your account to continue scanning.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 ml-8 sm:ml-0">
+                        {gmailData?.accounts && gmailData.accounts.length > 0 && (
+                            <Link href="/api/google/oauth/start">
+                                <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-100 hover:bg-amber-500/20 text-xs">
+                                    <RefreshCw className="h-3.5 w-3.5" />
+                                    Reconnect Gmail
+                                </Button>
+                            </Link>
+                        )}
+                        {microsoftData?.accounts && microsoftData.accounts.length > 0 && (
+                            <Link href="/api/microsoft/oauth">
+                                <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-100 hover:bg-amber-500/20 text-xs">
+                                    <RefreshCw className="h-3.5 w-3.5" />
+                                    Reconnect Outlook
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             )}
