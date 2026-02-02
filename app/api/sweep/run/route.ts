@@ -166,6 +166,30 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // ✅ Get user location from IP address
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+    let userLocation = "Remote";
+    
+    try {
+      // Skip localhost IPs
+      if (ip !== "127.0.0.1" && ip !== "::1" && !ip.startsWith("192.168.") && !ip.startsWith("10.")) {
+        const locResponse = await fetch(`https://ipapi.co/${ip}/json/`, {
+          signal: AbortSignal.timeout(3000), // 3 second timeout
+        });
+        if (locResponse.ok) {
+          const locData = await locResponse.json();
+          if (locData.city && !locData.error) {
+            userLocation = locData.region_code 
+              ? `${locData.city}, ${locData.region_code}` 
+              : locData.city;
+          }
+        }
+      }
+    } catch (locError) {
+      // Silently fail - location is optional
+      console.warn("Failed to fetch user location:", locError);
+    }
+
     // ✅ Create sweep job with user_id and email provider
     const { data: sweepEvent, error: sweepError } = await supabase
       .from("sweep_events")
@@ -175,6 +199,7 @@ export async function GET(request: NextRequest) {
         email: email,
         status: "pending",
         started_at: new Date().toISOString(),
+        location_text: userLocation,
       })
       .select("id")
       .single();

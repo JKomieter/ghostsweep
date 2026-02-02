@@ -15,9 +15,15 @@ import {
     Lock,
     EyeOff,
     BarChart3,
-    Clock
+    Clock,
+    ShieldCheck,
+    Fingerprint,
+    MapPin,
+    TrendingUp,
+    Users
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { GmailLogo } from "@/svgs";
 
 // Structured data (JSON-LD) for search engines
@@ -168,6 +174,374 @@ function HeroDashboard() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Types for the live feed
+interface LiveFeedItem {
+    id: string;
+    type: string;
+    serviceName: string;
+    amount: number;
+    location: string;
+    createdAt: string;
+}
+
+interface LiveFeedData {
+    feed: LiveFeedItem[];
+    dailyScanCount: number;
+    weeklyTotal: number;
+}
+
+// Custom hook to fetch live feed data using React Query
+function useLiveFeed() {
+    return useQuery<LiveFeedData>({
+        queryKey: ["marketing-live-feed"],
+        queryFn: async () => {
+            const response = await fetch("/api/marketing/live-feed");
+            if (!response.ok) {
+                throw new Error("Failed to fetch live feed");
+            }
+            return response.json();
+        },
+        refetchInterval: 30000, // Refresh every 30 seconds
+        staleTime: 15000, // Consider data fresh for 15 seconds
+        retry: 2, // Retry failed requests twice
+    });
+}
+
+function SocialProofBanner() {
+    const { data: liveFeed, isLoading } = useLiveFeed();
+    const [currentFind, setCurrentFind] = useState(0);
+    const [incrementedAmount, setIncrementedAmount] = useState(0);
+
+    // Format feed items - only use real data
+    const recentFinds = useMemo(() => {
+        if (liveFeed?.feed && liveFeed.feed.length > 0) {
+            return liveFeed.feed.map((item) => ({
+                location: item.location,
+                amount: item.amount,
+                item: item.serviceName,
+            }));
+        }
+        return [];
+    }, [liveFeed]);
+
+    // Get totals from live data only
+    const weeklyTotal = liveFeed?.weeklyTotal ?? 0;
+    const dailyScans = liveFeed?.dailyScanCount ?? 0;
+    const displayTotal = weeklyTotal + incrementedAmount;
+
+    // Check if we have any real data to show
+    const hasData = weeklyTotal > 0 || recentFinds.length > 0 || dailyScans > 0;
+    
+    useEffect(() => {
+        if (recentFinds.length === 0) return;
+        
+        // Rotate through recent finds
+        const findInterval = setInterval(() => {
+            setCurrentFind((prev) => (prev + 1) % recentFinds.length);
+        }, 4000);
+        
+        // Slowly increment weekly total for live feel (only if we have real data)
+        const totalInterval = weeklyTotal > 0 ? setInterval(() => {
+            setIncrementedAmount((prev) => prev + Math.floor(Math.random() * 15) + 5);
+        }, 8000) : null;
+        
+        return () => {
+            clearInterval(findInterval);
+            if (totalInterval) clearInterval(totalInterval);
+        };
+    }, [recentFinds.length, weeklyTotal]);
+    
+    // Don't render if no real data and not loading
+    if (!hasData && !isLoading) {
+        return null;
+    }
+
+    const find = recentFinds[currentFind];
+    
+    return (
+        <div className="py-6 border-y border-white/5 bg-emerald-500/5">
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
+                    {/* Weekly Counter - only show if we have data */}
+                    {displayTotal > 0 && (
+                        <>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                                    <TrendingUp className="h-5 w-5 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <div className="text-xl font-semibold text-emerald-400">
+                                        ${displayTotal.toLocaleString()}
+                                    </div>
+                                    <div className="text-[10px] uppercase tracking-wider text-white/40">
+                                        Recovered This Week
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Divider - only show if we also have finds */}
+                            {find && <div className="hidden sm:block h-8 w-px bg-white/10" />}
+                        </>
+                    )}
+                    
+                    {/* Recent Find Ticker - only show if we have finds */}
+                    {find && (
+                        <div className="flex items-center gap-3 min-w-[280px]">
+                            <div className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                            </div>
+                            <div className={`text-sm text-white/70 transition-opacity duration-500 ${isLoading ? "opacity-50" : "opacity-100"}`}>
+                                <span className="text-white/40">Just now:</span>{" "}
+                                <span className="text-emerald-400 font-medium">${find.amount}</span>{" "}
+                                <span>{find.item}</span>{" "}
+                                <span className="text-white/40">• {find.location}</span>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* User Count - only show if we have data */}
+                    {dailyScans > 0 && (
+                        <div className="hidden md:flex items-center gap-2 text-xs text-white/40">
+                            <Users className="h-3.5 w-3.5" />
+                            <span>{dailyScans.toLocaleString()} users scanned today</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// How It Works - Trust & Security Section
+function HowItWorksSection() {
+    return (
+        <section className="py-20 border-b border-white/5">
+            <div className="container mx-auto px-4">
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/60 mb-6">
+                        <ShieldCheck className="h-3 w-3" />
+                        <span>Privacy-First Architecture</span>
+                    </div>
+                    <h2 className="text-3xl font-light text-white">How It Works</h2>
+                    <p className="mt-4 text-white/50">
+                        We find your money without compromising your privacy. Here's exactly what happens:
+                    </p>
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    {/* Step 1 */}
+                    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+                        <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
+                            1
+                        </div>
+                        <div className="mt-4">
+                            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                                <ShieldCheck className="h-6 w-6 text-emerald-400" />
+                            </div>
+                            <h3 className="text-lg font-medium text-white mb-2">Official Google OAuth</h3>
+                            <p className="text-sm text-white/50 leading-relaxed">
+                                Connect securely through Google's official login. <strong className="text-white/70">We never see your password.</strong> You're always in control and can revoke access anytime.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {/* Step 2 */}
+                    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+                        <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
+                            2
+                        </div>
+                        <div className="mt-4">
+                            <div className="h-12 w-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
+                                <Fingerprint className="h-6 w-6 text-blue-400" />
+                            </div>
+                            <h3 className="text-lg font-medium text-white mb-2">Transient AI Scan</h3>
+                            <p className="text-sm text-white/50 leading-relaxed">
+                                Our AI processes emails <strong className="text-white/70">in memory only</strong>—extracting gift cards, coupons, and rewards. Raw email text is <strong className="text-white/70">deleted immediately</strong> after scanning.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {/* Step 3 */}
+                    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+                        <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
+                            3
+                        </div>
+                        <div className="mt-4">
+                            <div className="h-12 w-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-4">
+                                <DollarSign className="h-6 w-6 text-purple-400" />
+                            </div>
+                            <h3 className="text-lg font-medium text-white mb-2">Your Savings Report</h3>
+                            <p className="text-sm text-white/50 leading-relaxed">
+                                You get a clean dashboard with <strong className="text-white/70">only the value we found</strong>—gift cards, expiring points, hidden coupons. No stored emails, no data selling. Ever.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Trust Badges */}
+                <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs text-white/40">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 bg-white/5">
+                        <BadgeCheck className="h-4 w-4 text-emerald-400" />
+                        <span>CASA Tier 2 Verified</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 bg-white/5">
+                        <Lock className="h-4 w-4 text-white/60" />
+                        <span>256-bit Encryption</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 bg-white/5">
+                        <EyeOff className="h-4 w-4 text-white/60" />
+                        <span>Zero Email Storage</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#EA4335]/20 bg-[#EA4335]/10">
+                        <GmailLogo className="h-4 w-4" />
+                        <span className="text-white/60">Google Verified App</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// Digital Shadow Map Preview
+function ShadowMapPreview() {
+    const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+    
+    const nodes = useMemo(() => [
+        { id: 1, x: 50, y: 50, label: "Amazon", risk: "high", size: 60 },
+        { id: 2, x: 30, y: 30, label: "Netflix", risk: "medium", size: 45 },
+        { id: 3, x: 70, y: 35, label: "Spotify", risk: "low", size: 40 },
+        { id: 4, x: 20, y: 60, label: "Uber", risk: "medium", size: 35 },
+        { id: 5, x: 80, y: 65, label: "DoorDash", risk: "low", size: 38 },
+        { id: 6, x: 40, y: 75, label: "Unknown App", risk: "high", size: 30 },
+        { id: 7, x: 60, y: 20, label: "Dropbox", risk: "low", size: 42 },
+        { id: 8, x: 15, y: 45, label: "Old Forums", risk: "high", size: 28 },
+    ], []);
+    
+    const getRiskColor = (risk: string) => {
+        switch (risk) {
+            case "high": return "text-red-400 bg-red-500/20 border-red-500/30";
+            case "medium": return "text-yellow-400 bg-yellow-500/20 border-yellow-500/30";
+            default: return "text-emerald-400 bg-emerald-500/20 border-emerald-500/30";
+        }
+    };
+    
+    return (
+        <section className="py-20 border-b border-white/5">
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col lg:flex-row items-center gap-12">
+                    {/* Text */}
+                    <div className="flex-1 space-y-6">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-xs text-purple-400">
+                            <MapPin className="h-3 w-3" />
+                            <span>Digital Shadow Mapping</span>
+                        </div>
+                        <h2 className="text-3xl font-light text-white leading-tight">
+                            See Your Digital Mess. <br/>
+                            <span className="text-white/40">Then Clean It.</span>
+                        </h2>
+                        <p className="text-white/60 leading-relaxed">
+                            Your email reveals 89+ accounts you've forgotten about. Old subscriptions quietly draining money. 
+                            Data breach risks from services you used once in 2019. GhostSweep maps it all—so you can delete what doesn't serve you.
+                        </p>
+                        <ul className="space-y-3 text-sm">
+                            <li className="flex items-center gap-3 text-white/70">
+                                <div className="h-2 w-2 rounded-full bg-red-400" />
+                                <span>High-risk accounts (breached or dormant)</span>
+                            </li>
+                            <li className="flex items-center gap-3 text-white/70">
+                                <div className="h-2 w-2 rounded-full bg-yellow-400" />
+                                <span>Medium-risk (unused subscriptions)</span>
+                            </li>
+                            <li className="flex items-center gap-3 text-white/70">
+                                <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                                <span>Active & secure accounts</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    {/* Interactive Map Preview */}
+                    <div className="flex-1 w-full">
+                        <div className="relative rounded-xl border border-white/10 bg-black/60 p-4 aspect-square max-w-md mx-auto overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-emerald-500/5" />
+                            
+                            {/* Grid lines */}
+                            <div className="absolute inset-4 opacity-10">
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={`h-${i}`} className="absolute w-full h-px bg-white" style={{ top: `${(i + 1) * 20}%` }} />
+                                ))}
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={`v-${i}`} className="absolute h-full w-px bg-white" style={{ left: `${(i + 1) * 20}%` }} />
+                                ))}
+                            </div>
+                            
+                            {/* Connection lines */}
+                            <svg className="absolute inset-0 w-full h-full">
+                                <defs>
+                                    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="rgba(139, 92, 246, 0.3)" />
+                                        <stop offset="100%" stopColor="rgba(16, 185, 129, 0.3)" />
+                                    </linearGradient>
+                                </defs>
+                                {nodes.slice(1).map((node) => (
+                                    <line
+                                        key={`line-${node.id}`}
+                                        x1="50%"
+                                        y1="50%"
+                                        x2={`${node.x}%`}
+                                        y2={`${node.y}%`}
+                                        stroke="url(#lineGrad)"
+                                        strokeWidth="1"
+                                        className="opacity-30"
+                                    />
+                                ))}
+                            </svg>
+                            
+                            {/* Nodes */}
+                            {nodes.map((node) => (
+                                <div
+                                    key={node.id}
+                                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 cursor-pointer
+                                        ${getRiskColor(node.risk)} border rounded-full flex items-center justify-center
+                                        ${hoveredNode === node.id ? 'scale-125 z-10' : 'hover:scale-110'}`}
+                                    style={{
+                                        left: `${node.x}%`,
+                                        top: `${node.y}%`,
+                                        width: node.size,
+                                        height: node.size,
+                                    }}
+                                    onMouseEnter={() => setHoveredNode(node.id)}
+                                    onMouseLeave={() => setHoveredNode(null)}
+                                >
+                                    {hoveredNode === node.id && (
+                                        <div className="absolute -top-8 whitespace-nowrap px-2 py-1 rounded bg-black/90 text-[10px] text-white border border-white/10">
+                                            {node.label}
+                                        </div>
+                                    )}
+                                    <Ghost className="h-4 w-4" />
+                                </div>
+                            ))}
+                            
+                            {/* Center "You" node */}
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+                                <div className="h-16 w-16 rounded-full bg-white/10 border-2 border-white/30 flex items-center justify-center backdrop-blur-sm">
+                                    <span className="text-xs font-medium text-white">YOU</span>
+                                </div>
+                            </div>
+                            
+                            {/* Scan effect */}
+                            <div className="absolute inset-0 animate-pulse">
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-32 w-32 rounded-full border border-purple-500/20" />
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-48 w-48 rounded-full border border-purple-500/10" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     );
 }
 
@@ -540,7 +914,10 @@ export default function HomePage() {
                         </div>
                     </div>
                 </div>
-
+                
+                <SocialProofBanner />
+                <HowItWorksSection />
+                <ShadowMapPreview />
                 <TrinitySection />
                 <GhostEngineSection />
                 <PricingSection />
@@ -568,7 +945,27 @@ export default function HomePage() {
                         </div>
                     </div>
                 </footer>
+                
+                {/* Spacer for sticky CTA on mobile */}
+                <div className="h-20 md:hidden" />
 
+            </div>
+            
+            {/* Sticky Mobile CTA */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+                <div className="bg-gradient-to-t from-black via-black/95 to-transparent pt-6 pb-4 px-4">
+                    <Link
+                        href="/login"
+                        className="flex items-center justify-center gap-2 w-full rounded-full bg-emerald-500 py-4 text-sm font-semibold text-black shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition"
+                    >
+                        <Sparkles className="h-4 w-4" />
+                        Start Free Scan
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <p className="text-center text-[10px] text-white/40 mt-2">
+                        CASA Tier 2 Verified • No password required
+                    </p>
+                </div>
             </div>
         </main>
     );

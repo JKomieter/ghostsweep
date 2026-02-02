@@ -2,7 +2,7 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import sendEmail from "@/utils/send_email";
-import { decryptToken } from "@/utils/token_crypto";
+import { decryptToken, encryptToken } from "@/utils/token_crypto";
 import { tokenStillValid, refreshAccessToken } from "@/utils/refresh_access_token";
 
 function sendSSE(controller: ReadableStreamDefaultController, data: any) {
@@ -139,8 +139,12 @@ export async function POST(req: NextRequest) {
             const newExpiresAt = new Date(Date.now() + Number(refreshed.expires_in) * 1000).toISOString();
             const { error: updateErr } = await supabase
                 .from("gmail_accounts")
-                .update({ token_expires_at: newExpiresAt })
-                .eq("user_id", user.id);
+                .update({ 
+                    token_expires_at: newExpiresAt,
+                    access_token_encrypted: encryptToken(accessToken),
+                })
+                .eq("user_id", user.id)
+                .eq("gmail_address", gmailAccount.gmail_address);
 
             if (updateErr) {
                 console.error("[bulk_email] Failed to update token expiry:", updateErr);

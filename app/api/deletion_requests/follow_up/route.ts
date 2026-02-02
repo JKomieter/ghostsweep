@@ -2,7 +2,7 @@
 import { refreshAccessToken, tokenStillValid } from "@/utils/refresh_access_token";
 import sendEmail from "@/utils/send_email";
 import { createClient } from "@/utils/supabase/server";
-import { decryptToken } from "@/utils/token_crypto";
+import { decryptToken, encryptToken } from "@/utils/token_crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_FOLLOWUP_STATUSES = ["sent", "received", "needs_verification", "in_progress"] as const;
@@ -161,7 +161,17 @@ export async function POST(req: NextRequest) {
         try {
             const refreshed = await refreshAccessToken(refreshToken);
             accessToken = refreshed.access_token;
-            // Optional: persist refreshed token/expires here if you have an encrypt helper.
+            
+            // Persist the refreshed access token and new expiry time
+            const newExpiresAt = new Date(Date.now() + Number(refreshed.expires_in) * 1000).toISOString();
+            await supabase
+                .from("gmail_accounts")
+                .update({ 
+                    token_expires_at: newExpiresAt,
+                    access_token_encrypted: encryptToken(accessToken),
+                })
+                .eq("user_id", user.id)
+                .eq("gmail_address", gmailAccount.gmail_address);
         } catch (e) {
             console.error("Token refresh failed:", e);
             return NextResponse.json({ error: "Reconnect Gmail to continue" }, { status: 400 });

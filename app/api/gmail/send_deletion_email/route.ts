@@ -3,7 +3,7 @@
 import { refreshAccessToken, tokenStillValid } from "@/utils/refresh_access_token";
 import sendEmail from "@/utils/send_email";
 import { createClient } from "@/utils/supabase/server";
-import { decryptToken } from "@/utils/token_crypto";
+import { decryptToken, encryptToken } from "@/utils/token_crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -69,11 +69,15 @@ export async function POST(req: NextRequest) {
         accessToken = refreshed.access_token;
 
         const newExpiresAt = new Date(Date.now() + Number(refreshed.expires_in) * 1000).toISOString();
+        // Save both the new access token AND expiry time
         await supabase
             .from("gmail_accounts")
-            .update({ token_expires_at: newExpiresAt })
-            .eq("user_id", user.id);
-        // (If you also store access_token_encrypted updated, do it here—but not required if you refresh often.)
+            .update({ 
+                token_expires_at: newExpiresAt,
+                access_token_encrypted: encryptToken(accessToken),
+            })
+            .eq("user_id", user.id)
+            .eq("gmail_address", gmailAddress);
     }
 
 
