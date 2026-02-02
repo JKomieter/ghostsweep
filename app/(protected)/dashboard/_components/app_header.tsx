@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import SlidingSidebar from "./app_sidebar";
 import Notifications from "./notifications";
 import { usePathname } from "next/navigation";
+import useGetUser from "@/hooks/use-get-user";
 
 type LatestSweepResponse = {
     sweepId: string | null;
@@ -36,6 +37,7 @@ type LatestSweepResponse = {
 export default function Header() {
     const [openSupport, setOpenSupport] = useState(false)
     const [currentTime, setCurrentTime] = useState(() => Date.now())
+    const {data: user} = useGetUser()
 
     const pathname = usePathname();
 
@@ -57,17 +59,7 @@ export default function Header() {
         },
     })
 
-    // Fetch user data for avatar
-    const { data: userData } = useQuery({
-        queryKey: ['user'],
-        queryFn: async () => {
-            const res = await fetch('/api/account');
-            if (!res.ok) throw new Error('Failed to fetch user');
-            return res.json();
-        },
-    });
-
-    const userEmail = userData?.email ?? '';
+    const userEmail = user?.email ?? '';
     const userInitials = userEmail ? userEmail.slice(0, 2).toUpperCase() : 'GS';
 
     // Latest sweep status (for header progress outside dashboard)
