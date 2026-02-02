@@ -358,9 +358,9 @@ function HowItWorksSection() {
                             <div className="h-12 w-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
                                 <Fingerprint className="h-6 w-6 text-blue-400" />
                             </div>
-                            <h3 className="text-lg font-medium text-white mb-2">Transient AI Scan</h3>
+                            <h3 className="text-lg font-medium text-white mb-2">Transient Scan</h3>
                             <p className="text-sm text-white/50 leading-relaxed">
-                                Our AI processes emails <strong className="text-white/70">in memory only</strong>—extracting gift cards, coupons, and rewards. Raw email text is <strong className="text-white/70">deleted immediately</strong> after scanning.
+                                We process emails <strong className="text-white/70">in memory only</strong>—extracting gift cards, coupons, and rewards. Raw email text is <strong className="text-white/70">deleted immediately</strong> after scanning.
                             </p>
                         </div>
                     </div>
