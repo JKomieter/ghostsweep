@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 import CheckoutForm from "../_components/checkout";
 import { ShieldCheck, CalendarClock } from "lucide-react";
 
-const PRO_MONTHLY_PRICE_CENTS = 999; // $9.99
-const PRO_YEARLY_PRICE_CENTS = 7900; // $79.00
+const PRO_MONTHLY_PRICE_CENTS = 1999; // $19.99
+const PRO_YEARLY_PRICE_CENTS = 14900; // $149.00
 
 type BillingInterval = "monthly" | "yearly";
 
@@ -58,20 +58,20 @@ export default async function BillingPage({ searchParams }: PageProps) {
     const planConfig =
         selectedPlan === "monthly"
             ? {
-                label: "GhostSweep Professional — Monthly",
+                label: "Value Hunter — Monthly",
                 priceCents: PRO_MONTHLY_PRICE_CENTS,
-                priceLabel: "$9.99 / month",
+                priceLabel: "$19.99 / month",
                 interval: "monthly" as BillingInterval,
-                subline: "Pay month-to-month. Cancel anytime.",
+                subline: "Perfect for a one-time savings extraction and inbox audit.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
                 priceId: "price_1SVNdMK2SUgcYUhjVOPOghzk",
             }
             : {
-                label: "GhostSweep Professional — Yearly",
+                label: "Savings Pro — Yearly",
                 priceCents: PRO_YEARLY_PRICE_CENTS,
-                priceLabel: "$79.00 / year",
+                priceLabel: "$149 / year",
                 interval: "yearly" as BillingInterval,
-                subline: "Save ~34% vs paying monthly.",
+                subline: "Save 35% vs monthly. Continuous monitoring for new value.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
                 priceId: "price_1SVNecK2SUgcYUhjSkW1DnwS",
             };
@@ -175,7 +175,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         : "text-white/60 hover:text-white/80"
                                 )}
                             >
-                                Monthly · $9.99
+                                Monthly · $19.99
                             </Link>
                             <Link
                                 href="/dashboard/billing?plan=yearly"
@@ -186,7 +186,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         : "text-white/60 hover:text-white/80"
                                 )}
                             >
-                                Yearly · $79.00
+                                Yearly · $149
                             </Link>
                         </div>
 
@@ -204,8 +204,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         {planConfig.subline}
                                     </p>
                                 </div>
-                                <span className="rounded-lg border border-white/5 bg-white/2 px-3 py-1 text-[11px] font-medium text-white/80">
-                                    Professional plan
+                                <span className={cn(
+                                    "rounded-lg border px-3 py-1 text-[11px] font-medium",
+                                    selectedPlan === "yearly" 
+                                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                                        : "border-white/5 bg-white/2 text-white/80"
+                                )}>
+                                    {selectedPlan === "yearly" ? "Savings Pro" : "Value Hunter"}
                                 </span>
                             </div>
 
@@ -213,14 +218,20 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                             <div className="grid gap-2 text-xs text-white/60">
                                 <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">What you get</p>
+                                {selectedPlan === "monthly" ? (
                                     <ul className="space-y-1">
-                                        <li>• Everything in Free</li>
-                                        <li>• Automatic breach monitoring & alerts</li>
-                                        <li>• Quarterly automatic rescans</li>
-                                        <li>• Bulk deletion request tools</li>
-                                        <li>• Auto follow-ups & status tracking</li>
-                                        <li>• Priority email support</li>
+                                        <li>• Unlimited Coupon Discovery</li>
+                                        <li>• Gift Card & Rewards Rescue</li>
+                                        <li>• Account Deletion Engine</li>
                                     </ul>
+                                ) : (
+                                    <ul className="space-y-1">
+                                        <li>• Everything in Monthly</li>
+                                        <li>• Expiring Points Alerts</li>
+                                        <li>• Continuous value monitoring</li>
+                                        <li>• Save 35% vs Monthly</li>
+                                    </ul>
+                                )}
                             </div>
                         </section>
 

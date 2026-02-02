@@ -31,10 +31,11 @@ export interface UserService {
     is_whitelisted: boolean | null;
     email: string | null;
     email_provider: "gmail" | "outlook" | null;
+    status: "active" | "unsubscribed" | "deleted" | null;
 }
 
 export type Category =
-    "Social Media" | "Streaming & Entertainment" | "Shopping & E-commerce" | "Financial & Payments" | "Productivity & Work" | "Travel & Transportation" | "Food & Delivery" | "Gaming" | "Health & Fitness" | "News & Media" | "Email & Communication" | "Other" | "All"
+    "Social Media" | "Streaming & Entertainment" | "Shopping & E-commerce" | "Financial & Payments" | "Productivity & Work" | "Travel & Transportation" | "Food & Delivery" | "Gaming" | "Health & Fitness" | "News & Media" | "Email & Communication" | "Other" | "All" | "Newsletter"
 
 
 export type NotificationType =

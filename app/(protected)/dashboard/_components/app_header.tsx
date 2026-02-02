@@ -3,18 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Settings } from "lucide-react";
+import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus } from "lucide-react";
+import { GmailLogo, OutLookLogo } from "@/svgs";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuSeparator,
+    DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
-import Profile from "./profile";
 import { useState, useEffect, useMemo } from "react";
-import ConnectEmailModal from "./connected_email_account";
-import SubscriptionModal from "./subscription";
-import PrivacyToolsModal from "./privacy_modal";
 import Link from "next/link";
 import { SupportModal } from "./support-modal";
 import { toast } from "sonner";
@@ -35,10 +34,6 @@ type LatestSweepResponse = {
 
 
 export default function Header() {
-    const [openProfile, setOpenProfile] = useState(false)
-    const [openConnectEmail, setOpenConnectEmail] = useState(false)
-    const [openSubscription, setOpenSubscription] = useState(false)
-    const [openPrivacy, setOpenPrivacy] = useState(false)
     const [openSupport, setOpenSupport] = useState(false)
     const [currentTime, setCurrentTime] = useState(() => Date.now())
 
@@ -61,6 +56,19 @@ export default function Header() {
             return res.json();
         },
     })
+
+    // Fetch user data for avatar
+    const { data: userData } = useQuery({
+        queryKey: ['user'],
+        queryFn: async () => {
+            const res = await fetch('/api/account');
+            if (!res.ok) throw new Error('Failed to fetch user');
+            return res.json();
+        },
+    });
+
+    const userEmail = userData?.email ?? '';
+    const userInitials = userEmail ? userEmail.slice(0, 2).toUpperCase() : 'GS';
 
     // Latest sweep status (for header progress outside dashboard)
     const { data: latestSweep } = useQuery({
@@ -113,8 +121,8 @@ export default function Header() {
     const plan = data?.current_plan === "pro" ? "Professional" : "Free"
 
     return (
-        <div className="h-14 relative flex">
-            <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-10 border-border/60 bg-background/80 backdrop-blur-sm">
+        <div className={`relative flex ${isInProgress ? 'h-[88px]' : 'h-14'}`}>
+            <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-20 border-border/60 bg-background/80 backdrop-blur-sm">
                 <div className="flex-1 sm:px-4 p-0 flex justify-between items-center">
                     <div className="flex flex-row items-center gap-4">
                         <SlidingSidebar />
@@ -141,38 +149,79 @@ export default function Header() {
                     </div>
 
                     <div className="flex flex-row items-center space-x-4">
-                        <div>
+                        <div className="flex items-center gap-2">
                             {data?.current_plan !== "pro" && (
                                 <Link href="/dashboard/billing">
-                                    <Button variant={"default"} size="sm" className="bg-linear-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 font-semibold animate-pulse">
+                                    <Button variant={"default"} size="sm" className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
+                                        <Sparkles className="h-3.5 w-3.5" />
                                         Upgrade
                                     </Button>
                                 </Link>
                             )}
+                            
+                            {/* Connect Account Dropdown */}
                             <DropdownMenu>
-                                <DropdownMenuTrigger>
-                                    <Button variant="ghost" size="icon">
-                                        <Settings />
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="hidden sm:flex gap-1.5 text-xs border-white/20 hover:bg-white/5">
+                                        <Plus className="h-3.5 w-3.5" />
+                                        Connect
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => setOpenProfile(true)}>
-                                        Profile
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setOpenConnectEmail(true)}>
-                                        Connect email accounts
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setOpenSubscription(true)}>
-                                        Subscription & Billing
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setOpenPrivacy(true)}>
-                                        Privacy Tools
-                                    </DropdownMenuItem>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    <DropdownMenuLabel className="text-xs text-muted-foreground">Connect Email Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <Link href="/api/google/oauth/start">
+                                        <DropdownMenuItem className="cursor-pointer">
+                                            <GmailLogo className="mr-2 h-4 w-4" />
+                                            Add Gmail
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link href="/api/microsoft/oauth">
+                                        <DropdownMenuItem className="cursor-pointer">
+                                            <OutLookLogo className="mr-2 h-4 w-4" />
+                                            Add Outlook
+                                        </DropdownMenuItem>
+                                    </Link>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            
+                            <Link href="/dashboard/settings">
+                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                                    <Settings className="h-4 w-4" />
+                                </Button>
+                            </Link>
+                            
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-9 gap-2 px-2 hover:bg-white/5">
+                                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center">
+                                            <span className="text-[10px] font-semibold text-cyan-400">{userInitials}</span>
+                                        </div>
+                                        <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium">{userEmail || 'User'}</p>
+                                            <p className="text-xs text-muted-foreground">{plan} Plan</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <Link href="/dashboard/settings">
+                                        <DropdownMenuItem>
+                                            <Settings className="mr-2 h-4 w-4" />
+                                            Settings
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuItem onClick={() => setOpenSupport(true)}>
-                                        Support
+                                        <HelpCircle className="mr-2 h-4 w-4" />
+                                        Help & Support
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleLogout()}>
-                                        Logout
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleLogout()} className="text-red-400 focus:text-red-400">
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        Log out
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -182,41 +231,49 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Sweep progress banner shown outside /dashboard */}
-            {pathname !== "/dashboard" && isInProgress && latestSweep && (
+            {/* Sweep progress banner - shown on ALL pages when sweep is in progress */}
+            {isInProgress && latestSweep && (
                 <div className="fixed left-0 top-14 w-full z-10">
-                    <div className="mx-auto flex items-center justify-between gap-3 border-t border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-xs text-cyan-100">
-                        <div className="flex items-center gap-2">
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            <span className="font-medium">
-                                {latestSweep.phaseLabel ?? "Scanning your inbox…"}
-                            </span>
-                            {typeof latestSweep.messagesProcessed === "number" && (
-                                <span className="text-cyan-200/80">• {latestSweep.messagesProcessed.toLocaleString()} msgs</span>
-                            )}
-                            {elapsedMinutes > 0 && (
-                                <span className="text-cyan-200/80">• {elapsedMinutes} min</span>
-                            )}
+                    <div className="mx-auto flex items-center justify-between gap-3 border-b border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-sm px-4 py-2.5 text-xs text-cyan-100">
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                                <div className="absolute inset-0 h-4 w-4 animate-ping opacity-20 rounded-full bg-cyan-400" />
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                                <span className="font-medium text-white">
+                                    {latestSweep.phaseLabel ?? "Scanning your inbox…"}
+                                </span>
+                                <div className="flex items-center gap-2 text-cyan-300/70">
+                                    {typeof latestSweep.messagesProcessed === "number" && (
+                                        <span>• {latestSweep.messagesProcessed.toLocaleString()} messages</span>
+                                    )}
+                                    {elapsedMinutes > 0 && (
+                                        <span>• {elapsedMinutes} min elapsed</span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <div className="flex items-center gap-3">
                             {typeof latestSweep.progress === "number" && (
-                                <div className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-cyan-900/50 sm:block">
-                                    <div className="h-full bg-cyan-400 transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
+                                <div className="hidden sm:flex items-center gap-2">
+                                    <div className="h-1.5 w-28 overflow-hidden rounded-full bg-cyan-900/50">
+                                        <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
+                                    </div>
+                                    <span className="text-[10px] font-mono text-cyan-300">{latestSweep.progress}%</span>
                                 </div>
                             )}
-                            <Link href="/dashboard">
-                                <Button size="sm" variant="ghost" className="h-7 text-[11px] text-cyan-100 hover:bg-white/10">
-                                    View details
-                                </Button>
-                            </Link>
+                            {pathname !== "/dashboard" && (
+                                <Link href="/dashboard">
+                                    <Button size="sm" variant="ghost" className="h-7 text-[11px] text-cyan-100 hover:bg-white/10 border border-cyan-500/30">
+                                        View details
+                                    </Button>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>
             )}
-            <Profile open={openProfile} onOpenChangeAction={setOpenProfile} />
-            <ConnectEmailModal open={openConnectEmail} onOpenChangeAction={setOpenConnectEmail} />
-            <SubscriptionModal open={openSubscription} onOpenChangeAction={setOpenSubscription} />
-            <PrivacyToolsModal open={openPrivacy} onOpenChangeAction={setOpenPrivacy} />
             <SupportModal open={openSupport} onOpenChangeAction={setOpenSupport} />
         </div>
     )

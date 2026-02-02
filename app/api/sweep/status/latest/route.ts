@@ -34,9 +34,13 @@ const PHASE_META: Record<
     },
 };
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
         const supabase = await createClient();
+
+        // Check for includeRead query param (only Settings page should use this)
+        const { searchParams } = new URL(request.url);
+        const includeRead = searchParams.get("includeRead") === "true";
 
         // ✅ Get user from session
         const {
@@ -48,8 +52,9 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // ✅ Fetch latest unread sweep for this user
-        const { data: sweep, error: sweepError } = await supabase
+        // ✅ Fetch latest sweep for this user
+        // By default, only fetch unread sweeps. Settings page can pass ?includeRead=true
+        let query = supabase
             .from("sweep_events")
             .select(
                 `
@@ -65,8 +70,14 @@ export async function GET() {
                 is_read
       `,
             )
-            .eq("user_id", user.id)
-            .eq("is_read", false)
+            .eq("user_id", user.id);
+
+        // Only filter by is_read if not including read sweeps
+        if (!includeRead) {
+            query = query.eq("is_read", false);
+        }
+
+        const { data: sweep, error: sweepError } = await query
             .order("created_at", { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -79,7 +90,7 @@ export async function GET() {
             );
         }
 
-        // If nothing unread, return "no sweep"
+        // If no sweep found, return "no sweep"
         if (!sweep) {
             return NextResponse.json({
                 sweepId: null,
@@ -96,6 +107,7 @@ export async function GET() {
                 completedAt: null,
                 message: "No sweep has been started yet.",
                 errorMessage: null,
+                isRead: null,
             });
         }
 
@@ -161,7 +173,7 @@ export async function GET() {
             completedAt: sweep.completed_at ?? null,
             message: undefined,
             errorMessage,
-
+            isRead: sweep.is_read ?? false,
         });
     } catch (error) {
         console.error("Error getting latest sweep:", error);

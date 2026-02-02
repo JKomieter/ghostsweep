@@ -11,37 +11,44 @@ import useGetUser from "@/hooks/use-get-user";
 
 const navItems = [
     {
-        label: "Dashboard",
+        label: "Overview",
         href: "/dashboard",
         icon: LayoutDashboard,
     },
     {
-        label: "My Services",
-        href: "/dashboard/user_services",
+        label: "Value Recovery",
+        href: "/dashboard/value-recovery",
         icon: Zap,
     },
-];
-
-const dataItems = [
     {
-        label: "Digital Shadow",
-        href: "/dashboard/digital_shadow",
-        icon: Shield,
-    },
-    {
-        label: "Footprint Map",
-        href: "/dashboard/footprint_map",
-        icon: Map,
-    },
-    {
-        label: "Deletion Requests",
-        href: "/dashboard/deletion_requests",
+        label: "Subscriptions",
+        href: "/dashboard/subscriptions",
         icon: FileText,
     },
     {
-        label: "Opt-Out Progress",
-        href: "/dashboard/opt_out_progress",
-        icon: CheckCircle2,
+        label: "Newsletters",
+        href: "/dashboard/newsletters",
+        icon: Shield,
+    },
+    {
+        label: "Accounts",
+        href: "/dashboard/accounts",
+        icon: Map,
+    },
+    // {
+    //     label: "Breaches",
+    //     href: "/dashboard/breaches",
+    //     icon: CheckCircle2,
+    // },
+    {
+        label: "Settings",
+        href: "/dashboard/settings",
+        icon: X,
+    },
+    {
+        label: "Billing",
+        href: "/dashboard/billing",
+        icon: LogOut,
     },
 ];
 
@@ -134,31 +141,6 @@ export default function SlidingSidebar() {
                     {/* Divider */}
                     <div className="my-2 h-px bg-white/10" />
 
-                    {/* Data Section */}
-                    <div className="space-y-1">
-                        <h3 className="px-3 py-1.5 text-xs font-semibold text-white/50 uppercase tracking-wider">
-                            Your Data
-                        </h3>
-                        {dataItems.map((item) => {
-                            const Icon = item.icon;
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setOpen(false)}
-                                    className={cn(
-                                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                                        isSelected(item.href)
-                                            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                            : "text-white/70 hover:bg-white/10 hover:text-white"
-                                    )}
-                                >
-                                    <Icon className="h-4 w-4 shrink-0" />
-                                    <span>{item.label}</span>
-                                </Link>
-                            );
-                        })}
-                    </div>
 
                     {/* Logout - Bottom */}
                     <div className="mt-auto pt-4 border-t border-white/10">

@@ -1,3 +1,48 @@
+// Value Recovery types
+export type RiskLevel = "safe" | "caution" | "high_risk" | "unknown";
+
+export type FoundValue = {
+    idx: number;
+    id: string;
+    user_id: string;
+    type: "gift_card" | "coupon" | "rewards" | "refund" | "subscription";
+    service_id: string | null;
+    service_name: string;
+    amount: string;
+    email_id: string;
+    email_subject: string | null;
+    email_date: string | null;
+    email_from: string | null;
+    code: string | null;
+    pin: string | null;
+    redemption_url: string | null;
+    expiry_date: string | null;
+    status: "active" | "recovered" | "expired" | "ignored" | "canceled" | "kept" |null;
+    detected_at: string | null;
+    recovered_at: string | null;
+    cancel_url: string | null;
+    cancel_instructions: Array<string> | null;
+    email_body_snippet: string | null;
+    logo_url: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    // Risk protection fields
+    risk_level: RiskLevel | null;
+    is_verified: boolean | null;
+    warning_message: string | null;
+};
+
+export interface ValueRecoveryQueryResult {
+    plan: "free" | "pro";
+    blurred: boolean;
+    previewOnly: boolean;
+    previewCount: number | null;
+    totalValue: number | null;
+    recoveredValue: number | null;
+    totalCount: number;
+    recoveredCount: number;
+    values: FoundValue[];
+}
 import { UserService, Service, DeletionRequest, UserBreach, Breach, ServiceDeletionPlaybook, Plan, DeletionMethod } from "./types";
 
 

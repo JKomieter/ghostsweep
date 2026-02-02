@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import AccountSelect from "./account_select";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 
 type LatestSweep = {
@@ -136,6 +136,34 @@ export default function SweepDialog({
                 </p>
               )}
               <p className="text-white/50">The sweep runs in the background and typically takes 3-5 minutes. You&apos;ll be notified when it completes.</p>
+              
+              {/* Scan Depth Indicator - Value Discovery */}
+              <div className={`rounded-lg border p-3 ${planIsFree ? 'border-white/10 bg-white/5' : 'border-emerald-500/30 bg-emerald-500/10'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className={`h-4 w-4 ${planIsFree ? 'text-white/50' : 'text-emerald-400'}`} />
+                  <span className={`text-xs font-semibold uppercase tracking-wider ${planIsFree ? 'text-white/50' : 'text-emerald-400'}`}>
+                    Value Discovery Depth
+                  </span>
+                </div>
+                {planIsFree ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-white/70">
+                      <span className="font-medium text-white">Quick Scan:</span> Last 2 years of subscriptions & trials
+                    </p>
+                    <div className="flex items-center gap-2 pt-1 border-t border-white/10">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                      <p className="text-xs text-amber-300">
+                        Upgrade to Pro for <span className="font-semibold">5 years</span> of value recovery
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-white/80">
+                    <span className="font-medium text-emerald-300">Deep Audit:</span> 5 years of subscriptions, trials & hidden charges
+                  </p>
+                )}
+              </div>
+              
               {planIsFree && (
                 <p className="text-xs text-yellow-200/80 border-l-2 border-yellow-500/30 pl-3">Free plan: Up to 10 accounts shown.</p>
               )}
@@ -170,22 +198,52 @@ export default function SweepDialog({
                   </div>
                 </>
               ) : (
-                <div>
-                  <p className="text-xs font-medium text-cyan-300 mb-2">Connect more accounts:</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Link href="/api/google/oauth/start" onClick={onStartConnectAction}>
-                      <Button size="sm" variant="outline" disabled={isConnecting} className="inline-flex items-center gap-1.5 border-white/20 text-xs">
-                        <GmailLogo className="h-3.5 w-3.5" />
-                        {isConnecting ? "Connecting..." : "Add Gmail"}
-                      </Button>
-                    </Link>
-                    <Link href="/api/microsoft/oauth" onClick={onStartConnectAction}>
-                      <Button size="sm" variant="outline" disabled={isConnecting} className="inline-flex items-center gap-1.5 border-white/20 text-xs">
-                        <OutLookLogo className="h-3.5 w-3.5" />
-                        {isConnecting ? "Connecting..." : "Add Outlook"}
-                      </Button>
-                    </Link>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs font-medium text-cyan-300 mb-2">Connect more accounts:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Link href="/api/google/oauth/start" onClick={onStartConnectAction}>
+                        <Button size="sm" variant="outline" disabled={isConnecting} className="inline-flex items-center gap-1.5 border-white/20 text-xs">
+                          <GmailLogo className="h-3.5 w-3.5" />
+                          {isConnecting ? "Connecting..." : "Add Gmail"}
+                        </Button>
+                      </Link>
+                      <Link href="/api/microsoft/oauth" onClick={onStartConnectAction}>
+                        <Button size="sm" variant="outline" disabled={isConnecting} className="inline-flex items-center gap-1.5 border-white/20 text-xs">
+                          <OutLookLogo className="h-3.5 w-3.5" />
+                          {isConnecting ? "Connecting..." : "Add Outlook"}
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
+                  
+                  {/* Reconnect existing accounts */}
+                  {(gmailAccounts.length > 0 || microsoftAccounts.length > 0) && (
+                    <div className="pt-3 border-t border-white/10">
+                      <p className="text-xs font-medium text-white/50 mb-2 flex items-center gap-1.5">
+                        <RefreshCw className="h-3 w-3" />
+                        Reconnect an account (if token expired):
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {gmailAccounts.map(acc => (
+                          <Link key={acc.id} href="/api/google/oauth/start" onClick={onStartConnectAction}>
+                            <Button size="sm" variant="ghost" disabled={isConnecting} className="h-7 text-[10px] text-white/60 hover:text-white hover:bg-white/10 gap-1">
+                              <RefreshCw className="h-3 w-3" />
+                              {acc.gmail_address.split('@')[0]}@...
+                            </Button>
+                          </Link>
+                        ))}
+                        {microsoftAccounts.map(acc => (
+                          <Link key={acc.id} href="/api/microsoft/oauth" onClick={onStartConnectAction}>
+                            <Button size="sm" variant="ghost" disabled={isConnecting} className="h-7 text-[10px] text-white/60 hover:text-white hover:bg-white/10 gap-1">
+                              <RefreshCw className="h-3 w-3" />
+                              {acc.outlook_address.split('@')[0]}@...
+                            </Button>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
