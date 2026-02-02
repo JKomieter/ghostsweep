@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
     ArrowRight,
     CheckCircle,
@@ -20,7 +21,8 @@ import {
     Fingerprint,
     MapPin,
     TrendingUp,
-    Users
+    Users,
+    Linkedin
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -864,6 +866,58 @@ function FAQSection() {
     );
 }
 
+function FounderSection() {
+    return (
+        <section className="py-24 border-t border-white/5" id="founder">
+            <div className="container mx-auto px-4">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                        {/* Photo */}
+                        <div className="relative flex-shrink-0">
+                            <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10">
+                                <Image
+                                    src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg"
+                                    alt="Joel Komieter - Founder of GhostSweep"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                            </div>
+                            {/* Verified Founder Badge */}
+                            <a
+                                href="https://www.linkedin.com/in/joelkomieter"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="absolute -bottom-3 -right-3 flex items-center gap-1.5 rounded-full bg-[#0A66C2] px-3 py-1.5 text-xs font-medium text-white shadow-lg hover:bg-[#004182] transition-colors"
+                            >
+                                <Linkedin className="h-3.5 w-3.5" />
+                                <span>Verified Founder</span>
+                            </a>
+                        </div>
+
+                        {/* Quote */}
+                        <div className="flex-1 text-center md:text-left">
+                            <div className="mb-4">
+                                <span className="text-5xl text-emerald-400/60 font-serif leading-none">"</span>
+                            </div>
+                            <blockquote className="text-xl md:text-2xl font-light text-white/90 leading-relaxed mb-6">
+                                I built GhostSweep because I was tired of companies treating our inboxes like a gold mine for their profit. I wanted a tool that actually works for the user. I'm an engineer, a privacy advocate, and I'm here to make sure your data stays yours.
+                            </blockquote>
+                            <div className="flex items-center justify-center md:justify-start gap-3">
+                                <div>
+                                    <p className="font-medium text-white">Joel Komieter</p>
+                                    <p className="text-sm text-white/50">Founder & Engineer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
 export default function HomePage() {
     return (
         <main className="min-h-screen bg-[#050505] selection:bg-emerald-500/30">
@@ -922,6 +976,7 @@ export default function HomePage() {
                 <GhostEngineSection />
                 <PricingSection />
                 <FAQSection />
+                <FounderSection />
 
                 {/* Footer Section */}
                 <footer className="border-t border-white/5 pt-12 pb-12 bg-black/40">
