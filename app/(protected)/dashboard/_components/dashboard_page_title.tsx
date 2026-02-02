@@ -315,7 +315,7 @@ export default function DashboardTitle() {
         }
 
         toast.info("Starting your GhostSweep in the background…", {
-            description: "Processing your inbox. This typically takes 2-5 minutes depending on your email volume. You can close this window and we'll keep working.",
+            description: "Processing your inbox. This typically takes 10-20 minutes depending on your email volume. You can close this window and we'll keep working.",
         });
 
         try {
