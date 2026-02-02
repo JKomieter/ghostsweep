@@ -64,7 +64,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 interval: "monthly" as BillingInterval,
                 subline: "Perfect for a one-time savings extraction and inbox audit.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
-                priceId: "price_1SVNdMK2SUgcYUhjVOPOghzk",
+                priceId: "price_1SwHKrK2SUgcYUhjU6WHuXUn",
             }
             : {
                 label: "Savings Pro — Yearly",

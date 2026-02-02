@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server"
 import Stripe from "stripe"
 import stripe from "@/lib/stripe"
 
-const MONTHLY_PRICE_ID = "price_1SVNdMK2SUgcYUhjVOPOghzk"
+const MONTHLY_PRICE_ID = "price_1SwHKrK2SUgcYUhjU6WHuXUn"
 
 function getNextMonthDate(): string {
   const now = new Date()

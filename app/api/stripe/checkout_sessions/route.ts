@@ -109,9 +109,6 @@ export async function POST(req: NextRequest) {
                 supabase_user_id: user.id,
                 price_id,
             },
-            subscription_data: {
-                trial_period_days: 1,
-            },
         });
 
         if (!session.url) {
