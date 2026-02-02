@@ -75,7 +75,7 @@ function AccountsPageContent() {
         refetchOnWindowFocus: false,
         enabled: activeTab === "deletions",
     });
-
+    
     const isLoading = accountsStatus === "pending" || deletionRequestsStatus === "pending";
 
     return (

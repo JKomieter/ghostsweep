@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import {
     Table,
     TableBody,
@@ -15,10 +16,20 @@ import { formatDate } from "@/utils/format_date";
 
 interface DeletionRequest {
     id: string;
-    service_name: string;
     status: string;
     sent_at: string | null;
     updated_at: string;
+    user_service: {
+        id: string;
+        service: {
+            id: string;
+            name: string;
+            domain: string;
+            category: string | null;
+            logo_url: string | null;
+            is_breached: boolean | null;
+        };
+    } | null;
 }
 
 interface DeletionRequestsTableProps {
@@ -83,7 +94,19 @@ export default function DeletionRequestsTable({
                                     className="border-white/10 hover:bg-white/2"
                                 >
                                     <TableCell className="font-medium text-white">
-                                        {request.service_name}
+                                        <div className="flex items-center gap-2">
+                                            {request.user_service?.service?.logo_url && (
+                                                <Image 
+                                                    src={request.user_service.service.logo_url} 
+                                                    alt="" 
+                                                    width={20}
+                                                    height={20}
+                                                    className="h-5 w-5 rounded"
+                                                    unoptimized
+                                                />
+                                            )}
+                                            <span>{request.user_service?.service?.name || "Unknown Service"}</span>
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         {getStatusBadge(request.status)}
