@@ -115,7 +115,7 @@ export default function StartScanOnboardingDialog() {
                         >
                             Not now
                         </Button>
-                        <Link href="/api/google/oauth/start" className="w-auto">
+                        <a href="/api/google/oauth/start" className="w-auto">
                             <Button
                                 className="bg-white text-black hover:bg-zinc-100 w-full"
                                 onClick={() => setIsConnecting(true)}
@@ -132,7 +132,7 @@ export default function StartScanOnboardingDialog() {
                                     </span>
                                 )}
                             </Button>
-                        </Link>
+                        </a>
                     </div>
 
                     {/* Small footer help */}

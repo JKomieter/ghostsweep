@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Mail, RefreshCw, Unplug, Loader2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 import { toast } from "sonner";
 
 export default function ConnectEmailModal({
@@ -225,7 +224,7 @@ export default function ConnectEmailModal({
                         {/* Actions */}
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex flex-wrap gap-2">
-                                <Link href="/api/google/oauth/start">
+                                <a href="/api/google/oauth/start">
                                     <Button
                                         size="sm"
                                         disabled={loading || removing}
@@ -234,9 +233,9 @@ export default function ConnectEmailModal({
                                         <RefreshCw className="h-4 w-4" />
                                         {gmailAccounts.length > 0 ? "Add" : "Connect"} Gmail
                                     </Button>
-                                </Link>
+                                </a>
 
-                                <Link href="/api/microsoft/oauth">
+                                <a href="/api/microsoft/oauth">
                                     <Button
                                         size="sm"
                                         disabled={loading || removing}
@@ -245,7 +244,7 @@ export default function ConnectEmailModal({
                                         <RefreshCw className="h-4 w-4" />
                                         {microsoftAccounts.length > 0 ? "Add" : "Connect"} Outlook
                                     </Button>
-                                </Link>
+                                </a>
                             </div>
 
                             <Button

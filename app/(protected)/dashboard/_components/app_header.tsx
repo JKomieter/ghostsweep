@@ -152,7 +152,7 @@ export default function Header() {
                         <div className="flex items-center gap-2">
                             {data?.current_plan !== "pro" && (
                                 <Link href="/dashboard/billing">
-                                    <Button variant={"default"} size="sm" className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
+                                    <Button variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
                                         <Sparkles className="h-3.5 w-3.5" />
                                         Upgrade
                                     </Button>
@@ -170,18 +170,18 @@ export default function Header() {
                                 <DropdownMenuContent align="end" className="w-48">
                                     <DropdownMenuLabel className="text-xs text-muted-foreground">Connect Email Account</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <Link href="/api/google/oauth/start">
+                                    <a href="/api/google/oauth/start">
                                         <DropdownMenuItem className="cursor-pointer">
                                             <GmailLogo className="mr-2 h-4 w-4" />
                                             Add Gmail
                                         </DropdownMenuItem>
-                                    </Link>
-                                    <Link href="/api/microsoft/oauth">
+                                    </a>
+                                    <a href="/api/microsoft/oauth">
                                         <DropdownMenuItem className="cursor-pointer">
                                             <OutLookLogo className="mr-2 h-4 w-4" />
                                             Add Outlook
                                         </DropdownMenuItem>
-                                    </Link>
+                                    </a>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             

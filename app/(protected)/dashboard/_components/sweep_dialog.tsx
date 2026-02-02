@@ -3,7 +3,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import AccountSelect from "./account_select";
-import Link from "next/link";
 import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 
@@ -202,18 +201,18 @@ export default function SweepDialog({
                   <div>
                     <p className="text-xs font-medium text-cyan-300 mb-2">Connect more accounts:</p>
                     <div className="flex flex-wrap gap-2">
-                      <Link href="/api/google/oauth/start" onClick={onStartConnectAction}>
+                      <a href="/api/google/oauth/start" onClick={onStartConnectAction}>
                         <Button size="sm" variant="outline" disabled={isConnecting} className="inline-flex items-center gap-1.5 border-white/20 text-xs">
                           <GmailLogo className="h-3.5 w-3.5" />
                           {isConnecting ? "Connecting..." : "Add Gmail"}
                         </Button>
-                      </Link>
-                      <Link href="/api/microsoft/oauth" onClick={onStartConnectAction}>
+                      </a>
+                      <a href="/api/microsoft/oauth" onClick={onStartConnectAction}>
                         <Button size="sm" variant="outline" disabled={isConnecting} className="inline-flex items-center gap-1.5 border-white/20 text-xs">
                           <OutLookLogo className="h-3.5 w-3.5" />
                           {isConnecting ? "Connecting..." : "Add Outlook"}
                         </Button>
-                      </Link>
+                      </a>
                     </div>
                   </div>
                   
@@ -226,20 +225,20 @@ export default function SweepDialog({
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {gmailAccounts.map(acc => (
-                          <Link key={acc.id} href="/api/google/oauth/start" onClick={onStartConnectAction}>
+                          <a key={acc.id} href="/api/google/oauth/start" onClick={onStartConnectAction}>
                             <Button size="sm" variant="ghost" disabled={isConnecting} className="h-7 text-[10px] text-white/60 hover:text-white hover:bg-white/10 gap-1">
                               <RefreshCw className="h-3 w-3" />
                               {acc.gmail_address.split('@')[0]}@...
                             </Button>
-                          </Link>
+                          </a>
                         ))}
                         {microsoftAccounts.map(acc => (
-                          <Link key={acc.id} href="/api/microsoft/oauth" onClick={onStartConnectAction}>
+                          <a key={acc.id} href="/api/microsoft/oauth" onClick={onStartConnectAction}>
                             <Button size="sm" variant="ghost" disabled={isConnecting} className="h-7 text-[10px] text-white/60 hover:text-white hover:bg-white/10 gap-1">
                               <RefreshCw className="h-3 w-3" />
                               {acc.outlook_address.split('@')[0]}@...
                             </Button>
-                          </Link>
+                          </a>
                         ))}
                       </div>
                     </div>
@@ -263,7 +262,7 @@ export default function SweepDialog({
                 </Button>
               ) : (
                 <div className="flex w-full flex-col-reverse gap-2 sm:w-auto sm:flex-row">
-                  <Link href="/api/google/oauth/start" onClick={onStartConnectAction}>
+                  <a href="/api/google/oauth/start" onClick={onStartConnectAction}>
                     <Button size="sm" disabled={isConnecting} className="w-full sm:w-auto min-w-[130px] bg-red-600 hover:bg-red-700 text-white inline-flex items-center gap-1.5">
                       {isConnecting ? (
                         <>
@@ -277,8 +276,8 @@ export default function SweepDialog({
                         </>
                       )}
                     </Button>
-                  </Link>
-                  <Link href="/api/microsoft/oauth" onClick={onStartConnectAction}>
+                  </a>
+                  <a href="/api/microsoft/oauth" onClick={onStartConnectAction}>
                     <Button size="sm" disabled={isConnecting} className="w-full sm:w-auto min-w-[130px] bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5">
                       {isConnecting ? (
                         <>
@@ -292,7 +291,7 @@ export default function SweepDialog({
                         </>
                       )}
                     </Button>
-                  </Link>
+                  </a>
                 </div>
               )}
             </>

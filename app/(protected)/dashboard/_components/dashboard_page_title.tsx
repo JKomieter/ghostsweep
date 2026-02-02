@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Loader2, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SweepDialog from "./sweep_dialog";
-import Link from "next/link";
 import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
 import { OutLookLogo, GmailLogo } from "@/svgs";
@@ -532,20 +531,20 @@ export default function DashboardTitle() {
                     </div>
                     <div className="flex gap-2 ml-8 sm:ml-0">
                         {gmailData?.accounts && gmailData.accounts.length > 0 && (
-                            <Link href="/api/google/oauth/start">
+                            <a href="/api/google/oauth/start">
                                 <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-100 hover:bg-amber-500/20 text-xs">
                                     <RefreshCw className="h-3.5 w-3.5" />
                                     Reconnect Gmail
                                 </Button>
-                            </Link>
+                            </a>
                         )}
                         {microsoftData?.accounts && microsoftData.accounts.length > 0 && (
-                            <Link href="/api/microsoft/oauth">
+                            <a href="/api/microsoft/oauth">
                                 <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-100 hover:bg-amber-500/20 text-xs">
                                     <RefreshCw className="h-3.5 w-3.5" />
                                     Reconnect Outlook
                                 </Button>
-                            </Link>
+                            </a>
                         )}
                     </div>
                 </div>
