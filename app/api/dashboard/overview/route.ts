@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
     .select("amount")
     .eq("user_id", user.id)
     .eq("status", "active");
-  const totalValue = valueRows?.reduce((sum, row) => sum + Number(row.amount), 0) || 0;
+  // Convert from cents to dollars
+  const totalValue = (valueRows?.reduce((sum, row) => sum + Number(row.amount), 0) || 0) / 100;
 
   // Active subscriptions
   const { data: subRows } = await supabase
@@ -30,7 +31,8 @@ export async function GET(req: NextRequest) {
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "active");
-  const totalSubs = subRows?.reduce((sum, row) => sum + Number(row.amount), 0) || 0;
+  // Convert from cents to dollars
+  const totalSubs = (subRows?.reduce((sum, row) => sum + Number(row.amount), 0) || 0) / 100;
 
   // Newsletters count (include both spam and newsletter category services)
   const { data: allUserServices } = await supabase

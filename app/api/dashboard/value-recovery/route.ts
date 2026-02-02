@@ -59,8 +59,9 @@ export async function GET(req: NextRequest) {
     .in("type", ["gift_card", "coupon", "rewards", "refund"])
     .eq("status", "recovered");
 
-  const totalValue = (values || []).reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
-  const recoveredValue = (values || []).filter(v => v.status === "recovered").reduce((sum, v) => sum + (Number(v.amount) || 0), 0);
+  // Convert from cents to dollars
+  const totalValue = (values || []).reduce((sum, v) => sum + (Number(v.amount) || 0), 0) / 100;
+  const recoveredValue = (values || []).filter(v => v.status === "recovered").reduce((sum, v) => sum + (Number(v.amount) || 0), 0) / 100;
 
   // Free tier: blur codes, block copy, block links, limit data returned
   const isFree = plan === "free";
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest) {
   const allValues = values || [];
   const valuesToReturn = isFree ? allValues.slice(0, PREVIEW_LIMIT) : allValues;
   
-  // For free users, blur value details
+  // For free users, blur value details; for all users, convert amount from cents to dollars
   const processedValues = valuesToReturn.map(val => {
     if (isFree) {
       return {
@@ -88,6 +89,7 @@ export async function GET(req: NextRequest) {
     }
     return {
       ...val,
+      amount: Number(val.amount) / 100, // Convert from cents to dollars
       // Ensure risk fields are always present
       risk_level: val.risk_level || "unknown",
       is_verified: val.is_verified ?? false,

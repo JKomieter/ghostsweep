@@ -98,9 +98,10 @@ export async function GET(req: NextRequest) {
     .eq("type", "subscription")
     .eq("status", "active");
 
+  // Convert from cents to dollars
   const monthlyTotal = (activeSubscriptions || []).reduce((sum, sub) => {
     return sum + getMonthlyAmount(sub.amount, sub.billing_frequency || "monthly");
-  }, 0);
+  }, 0) / 100;
 
   const annualTotal = monthlyTotal * 12;
 
@@ -112,6 +113,7 @@ export async function GET(req: NextRequest) {
     .eq("type", "subscription")
     .eq("status", "canceled");
 
+  // Convert from cents to dollars
   const lifetimeSavings = (canceledSubs || []).reduce((sum, sub) => {
     const monthlySaving = getMonthlyAmount(sub.amount, sub.billing_frequency || "monthly");
     // Estimate savings based on when they canceled (assume they've saved for at least 1 month)
@@ -119,7 +121,7 @@ export async function GET(req: NextRequest) {
       Math.max(1, Math.floor((Date.now() - new Date(sub.recovered_at).getTime()) / (1000 * 60 * 60 * 24 * 30))) : 
       1;
     return sum + (monthlySaving * monthsSaved);
-  }, 0);
+  }, 0) / 100;
 
   // Free tier: blur service names and amounts, limit data returned
   const isFree = plan === "free";
@@ -129,7 +131,7 @@ export async function GET(req: NextRequest) {
   const allSubs = subscriptions || [];
   const subsToReturn = isFree ? allSubs.slice(0, PREVIEW_LIMIT) : allSubs;
   
-  // For free users, blur subscription details
+  // For free users, blur subscription details; for all users, convert amount from cents to dollars
   const processedSubs = subsToReturn.map(sub => {
     if (isFree) {
       return {
@@ -140,7 +142,10 @@ export async function GET(req: NextRequest) {
         cancellation_url: null, // Can't cancel without paying
       };
     }
-    return sub;
+    return {
+      ...sub,
+      amount: Number(sub.amount) / 100, // Convert from cents to dollars
+    };
   });
 
   return NextResponse.json({
