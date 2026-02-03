@@ -12,7 +12,7 @@ export async function GET() {
     client_id: process.env.MICROSOFT_CLIENT_ID!,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: 'email User.Read Mail.ReadBasic openid profile',
+    scope: 'email User.Read Mail.ReadBasic openid profile offline_access',
     response_mode: 'query',
   });
 

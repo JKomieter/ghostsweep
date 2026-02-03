@@ -28,10 +28,10 @@ export async function GET() {
         const state = crypto.randomBytes(32).toString("hex");
     
         const url = oauth2Client.generateAuthUrl({
-            access_type: "online",
-            prompt: "consent",
-            scope: [
-                "openid",
+        access_type: "offline",
+        prompt: "consent",
+        scope: [
+            "openid",
                 "https://www.googleapis.com/auth/userinfo.email",
 
                 // Gmail permissions
