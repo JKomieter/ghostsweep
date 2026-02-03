@@ -28,7 +28,7 @@ export async function GET() {
         const state = crypto.randomBytes(32).toString("hex");
     
         const url = oauth2Client.generateAuthUrl({
-            access_type: "offline",
+            access_type: "online",
             prompt: "consent",
             scope: [
                 "openid",

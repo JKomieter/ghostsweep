@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
 
         // encrypt tokens.access_token and tokens.refresh_token before storing
         const accessTokenEnc = encryptToken(tokens.access_token);
-        const refreshTokenEnc = encryptToken(tokens.refresh_token);
+        const refreshTokenEnc = tokens.refresh_token ? encryptToken(tokens.refresh_token) : "";
         const email = microsoftUser.mail || microsoftUser.userPrincipalName;
         const displayName = microsoftUser.displayName;
 
@@ -101,17 +101,23 @@ export async function GET(req: NextRequest) {
             // Account exists - check if it belongs to this user
             if (existingAccount.user_id === user.id) {
                 // Update tokens for the same user
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const updateData: any = {
+                    access_token_encrypted: accessTokenEnc,
+                    token_expires_at: tokens.expires_in
+                        ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
+                        : new Date().toISOString(),
+                    display_name: displayName,
+                    microsoft_user_id: microsoftUser.id,
+                };
+
+                if (refreshTokenEnc) {
+                    updateData.refresh_token_encrypted = refreshTokenEnc;
+                }
+
                 const { error: updateError } = await supabase
                     .from('microsoft_accounts')
-                    .update({
-                        access_token_encrypted: accessTokenEnc,
-                        refresh_token_encrypted: refreshTokenEnc,
-                        token_expires_at: tokens.expires_in
-                            ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
-                            : new Date().toISOString(),
-                        display_name: displayName,
-                        microsoft_user_id: microsoftUser.id,
-                    })
+                    .update(updateData)
                     .eq('outlook_address', email);
                 error = updateError;
             } else {
@@ -128,7 +134,7 @@ export async function GET(req: NextRequest) {
                 user_id: user.id,
                 outlook_address: email,
                 access_token_encrypted: accessTokenEnc,
-                refresh_token_encrypted: refreshTokenEnc,
+                refresh_token_encrypted: refreshTokenEnc, // Can be empty string now
                 token_expires_at: tokens.expires_in
                     ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
                     : new Date().toISOString(),

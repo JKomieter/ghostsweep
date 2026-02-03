@@ -97,15 +97,7 @@ export async function GET(request: NextRequest) {
             }
         } else {
             // New account - insert it
-            // For new accounts, we MUST have a refresh token
-            if (!refreshTokenEnc) {
-                console.error("No refresh token received for new Gmail connection - this shouldn't happen");
-                const url = request.nextUrl.clone();
-                url.pathname = '/dashboard';
-                url.searchParams.set('google_oauth_error', '1');
-                return NextResponse.redirect(url);
-            }
-            
+            // We might not get a refresh token if access_type is online, which is fine for transient scans
             const { error: insertError } = await supabase
                 .from("gmail_accounts")
                 .insert({

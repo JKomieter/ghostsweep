@@ -33,7 +33,7 @@ const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "GhostSweep | Stop Leaving Money in Your Inbox",
-    "description": "The average inbox holds $1,400 in forgotten coupons, unused gift cards, and expiring rewards. GhostSweep finds your hidden money automatically.",
+    "description": "The average inbox holds $285 in forgotten coupons, unused gift cards, and expiring rewards. GhostSweep finds your hidden money automatically.",
     "url": "https://ghostsweep.com/home",
     "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
     "publisher": {
@@ -56,7 +56,7 @@ const faqSchema = {
             "name": "How much money is hiding in my inbox?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "The average inbox holds $1,400 in forgotten value—unused digital gift cards, expiring rewards points, and overlooked coupons. GhostSweep scans and surfaces this hidden money automatically.",
+                "text": "The average inbox holds $285 in forgotten value—unused digital gift cards, expiring rewards points, and overlooked coupons. GhostSweep scans and surfaces this hidden money automatically.",
             },
         },
         {
@@ -92,9 +92,9 @@ function HeroDashboard() {
     const [accounts, setAccounts] = useState(0);
 
     useEffect(() => {
-        const timer1 = setTimeout(() => setValueFound(1465), 500);
-        const timer2 = setTimeout(() => setCoupons(23), 800);
-        const timer3 = setTimeout(() => setAccounts(89), 1100);
+        const timer1 = setTimeout(() => setValueFound(285), 500);
+        const timer2 = setTimeout(() => setCoupons(8), 800);
+        const timer3 = setTimeout(() => setAccounts(37), 1100);
         return () => {
             clearTimeout(timer1);
             clearTimeout(timer2);
@@ -104,7 +104,7 @@ function HeroDashboard() {
 
     return (
         <div className="relative mx-auto max-w-4xl rounded-xl border border-white/10 bg-black/40 p-1 backdrop-blur-xl shadow-2xl">
-            <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 blur opacity-50" />
+            <div className="absolute -inset-1 rounded-xl bg-linear-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 blur opacity-50" />
             <div className="relative rounded-lg bg-[#0A0A0A] p-6 sm:p-8">
                 <div className="flex items-center justify-between border-b border-white/5 pb-6 mb-6">
                     <div className="flex items-center gap-3">
@@ -156,7 +156,7 @@ function HeroDashboard() {
                             {accounts}
                         </div>
                         <p className="mt-2 text-xs text-white/40">
-                            Old accounts to delete
+                            Accounts & newsletters to purge
                         </p>
                     </div>
                 </div>
@@ -336,7 +336,7 @@ function HowItWorksSection() {
                 
                 <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                     {/* Step 1 */}
-                    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+                    <div className="relative p-6 rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-transparent">
                         <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
                             1
                         </div>
@@ -352,7 +352,7 @@ function HowItWorksSection() {
                     </div>
                     
                     {/* Step 2 */}
-                    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+                    <div className="relative p-6 rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-transparent">
                         <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
                             2
                         </div>
@@ -368,7 +368,7 @@ function HowItWorksSection() {
                     </div>
                     
                     {/* Step 3 */}
-                    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+                    <div className="relative p-6 rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-transparent">
                         <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
                             3
                         </div>
@@ -468,7 +468,7 @@ function ShadowMapPreview() {
                     {/* Interactive Map Preview */}
                     <div className="flex-1 w-full">
                         <div className="relative rounded-xl border border-white/10 bg-black/60 p-4 aspect-square max-w-md mx-auto overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-emerald-500/5" />
+                            <div className="absolute inset-0 bg-linear-to-br from-purple-500/5 via-transparent to-emerald-500/5" />
                             
                             {/* Grid lines */}
                             <div className="absolute inset-4 opacity-10">
@@ -550,12 +550,12 @@ function ShadowMapPreview() {
 function TrinitySection() {
     return (
         <section className="py-24 relative overflow-hidden">
-            <div className="absolute inset-0 bg-white/[0.02]" />
+            <div className="absolute inset-0 bg-white/2" />
             <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-400 mb-6">
                         <DollarSign className="h-3 w-3" />
-                        <span>The Hidden $1,400</span>
+                        <span>The Hidden $285</span>
                     </div>
                     <h2 className="text-3xl font-light text-white">Stop Leaving Money in Your Inbox</h2>
                     <p className="mt-4 text-white/60">
@@ -574,7 +574,7 @@ function TrinitySection() {
                             "Stop leaving money in your inbox. We find the 10% off you missed."
                         </p>
                         <p className="text-white/40 text-xs mb-6">
-                            Frequent coupon users save $1,465 annually—about 4% of a typical household budget. Join the 28% who save $10-25 monthly.
+                            Frequent coupon users save $285 annually—unused money that adds up. Join the 28% who save $5-15 monthly.
                         </p>
                         <ul className="space-y-2 text-sm text-white/70">
                             <li className="flex items-center gap-2">
@@ -617,9 +617,9 @@ function TrinitySection() {
                         <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center mb-6 text-purple-400">
                             <Ghost className="h-6 w-6" />
                         </div>
-                        <h3 className="text-xl text-white mb-3">Digital Footprint Audit</h3>
+                        <h3 className="text-xl text-white mb-3">Digital Cleanup & Unsubscribe</h3>
                         <p className="text-white/50 text-sm leading-relaxed mb-4">
-                            "Kill the zombie subscriptions draining $200 from your bank account."
+                            "Kill zombie subscriptions and mass-unsubscribe from junk newsletters."
                         </p>
                         <p className="text-white/40 text-xs mb-6">
                             Shrink your digital footprint. Old accounts are data-leak risks and forgotten subscriptions are silent budget killers.
@@ -631,7 +631,7 @@ function TrinitySection() {
                             </li>
                             <li className="flex items-center gap-2">
                                 <CheckCircle className="h-4 w-4 text-purple-500/50" />
-                                <span>Breach monitoring</span>
+                                <span>Bulk newsletter unsubscribe</span>
                             </li>
                         </ul>
                     </div>
@@ -702,7 +702,7 @@ function GhostEngineSection() {
                     </div>
 
                     <div className="flex-1 w-full relative">
-                        <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 to-purple-500/20 opacity-30 blur-2xl rounded-full" />
+                        <div className="absolute -inset-4 bg-linear-to-r from-emerald-500/20 to-purple-500/20 opacity-30 blur-2xl rounded-full" />
                         <div className="relative rounded-xl border border-white/10 bg-black/80 overflow-hidden shadow-2xl">
                            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3 bg-white/5">
                                 <div className="h-2.5 w-2.5 rounded-full bg-red-500/20" />
@@ -732,6 +732,10 @@ function GhostEngineSection() {
                                     <DollarSign className="h-3 w-3" />
                                     <span>FOUND: Amazon refund pending ($34.99)</span>
                                 </div>
+                                <div className="flex items-center gap-2 text-purple-400/80 pl-5">
+                                    <Ghost className="h-3 w-3" />
+                                    <span>ACTION: Unsubscribed from 12 junk lists</span>
+                                </div>
                                 <div className="animate-pulse text-white/30 pl-5 pt-2">
                                     &gt; Raw email data purged. Only savings retained.
                                 </div>
@@ -750,7 +754,7 @@ function PricingSection() {
             <div className="text-center max-w-2xl mx-auto mb-16">
                 <h2 className="text-3xl font-light text-white">The Scan That Pays For Itself</h2>
                 <p className="mt-4 text-white/60">
-                    Most users find enough hidden value in the first scan to cover years of GhostSweep. Join the 28% who save $10-25 monthly.
+                    Most users find enough hidden value in the first scan to cover years of GhostSweep. Join the 28% who save $5-15 monthly.
                 </p>
             </div>
 
@@ -778,6 +782,10 @@ function PricingSection() {
                             <Check className="h-4 w-4 text-white" />
                             <span>Account Deletion Engine</span>
                         </li>
+                        <li className="flex items-center gap-3 text-sm text-white/70">
+                            <Check className="h-4 w-4 text-white" />
+                            <span>Bulk Newsletter Unsubscribe</span>
+                        </li>
                     </ul>
                     <Link
                         href="/login?plan=monthly"
@@ -790,7 +798,7 @@ function PricingSection() {
                 {/* Annual */}
                 <div className="relative rounded-2xl border border-emerald-500/30 bg-white/5 p-8 flex flex-col shadow-2xl shadow-emerald-900/20">
                     <div className="absolute -top-3 right-8 rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-bold text-black uppercase tracking-wide">
-                        Avg. $122/mo Found
+                        Avg. $24/mo Found
                     </div>
                     <div className="mb-4 text-lg text-emerald-400 font-medium">Savings Pro</div>
                    <div className="flex items-baseline gap-1 mb-6">
@@ -833,7 +841,7 @@ function FAQSection() {
     const faqs = [
         {
             q: "How much money is hiding in my inbox?",
-            a: "Research shows the average inbox holds $1,400+ in forgotten value—unused digital gift cards, expiring rewards points (Fetch, Lowe's Pro, etc.), and overlooked coupons. Frequent coupon users save $1,465 annually. GhostSweep surfaces all of it automatically.",
+            a: "Research shows the average inbox holds $285+ in forgotten value—unused digital gift cards, expiring rewards points (Fetch, Lowe's Pro, etc.), and overlooked coupons. Frequent coupon users save $300 annually. GhostSweep surfaces all of it automatically.",
         },
         {
             q: "Is GhostSweep safe to use?",
@@ -873,7 +881,7 @@ function FounderSection() {
                 <div className="max-w-4xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
                         {/* Photo */}
-                        <div className="relative flex-shrink-0">
+                        <div className="relative shrink-0">
                             <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-emerald-500/10">
                                 <Image
                                     src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg"
@@ -882,7 +890,7 @@ function FounderSection() {
                                     className="object-cover"
                                     priority
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent" />
                             </div>
                             {/* Verified Founder Badge */}
                             <a
@@ -918,6 +926,30 @@ function FounderSection() {
     );
 }
 
+function SecuritySandbox() {
+    return (
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 text-sm text-white/60">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                    <EyeOff className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>We never store your email bodies</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Access revoked automatically</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                    <Lock className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Transient RAM-only scanning</span>
+                </div>
+            </div>
+            <p className="text-xs text-white/30 mt-2">
+                Your data never leaves our secure sandbox environment.
+            </p>
+        </div>
+    );
+}
+
 export default function HomePage() {
     return (
         <main className="min-h-screen bg-[#050505] selection:bg-emerald-500/30">
@@ -934,22 +966,22 @@ export default function HomePage() {
             <div className="relative isolate overflow-hidden">
                 {/* Background Effects */}
                 <div className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-                    <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#10b981] to-[#047857] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
+                    <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-[#10b981] to-[#047857] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
                 </div>
 
                 <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
                     <div className="mx-auto max-w-4xl text-center">
                         <div className="mb-8 flex justify-center">
                             <div className="rounded-full px-3 py-1 text-sm leading-6 text-emerald-400 ring-1 ring-white/10 hover:ring-white/20 bg-white/5">
-                                Your inbox holds $1,400 in hidden value
+                                Your inbox holds $285 in hidden value
                             </div>
                         </div>
 
                         <h1 className="mt-10 text-4xl font-light tracking-tight text-white sm:text-6xl mb-6">
-                            Stop Leaving <span className="text-emerald-400 font-normal">Money</span> in Your Inbox.
+                            Your Inbox Has a <span className="text-emerald-400 font-normal">Digital Shadow</span>.
                         </h1>
                         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-400">
-                            The average inbox holds $1,400 in forgotten coupons, unused gift cards, and expiring rewards. GhostSweep is your private digital scavenger—finding your hidden money without storing your emails.
+                            Every sign-up, every receipt, every forgotten account. GhostSweep maps your digital footprint—finding the money you lost and the accounts you need to delete.
                         </p>
                         
                         <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -960,11 +992,15 @@ export default function HomePage() {
                                 Start Free Scan
                                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </Link>
-
                         </div>
+                        
+                        <SecuritySandbox />
                         
                          <div className="mt-16">
                             <HeroDashboard />
+                            <p className="mt-6 text-xs text-white/30 animate-pulse">
+                                👇 Live global recoveries happening now
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -1008,7 +1044,7 @@ export default function HomePage() {
             
             {/* Sticky Mobile CTA */}
             <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-                <div className="bg-gradient-to-t from-black via-black/95 to-transparent pt-6 pb-4 px-4">
+                <div className="bg-linear-to-t from-black via-black/95 to-transparent pt-6 pb-4 px-4">
                     <Link
                         href="/login"
                         className="flex items-center justify-center gap-2 w-full rounded-full bg-emerald-500 py-4 text-sm font-semibold text-black shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition"
