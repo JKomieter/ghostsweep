@@ -239,7 +239,7 @@ export default async function BlogPostPage(rawParams: PageParams) {
                     )}
 
                     {post.cover_image_url && (
-                        <div className="mt-3 overflow-hidden rounded-lg border border-white/5 h-64 w-full">
+                        <div className="mt-3 overflow-hidden rounded-lg border border-white/5 h-96 w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.cover_image_url}
