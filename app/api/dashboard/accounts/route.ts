@@ -334,7 +334,6 @@ export async function PATCH(req: NextRequest) {
         user_service_id: userService.id,
         status: "completed" as const,
         updated_at: now,
-        created_at: now,
         completed_at: now,
       }));
 
