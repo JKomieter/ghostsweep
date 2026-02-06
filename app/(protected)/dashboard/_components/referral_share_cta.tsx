@@ -34,14 +34,14 @@ export default function ReferralShareCta() {
     const isError = status === "error" || (status === "success" && !referralCode);
 
     const displayLink = isReady
-        ? `ghostsweep.com/signup?ref=${referralCode}`
-        : "ghostsweep.com/signup";
+        ? `ghostsweep.com/login?ref=${referralCode}`
+        : "ghostsweep.com/login";
     const shareLink = isReady
-        ? `https://ghostsweep.com/signup?ref=${referralCode}`
-        : "https://ghostsweep.com/signup";
+        ? `https://ghostsweep.com/login?ref=${referralCode}`
+        : "https://ghostsweep.com/login";
     const shareMessage = isReady
-        ? `Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. It found $140 in gift cards I missed. Use my link to get 50% off your first month: ghostsweep.com/signup?ref=${referralCode}`
-        : "Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use this link to get 50% off your first month: ghostsweep.com/signup";
+        ? `Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. It found $140 in gift cards I missed. Use my link to get 50% off your first month: ghostsweep.com/login?ref=${referralCode}`
+        : "Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use this link to get 50% off your first month: ghostsweep.com/login";
 
     const handleCopy = async () => {
         if (!isReady) {
