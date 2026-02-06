@@ -117,49 +117,82 @@ function HeroDashboard() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Value Card */}
-                    <div className="group rounded-lg bg-emerald-500/5 border border-emerald-500/10 p-6 transition hover:bg-emerald-500/10">
-                        <div className="flex items-center justify-between mb-4">
-                            <DollarSign className="h-5 w-5 text-emerald-400" />
-                            <span className="text-[10px] text-emerald-400/60 uppercase tracking-wider font-semibold">Hidden Value Found</span>
-                        </div>
-                        <div className="text-3xl font-light text-white transition-all duration-1000">
-                            ${valueFound.toLocaleString()}
-                        </div>
-                        <p className="mt-2 text-xs text-white/40">
-                            Gift cards, coupons & rewards
-                        </p>
-                    </div>
+                {(() => {
+                    const CountUp = ({
+                        value,
+                        duration = 900,
+                        formatter,
+                    }: {
+                        value: number;
+                        duration?: number;
+                        formatter?: (n: number) => string;
+                    }) => {
+                        const [display, setDisplay] = useState(0);
 
-                    {/* Coupons Card */}
-                    <div className="group rounded-lg bg-blue-500/5 border border-blue-500/10 p-6 transition hover:bg-blue-500/10">
-                        <div className="flex items-center justify-between mb-4">
-                            <Mail className="h-5 w-5 text-blue-400" />
-                            <span className="text-[10px] text-blue-400/60 uppercase tracking-wider font-semibold">Offers Clipped</span>
-                        </div>
-                        <div className="text-3xl font-light text-white transition-all duration-1000">
-                            {coupons}
-                        </div>
-                        <p className="mt-2 text-xs text-white/40">
-                            Coupons you almost missed
-                        </p>
-                    </div>
+                        useEffect(() => {
+                            let frameId = 0;
+                            const start = performance.now();
 
-                    {/* Accounts Card */}
-                    <div className="group rounded-lg bg-purple-500/5 border border-purple-500/10 p-6 transition hover:bg-purple-500/10">
-                        <div className="flex items-center justify-between mb-4">
-                            <Ghost className="h-5 w-5 text-purple-400" />
-                            <span className="text-[10px] text-purple-400/60 uppercase tracking-wider font-semibold">Data Leak Risks</span>
+                            const tick = (now: number) => {
+                                const progress = Math.min((now - start) / duration, 1);
+                                const next = Math.round(progress * value);
+                                setDisplay(next);
+                                if (progress < 1) frameId = requestAnimationFrame(tick);
+                            };
+
+                            frameId = requestAnimationFrame(tick);
+                            return () => cancelAnimationFrame(frameId);
+                        }, [value, duration]);
+
+                        return <span>{formatter ? formatter(display) : display.toLocaleString()}</span>;
+                    };
+
+                    return (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Value Card */}
+                            <div className="group rounded-lg bg-emerald-500/5 border border-emerald-500/10 p-6 transition hover:bg-emerald-500/10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <DollarSign className="h-5 w-5 text-emerald-400" />
+                                    <span className="text-[10px] text-emerald-400/60 uppercase tracking-wider font-semibold">Hidden Value Found</span>
+                                </div>
+                                <div className="text-3xl font-light text-white transition-all duration-1000 tabular-nums">
+                                    <CountUp value={valueFound} formatter={(n) => `$${n.toLocaleString()}`} />
+                                </div>
+                                <p className="mt-2 text-xs text-white/40">
+                                    Gift cards, coupons & rewards
+                                </p>
+                            </div>
+
+                            {/* Coupons Card */}
+                            <div className="group rounded-lg bg-blue-500/5 border border-blue-500/10 p-6 transition hover:bg-blue-500/10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <Mail className="h-5 w-5 text-blue-400" />
+                                    <span className="text-[10px] text-blue-400/60 uppercase tracking-wider font-semibold">Offers Clipped</span>
+                                </div>
+                                <div className="text-3xl font-light text-white transition-all duration-1000 tabular-nums">
+                                    <CountUp value={coupons} />
+                                </div>
+                                <p className="mt-2 text-xs text-white/40">
+                                    Coupons you almost missed
+                                </p>
+                            </div>
+
+                            {/* Accounts Card */}
+                            <div className="group rounded-lg bg-purple-500/5 border border-purple-500/10 p-6 transition hover:bg-purple-500/10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <Ghost className="h-5 w-5 text-purple-400" />
+                                    <span className="text-[10px] text-purple-400/60 uppercase tracking-wider font-semibold">Data Leak Risks</span>
+                                </div>
+                                <div className="text-3xl font-light text-white transition-all duration-1000 tabular-nums">
+                                    <CountUp value={accounts} />
+                                </div>
+                                <p className="mt-2 text-xs text-white/40">
+                                    Accounts & newsletters to purge
+                                </p>
+                            </div>
                         </div>
-                        <div className="text-3xl font-light text-white transition-all duration-1000">
-                            {accounts}
-                        </div>
-                        <p className="mt-2 text-xs text-white/40">
-                            Accounts & newsletters to purge
-                        </p>
-                    </div>
-                </div>
+                    );
+                })()}
 
                 <div className="mt-8 flex items-center justify-between text-xs text-white/30 font-mono">
                     <div className="flex items-center gap-2">
@@ -430,6 +463,14 @@ function ShadowMapPreview() {
             default: return "text-emerald-400 bg-emerald-500/20 border-emerald-500/30";
         }
     };
+
+    const seededRandom = (seed: number) => {
+        const x = Math.sin(seed) * 10000;
+        return x - Math.floor(x);
+    };
+
+    const getSeededValue = (seed: number, min: number, max: number) =>
+        min + seededRandom(seed) * (max - min);
     
     return (
         <section className="py-20 border-b border-white/5">
@@ -503,29 +544,68 @@ function ShadowMapPreview() {
                             </svg>
                             
                             {/* Nodes */}
-                            {nodes.map((node) => (
-                                <div
-                                    key={node.id}
-                                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 cursor-pointer
-                                        ${getRiskColor(node.risk)} border rounded-full flex items-center justify-center
-                                        ${hoveredNode === node.id ? 'scale-125 z-10' : 'hover:scale-110'}`}
-                                    style={{
-                                        left: `${node.x}%`,
-                                        top: `${node.y}%`,
-                                        width: node.size,
-                                        height: node.size,
-                                    }}
-                                    onMouseEnter={() => setHoveredNode(node.id)}
-                                    onMouseLeave={() => setHoveredNode(null)}
-                                >
-                                    {hoveredNode === node.id && (
-                                        <div className="absolute -top-8 whitespace-nowrap px-2 py-1 rounded bg-black/90 text-[10px] text-white border border-white/10">
-                                            {node.label}
+                            <>
+                                {nodes.map((node) => {
+                                    const floatX = getSeededValue(node.id * 13, -8, 8).toFixed(2);
+                                    const floatY = getSeededValue(node.id * 29, -8, 8).toFixed(2);
+                                    const duration = getSeededValue(node.id * 43, 4, 8).toFixed(2);
+                                    const delay = getSeededValue(node.id * 57, 0, 2).toFixed(2);
+
+                                    return (
+                                        <div
+                                            key={node.id}
+                                            className={`ghost-node absolute transition-all duration-300 cursor-pointer
+                                                ${getRiskColor(node.risk)} border rounded-full flex items-center justify-center
+                                                ${hoveredNode === node.id ? "hovered z-10" : ""}`}
+                                            style={{
+                                                left: `${node.x}%`,
+                                                top: `${node.y}%`,
+                                                width: node.size,
+                                                height: node.size,
+                                                animationDuration: `${duration}s`,
+                                                animationDelay: `${delay}s`,
+                                                "--float-x": `${floatX}px`,
+                                                "--float-y": `${floatY}px`,
+                                            } as React.CSSProperties}
+                                            onMouseEnter={() => setHoveredNode(node.id)}
+                                            onMouseLeave={() => setHoveredNode(null)}
+                                        >
+                                            {hoveredNode === node.id && (
+                                                <div className="absolute -top-8 whitespace-nowrap px-2 py-1 rounded bg-black/90 text-[10px] text-white border border-white/10">
+                                                    {node.label}
+                                                </div>
+                                            )}
+                                            <Ghost className="h-4 w-4" />
                                         </div>
-                                    )}
-                                    <Ghost className="h-4 w-4" />
-                                </div>
-                            ))}
+                                    );
+                                })}
+                                <style jsx>{`
+                                    .ghost-node {
+                                        --scale: 1;
+                                        transform: translate(-50%, -50%) translate(0, 0) scale(var(--scale));
+                                        animation-name: ghostFloat;
+                                        animation-iteration-count: infinite;
+                                        animation-timing-function: ease-in-out;
+                                        will-change: transform;
+                                    }
+                                    .ghost-node:hover {
+                                        --scale: 1.1;
+                                    }
+                                    .ghost-node.hovered {
+                                        --scale: 1.25;
+                                    }
+                                    @keyframes ghostFloat {
+                                        0%,
+                                        100% {
+                                            transform: translate(-50%, -50%) translate(0, 0) scale(var(--scale));
+                                        }
+                                        50% {
+                                            transform: translate(-50%, -50%) translate(var(--float-x), var(--float-y))
+                                                scale(var(--scale));
+                                        }
+                                    }
+                                `}</style>
+                            </>
                             
                             {/* Center "You" node */}
                             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
