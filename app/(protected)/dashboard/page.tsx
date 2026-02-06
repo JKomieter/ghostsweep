@@ -5,12 +5,14 @@ import DashboardUserServicesTable from "./_components/dashboard_user_services_ta
 import FreemiumUpgradeTeaser from "./_components/freemium_upgrade_teaser";
 import News from "./_components/news";
 import SummaryCards from "./_components/summary-cards";
+import ReferralShareCta from "./_components/referral_share_cta";
 
 export default function DashboardPage() {
     return (
         <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
             <div className="max-w-6xl mx-auto space-y-8">
                 <DashboardPageTitle />
+                <ReferralShareCta />
                 <FreemiumUpgradeTeaser />
                 <SummaryCards />
                 <DashboardUserServicesTable />

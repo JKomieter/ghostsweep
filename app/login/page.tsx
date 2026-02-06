@@ -302,6 +302,18 @@ function SignUpForm({
         e.preventDefault();
         setErrorMessage(null);
 
+        if (typeof window !== "undefined") {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const referralCode = params.get("ref");
+                if (referralCode) {
+                    localStorage.setItem("referral_code", referralCode);
+                }
+            } catch {
+                // Ignore localStorage/query parsing errors
+            }
+        }
+
         if (password !== confirmPassword) {
             const msg = "Passwords do not match.";
             setErrorMessage(msg);

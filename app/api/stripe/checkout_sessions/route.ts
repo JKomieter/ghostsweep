@@ -26,13 +26,16 @@ export async function POST(req: NextRequest) {
         // Get price_id from request
         const contentType = req.headers.get("content-type") || "";
         let price_id: string | undefined;
+        let referral_code: string | undefined;
 
         if (contentType.includes("application/json")) {
             const body = await req.json();
             price_id = body.price_id;
+            referral_code = body.referral_code;
         } else {
             const formData = await req.formData();
             price_id = formData.get("price_id") as string | undefined;
+            referral_code = formData.get("referral_code") as string | undefined;
         }
 
         if (!price_id) {
@@ -87,6 +90,23 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        // get thr user_subscription row for the referrer if referral_code is provided
+        let referrerStripeCustomerId: string | null = null;
+        if (referral_code) {
+            const { data: referrerSub } = await supabase
+                .from("user_subscriptions")
+                .select("id, stripe_customer_id, user_id")
+                .eq("referral_code", referral_code)
+                .maybeSingle();
+
+            if (!referrerSub) {
+                console.warn("Invalid referral code provided:", referral_code);
+            } else {
+                referrerStripeCustomerId = referrerSub.stripe_customer_id;
+            }
+        }
+
+        const shouldApplyReferralDiscount = Boolean(referrerStripeCustomerId);
         // Create Checkout Session
         const session = await stripe.checkout.sessions.create({
             customer: stripeCustomerId,
@@ -100,14 +120,19 @@ export async function POST(req: NextRequest) {
             success_url: `${origin}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${origin}/dashboard/billing?canceled=true`,
             automatic_tax: { enabled: true },
-            allow_promotion_codes: true, // Allow promo codes
+            allow_promotion_codes: shouldApplyReferralDiscount,
             billing_address_collection: 'auto',
             customer_update: {
                 address: 'auto',
             },
+            ...(shouldApplyReferralDiscount
+                ? { discounts: [{ promotion_code: 'SWEEP50' }] }
+                : {}),
             metadata: {
                 supabase_user_id: user.id,
                 price_id,
+                ...(referral_code ? { referral_code } : {}),
+                ...(referrerStripeCustomerId ? { referrer_stripe_customer_id: referrerStripeCustomerId } : {}),
             },
         });
 

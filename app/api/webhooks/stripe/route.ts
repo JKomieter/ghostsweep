@@ -72,9 +72,47 @@ export async function POST(req: Request) {
 
         const stripeCustomerId = session.customer as string
         const priceId = session.metadata?.price_id || ""
+        const referralCode = session.metadata?.referral_code || null
+        const referrerStripeCustomerId = session.metadata?.referrer_stripe_customer_id || null
         const renewsAt = getRenewalDate(priceId)
 
         console.log(`✅ Checkout completed for user ${supabaseUserId}`)
+
+        if (referrerStripeCustomerId) {
+          const REFERRAL_REWARD_CENTS = 1999; // $19.99
+
+          try {
+            // 1. Apply ONLY the incremental reward to Stripe
+            await stripe.customers.createBalanceTransaction(
+              referrerStripeCustomerId,
+              {
+                amount: -REFERRAL_REWARD_CENTS, // Just the $19.99, not the running total
+                currency: 'usd',
+                description: `Referral reward for bringing in user ${supabaseUserId}`,
+              }
+            );
+
+            console.log(`💰 $19.99 credit added to Stripe for ${referrerStripeCustomerId}`);
+
+            // 2. Update Supabase via Edge Function
+            // We pass the STATIC amount to add, the edge function handles the math
+            const { error: edgeError } = await supabase.functions.invoke('update-referral-credits', {
+              body: {
+                referrerUserId: session.metadata?.referrer_supabase_id, // Make sure you pass this in checkout metadata!
+                referredUserId: supabaseUserId,
+                creditsToAdd: REFERRAL_REWARD_CENTS
+              },
+              headers: {
+                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+              }
+            });
+
+            if (edgeError) console.error("❌ Edge Function Error:", edgeError);
+
+          } catch (stripeErr) {
+            console.error("❌ Stripe Balance Error:", stripeErr);
+          }
+        }
 
         // Edge function will auto-detect if this is a new trial
         // and override renewsAt to 7 days if needed

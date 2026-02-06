@@ -18,6 +18,10 @@ export default function CheckoutForm({
         setError(null);
 
         try {
+            const referralCode =
+                typeof window !== "undefined"
+                    ? localStorage.getItem("referral_code")
+                    : null;
             const response = await fetch("/api/stripe/checkout_sessions", {
                 method: "POST",
                 headers: {
@@ -25,6 +29,7 @@ export default function CheckoutForm({
                 },
                 body: JSON.stringify({
                     price_id: priceId,
+                    ...(referralCode ? { referral_code: referralCode } : {}),
                 }),
             });
 
