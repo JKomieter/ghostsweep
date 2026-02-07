@@ -113,7 +113,7 @@ function HeroDashboard() {
                         <div className="h-3 w-3 rounded-full bg-green-500/50" />
                     </div>
                     <div className="text-xs font-mono text-white/30 uppercase tracking-widest">
-                        Inbox Value Scan :: Active
+                        Automated Ledger Audit :: Active
                     </div>
                 </div>
 
@@ -204,7 +204,7 @@ function HeroDashboard() {
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
-                        Scanning...
+                        Ledger audit running...
                     </div>
                 </div>
             </div>
@@ -351,7 +351,7 @@ function SocialProofBanner() {
     );
 }
 
-// How It Works - Trust & Security Section
+// Three Pillars - Trust & Security Section
 function HowItWorksSection() {
     return (
         <section className="py-20 border-b border-white/5">
@@ -361,14 +361,14 @@ function HowItWorksSection() {
                         <ShieldCheck className="h-3 w-3" />
                         <span>Privacy-First Architecture</span>
                     </div>
-                    <h2 className="text-3xl font-light text-white">How It Works</h2>
+                    <h2 className="text-3xl font-light text-white">The Three Pillars of GhostSweep</h2>
                     <p className="mt-4 text-white/50">
-                        We find your money without compromising your privacy. Here's exactly what happens:
+                        GhostSweep is built on the principle of Zero-Knowledge Discovery. We audit your digital shadow to find your assets, but we never sell your data or store your personal communications. You own your data; we just find your money.
                     </p>
                 </div>
                 
                 <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    {/* Step 1 */}
+                    {/* Pillar 1 */}
                     <div className="relative p-6 rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-transparent">
                         <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
                             1
@@ -377,14 +377,14 @@ function HowItWorksSection() {
                             <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
                                 <ShieldCheck className="h-6 w-6 text-emerald-400" />
                             </div>
-                            <h3 className="text-lg font-medium text-white mb-2">Official Google OAuth</h3>
+                            <h3 className="text-lg font-medium text-white mb-2">Discovery</h3>
                             <p className="text-sm text-white/50 leading-relaxed">
-                                Connect securely through Google's official login. <strong className="text-white/70">We never see your password.</strong> You're always in control and can revoke access anytime.
+                                We scan your digital footprint to find credits, gift cards, and rewards corporations hope you’ll forget.
                             </p>
                         </div>
                     </div>
                     
-                    {/* Step 2 */}
+                    {/* Pillar 2 */}
                     <div className="relative p-6 rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-transparent">
                         <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
                             2
@@ -393,14 +393,14 @@ function HowItWorksSection() {
                             <div className="h-12 w-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
                                 <Fingerprint className="h-6 w-6 text-blue-400" />
                             </div>
-                            <h3 className="text-lg font-medium text-white mb-2">Transient Scan</h3>
+                            <h3 className="text-lg font-medium text-white mb-2">Liquidation</h3>
                             <p className="text-sm text-white/50 leading-relaxed">
-                                We process emails <strong className="text-white/70">in memory only</strong>—extracting gift cards, coupons, and rewards. Raw email text is <strong className="text-white/70">deleted immediately</strong> after scanning.
+                                Turn stagnant gift card balances into liquid spending power through our marketplace integrations.
                             </p>
                         </div>
                     </div>
                     
-                    {/* Step 3 */}
+                    {/* Pillar 3 */}
                     <div className="relative p-6 rounded-2xl border border-white/10 bg-linear-to-b from-white/5 to-transparent">
                         <div className="absolute -top-3 -left-1 h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-sm">
                             3
@@ -409,9 +409,9 @@ function HowItWorksSection() {
                             <div className="h-12 w-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-4">
                                 <DollarSign className="h-6 w-6 text-purple-400" />
                             </div>
-                            <h3 className="text-lg font-medium text-white mb-2">Your Savings Report</h3>
+                            <h3 className="text-lg font-medium text-white mb-2">Protection</h3>
                             <p className="text-sm text-white/50 leading-relaxed">
-                                You get a clean dashboard with <strong className="text-white/70">only the value we found</strong>—gift cards, expiring points, hidden coupons. No stored emails, no data selling. Ever.
+                                Identify the silent budget killers—subscriptions—and get the tools to stop them instantly.
                             </p>
                         </div>
                     </div>
@@ -793,28 +793,32 @@ function GhostEngineSection() {
                            <div className="p-6 font-mono text-xs space-y-3">
                                 <div className="flex items-center gap-2 text-emerald-400/80">
                                     <Check className="h-3 w-3" />
-                                    <span>Scan initiated: Finding hidden value...</span>
+                                        <span>Automated Ledger Audit initiated: locating dormant value...</span>
                                 </div>
-                                <div className="text-white/40 pl-5">Analyzing 8,294 emails for savings...</div>
+                                    <div className="text-white/40 pl-5">Ledger index: 8,294 emails under audit...</div>
                                 <div className="flex items-center gap-2 text-blue-400/80 pl-5">
                                     <Zap className="h-3 w-3" />
-                                    <span>Coupon detected: Target 15% off (expires 3 days)</span>
+                                        <span>Balance Verification: Target 15% off (expires 3 days)</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-purple-400/80 pl-5">
                                     <Clock className="h-3 w-3" />
-                                    <span>Alert: Fetch rewards expiring in 14 days</span>
+                                        <span>Balance Verification: Fetch rewards expiring in 14 days</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-emerald-400 pl-5 bg-emerald-500/10 py-1 pr-2 rounded w-fit">
                                     <DollarSign className="h-3 w-3" />
-                                    <span>FOUND: Unused Starbucks Card ($25.00)</span>
+                                        <span>Balance Verified: Unused Starbucks Card ($25.00)</span>
                                 </div>
+                                    <div className="flex items-center gap-2 text-blue-400 pl-5 bg-blue-500/10 py-1 pr-2 rounded w-fit">
+                                        <Zap className="h-3 w-3" />
+                                        <span>Liquidity Pathway: Cash-out available (instant payout)</span>
+                                    </div>
                                 <div className="flex items-center gap-2 text-emerald-400 pl-5 bg-emerald-500/10 py-1 pr-2 rounded w-fit">
                                     <DollarSign className="h-3 w-3" />
-                                    <span>FOUND: Amazon refund pending ($34.99)</span>
+                                        <span>Balance Verified: Amazon refund pending ($34.99)</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-purple-400/80 pl-5">
                                     <Ghost className="h-3 w-3" />
-                                    <span>ACTION: Unsubscribed from 12 junk lists</span>
+                                        <span>Protection Action: Unsubscribed from 12 junk lists</span>
                                 </div>
                                 <div className="animate-pulse text-white/30 pl-5 pt-2">
                                     &gt; Raw email data purged. Only savings retained.
@@ -990,7 +994,7 @@ function FounderSection() {
                                 <span className="text-5xl text-emerald-400/60 font-serif leading-none">"</span>
                             </div>
                             <blockquote className="text-xl md:text-2xl font-light text-white/90 leading-relaxed mb-6">
-                                I built GhostSweep because I was tired of companies treating our inboxes like a gold mine for their profit. I wanted a tool that actually works for the user. I'm an engineer, a privacy advocate, and I'm here to make sure your data stays yours.
+                                I built GhostSweep because I was tired of companies treating our inboxes like a gold mine for their profit. This is a hustle tool for financial empowerment—reclaiming wealth that big corporations hope you forget. I'm an engineer, a privacy advocate, and I'm here to make sure your data stays yours.
                             </blockquote>
                             <div className="flex items-center justify-center md:justify-start gap-3">
                                 <div>
@@ -1058,10 +1062,10 @@ export default function HomePage() {
                         </div>
 
                         <h1 className="mt-10 text-4xl font-light tracking-tight text-white sm:text-6xl mb-6">
-                            Your Inbox Has a <span className="text-emerald-400 font-normal">Digital Shadow</span>.
+                            Reclaim your <span className="text-emerald-400 font-normal">Digital Shadow</span>.
                         </h1>
                         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-400">
-                            Every sign-up, every receipt, every forgotten account. GhostSweep maps your digital footprint—finding the money you lost and the accounts you need to delete.
+                            The private engine that uncovers forgotten money and kills hidden subscriptions—so you keep what’s yours.
                         </p>
                         
                         <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -1093,6 +1097,13 @@ export default function HomePage() {
                 <PricingSection />
                 <FAQSection />
                 <FounderSection />
+                <div className="py-10">
+                    <div className="container mx-auto px-4">
+                        <div className="mx-auto w-fit rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-white/60">
+                            Current Integration Roadmap: Secure Marketplace Liquidity and Virtual Card Issuing.
+                        </div>
+                    </div>
+                </div>
 
                 {/* Footer Section */}
                 <footer className="border-t border-white/5 pt-12 pb-12 bg-black/40">
