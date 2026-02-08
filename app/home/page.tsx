@@ -842,9 +842,44 @@ function PricingSection() {
                 </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {/* Monthly */}
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {/* Free */}
                 <div className="rounded-2xl border border-white/10 bg-white/2 p-8 flex flex-col">
+                    <div className="mb-4 text-lg text-white font-medium">Free Scan</div>
+                    <div className="flex items-baseline gap-1 mb-6">
+                        <span className="text-4xl text-white font-light">$0</span>
+                    </div>
+                    <p className="text-sm text-white/50 mb-8 h-10">
+                        Dip your toes in and see exactly what's hiding in your inbox.
+                    </p>
+                    <ul className="space-y-4 mb-8 flex-1">
+                        <li className="flex items-center gap-3 text-sm text-white/70">
+                            <Check className="h-4 w-4 text-white" />
+                            <span>1 Initial Deep Scan</span>
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-white/70">
+                            <Check className="h-4 w-4 text-white" />
+                            <span>See 10 Hidden Accounts</span>
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-white/70">
+                            <Check className="h-4 w-4 text-white" />
+                            <span>Exact Savings Counts</span>
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-white/70">
+                            <Check className="h-4 w-4 text-white" />
+                            <span>Breach Risk Summary</span>
+                        </li>
+                    </ul>
+                    <Link
+                        href="/login"
+                        className="w-full flex items-center justify-center rounded-lg bg-white/5 border border-white/10 py-3 text-sm text-white hover:bg-white/10 transition"
+                    >
+                        Try Free Scan
+                    </Link>
+                </div>
+
+                {/* Monthly */}
+                <div className="rounded-2xl border border-white/10 bg-white/2 p-8 flex flex-col relative">
                     <div className="mb-4 text-lg text-white font-medium">Value Hunter</div>
                    <div className="flex items-baseline gap-1 mb-6">
                         <span className="text-4xl text-white font-light">$19.99</span>
