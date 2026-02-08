@@ -392,8 +392,8 @@ export default function NewslettersPage() {
 
         {/* Bulk Actions */}
         {tab === "active" && (
-          <div className="flex items-center justify-between mb-6 px-6 py-4 rounded-xl bg-white/2 border border-white/5">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 py-4 rounded-xl bg-white/2 border border-white/5">
+            <div className="flex flex-wrap items-center gap-4">
               <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10" onClick={allSelected ? clearSelected : selectAll}>
                 <Checkbox checked={allSelected} className="mr-2 border-white/30 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" /> 
                 {allSelected ? "Deselect All" : "Select All"}
@@ -407,7 +407,7 @@ export default function NewslettersPage() {
             </div>
             
             {selected.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -445,24 +445,24 @@ export default function NewslettersPage() {
         {/* Newsletter Cards */}
         <div className="grid grid-cols-1 gap-4">
           {loading ? (
-            Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl bg-white/5" />)
+            Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-24 w-full rounded-2xl bg-white/5" />)
           ) : data?.newsletters && data.newsletters.length > 0 ? (
             data.newsletters.map((newsletter: Newsletter) => (
               <div key={newsletter.id} className="group relative rounded-2xl border border-white/5 bg-white/2 p-6 transition duration-300 hover:bg-white/5 hover:border-white/10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 flex-1">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
                     {tab === "active" && (
                       <Checkbox 
                         checked={selected.includes(newsletter.id)} 
                         onCheckedChange={() => toggleSelect(newsletter.id)} 
-                        className="h-5 w-5 border-white/20 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md" 
+                        className="mt-1 h-5 w-5 border-white/20 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 rounded-md" 
                         disabled={blurred && !isPro}
                       />
                     )}
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-white text-lg truncate">
+                      <div className="flex flex-wrap items-center gap-3 mb-2">
+                        <h3 className="font-semibold text-white text-lg truncate max-w-[200px] sm:max-w-md">
                           {blurred && !isPro ? "████████" : newsletter.name}
                         </h3>
                         
@@ -471,7 +471,7 @@ export default function NewslettersPage() {
                         </Badge>
                       </div>
                       
-                      <div className="flex items-center gap-6 text-sm text-white/60">
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60">
                         <div className="flex items-center gap-1">
                           <Mail className="h-4 w-4" />
                           {newsletter.email_count || 0} emails in last 90 days
@@ -504,11 +504,11 @@ export default function NewslettersPage() {
                   
                   {/* Actions */}
                   {tab === "active" && (
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       {newsletter.unsubscribe_url ? (
                         <Button 
                           size="sm" 
-                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs"
+                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs whitespace-nowrap"
                           onClick={() => window.open(newsletter.unsubscribe_url!, '_blank')}
                           disabled={blurred && !isPro}
                         >
@@ -518,7 +518,7 @@ export default function NewslettersPage() {
                       ) : newsletter.unsubscribe_method === "email" ? (
                         <Button 
                           size="sm" 
-                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs"
+                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs whitespace-nowrap"
                           onClick={() => window.open(`mailto:unsubscribe@${newsletter?.from_address?.split('@')[1] || 'newsletter.com'}?subject=Unsubscribe`, '_blank')}
                           disabled={blurred && !isPro}
                         >
@@ -529,7 +529,7 @@ export default function NewslettersPage() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="border-white/20 text-white/70 hover:bg-white/10 text-xs"
+                          className="border-white/20 text-white/70 hover:bg-white/10 text-xs whitespace-nowrap"
                           onClick={() => setModalNewsletter(newsletter)}
                           disabled={blurred && !isPro}
                         >
@@ -540,7 +540,7 @@ export default function NewslettersPage() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-emerald-400 hover:bg-emerald-500/10 text-xs"
+                        className="text-emerald-400 hover:bg-emerald-500/10 text-xs whitespace-nowrap"
                         onClick={() => markAsUnsubscribed(newsletter.id)}
                         disabled={updateStatusMutation.isPending || (blurred && !isPro)}
                       >

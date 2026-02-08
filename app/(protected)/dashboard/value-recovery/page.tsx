@@ -193,59 +193,88 @@ export default function ValueRecoveryPage() {
       </div>
 
       {/* Filters and sort */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-6 py-4 rounded-xl bg-white/2 border border-white/5">
-        <div className="flex items-center gap-2">
-          <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="bg-black/40 border border-white/5">
-              {TABS.map(t => <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300">{t.label}</TabsTrigger>)}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 px-4 sm:px-6 py-4 rounded-xl bg-white/2 border border-white/5">
+        <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
+          <Tabs value={tab} onValueChange={setTab} className="w-full">
+            <TabsList className="bg-black/40 border border-white/5 w-full justify-start md:justify-center lg:justify-start min-w-max">
+              {TABS.map(t => (
+                <TabsTrigger 
+                  key={t.key} 
+                  value={t.key} 
+                  className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300 min-w-[80px]"
+                >
+                  {t.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
         </div>
         
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10"><Filter className="mr-2 h-3.5 w-3.5" />{SORTS.find(s => s.key === sort)?.label}</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
-              {SORTS.map(s => <DropdownMenuItem key={s.key} onClick={() => setSort(s.key)} className="focus:bg-white/10 cursor-pointer">{s.label}</DropdownMenuItem>)}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10">
+                  <Filter className="mr-2 h-3.5 w-3.5" />
+                  {SORTS.find(s => s.key === sort)?.label}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
+                {SORTS.map(s => <DropdownMenuItem key={s.key} onClick={() => setSort(s.key)} className="focus:bg-white/10 cursor-pointer">{s.label}</DropdownMenuItem>)}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <div className="h-4 w-px bg-white/10 mx-1" />
+            <div className="h-4 w-px bg-white/10 mx-1" />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10"><RefreshCw className="mr-2 h-3.5 w-3.5" />{status ? status.charAt(0).toUpperCase() + status.slice(1) : "All"}</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
-              <DropdownMenuItem onClick={() => setStatus("")} className="focus:bg-white/10 cursor-pointer">All</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatus("active")} className="focus:bg-white/10 cursor-pointer">Active</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatus("recovered")} className="focus:bg-white/10 cursor-pointer">Recovered</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatus("expired")} className="focus:bg-white/10 cursor-pointer">Expired</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatus("ignored")} className="focus:bg-white/10 cursor-pointer">Ignored</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10">
+                  <RefreshCw className="mr-2 h-3.5 w-3.5" />
+                  {status ? status.charAt(0).toUpperCase() + status.slice(1) : "All"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
+                <DropdownMenuItem onClick={() => setStatus("")} className="focus:bg-white/10 cursor-pointer">All</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatus("active")} className="focus:bg-white/10 cursor-pointer">Active</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatus("recovered")} className="focus:bg-white/10 cursor-pointer">Recovered</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatus("expired")} className="focus:bg-white/10 cursor-pointer">Expired</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatus("ignored")} className="focus:bg-white/10 cursor-pointer">Ignored</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-          <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10" onClick={allSelected ? clearSelected : selectAll} disabled={previewOnly}>
-            <Checkbox checked={allSelected} className="mr-2 border-white/30 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500" /> {allSelected ? "Clear" : "All"}
-          </Button>
-          
-          <Button variant="outline" size="sm" className="h-8 ml-2 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200" 
-            disabled={!selected.length || bulkRecoveryMutation.isPending || previewOnly} 
-            onClick={markAllRecovered}>
-            {previewOnly ? "Upgrade to Recover" : bulkRecoveryMutation.isPending ? "Processing..." : "Recover Selected"}
-          </Button>
-          
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10" disabled={previewOnly}><Download className="h-4 w-4" /></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
-              <DropdownMenuItem onClick={() => exportList("csv")} className="focus:bg-white/10 cursor-pointer">Export CSV</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportList("pdf")} className="focus:bg-white/10 cursor-pointer">Export PDF</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10" onClick={allSelected ? clearSelected : selectAll} disabled={previewOnly}>
+              <Checkbox checked={allSelected} className="mr-2 border-white/30 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500" /> {allSelected ? "Clear" : "All"}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200" 
+              disabled={!selected.length || bulkRecoveryMutation.isPending || previewOnly} 
+              onClick={markAllRecovered}
+            >
+              <span className="hidden sm:inline">
+                {previewOnly ? "Upgrade to Recover" : bulkRecoveryMutation.isPending ? "Processing..." : "Recover Selected"}
+              </span>
+              <span className="sm:hidden">
+                {previewOnly ? "Upgrade" : bulkRecoveryMutation.isPending ? "..." : "Recover"}
+              </span>
+            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10" disabled={previewOnly}>
+                  <Download className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
+                <DropdownMenuItem onClick={() => exportList("csv")} className="focus:bg-white/10 cursor-pointer">Export CSV</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportList("pdf")} className="focus:bg-white/10 cursor-pointer">Export PDF</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

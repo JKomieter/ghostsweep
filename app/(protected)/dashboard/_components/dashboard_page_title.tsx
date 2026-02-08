@@ -155,6 +155,7 @@ export default function DashboardTitle() {
     const gmailAddress = gmailData?.accounts?.[0]?.gmail_address ?? null;
     const outlookAddress = microsoftData?.accounts?.[0]?.outlook_address ?? null;
     const connectedEmail = gmailAddress || outlookAddress;
+    const totalAccountsCount = (gmailData?.accounts?.length || 0) + (microsoftData?.accounts?.length || 0);
     const isInProgress =
         latestSweep?.status === "pending" || latestSweep?.status === "processing";
 
@@ -441,23 +442,25 @@ export default function DashboardTitle() {
 
                 <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
                     {/* Email status pill */}
-                    <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors">
+                    <div className={`inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        connectedEmail 
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100" 
+                            : "border-yellow-500/30 bg-yellow-500/10 text-yellow-200"
+                    }`}>
                         {connectedEmail ? (
-                            <>
-                                <div className="flex items-center gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-100">
-                                    <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
-                                    <span className="hidden sm:inline text-emerald-200">
-                                        {connectedEmail}
+                            <div className="flex items-center gap-1.5">
+                                <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
+                                <span className="text-emerald-200 max-w-[150px] sm:max-w-none truncate">
+                                    {connectedEmail}
+                                </span>
+                                {totalAccountsCount > 1 && (
+                                    <span className="ml-0.5 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-100 whitespace-nowrap">
+                                        +{totalAccountsCount - 1} more
                                     </span>
-                                    {gmailAddress && outlookAddress && (
-                                        <span className="ml-0.5 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-100">
-                                            +1 more
-                                        </span>
-                                    )}
-                                </div>
-                            </>
+                                )}
+                            </div>
                         ) : (
-                            <span className="border-yellow-500/30 bg-yellow-500/10 text-yellow-200">
+                            <span>
                                 Connect email
                             </span>
                         )}

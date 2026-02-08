@@ -243,18 +243,20 @@ export default function SubscriptionsPage() {
         </div>
 
         {/* Tabs and Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
-          <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="bg-black/40 border border-white/5">
-              {TABS.map(t => (
-                <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-300">
-                  {t.label} ({getTabCount(t.key)})
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+          <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
+            <Tabs value={tab} onValueChange={setTab} className="w-full">
+              <TabsList className="bg-black/40 border border-white/5 w-full justify-start md:justify-center lg:justify-start min-w-max">
+                {TABS.map(t => (
+                  <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-300 min-w-[100px]">
+                    {t.label} ({getTabCount(t.key)})
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10">
@@ -289,9 +291,9 @@ export default function SubscriptionsPage() {
 
         {/* Bulk Actions */}
         {tab === "active" && (
-          <div className="flex items-center justify-between mb-6 px-6 py-4 rounded-xl bg-white/2 border border-white/5">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10" onClick={allSelected ? clearSelected : selectAll}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 py-4 rounded-xl bg-white/2 border border-white/5">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
+              <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10 w-fit" onClick={allSelected ? clearSelected : selectAll}>
                 <Checkbox checked={allSelected} className="mr-2 border-white/30 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500" /> 
                 {allSelected ? "Clear" : "Select All"}
               </Button>
@@ -304,7 +306,7 @@ export default function SubscriptionsPage() {
             </div>
             
             {selected.length > 0 && (
-              <Button variant="outline" size="sm" className="h-8 border-red-500/30 text-red-300 hover:bg-red-500/10 hover:text-red-200" onClick={bulkCancel}>
+              <Button variant="outline" size="sm" className="h-8 border-red-500/30 text-red-300 hover:bg-red-500/10 hover:text-red-200 whitespace-nowrap w-fit" onClick={bulkCancel}>
                 Open {selected.length} Cancel Page{selected.length > 1 ? 's' : ''}
               </Button>
             )}
@@ -332,132 +334,145 @@ export default function SubscriptionsPage() {
               const isHighValue = annualAmount > 500;
               
               return (
-                <div key={sub.id} className="group relative rounded-2xl border border-white/5 bg-white/2 p-6 transition duration-300 hover:bg-white/5 hover:border-white/10">
-                  {tab === "active" && (
-                    <div className="absolute top-6 left-6">
-                      <Checkbox 
-                        checked={selected.includes(sub.id)} 
-                        onCheckedChange={() => toggleSelect(sub.id)} 
-                        className="h-5 w-5 border-white/20 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 rounded-md" 
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start gap-5 ml-8">
-                    <div className="h-12 w-12 rounded-xl bg-white/5 p-2 border border-white/10 flex items-center justify-center">
-                      {sub.logo_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={sub.logo_url} alt={sub.service_name} className="h-full w-full object-contain" />
-                      ) : (
-                        <div className="text-white/40 text-xs font-mono">{sub.service_name.slice(0, 2).toUpperCase()}</div>
-                      )}
-                    </div>
-
+                <div key={sub.id} className="group relative rounded-2xl border border-white/5 bg-white/2 p-4 sm:p-6 transition duration-300 hover:bg-white/5 hover:border-white/10">
+                  <div className="flex items-start gap-4">
+                    {tab === "active" && (
+                      <div className="pt-1.5 shrink-0">
+                        <Checkbox 
+                          checked={selected.includes(sub.id)} 
+                          onCheckedChange={() => toggleSelect(sub.id)} 
+                          className="h-5 w-5 border-white/20 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 rounded-md" 
+                        />
+                      </div>
+                    )}
+                    
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h3 className="font-semibold text-white text-lg truncate">
-                            {blurred && !isPro ? "██████" : sub.service_name}
-                          </h3>
-                          {sub.plan_details && (
-                            <p className="text-sm text-white/50 mt-0.5">
-                              {blurred && !isPro ? "████" : sub.plan_details}
-                            </p>
+                      <div className="flex flex-col sm:flex-row gap-5">
+                        <div className="h-12 w-12 shrink-0 rounded-xl bg-white/5 p-2 border border-white/10 flex items-center justify-center">
+                          {sub.logo_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={sub.logo_url} alt={sub.service_name} className="h-full w-full object-contain" />
+                          ) : (
+                            <div className="text-white/40 text-xs font-mono">{sub.service_name.slice(0, 2).toUpperCase()}</div>
                           )}
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className={`text-[10px] uppercase tracking-wider border-white/10 text-white/50 ${
-                              sub.status === 'canceled' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                              sub.status === 'kept' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                              'bg-red-500/10 border-red-500/20 text-red-400'
-                            }`}>
-                              {sub.status === 'canceled' ? 'Canceled' : sub.status === 'kept' ? 'Kept' : 'Active'}
-                            </Badge>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+                            <div className="min-w-0">
+                              <h3 className="font-semibold text-white text-lg truncate">
+                                {blurred && !isPro ? "██████" : sub.service_name}
+                              </h3>
+                              {sub.plan_details && (
+                                <p className="text-sm text-white/50 mt-0.5 truncate">
+                                  {blurred && !isPro ? "████" : sub.plan_details}
+                                </p>
+                              )}
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                <Badge variant="outline" className={`text-[10px] uppercase tracking-wider border-white/10 text-white/50 ${
+                                  sub.status === 'canceled' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                                  sub.status === 'kept' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                                  'bg-red-500/10 border-red-500/20 text-red-400'
+                                }`}>
+                                  {sub.status === 'canceled' ? 'Canceled' : sub.status === 'kept' ? 'Kept' : 'Active'}
+                                </Badge>
+                                
+                                {sub.billing_frequency && (
+                                  <span className="text-xs text-white/40 capitalize">{sub.billing_frequency}</span>
+                                )}
+                              </div>
+                            </div>
                             
-                            {sub.billing_frequency && (
-                              <span className="text-xs text-white/40 capitalize">{sub.billing_frequency}</span>
+                            <div className="sm:text-right shrink-0">
+                              <div className="text-2xl font-light text-red-400">
+                                {blurred && !isPro ? "$██" : formatCurrency(monthlyAmount)}
+                              </div>
+                              <div className="text-xs text-white/40">per month</div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-sm text-white/60 mb-4 space-y-0.5">
+                            <div className="flex justify-between sm:block">
+                              <span className="sm:inline">Annual cost: </span>
+                              <span className="text-red-300 font-medium">{blurred && !isPro ? "$███" : formatCurrency(annualAmount)}</span>
+                            </div>
+                            {sub.next_billing_date && (
+                              <div className="flex justify-between sm:block">
+                                <span className="sm:inline">Next bill: </span>
+                                <span>{new Date(sub.next_billing_date).toLocaleDateString()}</span>
+                              </div>
+                            )}
+                            {sub.email_date && (
+                              <div className="flex justify-between sm:block">
+                                <span className="sm:inline">Last charged: </span>
+                                <span>{new Date(sub.email_date).toLocaleDateString()}</span>
+                              </div>
                             )}
                           </div>
-                        </div>
-                        
-                        <div className="text-right">
-                          <div className="text-2xl font-light text-red-400">
-                            {blurred && !isPro ? "$██" : formatCurrency(monthlyAmount)}
+                          
+                          {/* Warning badges */}
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {isHighValue && (
+                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20">
+                                <AlertTriangle className="h-3 w-3" />
+                                <span className="truncate">High value: {formatCurrency(annualAmount)}/y</span>
+                              </div>
+                            )}
+                            {isUnused && (
+                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full border border-yellow-500/20">
+                                <AlertTriangle className="h-3 w-3" />
+                                Unused: {daysSinceLastBill}d
+                              </div>
+                            )}
                           </div>
-                          <div className="text-xs text-white/40">per month</div>
+                          
+                          {/* Actions */}
+                          {tab === "active" && (
+                            <div className="flex flex-wrap gap-2">
+                              <Button 
+                                size="sm" 
+                                className="bg-red-600 hover:bg-red-500 text-white text-[10px] sm:text-xs h-8"
+                                onClick={() => sub.cancel_url && window.open(sub.cancel_url, '_blank')}
+                                disabled={blurred && !isPro || !sub.cancel_url}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Cancel
+                              </Button>
+                              
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="border-white/20 text-white/70 hover:bg-white/10 text-[10px] sm:text-xs h-8"
+                                onClick={() => setModalSub(sub)}
+                                disabled={blurred && !isPro}
+                              >
+                                Steps
+                              </Button>
+                              
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-emerald-400 hover:bg-emerald-500/10 text-[10px] sm:text-xs h-8"
+                                onClick={() => markAsCanceled(sub.id)}
+                                disabled={updateStatusMutation.isPending || (blurred && !isPro)}
+                              >
+                                <Check className="h-3 w-3 mr-1" />
+                                {updateStatusMutation.isPending ? "..." : "Mark Canceled"}
+                              </Button>
+                              
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-blue-400 hover:bg-blue-500/10 text-[10px] sm:text-xs h-8"
+                                onClick={() => markAsKept(sub.id)}
+                                disabled={updateStatusMutation.isPending || (blurred && !isPro)}
+                              >
+                                Keep
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      
-                      <div className="text-sm text-white/60 mb-4">
-                        <div>Annual cost: <span className="text-red-300">{blurred && !isPro ? "$███" : formatCurrency(annualAmount)}</span></div>
-                        {sub.next_billing_date && (
-                          <div>Next bill: {new Date(sub.next_billing_date).toLocaleDateString()}</div>
-                        )}
-                        {sub.email_date && (
-                          <div>Last charged: {new Date(sub.email_date).toLocaleDateString()}</div>
-                        )}
-                      </div>
-                      
-                      {/* Warning badges */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {isHighValue && (
-                          <div className="flex items-center gap-1 text-xs text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full">
-                            <AlertTriangle className="h-3 w-3" />
-                            High value: {formatCurrency(annualAmount)}/year
-                          </div>
-                        )}
-                        {isUnused && (
-                          <div className="flex items-center gap-1 text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full">
-                            <AlertTriangle className="h-3 w-3" />
-                            Unused for {daysSinceLastBill} days
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Actions */}
-                      {tab === "active" && (
-                        <div className="flex flex-wrap gap-2">
-                          <Button 
-                            size="sm" 
-                            className="bg-red-600 hover:bg-red-500 text-white text-xs"
-                            onClick={() => sub.cancel_url && window.open(sub.cancel_url, '_blank')}
-                            disabled={blurred && !isPro || !sub.cancel_url}
-                          >
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            Cancel
-                          </Button>
-                          
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="border-white/20 text-white/70 hover:bg-white/10 text-xs"
-                            onClick={() => setModalSub(sub)}
-                            disabled={blurred && !isPro}
-                          >
-                            Instructions
-                          </Button>
-                          
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-emerald-400 hover:bg-emerald-500/10 text-xs"
-                            onClick={() => markAsCanceled(sub.id)}
-                            disabled={updateStatusMutation.isPending || (blurred && !isPro)}
-                          >
-                            <Check className="h-3 w-3 mr-1" />
-                            {updateStatusMutation.isPending ? "Updating..." : "Mark Canceled"}
-                          </Button>
-                          
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-blue-400 hover:bg-blue-500/10 text-xs"
-                            onClick={() => markAsKept(sub.id)}
-                            disabled={updateStatusMutation.isPending || (blurred && !isPro)}
-                          >
-                            Keep This
-                          </Button>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
