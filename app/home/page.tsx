@@ -32,10 +32,12 @@ import { GmailLogo } from "@/svgs";
 const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "GhostSweep | Stop Leaving Money in Your Inbox",
-    "description": "The average inbox holds $285 in forgotten coupons, unused gift cards, and expiring rewards. GhostSweep finds your hidden money automatically.",
+    "name": "GhostSweep | Digital Privacy & Digital Shadow Management",
+    "description": "GhostSweep is a digital privacy platform that helps users visualize and reduce their Digital Shadow. By scanning for forgotten accounts and \"ghost\" subscriptions, it recovers lost money and secures personal data from potential breaches.",
     "url": "https://ghostsweep.com/home",
     "image": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+    "applicationCategory": "SecurityApplication",
+    "operatingSystem": "Web, Android, iOS",
     "publisher": {
         "@type": "Organization",
         "name": "GhostSweep",
@@ -53,10 +55,26 @@ const faqSchema = {
     "mainEntity": [
         {
             "@type": "Question",
-            "name": "How much money is hiding in my inbox?",
+            "name": "What is GhostSweep?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "The average inbox holds $285 in forgotten value—unused digital gift cards, expiring rewards points, and overlooked coupons. GhostSweep scans and surfaces this hidden money automatically.",
+                "text": "GhostSweep is a digital privacy platform that helps users visualize and reduce their Digital Shadow. By scanning for forgotten accounts and \"ghost\" subscriptions, it recovers lost money and secures personal data from potential breaches.",
+            },
+        },
+        {
+            "@type": "Question",
+            "name": "What is a Digital Shadow?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Your Digital Shadow is the trail of data you leave behind online—forgotten accounts, old subscriptions, and personal information shared with services you no longer use. GhostSweep maps this shadow so you can take control of it.",
+            },
+        },
+        {
+            "@type": "Question",
+            "name": "How does GhostSweep recover lost money?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "GhostSweep scans your inbox for forgotten digital gift cards, unused rewards points, and expiring coupons. The average user discovers over $285 in hidden value that would have otherwise gone to waste.",
             },
         },
         {
@@ -64,7 +82,7 @@ const faqSchema = {
             "name": "Is GhostSweep safe to use with my email?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Yes. We see your savings, not your secrets. GhostSweep scans email content transiently to find value, then discards the raw text immediately. No cloud storage, no data selling—just found money. We're CASA Tier 2 verified.",
+                "text": "Yes. We use transient, RAM-only scanning to find value and secure your data. We never store your email bodies and we are CASA Tier 2 verified for security.",
             },
         },
         {
@@ -72,15 +90,7 @@ const faqSchema = {
             "name": "Do you sell my data?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Never. Unlike free inbox tools that sell your purchase data to hedge funds, GhostSweep has a privacy-first business model. You pay us, we find your money. That's it.",
-            },
-        },
-        {
-            "@type": "Question",
-            "name": "What about my rewards points?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We alert you before points expire. The digital gift card market is $680 billion—and much of it goes unspent. Don't let your points turn into $0.",
+                "text": "Never. GhostSweep has a privacy-first business model. We do not sell your personal data or purchase history to third parties. Our goal is to protect your privacy, not exploit it.",
             },
         },
     ],
@@ -361,9 +371,9 @@ function HowItWorksSection() {
                         <ShieldCheck className="h-3 w-3" />
                         <span>Privacy-First Architecture</span>
                     </div>
-                    <h2 className="text-3xl font-light text-white">The Three Pillars of GhostSweep</h2>
+                    <h2 className="text-3xl font-light text-white">Reduce Your Digital Shadow with Three Pillars</h2>
                     <p className="mt-4 text-white/50">
-                        GhostSweep is built on the principle of Zero-Knowledge Discovery. We audit your digital shadow to find your assets, but we never sell your data or store your personal communications. You own your data; we just find your money.
+                        GhostSweep is built on the principle of Zero-Knowledge Discovery. We map your digital shadow to find forgotten assets and secure your data without ever storing your personal communications.
                     </p>
                 </div>
                 
@@ -483,8 +493,8 @@ function ShadowMapPreview() {
                             <span>Digital Shadow Mapping</span>
                         </div>
                         <h2 className="text-3xl font-light text-white leading-tight">
-                            See Your Digital Mess. <br/>
-                            <span className="text-white/40">Then Clean It.</span>
+                            Visualize Your Digital Shadow. <br/>
+                            <span className="text-white/40">Then Eliminate the Mess.</span>
                         </h2>
                         <p className="text-white/60 leading-relaxed">
                             Your email reveals 89+ accounts you've forgotten about. Old subscriptions quietly draining money. 
@@ -635,11 +645,11 @@ function TrinitySection() {
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-400 mb-6">
                         <DollarSign className="h-3 w-3" />
-                        <span>The Hidden $285</span>
+                        <span>Financial Recovery</span>
                     </div>
-                    <h2 className="text-3xl font-light text-white">Stop Leaving Money in Your Inbox</h2>
+                    <h2 className="text-3xl font-light text-white">Recover Hidden Money and Ghost Subscriptions</h2>
                     <p className="mt-4 text-white/60">
-                        41% of people check email specifically for coupons but find it overwhelming. We clip the deals automatically so you don't have to scroll.
+                        GhostSweep scans your inbox for forgotten gift cards, unused rewards points, and expiring coupons—identifying unclaimed value in your digital footprint.
                     </p>
                 </div>
 
@@ -836,9 +846,9 @@ function PricingSection() {
     return (
         <section className="py-24 container mx-auto px-4" id="pricing">
             <div className="text-center max-w-2xl mx-auto mb-16">
-                <h2 className="text-3xl font-light text-white">The Scan That Pays For Itself</h2>
+                <h2 className="text-3xl font-light text-white">GhostSweep Pricing: The Scan That Pays For Itself</h2>
                 <p className="mt-4 text-white/60">
-                    Most users find enough hidden value in the first scan to cover years of GhostSweep. Join the 28% who save $5-15 monthly.
+                    Discover how GhostSweep can help you save money by identifying forgotten subscriptions and reclaiming hidden assets.
                 </p>
             </div>
 
@@ -959,20 +969,24 @@ function PricingSection() {
 function FAQSection() {
     const faqs = [
         {
-            q: "How much money is hiding in my inbox?",
-            a: "Research shows the average inbox holds $285+ in forgotten value—unused digital gift cards, expiring rewards points (Fetch, Lowe's Pro, etc.), and overlooked coupons. Frequent coupon users save $300 annually. GhostSweep surfaces all of it automatically.",
+            q: "What is GhostSweep?",
+            a: "GhostSweep is a digital privacy platform that helps users visualize and reduce their Digital Shadow. By scanning for forgotten accounts and \"ghost\" subscriptions, it recovers lost money and secures personal data from potential breaches.",
         },
         {
-            q: "Is GhostSweep safe to use?",
-            a: "Yes. We see your savings, not your secrets. GhostSweep scans email content transiently to extract value, then discards the raw text immediately. No cloud storage, no data selling. We're CASA Tier 2 verified—the Google-vetted security standard.",
+            q: "What is a Digital Shadow?",
+            a: "Your Digital Shadow is the trail of data you leave behind online—forgotten accounts, old subscriptions, and personal information shared with services you no longer use. GhostSweep maps this shadow so you can take control of it.",
         },
         {
-            q: "Do you sell my data like Unroll.me?",
-            a: "Never. Unlike free inbox tools that sell your purchase data to hedge funds, GhostSweep has a privacy-first business model. You pay us a fair price, we find your money. That's it. Your data is processed transiently and never stored permanently.",
+            q: "How does GhostSweep recover lost money?",
+            a: "GhostSweep scans your inbox for forgotten digital gift cards, unused rewards points, and expiring coupons. The average user discovers over $285 in hidden value that would have otherwise gone to waste.",
         },
         {
-            q: "What about expiring rewards points?",
-            a: "We alert you before points expire. The digital gift card market is $680 billion in 2026—and much of it goes unspent because it's lost in cluttered inboxes. Don't let your Fetch, Starbucks, or airline points turn into $0.",
+            q: "Is GhostSweep safe to use with my email?",
+            a: "Yes. We use transient, RAM-only scanning to find value and secure your data. We never store your email bodies and we are CASA Tier 2 verified for security.",
+        },
+        {
+            q: "Do you sell my data?",
+            a: "Never. GhostSweep has a privacy-first business model. We do not sell your personal data or purchase history to third parties. Our goal is to protect your privacy, not exploit it.",
         },
     ];
 
@@ -1097,10 +1111,10 @@ export default function HomePage() {
                         </div>
 
                         <h1 className="mt-10 text-4xl font-light tracking-tight text-white sm:text-6xl mb-6">
-                            Reclaim your <span className="text-emerald-400 font-normal">Digital Shadow</span>.
+                            Reclaim Your <span className="text-emerald-400 font-normal">Digital Shadow</span>.
                         </h1>
                         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-400">
-                            The private engine that uncovers forgotten money and kills hidden subscriptions—so you keep what’s yours.
+                            GhostSweep is the digital privacy platform that uncovers forgotten accounts, recovers lost money from subscriptions, and secures your data from potential breaches.
                         </p>
                         
                         <div className="mt-10 flex items-center justify-center gap-x-6">
