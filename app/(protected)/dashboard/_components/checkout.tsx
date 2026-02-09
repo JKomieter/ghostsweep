@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader2, Zap } from "lucide-react";
 
 export default function CheckoutForm({
     priceId,
@@ -11,6 +11,14 @@ export default function CheckoutForm({
 }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [referralCode, setReferralCode] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const code = localStorage.getItem("referral_code");
+            if (code) setReferralCode(code);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -18,10 +26,6 @@ export default function CheckoutForm({
         setError(null);
 
         try {
-            const referralCode =
-                typeof window !== "undefined"
-                    ? localStorage.getItem("referral_code")
-                    : null;
             const response = await fetch("/api/stripe/checkout_sessions", {
                 method: "POST",
                 headers: {
@@ -54,6 +58,12 @@ export default function CheckoutForm({
 
     return (
         <div className="space-y-3">
+            {referralCode && (
+                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-400 flex items-center gap-2">
+                    <Zap className="h-4 w-4 fill-emerald-400" />
+                    <span>Referral applied: <strong>50% off</strong> first month!</span>
+                </div>
+            )}
             {error && (
                 <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">
                     {error}

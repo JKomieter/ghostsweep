@@ -7,9 +7,10 @@ import {
     type Dispatch,
     type SetStateAction,
     useRef,
+    useEffect,
 } from "react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, MailIcon, Lock, Shield } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff, MailIcon, Lock, Shield, Gift } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
@@ -517,8 +518,19 @@ function ConfirmEmail({ email = "email address" }: { email?: string }) {
 }
 
 export default function LoginPage() {
-    const [mode, setMode] = useState<Mode>("signin");
+    const searchParams = useSearchParams();
+    const referralCode = searchParams.get("ref");
+    const hasReferral = Boolean(referralCode);
+    const [mode, setMode] = useState<Mode>(() =>
+        hasReferral ? "signup" : "signin"
+    );
     const [email, setEmail] = useState("");
+
+    useEffect(() => {
+        if (referralCode) {
+            localStorage.setItem("referral_code", referralCode);
+        }
+    }, [referralCode]);
 
     return (
         <div className="relative flex min-h-screen w-full overflow-hidden bg-[#050505]">
@@ -616,6 +628,21 @@ export default function LoginPage() {
                     </div>
 
                     <div className="w-full max-w-md">
+                        {hasReferral && (
+                            <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-100 shadow-lg shadow-emerald-500/10">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                                        <Gift className="h-5 w-5 text-emerald-400" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold">Referral link active!</p>
+                                        <p className="text-[12px] text-emerald-100/70">
+                                            Create an account now to lock in your <span className="text-emerald-400 font-semibold">50% discount</span> on GhostSweep Pro.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="mt-16 sm:mt-10 rounded-lg border border-white/5 bg-white/2 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
                             {mode === "confirm" ? (
                                 <ConfirmEmail email={email} />

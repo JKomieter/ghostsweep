@@ -40,8 +40,8 @@ export default function ReferralShareCta() {
         ? `https://ghostsweep.com/login?ref=${referralCode}`
         : "https://ghostsweep.com/login";
     const shareMessage = isReady
-        ? `Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. It found $140 in gift cards I missed. Use my link to get 50% off your first month: ghostsweep.com/login?ref=${referralCode}`
-        : "Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use this link to get 50% off your first month: ghostsweep.com/login";
+        ? `Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. It found $140 in gift cards I missed. Use my link to get 50% off your first month: https://ghostsweep.com/login?ref=${referralCode}`
+        : "Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use this link to get 50% off your first month: https://ghostsweep.com/login";
 
     const handleCopy = async () => {
         if (!isReady) {
@@ -80,9 +80,9 @@ export default function ReferralShareCta() {
     return (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
-                <p className="text-sm font-semibold text-foreground">Share GhostSweep. Get a free month.</p>
+                <p className="text-sm font-semibold text-foreground">Invite friends. Get a free month.</p>
                 <p className="text-sm text-muted-foreground">
-                    Send your invite link with a pre-written message in seconds.
+                    Get a month free for every friend who upgrades. They get 50% off too!
                 </p>
             </div>
             <Dialog
@@ -94,14 +94,14 @@ export default function ReferralShareCta() {
             >
                 <DialogTrigger asChild>
                     <Button size="lg" className="w-full sm:w-auto">
-                        Get a Free Month
+                        Refer & Earn
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Copy & Share Your Invite</DialogTitle>
+                        <DialogTitle>Invite Friends & Earn Free Months</DialogTitle>
                         <DialogDescription>
-                            Send this link with a ready-to-go message to earn a free month.
+                            Each friend who upgrades using your link earns you a free month. They&apos;ll also get 50% off their first month.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">

@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
 
         // get thr user_subscription row for the referrer if referral_code is provided
         let referrerStripeCustomerId: string | null = null;
+        let referrerSupabaseId: string | null = null;
         if (referral_code) {
             const { data: referrerSub } = await supabase
                 .from("user_subscriptions")
@@ -103,6 +104,7 @@ export async function POST(req: NextRequest) {
                 console.warn("Invalid referral code provided:", referral_code);
             } else {
                 referrerStripeCustomerId = referrerSub.stripe_customer_id;
+                referrerSupabaseId = referrerSub.user_id;
             }
         }
 
@@ -133,6 +135,7 @@ export async function POST(req: NextRequest) {
                 price_id,
                 ...(referral_code ? { referral_code } : {}),
                 ...(referrerStripeCustomerId ? { referrer_stripe_customer_id: referrerStripeCustomerId } : {}),
+                ...(referrerSupabaseId ? { referrer_supabase_id: referrerSupabaseId } : {}),
             },
         });
 
