@@ -8,6 +8,7 @@ import {
     type SetStateAction,
     useRef,
     useEffect,
+    Suspense,
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, MailIcon, Lock, Shield, Gift } from "lucide-react";
@@ -517,7 +518,7 @@ function ConfirmEmail({ email = "email address" }: { email?: string }) {
     );
 }
 
-export default function LoginPage() {
+function LoginContent() {
     const searchParams = useSearchParams();
     const referralCode = searchParams.get("ref");
     const hasReferral = Boolean(referralCode);
@@ -698,5 +699,17 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+                <Spinner />
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 30; // Revalidate every 30 seconds for ISR
 
 interface MarketingFeedItem {
