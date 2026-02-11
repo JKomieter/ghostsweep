@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
             success_url: `${origin}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${origin}/dashboard/billing?canceled=true`,
             automatic_tax: { enabled: true },
-            allow_promotion_codes: shouldApplyReferralDiscount,
+            allow_promotion_codes: true,
             billing_address_collection: 'auto',
             customer_update: {
                 address: 'auto',
