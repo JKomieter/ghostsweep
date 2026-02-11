@@ -22,7 +22,10 @@ import {
     MapPin,
     TrendingUp,
     Users,
-    Linkedin
+    Linkedin,
+    Twitter,
+    Instagram,
+    Music2
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -1167,11 +1170,22 @@ export default function HomePage() {
                                 © {new Date().getFullYear()} GhostSweep Inc. Privacy-First.
                             </p>
 
-                            <div className="flex flex-wrap justify-center gap-6 text-xs text-white/50">
+                            <div className="flex flex-wrap justify-center items-center gap-6 text-xs text-white/50">
                                 <Link href="/home/privacy" className="hover:text-white transition">Privacy Policy</Link>
                                 <Link href="/home/terms" className="hover:text-white transition">Terms of Service</Link>
                                 <Link href="/home/security" className="hover:text-white transition">Security Audit</Link>
                                 <Link href="mailto:support@ghostsweep.com" className="hover:text-white transition">Support</Link>
+                                <div className="flex items-center gap-4 border-l border-white/10 pl-6">
+                                    {/* <Link href="https://x.com/ghostsweep" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
+                                        <Twitter className="h-4 w-4" />
+                                    </Link> */}
+                                    <Link href="https://www.instagram.com/ghost_sweep/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
+                                        <Instagram className="h-4 w-4" />
+                                    </Link>
+                                    <Link href="https://www.tiktok.com/@ghostsweep_?lang=en" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">
+                                        <Music2 className="h-4 w-4" />
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
