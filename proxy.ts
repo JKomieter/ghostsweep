@@ -210,11 +210,89 @@ export async function proxy(request: NextRequest) {
         const { success, limit, remaining, reset } = await ratelimit.limit(ip);
         if (!success) {
             const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
+            
+            // Check if it's a browser request for a page
+            const accept = request.headers.get('accept');
+            if (accept && accept.includes('text/html')) {
+                return new NextResponse(
+                    `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Demand | GhostSweep</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: white; }
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .premium-loader { animation: subtle-pulse 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="max-w-md w-full text-center space-y-8">
+        <div class="mx-auto w-16 h-16 bg-white/5 rounded-full flex items-center justify-center border border-white/10 mb-8">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/60 premium-loader"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+        </div>
+        <div class="space-y-4">
+            <h1 class="text-2xl font-light tracking-tight text-white/90">Premium Experience Protection</h1>
+            <p class="text-white/50 text-sm leading-relaxed font-light px-4">
+                GhostSweep is currently managing a high volume of requests to maintain the highest quality of service. We appreciate your patience as we ensure the best experience for all our members.
+            </p>
+        </div>
+        <div class="pt-8 max-w-[240px] mx-auto">
+            <div id="countdown" class="text-[10px] uppercase tracking-[0.3em] text-white/30 mb-4 font-light">Ready in ${retryAfterSeconds}s</div>
+            <div class="h-[1px] w-full bg-white/10 rounded-full overflow-hidden">
+                <div id="progress" class="h-full bg-white/40 transition-all duration-1000 ease-linear" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="pt-8">
+            <button onclick="window.location.reload()" class="text-[11px] uppercase tracking-widest text-white/40 hover:text-white/70 transition-colors duration-300">
+                Refresh manually
+            </button>
+        </div>
+        <script>
+            let timeLeft = ${retryAfterSeconds};
+            const countdownEl = document.getElementById('countdown');
+            const progressEl = document.getElementById('progress');
+            const totalTime = ${retryAfterSeconds};
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    countdownEl.textContent = 'Restarting now...';
+                    window.location.reload();
+                } else {
+                    countdownEl.textContent = 'Ready in ' + timeLeft + 's';
+                    progressEl.style.width = ((totalTime - timeLeft) / totalTime * 100) + '%';
+                }
+            }, 1000);
+            
+            setTimeout(() => { progressEl.style.width = '10%'; }, 50);
+        </script>
+    </div>
+</body>
+</html>`,
+                    {
+                        status: 429,
+                        headers: {
+                            'Content-Type': 'text/html',
+                            'Retry-After': String(retryAfterSeconds),
+                            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                        }
+                    }
+                );
+            }
+
             return NextResponse.json(
                 {
                     code: "RATE_LIMITED",
                     error: "Too Many Requests",
-                    message: "You're doing that too fast. Please try again shortly.",
+                    message: "We're currently handling a high volume of requests to ensure the best experience for our members. Please take a breath and try again shortly.",
                     retryAfterSeconds,
                     rateLimitState: {
                         limit,

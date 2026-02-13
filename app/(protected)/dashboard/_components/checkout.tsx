@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Loader2, Zap } from "lucide-react";
+import { Loader2, Zap, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CheckoutForm({
     priceId,
@@ -36,6 +37,17 @@ export default function CheckoutForm({
                     ...(referralCode ? { referral_code: referralCode } : {}),
                 }),
             });
+
+            if (response.status === 429) {
+                const data = await response.json();
+                toast.error("Premium Service Demand", {
+                    description: data.message || "We're currently handling a high volume of requests.",
+                    icon: <Clock className="h-4 w-4 text-red-500" />,
+                    duration: 6000,
+                });
+                setIsLoading(false);
+                return;
+            }
 
             const data = await response.json();
 

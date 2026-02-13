@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { createClient } from '@/utils/supabase/server';
 import stripe from '@/lib/stripe';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const redis = Redis.fromEnv();
+const checkoutRateLimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(3, '60 s'), // Premium users don't need to spam checkout
+    analytics: true,
+    prefix: 'ratelimit:checkout',
+});
 
 export async function POST(req: NextRequest) {
     try {
@@ -20,6 +30,27 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 { error: "Unauthorized. Please log in." },
                 { status: 401 }
+            );
+        }
+
+        // Rate limiting for premium checkout
+        const ip = headersList.get("x-forwarded-for") || "127.0.0.1";
+        const { success, reset } = await checkoutRateLimit.limit(user.id || ip);
+        
+        if (!success) {
+            const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+            return NextResponse.json(
+                { 
+                    error: "High Demand",
+                    message: "GhostSweep is currently experiencing high demand for our premium features. To ensure the highest level of service for all members, please take a brief pause and try again in a few moments.",
+                    retryAfter
+                },
+                { 
+                    status: 429,
+                    headers: {
+                        'Retry-After': retryAfter.toString(),
+                    }
+                }
             );
         }
 
