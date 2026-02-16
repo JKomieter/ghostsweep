@@ -1,14 +1,9 @@
 interface PrivacyScoreCardProps {
     privacyScore: number;
-    breachedCount: number;
-    unusedCount: number;
-    totalCount: number;
 }
 
 export default function PrivacyScoreCard({
     privacyScore,
-    breachedCount,
-    unusedCount,
 }: PrivacyScoreCardProps) {
     const getScoreColor = (score: number) => {
         if (score < 50) return "text-red-400";

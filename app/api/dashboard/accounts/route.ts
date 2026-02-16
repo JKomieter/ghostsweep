@@ -116,13 +116,14 @@ export async function GET(req: NextRequest) {
   const deletedCount = allAccounts.filter(us => deletionRequestMap.has(us.id)).length;
 
 
-  // 3. Privacy Score Calculation
-  let privacyScore = 100;
-  if (totalCount > 0) {
-    const breachPenalty = (breachedCount / totalCount) * 40; // Up to 40 points
-    const unusedPenalty = (unusedCount / totalCount) * 20;   // Up to 20 points
-    privacyScore = Math.max(0, Math.round(100 - breachPenalty - unusedPenalty));
-  }
+  // 3. Privacy Score — fetch from user_security_scores
+  const { data: scoreRow } = await supabase
+    .from("user_security_scores")
+    .select("score")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const privacyScore = scoreRow?.score ?? 0;
 
 
   // 4. Apply View Filters (Status & Category)

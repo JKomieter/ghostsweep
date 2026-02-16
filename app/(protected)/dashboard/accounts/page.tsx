@@ -89,9 +89,6 @@ function AccountsPageContent() {
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
                             <PrivacyScoreCard 
                                 privacyScore={accountsResult.privacyScore}
-                                breachedCount={accountsResult.breachedCount}
-                                unusedCount={accountsResult.unusedCount}
-                                totalCount={accountsResult.totalCount}
                             />
                             <div className="lg:col-span-4">
                                 <AccountsMetrics

@@ -64,7 +64,7 @@ export default function SummaryCards() {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             recent.map((item: any) => (
                                 <div key={item.id} className="text-xs text-white/80 truncate">
-                                    {item.type}: ${item.amount} – {item.detected_at?.slice(0, 10)}
+                                    {item.type}: ${ (item.amount / 100).toFixed(2) } – {item.detected_at?.slice(0, 10)}
                                 </div>
                             ))
                         )}
