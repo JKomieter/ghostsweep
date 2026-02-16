@@ -12,8 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 import Input from "@/components/ui/input";
@@ -60,8 +59,6 @@ export default function DeletionEmailModal({
     userEmail,
     playbook,
 }: Props) {
-    const queryClient = useQueryClient();
-
     const toAddress = playbook?.deletion_email ?? "";
 
     // Fetch email template
@@ -116,49 +113,49 @@ export default function DeletionEmailModal({
             : "";
 
     // Send email via API
-    const sendMutation = useMutation({
-        mutationFn: async () => {
-            if (!accountId) throw new Error("Missing account ID");
-            if (!subject.trim() || !body.trim()) throw new Error("Subject/body required");
-            if (!toAddress) throw new Error("No deletion email found in playbook");
+    // const sendMutation = useMutation({
+    //     mutationFn: async () => {
+    //         if (!accountId) throw new Error("Missing account ID");
+    //         if (!subject.trim() || !body.trim()) throw new Error("Subject/body required");
+    //         if (!toAddress) throw new Error("No deletion email found in playbook");
 
-            const res = await fetch("/api/gmail/send_deletion_email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_service_id: accountId,
-                    receiver_email: toAddress,
-                    subject: subject,
-                    template_used: body,
-                }),
-            });
+    //         const res = await fetch("/api/gmail/send_deletion_email", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({
+    //                 user_service_id: accountId,
+    //                 receiver_email: toAddress,
+    //                 subject: subject,
+    //                 template_used: body,
+    //             }),
+    //         });
 
-            const j = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(j?.error || "Failed to send email");
-            return j;
-        },
-        onSuccess: async () => {
-            toast.success("Sent! We'll track replies for you.");
-            onOpenChange(false);
+    //         const j = await res.json().catch(() => ({}));
+    //         if (!res.ok) throw new Error(j?.error || "Failed to send email");
+    //         return j;
+    //     },
+    //     onSuccess: async () => {
+    //         toast.success("Sent! We'll track replies for you.");
+    //         onOpenChange(false);
 
-            await queryClient.invalidateQueries({ queryKey: ["account_details", accountId] });
-            await queryClient.invalidateQueries({ queryKey: ["accounts"] });
-            await queryClient.invalidateQueries({ queryKey: ["deletion_requests"] });
-        },
-        onError: (e) => {
-            toast.error("Couldn't send email", {
-                description: e?.message ?? "Try again.",
-            });
-        },
-    });
+    //         await queryClient.invalidateQueries({ queryKey: ["account_details", accountId] });
+    //         await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    //         await queryClient.invalidateQueries({ queryKey: ["deletion_requests"] });
+    //     },
+    //     onError: (e) => {
+    //         toast.error("Couldn't send email", {
+    //             description: e?.message ?? "Try again.",
+    //         });
+    //     },
+    // });
 
-    const canSend =
-        !!accountId &&
-        !!toAddress &&
-        !isLoadingTemplate &&
-        !sendMutation.isPending &&
-        !!subject.trim() &&
-        !!body.trim();
+    // const canSend =
+    //     !!accountId &&
+    //     !!toAddress &&
+    //     !isLoadingTemplate &&
+    //     !sendMutation.isPending &&
+    //     !!subject.trim() &&
+    //     !!body.trim();
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -278,7 +275,7 @@ export default function DeletionEmailModal({
                     </p>
 
                     <div className="flex gap-2">
-                        <Button
+                        {/* <Button
                             size="sm"
                             className="shrink-0 bg-primary text-black hover:bg-primary/80"
                             onClick={() => sendMutation.mutate()}
@@ -291,7 +288,7 @@ export default function DeletionEmailModal({
                             ) : (
                                 "Send with GhostSweep"
                             )}
-                        </Button>
+                        </Button> */}
 
                         <Link href={composeUrl || "#"} target="_blank" rel="noreferrer">
                             <Button size="sm" variant="outline" disabled={!composeUrl}>
