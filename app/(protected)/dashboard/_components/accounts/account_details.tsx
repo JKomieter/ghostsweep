@@ -169,6 +169,23 @@ export default function AccountDetailsPage({ accountId }: Props) {
         onError: () => toast.error("Failed to restore account"),
     });
 
+    // Permanently delete account mutation
+    const permanentlyDelete = useMutation({
+        mutationFn: async () => {
+            const res = await fetch(`/api/dashboard/accounts?id=${accountId}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error("Failed to permanently delete account");
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success("Account permanently deleted");
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
+            window.location.href = "/dashboard/accounts";
+        },
+        onError: () => toast.error("Failed to delete account"),
+    });
+
     const copyDomain = async () => {
         if (!account?.domain) return;
         try {
@@ -474,15 +491,42 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                         </AlertDialogContent>
                                     </AlertDialog>
                                 ) : (
-                                    <Button
-                                        variant="outline"
-                                        className="w-full justify-start gap-2"
-                                        onClick={() => restoreAccount.mutate()}
-                                        disabled={restoreAccount.isPending}
-                                    >
-                                        {restoreAccount.isPending ? <Spinner className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
-                                        Restore Account
-                                    </Button>
+                                    <>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-start gap-2"
+                                            onClick={() => restoreAccount.mutate()}
+                                            disabled={restoreAccount.isPending}
+                                        >
+                                            {restoreAccount.isPending ? <Spinner className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+                                            Restore Account
+                                        </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" className="w-full justify-start gap-2">
+                                                    <Trash2 className="h-4 w-4" />
+                                                    Permanently Delete
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent className="bg-[#0A0A0A] border-white/10">
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Permanently delete this account?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This will permanently remove {account.name} from your GhostSweep dashboard. This action cannot be undone.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => permanentlyDelete.mutate()}
+                                                        className="bg-red-600 hover:bg-red-700"
+                                                    >
+                                                        {permanentlyDelete.isPending ? <Spinner className="h-4 w-4" /> : "Delete Forever"}
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </>
                                 )}
                             </CardContent>
                         </Card>

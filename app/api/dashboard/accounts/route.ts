@@ -362,3 +362,42 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ error: "id is required" }, { status: 400 });
+  }
+
+  try {
+    // Delete associated deletion requests first
+    await supabase
+      .from("deletion_requests")
+      .delete()
+      .eq("user_service_id", id)
+      .eq("user_id", user.id);
+
+    // Delete the user service
+    const { error } = await supabase
+      .from("user_services")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error permanently deleting account:", error);
+      return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error in DELETE /api/dashboard/accounts:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
