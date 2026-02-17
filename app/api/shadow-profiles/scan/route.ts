@@ -34,7 +34,7 @@ export async function POST() {
       );
     }
 
-    // Check plan — free users limited to 1 scan per week
+    // Check plan — free users limited to 10 scans per week
     const { data: plan } = await supabase
       .from("user_subscriptions")
       .select("current_plan")
@@ -49,23 +49,16 @@ export async function POST() {
         Date.now() - 7 * 24 * 60 * 60 * 1000
       ).toISOString();
 
-      const { data: recentScan } = await supabase
+      const { count: recentScanCount } = await supabase
         .from("shadow_scans")
-        .select("id, created_at")
+        .select("id", { count: "exact", head: true })
         .eq("user_id", user.id)
-        .gte("created_at", oneWeekAgo)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .gte("created_at", oneWeekAgo);
 
-      if (recentScan) {
-        const nextAvailable = new Date(
-          new Date(recentScan.created_at).getTime() + 7 * 24 * 60 * 60 * 1000
-        );
+      if ((recentScanCount ?? 0) >= 10) {
         return NextResponse.json(
           {
-            error: "Free plan allows 1 scan per week",
-            nextAvailableAt: nextAvailable.toISOString(),
+            error: "Free plan allows 10 scans per week. Upgrade for unlimited scans.",
           },
           { status: 429 }
         );

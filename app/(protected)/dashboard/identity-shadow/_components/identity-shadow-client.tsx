@@ -11,6 +11,7 @@ import ShadowCard, { type ShadowProfile } from "./shadow-card";
 import SelectorManager from "./selector-manager";
 import RemediationQueue from "./remediation-queue";
 import ScanButton, { type ScanStatus } from "./scan-button";
+import ShadowOnboardingModal from "./shadow-onboarding-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type ShadowData = {
@@ -210,6 +211,9 @@ export default function IdentityShadowClient() {
 
   return (
     <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
+      {/* Onboarding guidance modal for first-time visitors */}
+      <ShadowOnboardingModal />
+
       {/* Scanline overlay when scanning */}
       {isScanning && (
         <div className="fixed inset-0 z-50 pointer-events-none">
