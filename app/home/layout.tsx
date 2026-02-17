@@ -12,7 +12,7 @@ export default function HomeLayout({
 }) {
     return (
         <QueryClientProvider client={queryClient}>
-            <div className="min-h-screen bg-background relative">
+            <div className="min-h-screen bg-[#050505] text-white relative">
                 <Header />
                 {children}
             </div>

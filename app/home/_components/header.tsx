@@ -5,112 +5,80 @@ import Link from "next/link";
 import { Logo } from "@/svgs";
 import { ArrowRight, Menu, X } from "lucide-react";
 
-const NavLinks = ({
+const links = [
+    { href: "/home/how-it-works", label: "How it works" },
+    { href: "/home/security", label: "Security" },
+    { href: "/home/blogs", label: "Blog" },
+    { href: "/home/breach_check", label: "Breach checker" },
+    { href: "/home#pricing", label: "Pricing", anchor: true },
+    { href: "/home#faq", label: "FAQ", anchor: true },
+];
+
+function NavLinks({
     className = "",
     onClick,
 }: {
     className?: string;
     onClick?: () => void;
-}) => (
-    <nav className={className}>
-        <Link
-            href="/home/how-it-works"
-            className="transition-colors hover:text-foreground"
-            onClick={onClick}
-        >
-            How it works
-        </Link>
-        <Link
-            href="/home/security"
-            className="transition-colors hover:text-foreground"
-            onClick={onClick}
-        >
-            Security
-        </Link>
-        <Link
-            href="/home/blogs"
-            className="transition-colors hover:text-foreground"
-            onClick={onClick}
-        >
-            Blog
-        </Link>
-        <Link
-            href="/home/breach_check"
-            className="transition-colors hover:text-foreground"
-            onClick={onClick}
-        >
-            Breach checker
-        </Link>
-        <a
-            href="/home#pricing"
-            className="transition-colors hover:text-foreground"
-            onClick={onClick}
-        >
-            Pricing
-        </a>
-        <a
-            href="/home#faq"
-            className="transition-colors hover:text-foreground"
-            onClick={onClick}
-        >
-            FAQ
-        </a>
-    </nav>
-);
+}) {
+    return (
+        <nav className={className}>
+            {links.map((link) =>
+                link.anchor ? (
+                    <a
+                        key={link.href}
+                        href={link.href}
+                        className="text-white/40 transition-colors hover:text-white"
+                        onClick={onClick}
+                    >
+                        {link.label}
+                    </a>
+                ) : (
+                    <Link
+                        key={link.href}
+                        href={link.href}
+                        className="text-white/40 transition-colors hover:text-white"
+                        onClick={onClick}
+                    >
+                        {link.label}
+                    </Link>
+                )
+            )}
+        </nav>
+    );
+}
 
 export default function Header() {
     const [mobileOpen, setMobileOpen] = useState(false);
-
     const closeMobile = () => setMobileOpen(false);
 
     return (
-        <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-sm">
-            <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+        <header className="sticky top-0 z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl">
+            <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
                 {/* Logo */}
-                <Link href="/home" onClick={closeMobile}>
-                    <div className="flex items-center gap-2">
-                        <Logo className="h-6 w-auto" />
-                        <span className="text-sm font-semibold tracking-tight">
-                            GhostSweep
-                        </span>
-                    </div>
+                <Link href="/home" onClick={closeMobile} className="flex items-center gap-2.5">
+                    <Logo className="h-5 w-auto" />
+                    <span className="text-sm font-semibold tracking-tight text-white">
+                        GhostSweep
+                    </span>
                 </Link>
 
-                {/* Center nav – desktop only */}
-                <NavLinks className="hidden items-center gap-6 text-xs text-muted-foreground sm:flex" />
+                {/* Desktop nav */}
+                <NavLinks className="hidden items-center gap-7 text-[13px] sm:flex" />
 
-                {/* Right side (desktop) */}
-                <div className="hidden items-center gap-3 sm:flex">
-                    {/* Policy links (more visible) */}
-                    <nav className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                        <Link
-                            href="/home/privacy"
-                            className="transition-colors hover:text-foreground"
-                        >
-                            Privacy
-                        </Link>
-                        <Link
-                            href="/home/terms"
-                            className="transition-colors hover:text-foreground"
-                        >
-                            Terms
-                        </Link>
-                    </nav>
-
-                    <div className="h-4 w-px bg-border/60" />
-
-                    {/* CTAs */}
+                {/* Desktop right */}
+                <div className="hidden items-center gap-4 sm:flex">
                     <Link
                         href="/login"
-                        className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                        className="text-[13px] text-white/40 transition-colors hover:text-white"
                     >
                         Log in
                     </Link>
                     <Link
                         href="/login"
-                        className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-[13px] font-medium text-black shadow-sm transition hover:bg-emerald-400"
                     >
-                        Find accounts
+                        Get started
                         <ArrowRight className="h-3 w-3" />
                     </Link>
                 </div>
@@ -118,7 +86,7 @@ export default function Header() {
                 {/* Mobile menu button */}
                 <button
                     type="button"
-                    className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-muted sm:hidden"
+                    className="inline-flex items-center justify-center rounded-lg p-2 text-white/40 hover:text-white hover:bg-white/5 sm:hidden transition"
                     onClick={() => setMobileOpen((prev) => !prev)}
                     aria-label="Toggle navigation menu"
                     aria-expanded={mobileOpen}
@@ -129,37 +97,17 @@ export default function Header() {
 
             {/* Mobile dropdown */}
             {mobileOpen && (
-                <div className="border-t border-border/60 bg-background/95 sm:hidden">
-                    <div className="mx-auto max-w-5xl px-4 pb-3 pt-2 space-y-3">
+                <div className="border-t border-white/5 bg-[#050505]/95 backdrop-blur-xl sm:hidden">
+                    <div className="mx-auto max-w-5xl px-6 py-4 space-y-5">
                         <NavLinks
                             onClick={closeMobile}
-                            className="flex flex-col gap-2 text-sm text-muted-foreground"
+                            className="flex flex-col gap-3 text-sm"
                         />
 
-                        {/* Policy links (mobile) */}
-                        <div className="pt-2 border-t border-border/60">
-                            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                                <Link
-                                    href="/home/privacy"
-                                    className="transition-colors hover:text-foreground"
-                                    onClick={closeMobile}
-                                >
-                                    Privacy
-                                </Link>
-                                <Link
-                                    href="/home/terms"
-                                    className="transition-colors hover:text-foreground"
-                                    onClick={closeMobile}
-                                >
-                                    Terms
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2 pt-2">
+                        <div className="border-t border-white/5 pt-4 space-y-3">
                             <Link
                                 href="/login"
-                                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                className="block text-sm text-white/40 transition-colors hover:text-white"
                                 onClick={closeMobile}
                             >
                                 Log in
@@ -167,10 +115,10 @@ export default function Header() {
                             <Link
                                 href="/login"
                                 onClick={closeMobile}
-                                className="inline-flex items-center justify-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+                                className="flex items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-black shadow-sm transition hover:bg-emerald-400"
                             >
-                                Find accounts
-                                <ArrowRight className="h-4 w-4" />
+                                Get started
+                                <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
                         </div>
                     </div>
