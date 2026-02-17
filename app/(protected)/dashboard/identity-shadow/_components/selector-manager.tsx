@@ -30,6 +30,7 @@ export default function SelectorManager({
   };
 
   const detectedType = value.trim() ? detectSelectorType(value) : null;
+  const hasSpace = detectedType === "username" && /\s/.test(value.trim());
 
   const addMutation = useMutation({
     mutationFn: async (selectorValue: string) => {
@@ -105,26 +106,38 @@ export default function SelectorManager({
             type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            onKeyDown={(e) => e.key === "Enter" && !hasSpace && handleAdd()}
             placeholder="email, phone, or username"
             className="w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 font-mono"
             autoFocus
           />
           {detectedType && (
-            <div className="flex items-center gap-1.5 px-1">
-              {detectedType === "email" && <Mail className="h-3 w-3 text-emerald-400/70" />}
-              {detectedType === "phone" && <Phone className="h-3 w-3 text-blue-400/70" />}
-              {detectedType === "username" && <User className="h-3 w-3 text-amber-400/70" />}
-              <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">
-                Detected as <span className={detectedType === "email" ? "text-emerald-400/70" : detectedType === "phone" ? "text-blue-400/70" : "text-amber-400/70"}>{detectedType}</span>
-              </span>
+            <div className="space-y-1.5 px-1">
+              <div className="flex items-center gap-1.5">
+                {detectedType === "email" && <Mail className="h-3 w-3 text-emerald-400/70" />}
+                {detectedType === "phone" && <Phone className="h-3 w-3 text-blue-400/70" />}
+                {detectedType === "username" && <User className="h-3 w-3 text-amber-400/70" />}
+                <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">
+                  Detected as <span className={detectedType === "email" ? "text-emerald-400/70" : detectedType === "phone" ? "text-blue-400/70" : "text-amber-400/70"}>{detectedType}</span>
+                </span>
+              </div>
+              {hasSpace && (
+                <p className="text-[10px] text-red-400/80">
+                  Usernames can&apos;t contain spaces. Add each word as a separate selector.
+                </p>
+              )}
+              {detectedType === "username" && !hasSpace && (
+                <p className="text-[10px] text-white/25 leading-relaxed">
+                  Add usernames you actually use online — not your legal name. No spaces allowed. Hyphens, underscores, and dots are fine (e.g. <span className="font-mono text-white/40">john_doe</span>, <span className="font-mono text-white/40">j-doe99</span>). Add each username as a separate selector.
+                </p>
+              )}
             </div>
           )}
           <div className="flex gap-2">
             <Button
               size="sm"
               onClick={handleAdd}
-              disabled={addMutation.isPending || !value.trim()}
+              disabled={addMutation.isPending || !value.trim() || hasSpace}
               className="flex-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 text-xs"
             >
               {addMutation.isPending ? (
