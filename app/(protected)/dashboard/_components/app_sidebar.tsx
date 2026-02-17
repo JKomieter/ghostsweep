@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, LayoutDashboard, Zap, FileText, Shield, CheckCircle2, LogOut, Map } from "lucide-react";
+import { Menu, X, LayoutDashboard, Zap, FileText, Shield, CheckCircle2, LogOut, Map, Fingerprint } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -34,6 +34,11 @@ const navItems = [
         label: "Accounts",
         href: "/dashboard/accounts",
         icon: Map,
+    },
+    {
+        label: "Identity Shadow",
+        href: "/dashboard/identity-shadow",
+        icon: Fingerprint,
     },
     // {
     //     label: "Breaches",
