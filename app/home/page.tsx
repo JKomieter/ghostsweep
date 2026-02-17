@@ -15,7 +15,7 @@ import {
     Fingerprint,
     Instagram,
     Music2,
-    Scan,
+    ScanSearch,
     Search,
     Trash2,
     Shield,
@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { GmailLogo } from "@/svgs";
+import TeaserScan from "./_components/teaser-scan";
 
 // ─── Structured Data ───────────────────────────────────────────
 const structuredData = {
@@ -300,7 +301,7 @@ function DashboardPreview() {
                         {/* Terminal output */}
                         <div className="border-t border-white/5 p-6 font-mono text-xs space-y-2.5 text-white/30">
                             <div className="flex items-center gap-2 text-emerald-400/70">
-                                <Scan className="h-3 w-3" />
+                                <ScanSearch className="h-3 w-3" />
                                 <span>Scanning inbox: j***@gmail.com</span>
                             </div>
                             <div className="pl-5">
@@ -438,7 +439,7 @@ function HowItWorksSection() {
             title: "We scan everywhere",
             description:
                 "Your inbox reveals hidden accounts. Our shadow scanner searches the web for profiles you didn't even know existed. Breach databases are checked in real-time.",
-            icon: Scan,
+            icon: ScanSearch,
         },
         {
             num: "03",
@@ -516,11 +517,16 @@ function IdentityShadowSection() {
                     <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white leading-tight">
                         Your inbox shows what you signed up for.
                         <br />
-                        <span className="text-white/30">We find what you didn't.</span>
+                        <span className="text-white/30">We find what you didn&apos;t.</span>
                     </h2>
                     <p className="mx-auto mt-6 max-w-xl text-base text-white/45 leading-relaxed">
                         Beyond inbox scanning, the Identity Shadow scanner searches the open web using your email, phone number, or username — discovering accounts and profiles that exist without your knowledge.
                     </p>
+                </div>
+
+                {/* Live teaser scan */}
+                <div className="max-w-2xl mx-auto mb-16">
+                    <TeaserScan />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

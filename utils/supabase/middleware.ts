@@ -14,6 +14,8 @@ const publicRoutes = [
     "/api/waitlist",
     "/api/unsubscribe",
     "/api/breach_check",
+    "/api/teaser-scan",
+    "/api/scan/teaser",
     "/sitemap.xml",
 ]
 
