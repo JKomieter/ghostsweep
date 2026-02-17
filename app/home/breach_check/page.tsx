@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useMemo } from "react";
 import { ShieldCheck, Loader2, AlertTriangle, Ghost } from "lucide-react";
-import DOMPurify from "dompurify";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +14,13 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Input from "@/components/ui/input";
 import { toast } from "sonner";
+
+function sanitizeHtml(dirty: string): string {
+    if (typeof window === "undefined") return dirty;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const DOMPurify = require("dompurify") as { sanitize: (d: string) => string };
+    return DOMPurify.sanitize(dirty);
+}
 
 type Breach = {
     Id?: string | null;
@@ -206,7 +212,7 @@ export default function BreachCheckPage() {
                                     breach.Domain ||
                                     "Unknown breach";
 
-                                const safeHtml = DOMPurify.sanitize(
+                                const safeHtml = sanitizeHtml(
                                     breach.Description ??
                                         "This service was involved in a known data exposure."
                                 );
