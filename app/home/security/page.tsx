@@ -20,22 +20,20 @@ import {
 
 export const metadata: Metadata = {
     title: "Security & Privacy | How GhostSweep Protects Your Data",
-    description: "Learn how GhostSweep securely scans your email using transient, zero-storage analysis, Google OAuth, and privacy-first design. CASA certified and Google verified.",
+    description:
+        "Learn how GhostSweep securely scans your email using transient, zero-storage analysis, Google OAuth, and privacy-first design.",
     keywords: [
         "email security",
         "privacy protection",
         "OAuth security",
         "data privacy",
-        "email scanning security",
-        "CCPA compliant",
-        "GDPR compliant",
-        "data encryption",
+        "CASA certified",
         "transient analysis",
-        "privacy certification",
     ],
     openGraph: {
         title: "Security & Privacy | How GhostSweep Protects Your Data",
-        description: "Discover how GhostSweep securely protects your privacy with transient, zero-storage scanning and Google OAuth verification.",
+        description:
+            "Discover how GhostSweep protects your privacy with transient, zero-storage scanning.",
         url: "https://ghostsweep.com/home/security",
         type: "website",
     },
@@ -44,608 +42,572 @@ export const metadata: Metadata = {
     },
 };
 
-// Organization schema for security page
 const securityPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Security & Privacy | How GhostSweep Protects Your Data",
-    "description": "Learn how GhostSweep securely scans your email using transient, zero-storage analysis, Google OAuth, and privacy-first design.",
-    "url": "https://ghostsweep.com/home/security",
-    "publisher": {
+    name: "Security & Privacy | How GhostSweep Protects Your Data",
+    description:
+        "Learn how GhostSweep securely scans your email using transient, zero-storage analysis.",
+    url: "https://ghostsweep.com/home/security",
+    publisher: {
         "@type": "Organization",
-        "name": "GhostSweep",
-        "logo": {
+        name: "GhostSweep",
+        logo: {
             "@type": "ImageObject",
-            "url": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
+            url: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
         },
-        "sameAs": [
-            "https://twitter.com/ghostsweep",
-            "https://ghostsweep.com",
-        ],
     },
 };
 
 export default function SecurityPage() {
     return (
-        <main className="min-h-screen text-foreground bg-[#050505]">
-            {/* JSON-LD Structured Data */}
+        <main className="min-h-screen bg-[#050505]">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(securityPageSchema) }}
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(securityPageSchema),
+                }}
             />
 
-            <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 pt-12 space-y-16">
-                {/* HERO */}
-                <section className="space-y-8">
-                    <div className="text-center space-y-5 max-w-3xl mx-auto">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/2 px-4 py-1.5 text-[11px] text-white/60 backdrop-blur-sm">
-                            <Shield className="h-3 w-3" />
-                            Google OAuth · Zero-storage scanning · You control all actions
-                        </div>
-
-                        <div className="space-y-3">
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight leading-tight text-white">
-                                Bank-Grade Security. <br/> Zero-Knowledge Privacy.
-                            </h1>
-                            <p className="text-sm sm:text-base text-white/60 leading-relaxed">
-                                Because we help you find money, we treat your security like a bank would. 
-                                We use transient, zero-storage scanning, we never see your banking credentials, 
-                                and we never sell your data.
-                            </p>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                            <Link
-                                href="/login"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-7 py-2.5 text-xs sm:text-sm font-light text-black shadow-sm hover:bg-emerald-400 transition"
-                            >
-                                Start Secure Scan
-                                <ArrowRight className="h-3.5 w-3.5" />
-                            </Link>
-
-                            <Link
-                                href="/home/privacy"
-                                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/5 bg-white/2 px-7 py-2.5 text-xs sm:text-sm font-light hover:bg-white/3 hover:border-white/10 transition backdrop-blur-sm"
-                            >
-                                Read privacy policy
-                                <ExternalLink className="h-4 w-4" />
-                            </Link>
-                        </div>
+            <div className="mx-auto max-w-4xl px-6 pt-24 pb-20 sm:pt-32 space-y-20">
+                {/* Hero */}
+                <section className="text-center max-w-3xl mx-auto space-y-6">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/50">
+                        <Shield className="h-3 w-3 text-emerald-400" />
+                        Google OAuth · Zero-storage scanning · You control all actions
                     </div>
 
-                    {/* At a glance */}
-                    <div className="grid gap-4 md:grid-cols-3 text-xs sm:text-sm">
-                        <div className="rounded-lg border border-white/5 bg-white/2 p-4 space-y-1.5 backdrop-blur-sm">
-                            <p className="font-light flex items-center gap-2 text-white">
-                                <EyeOff className="h-3.5 w-3.5 text-emerald-400" />
-                                We do NOT scan bank logins
-                            </p>
-                            <p className="text-white/60">
-                                We analyze receipts and confirmation emails. Your bank credentials and password never touch our servers.
-                            </p>
-                        </div>
+                    <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
+                        Your security.
+                        <br />
+                        <span className="text-white/30">Our obsession.</span>
+                    </h1>
 
+                    <p className="mx-auto max-w-xl text-lg text-white/45 font-light leading-relaxed">
+                        We help you find money and clean up accounts. That means your
+                        security gets treated like a bank would — transient processing,
+                        zero-knowledge storage, and you control every action.
+                    </p>
 
-                        <div className="rounded-lg border border-white/5 bg-white/2 p-4 space-y-1.5 backdrop-blur-sm">
-                            <p className="font-light flex items-center gap-2 text-white">
-                                <Lock className="h-3.5 w-3.5 text-white" />
-                                Permissioned access only
-                            </p>
-                            <p className="text-white/60">
-                                Email access is granted via Google or Microsoft OAuth and can be revoked at any time from your Google or Microsoft account.
-                            </p>
-                        </div>
-
-                        <div className="rounded-lg border border-white/5 bg-white/2 p-4 space-y-1.5 backdrop-blur-sm">
-                            <p className="font-light flex items-center gap-2 text-white">
-                                <Shield className="h-3.5 w-3.5 text-white" />
-                                Minimal storage
-                            </p>
-                            <p className="text-white/60">
-                                We store only what’s needed for your dashboard: detected services, breach matches, and deletion
-                                tracking status.
-                            </p>
-                        </div>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Link
+                            href="/login"
+                            className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
+                        >
+                            Start Secure Scan
+                            <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                        <Link
+                            href="/home/privacy"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm text-white/60 hover:text-white hover:bg-white/10 transition"
+                        >
+                            Read privacy policy
+                            <ExternalLink className="h-3.5 w-3.5" />
+                        </Link>
                     </div>
                 </section>
 
-                {/* KEY PRINCIPLE */}
-                <section className="rounded-lg border border-white/5 bg-white/2 p-6 sm:p-8 md:p-10 backdrop-blur-sm">
-                    <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/5 shrink-0">
-                            <EyeOff className="h-5 w-5 text-white" />
+                {/* At a glance */}
+                <section className="grid gap-4 md:grid-cols-3">
+                    {[
+                        {
+                            icon: EyeOff,
+                            title: "We do NOT scan bank logins",
+                            text: "We analyze receipts and confirmation emails. Your bank credentials never touch our servers.",
+                        },
+                        {
+                            icon: Lock,
+                            title: "Permissioned access only",
+                            text: "Email access via Google or Microsoft OAuth. Revoke anytime from your Google/Microsoft account.",
+                        },
+                        {
+                            icon: Shield,
+                            title: "Minimal storage",
+                            text: "We store only what's needed for your dashboard: detected services, breach matches, and deletion tracking.",
+                        },
+                    ].map((card) => (
+                        <div
+                            key={card.title}
+                            className="rounded-2xl border border-white/5 bg-white/2 p-6"
+                        >
+                            <card.icon className="h-5 w-5 text-emerald-400 mb-3" />
+                            <p className="text-sm font-medium text-white mb-1.5">
+                                {card.title}
+                            </p>
+                            <p className="text-xs text-white/40 leading-relaxed">
+                                {card.text}
+                            </p>
                         </div>
+                    ))}
+                </section>
 
-                        <div className="space-y-3">
-                            <h2 className="text-lg sm:text-xl font-light text-white">
+                {/* Core principle */}
+                <section className="rounded-2xl border border-white/10 bg-white/3 p-8 sm:p-10">
+                    <div className="flex items-start gap-5">
+                        <div className="shrink-0 h-11 w-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                            <EyeOff className="h-5 w-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold text-white mb-3">
                                 Core Principle: Minimize Access, Maximize Control
                             </h2>
-
-                            <p className="text-xs sm:text-sm text-white/60 leading-relaxed max-w-3xl">
-                                GhostSweep is built to keep your inbox private. We focus on{" "}
-                                <span className="font-light text-white">account signals</span> (like sender, subject, and timestamps)
-                                to build your service list and surface risk. When you choose to take action (like sending a deletion request),
-                                the app will only do so with your explicit confirmation.
+                            <p className="text-sm text-white/45 leading-relaxed max-w-2xl mb-6">
+                                GhostSweep focuses on account signals (sender, subject,
+                                timestamps) to build your service list. When you take
+                                action, it only happens with your explicit confirmation.
                             </p>
-
-                            <div className="grid gap-2 sm:grid-cols-3 text-xs text-white/60">
-                                <div className="inline-flex items-start gap-2">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <span>No storing full email bodies.</span>
-                                </div>
-                                <div className="inline-flex items-start gap-2">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <span>Deletion emails sent only after you preview and approve.</span>
-                                </div>
-                                <div className="inline-flex items-start gap-2">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <span>Disconnect & wipe scan data anytime.</span>
-                                </div>
+                            <div className="grid gap-3 sm:grid-cols-3 text-xs text-white/50">
+                                {[
+                                    "No storing full email bodies.",
+                                    "Deletion emails sent only after you preview and approve.",
+                                    "Disconnect & wipe scan data anytime.",
+                                ].map((text) => (
+                                    <div
+                                        key={text}
+                                        className="flex items-start gap-2"
+                                    >
+                                        <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                        <span>{text}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* PERMISSIONS */}
-                <section className="space-y-8">
-                    <div className="text-center space-y-2 max-w-3xl mx-auto">
-                        <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-                            Exactly What GhostSweep Can Access
+                {/* Permissions */}
+                <section className="space-y-10">
+                    <div className="text-center space-y-3 max-w-2xl mx-auto">
+                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                            What GhostSweep can access
                         </h2>
-                        <p className="text-sm text-white/60">
-                            Permissions are granted via Google OAuth. We request only what’s needed for the features you use.
+                        <p className="text-sm text-white/40">
+                            Permissions are granted via Google OAuth. We request only
+                            what's needed.
                         </p>
                     </div>
 
-                    <div className="grid gap-6 md:grid-cols-2">
-                        {/* CAN ACCESS */}
-                        <div className="space-y-5 rounded-lg border border-white/5 bg-white/2 p-6 backdrop-blur-sm">
+                    <div className="grid gap-5 md:grid-cols-2">
+                        {/* Can access */}
+                        <div className="rounded-2xl border border-white/5 bg-white/2 p-7 space-y-6">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                                    <Eye className="h-5 w-5 text-white" />
+                                <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center">
+                                    <Eye className="h-5 w-5 text-white/60" />
                                 </div>
-                                <h3 className="text-sm sm:text-base font-light text-white">
-                                    What we access (via Gmail and Outlook)
+                                <h3 className="text-sm font-medium text-white">
+                                    What we access
                                 </h3>
                             </div>
-
-                            <p className="text-xs sm:text-sm text-white/60">
-                                Access is scoped and permissioned. GhostSweep does not see your Google password and cannot bypass OAuth controls.
+                            <p className="text-xs text-white/40">
+                                Scoped and permissioned. GhostSweep never sees your
+                                Google password.
                             </p>
 
-                            <div className="space-y-4">
+                            <div className="space-y-5">
                                 <div>
-                                    <h4 className="text-xs font-light text-white mb-1.5 uppercase tracking-wide">
-                                        For value scanning (account discovery)
+                                    <h4 className="text-[10px] uppercase tracking-widest text-white/25 mb-2">
+                                        For value scanning
                                     </h4>
-                                    <ul className="space-y-1.5 text-xs sm:text-sm text-white/60">
+                                    <ul className="space-y-2 text-xs text-white/50">
                                         <li className="flex items-start gap-2">
-                                            <CheckCircle className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>Sender addresses (who sent the email)</span>
+                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                            Sender addresses
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <CheckCircle className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>Subject lines (e.g., "Receipt for order", "Gift Card Balance")</span>
+                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                            Subject lines
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <CheckCircle className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>Body content (transiently scanned for values/codes, never stored)</span>
+                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                            Body content (transiently scanned, never
+                                            stored)
                                         </li>
                                     </ul>
                                 </div>
 
-
                                 <div>
-                                    <h4 className="text-xs font-light text-white mb-1.5 uppercase tracking-wide">
-                                        Optional: For deletion requests (only when you choose)
+                                    <h4 className="text-[10px] uppercase tracking-widest text-white/25 mb-2">
+                                        For deletion requests (optional)
                                     </h4>
-                                    <ul className="space-y-1.5 text-xs sm:text-sm text-white/60">
+                                    <ul className="space-y-2 text-xs text-white/50">
                                         <li className="flex items-start gap-2">
-                                            <Send className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>
-                                                Send deletion request emails when you click <span className="font-light text-white">Start Deletion</span>
-                                            </span>
+                                            <Send className="h-3.5 w-3.5 text-white/30 mt-0.5 shrink-0" />
+                                            Send deletion emails when you click Start
+                                            Deletion
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <Mail className="h-3.5 w-3.5 text-white mt-0.5 shrink-0" />
-                                            <span>
-                                                Track deletion request status (which services were contacted, when, and reply status)
-                                            </span>
+                                            <Mail className="h-3.5 w-3.5 text-white/30 mt-0.5 shrink-0" />
+                                            Track deletion request status
                                         </li>
                                     </ul>
-
-                                    <p className="mt-2 text-[11px] text-white/40">
-                                        If you prefer, you can choose a workflow that opens the provider’s deletion page (no email sent),
-                                        or you can disconnect your email after sending.
-                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* CANNOT ACCESS */}
-                        <div className="space-y-5 rounded-lg border border-red-500/20 bg-red-500/10 p-6 backdrop-blur-sm">
+                        {/* Cannot access */}
+                        <div className="rounded-2xl border border-red-500/15 bg-red-500/5 p-7 space-y-6">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/20">
-                                    <EyeOff className="h-5 w-5 text-red-300" />
+                                <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                                    <EyeOff className="h-5 w-5 text-red-400" />
                                 </div>
-                                <h3 className="text-sm sm:text-base font-light text-white">
-                                    What we never access / do
+                                <h3 className="text-sm font-medium text-white">
+                                    What we never do
                                 </h3>
                             </div>
 
-                            <p className="text-xs sm:text-sm text-white/60">
-                                These are hard constraints—by design and by policy.
-                            </p>
-
-                            <ul className="space-y-2.5 text-xs sm:text-sm">
-                                <li className="flex items-start gap-3 rounded-lg bg-black/40 p-3">
-                                    <span className="text-red-400 text-base shrink-0">✕</span>
-                                    <div>
-                                        <p className="font-medium">Sell data or run ads</p>
-                                        <p className="text-[11px] text-muted-foreground mt-1">
-                                            You are the customer, not the product. We charge a fair price so we never have to sell your data.
+                            <ul className="space-y-3">
+                                {[
+                                    {
+                                        title: "Sell data or run ads",
+                                        text: "You are the customer, not the product.",
+                                    },
+                                    {
+                                        title: "Automatic deletions",
+                                        text: "You preview and approve every action.",
+                                    },
+                                    {
+                                        title: "Bulk mailbox export",
+                                        text: "No copy of your full mailbox is ever made.",
+                                    },
+                                    {
+                                        title: "Password access",
+                                        text: "OAuth means we never see your password.",
+                                    },
+                                ].map((item) => (
+                                    <li
+                                        key={item.title}
+                                        className="rounded-xl bg-black/30 p-3"
+                                    >
+                                        <p className="text-xs font-medium text-white mb-0.5">
+                                            <span className="text-red-400 mr-1.5">
+                                                ✕
+                                            </span>
+                                            {item.title}
                                         </p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3 rounded-lg bg-black/40 p-3">
-                                    <span className="text-red-400 text-base shrink-0">✕</span>
-                                    <div>
-                                        <p className="font-medium">Automatic deletions</p>
-                                        <p className="text-[11px] text-muted-foreground mt-1">
-                                            We never delete accounts or send emails without your explicit approval. You preview every action first.
+                                        <p className="text-xs text-white/35 pl-5">
+                                            {item.text}
                                         </p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3 rounded-lg bg-black/40 p-3">
-                                    <span className="text-red-400 text-base shrink-0">✕</span>
-                                    <div>
-                                        <p className="font-medium">Bulk mailbox export</p>
-                                        <p className="text-[11px] text-muted-foreground mt-1">
-                                            We don’t keep a copy of your full mailbox or export it to our servers.
-                                        </p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3 rounded-lg bg-black/40 p-3">
-                                    <span className="text-red-400 text-base shrink-0">✕</span>
-                                    <div>
-                                        <p className="font-medium">Password access</p>
-                                        <p className="text-[11px] text-muted-foreground mt-1">
-                                            OAuth means GhostSweep never sees your Google password.
-                                        </p>
-                                    </div>
-                                </li>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
                 </section>
 
-                {/* WHAT WE STORE */}
-                <section className="space-y-8">
-                    <div className="text-center space-y-2 max-w-3xl mx-auto">
-                        <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-                            What We Store (and What We Don&lsquo;t)
+                {/* What we store */}
+                <section className="space-y-10">
+                    <div className="text-center space-y-3 max-w-2xl mx-auto">
+                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                            What we store
                         </h2>
-                        <p className="text-sm text-white/60">
-                            We store only what’s needed to power your dashboard and deletion tracking.
+                        <p className="text-sm text-white/40">
+                            Only what's needed to power your dashboard and deletion
+                            tracking.
                         </p>
                     </div>
 
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <div className="space-y-5 rounded-lg border border-white/5 bg-white/2 p-6 backdrop-blur-sm">
+                    <div className="grid gap-5 md:grid-cols-2">
+                        <div className="rounded-2xl border border-white/5 bg-white/2 p-7 space-y-5">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                                    <Database className="h-5 w-5 text-white" />
-                                </div>
-                                <h3 className="text-sm sm:text-base font-light text-white">
+                                <Database className="h-5 w-5 text-white/60" />
+                                <h3 className="text-sm font-medium text-white">
                                     Stored in GhostSweep
                                 </h3>
                             </div>
-
-                            <ul className="space-y-3 text-xs sm:text-sm text-white/60">
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <div>
-                                        <p className="font-light text-white">Account profile</p>
-                                        <p className="text-[11px] mt-1">Email + basic settings.</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <div>
-                                        <p className="font-light text-white">Detected services</p>
-                                        <p className="text-[11px] mt-1">
-                                            Service/domain + activity indicators (first seen, last seen, email count).
-                                        </p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <div>
-                                        <p className="font-light text-white">Breach matches</p>
-                                        <p className="text-[11px] mt-1">
-                                            Which services appear in public breach datasets (sourced from Have I Been Pwned and similar databases).
-                                        </p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="h-4 w-4 text-white mt-0.5 shrink-0" />
-                                    <div>
-                                        <p className="font-light text-white">Deletion request tracking</p>
-                                        <p className="text-[11px] mt-1">
-                                            Which services you started deletion for, timestamps, and status (pending / completed).
-                                        </p>
-                                    </div>
-                                </li>
+                            <ul className="space-y-4 text-xs text-white/45">
+                                {[
+                                    {
+                                        label: "Account profile",
+                                        detail: "Email + basic settings.",
+                                    },
+                                    {
+                                        label: "Detected services",
+                                        detail: "Service/domain + activity indicators.",
+                                    },
+                                    {
+                                        label: "Breach matches",
+                                        detail: "Services appearing in public breach datasets.",
+                                    },
+                                    {
+                                        label: "Deletion tracking",
+                                        detail: "Status, timestamps, and progress.",
+                                    },
+                                ].map((item) => (
+                                    <li
+                                        key={item.label}
+                                        className="flex items-start gap-3"
+                                    >
+                                        <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="font-medium text-white">
+                                                {item.label}
+                                            </p>
+                                            <p className="text-white/35 mt-0.5">
+                                                {item.detail}
+                                            </p>
+                                        </div>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
 
-                        <div className="space-y-5 rounded-2xl border border-emerald-500/35 bg-emerald-500/5 p-6">
+                        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-7 space-y-5">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20">
-                                    <Shield className="h-5 w-5 text-emerald-300" />
-                                </div>
-                                <h3 className="text-sm sm:text-base font-semibold">Never stored</h3>
+                                <Shield className="h-5 w-5 text-emerald-400" />
+                                <h3 className="text-sm font-medium text-white">
+                                    Never stored
+                                </h3>
                             </div>
-
-                            <ul className="space-y-3 text-xs sm:text-sm text-muted-foreground">
-                                <li className="flex items-start gap-3">
-                                    <span className="text-emerald-300 text-base shrink-0">✓</span>
-                                    <div>
-                                        <p className="font-medium text-foreground">Email bodies</p>
-                                        <p className="text-[11px] mt-1">We don’t store full message content.</p>
-                                    </div>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <span className="text-emerald-300 text-base shrink-0">✓</span>
-                                    <div>
-                                        <p className="font-medium text-foreground">Attachments and files</p>
-                                        <p className="text-[11px] mt-1">No PDFs, images, or documents are stored.</p>
-                                    </div>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <span className="text-emerald-300 text-base shrink-0">✓</span>
-                                    <div>
-                                        <p className="font-medium text-foreground">Passwords or credentials</p>
-                                        <p className="text-[11px] mt-1">We never see your Google password or any passwords from emails. OAuth only.</p>
-                                    </div>
-                                </li>
+                            <ul className="space-y-4 text-xs text-white/45">
+                                {[
+                                    {
+                                        label: "Email bodies",
+                                        detail: "Full message content is never kept.",
+                                    },
+                                    {
+                                        label: "Attachments and files",
+                                        detail: "No PDFs, images, or documents stored.",
+                                    },
+                                    {
+                                        label: "Passwords or credentials",
+                                        detail: "OAuth only — we never see your password.",
+                                    },
+                                ].map((item) => (
+                                    <li
+                                        key={item.label}
+                                        className="flex items-start gap-3"
+                                    >
+                                        <span className="text-emerald-400 shrink-0 mt-0.5">
+                                            ✓
+                                        </span>
+                                        <div>
+                                            <p className="font-medium text-white">
+                                                {item.label}
+                                            </p>
+                                            <p className="text-white/35 mt-0.5">
+                                                {item.detail}
+                                            </p>
+                                        </div>
+                                    </li>
+                                ))}
                             </ul>
-
                             <div className="pt-4 border-t border-white/10">
-                                <p className="text-[11px] text-muted-foreground">
-                                    You can disconnect your email at any time. If you also delete your scan data, we remove stored service
-                                    summaries and deletion tracking records associated with your account.
+                                <p className="text-[11px] text-white/30">
+                                    Disconnect your email and delete your scan data
+                                    anytime. We remove all associated records.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* SECURITY MEASURES */}
-                <section className="space-y-8">
-                    <div className="text-center space-y-2 max-w-3xl mx-auto">
-                        <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-                            How We Secure GhostSweep
+                {/* Security measures */}
+                <section className="space-y-10">
+                    <div className="text-center space-y-3 max-w-2xl mx-auto">
+                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                            How we secure GhostSweep
                         </h2>
-                        <p className="text-sm text-white/60">
-                            Encryption, infrastructure, and access controls.
-                        </p>
                     </div>
 
-                    <div className="grid gap-6 md:grid-cols-3">
-                        <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 backdrop-blur-sm">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                                <Lock className="h-5 w-5 text-white" />
+                    <div className="grid gap-5 md:grid-cols-3">
+                        {[
+                            {
+                                icon: Lock,
+                                title: "Encryption",
+                                items: [
+                                    "Tokens encrypted at rest",
+                                    "All traffic over HTTPS / TLS",
+                                    "Database encryption at rest",
+                                ],
+                            },
+                            {
+                                icon: Server,
+                                title: "Infrastructure",
+                                items: [
+                                    "Managed Postgres",
+                                    "Restricted admin access",
+                                    "Server-side sensitive operations",
+                                ],
+                            },
+                            {
+                                icon: Shield,
+                                title: "Access control",
+                                items: [
+                                    "Least-privilege OAuth scopes",
+                                    "Scoped database policies per user",
+                                    "No ad trackers selling data",
+                                ],
+                            },
+                        ].map((card) => (
+                            <div
+                                key={card.title}
+                                className="rounded-2xl border border-white/5 bg-white/2 p-6 space-y-4"
+                            >
+                                <card.icon className="h-5 w-5 text-white/60" />
+                                <h3 className="text-sm font-medium text-white">
+                                    {card.title}
+                                </h3>
+                                <ul className="space-y-2 text-xs text-white/40">
+                                    {card.items.map((item) => (
+                                        <li key={item}>{item}</li>
+                                    ))}
+                                </ul>
                             </div>
-                            <h3 className="text-sm font-light text-white">Encryption</h3>
-                            <ul className="space-y-1.5 text-xs text-white/60">
-                                <li>Tokens stored encrypted at rest.</li>
-                                <li>All traffic over HTTPS / TLS.</li>
-                                <li>Database encryption at rest (provider-managed).</li>
-                            </ul>
-                        </div>
-
-                        <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 backdrop-blur-sm">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                                <Server className="h-5 w-5 text-white" />
-                            </div>
-                            <h3 className="text-sm font-light text-white">Infrastructure</h3>
-                            <ul className="space-y-1.5 text-xs text-white/60">
-                                <li>Managed Postgres for persistence.</li>
-                                <li>Restricted admin access.</li>
-                                <li>Server-side processing for sensitive operations.</li>
-                            </ul>
-                        </div>
-
-                        <div className="space-y-3 rounded-lg border border-white/5 bg-white/2 p-5 backdrop-blur-sm">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                                <Shield className="h-5 w-5 text-white" />
-                            </div>
-                            <h3 className="text-sm font-light text-white">Access control</h3>
-                            <ul className="space-y-1.5 text-xs text-white/60">
-                                <li>Least-privilege OAuth scopes.</li>
-                                <li>Scoped database policies per user.</li>
-                                <li>No ad trackers selling user data.</li>
-                            </ul>
-                        </div>
+                        ))}
                     </div>
                 </section>
 
-                {/* THIRD PARTIES */}
-                <section className="space-y-8">
-                    <div className="text-center space-y-2 max-w-3xl mx-auto">
-                        <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-                            Third-Party Services We Rely On
+                {/* Third parties */}
+                <section className="space-y-10">
+                    <div className="text-center space-y-3 max-w-2xl mx-auto">
+                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                            Trusted third parties
                         </h2>
-                        <p className="text-sm text-white/60">
-                            Trusted vendors that help us run GhostSweep.
-                        </p>
                     </div>
 
-                    <div className="grid gap-5 md:grid-cols-3 text-xs sm:text-sm">
-                        <div className="space-y-2 rounded-lg border border-white/5 bg-white/2 p-5 backdrop-blur-sm">
-                            <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-white" />
-                                <p className="font-light text-white">Google</p>
+                    <div className="grid gap-5 md:grid-cols-3">
+                        {[
+                            {
+                                icon: Users,
+                                name: "Google",
+                                text: "Email APIs and OAuth permissions for scanning and optional deletion requests.",
+                            },
+                            {
+                                icon: Lock,
+                                name: "Stripe",
+                                text: "Handles all payment data. GhostSweep never stores card numbers.",
+                            },
+                            {
+                                icon: Database,
+                                name: "Hosting / Infra",
+                                text: "Vercel (frontend) plus managed database infrastructure.",
+                            },
+                        ].map((vendor) => (
+                            <div
+                                key={vendor.name}
+                                className="rounded-2xl border border-white/5 bg-white/2 p-6"
+                            >
+                                <vendor.icon className="h-5 w-5 text-white/40 mb-3" />
+                                <p className="text-sm font-medium text-white mb-1.5">
+                                    {vendor.name}
+                                </p>
+                                <p className="text-xs text-white/40 leading-relaxed">
+                                    {vendor.text}
+                                </p>
                             </div>
-                            <p className="text-white/60">
-                                Email APIs and OAuth permissions to scan and (optionally) send deletion request emails when you choose.
-                            </p>
-                        </div>
-
-                        <div className="space-y-2 rounded-lg border border-white/5 bg-white/2 p-5 backdrop-blur-sm">
-                            <div className="flex items-center gap-2">
-                                <Lock className="h-4 w-4 text-white" />
-                                <p className="font-light text-white">Stripe</p>
-                            </div>
-                            <p className="text-white/60">
-                                Handles all payment data. GhostSweep never stores card numbers.
-                            </p>
-                        </div>
-
-                        <div className="space-y-2 rounded-lg border border-white/5 bg-white/2 p-5 backdrop-blur-sm">
-                            <div className="flex items-center gap-2">
-                                <Database className="h-4 w-4 text-white" />
-                                <p className="font-light text-white">Hosting / Infra</p>
-                            </div>
-                            <p className="text-white/60">
-                                Vercel (frontend) plus managed database infrastructure.
-                            </p>
-                        </div>
+                        ))}
                     </div>
 
-                    <div className="rounded-lg border border-white/5 bg-white/2 p-4 text-center text-xs sm:text-sm text-white/60 backdrop-blur-sm">
-                        Providers are used only to operate GhostSweep and are not permitted to use your data for advertising or resale.
-                    </div>
+                    <p className="text-center text-xs text-white/25">
+                        Providers are used only to operate GhostSweep and are not
+                        permitted to use your data for advertising or resale.
+                    </p>
                 </section>
 
-                {/* YOUR RIGHTS */}
-                <section className="space-y-8 rounded-lg border border-white/5 bg-white/2 p-6 sm:p-8 md:p-10 backdrop-blur-sm">
-                    <div className="text-center space-y-2">
-                        <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-                            Your Control
+                {/* Your control */}
+                <section className="rounded-2xl border border-white/10 bg-white/3 p-8 sm:p-10 space-y-8">
+                    <div className="text-center space-y-3">
+                        <h2 className="text-2xl font-semibold tracking-tight text-white">
+                            Your control
                         </h2>
-                        <p className="text-xs sm:text-sm text-white/60 max-w-2xl mx-auto">
-                            GhostSweep is designed so you can disconnect, delete, and stay in control of actions.
+                        <p className="text-sm text-white/40 max-w-xl mx-auto">
+                            Disconnect, delete, and stay in control at all times.
                         </p>
                     </div>
 
-                    <div className="grid gap-5 md:grid-cols-2 text-xs sm:text-sm">
+                    <div className="grid gap-5 sm:grid-cols-2">
                         {[
                             {
                                 title: "Disconnect anytime",
-                                body: "Revoke email access from GhostSweep or directly from your Google/Microsoft account settings.",
+                                body: "Revoke email access from GhostSweep or your Google/Microsoft account settings.",
                             },
                             {
                                 title: "Delete your data",
-                                body: "Request deletion and we’ll remove your scan summaries and tracking data from our systems (subject to legal requirements).",
+                                body: "Remove scan summaries and tracking data from our systems.",
                             },
                             {
                                 title: "Choose how you act",
-                                body: "For deletion, you may open provider pages, send emails, or do nothing—GhostSweep follows your choices.",
-                                icon: <Trash2 className="h-4 w-4 text-white" />,
+                                body: "Open provider pages, send emails, or do nothing — your choice.",
                             },
                             {
                                 title: "Email preferences",
-                                body: "Control alerts and notifications where supported.",
+                                body: "Control alerts and notifications.",
                             },
                         ].map((item) => (
-                            <div key={item.title} className="flex items-start gap-3">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 shrink-0">
-                                    {item.icon ?? <CheckCircle className="h-4 w-4 text-white" />}
-                                </div>
+                            <div
+                                key={item.title}
+                                className="flex items-start gap-3"
+                            >
+                                <CheckCircle className="h-4 w-4 text-emerald-400/60 mt-0.5 shrink-0" />
                                 <div>
-                                    <h3 className="font-light text-white mb-0.5">{item.title}</h3>
-                                    <p className="text-white/60">{item.body}</p>
+                                    <h4 className="text-sm font-medium text-white mb-0.5">
+                                        {item.title}
+                                    </h4>
+                                    <p className="text-xs text-white/40">
+                                        {item.body}
+                                    </p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                {/* REPORT */}
-                <section className="grid gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-                    <div className="space-y-5 rounded-lg border border-white/5 bg-white/2 p-6 md:p-7 text-center md:text-left backdrop-blur-sm">
-                        <h2 className="text-lg sm:text-xl font-light text-white">
+                {/* Verify + Report */}
+                <section className="grid gap-5 md:grid-cols-2">
+                    <div className="rounded-2xl border border-white/5 bg-white/2 p-7 space-y-5">
+                        <h3 className="text-lg font-semibold text-white">
                             Verify permissions yourself
-                        </h2>
-                        <p className="text-xs sm:text-sm text-white/60 max-w-xl">
-                            You can see exactly what access GhostSweep has from your Google account page at any time.
+                        </h3>
+                        <p className="text-sm text-white/40">
+                            See exactly what access GhostSweep has from your Google
+                            account.
                         </p>
-
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <a
                                 href="https://myaccount.google.com/permissions"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-2.5 text-xs sm:text-sm font-light text-black hover:bg-white/90 transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
                             >
                                 Check OAuth permissions
-                                <ExternalLink className="h-3.5 w-3.5" />
+                                <ExternalLink className="h-3 w-3" />
                             </a>
-
-                            <Link
-                                href="/home/privacy"
-                                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/5 bg-white/2 px-6 py-2.5 text-xs sm:text-sm font-light hover:bg-white/3 hover:border-white/10 transition backdrop-blur-sm"
-                            >
-                                Read privacy policy
-                                <ExternalLink className="h-4 w-4" />
-                            </Link>
                         </div>
-
-                        <p className="text-[11px] text-white/40">
-                            You control access from your Google account, and you can disconnect at any time.
-                        </p>
                     </div>
 
-                    <div className="space-y-4 rounded-lg border border-red-500/20 bg-red-500/10 p-6 md:p-7 backdrop-blur-sm">
+                    <div className="rounded-2xl border border-red-500/15 bg-red-500/5 p-7 space-y-4">
                         <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/20 shrink-0">
-                                <AlertCircle className="h-5 w-5 text-red-300" />
-                            </div>
-                            <div className="space-y-2">
-                                <h2 className="text-sm sm:text-base font-light text-white">
-                                    Report a security or privacy issue
-                                </h2>
-                                <p className="text-xs sm:text-sm text-white/60">
-                                    If you believe you’ve found a vulnerability or privacy issue in GhostSweep, please contact us directly.
+                            <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                            <div>
+                                <h3 className="text-sm font-medium text-white mb-2">
+                                    Report a security issue
+                                </h3>
+                                <p className="text-xs text-white/40 mb-3">
+                                    Found a vulnerability or privacy issue? Contact us
+                                    directly.
                                 </p>
-                                <div className="flex flex-wrap gap-3 text-xs sm:text-sm">
-                                    <a
-                                        href="mailto:support@ghostsweep.com"
-                                        className="inline-flex items-center gap-1.5 font-light text-red-300 hover:text-red-200 transition"
-                                    >
-                                        support@ghostsweep.com
-                                        <ExternalLink className="h-3.5 w-3.5" />
-                                    </a>
-                                    <a
-                                        href="mailto:komieterj@gmail.com"
-                                        className="inline-flex items-center gap-1.5 font-light text-red-300 hover:text-red-200 transition"
-                                    >
-                                        komieterj@gmail.com
-                                        <ExternalLink className="h-3.5 w-3.5" />
-                                    </a>
-                                </div>
+                                <a
+                                    href="mailto:support@ghostsweep.com"
+                                    className="text-xs text-red-400 hover:text-red-300 underline transition"
+                                >
+                                    support@ghostsweep.com
+                                </a>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* FINAL NOTE */}
-                <section className="border-t border-white/5 pt-6 text-center">
-                    <p className="text-xs sm:text-sm text-white/60 max-w-3xl mx-auto leading-relaxed">
-                        GhostSweep exists to give you visibility and control—not to become another data risk.
-                        If anything on this page is unclear, email{" "}
-                        <a href="mailto:support@ghostsweep.com" className="font-light text-white underline hover:text-white/80">
+                {/* Final note */}
+                <section className="border-t border-white/5 pt-10 text-center">
+                    <p className="text-sm text-white/30 max-w-2xl mx-auto leading-relaxed">
+                        GhostSweep exists to give you visibility and control — not to
+                        become another data risk. Questions?{" "}
+                        <a
+                            href="mailto:support@ghostsweep.com"
+                            className="text-white underline hover:text-white/80"
+                        >
                             support@ghostsweep.com
-                        </a>{" "}
-                        and we’ll clarify.
+                        </a>
                     </p>
                 </section>
             </div>

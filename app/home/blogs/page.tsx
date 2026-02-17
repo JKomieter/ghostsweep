@@ -1,9 +1,9 @@
-// app/blog/page.tsx
+// app/home/blogs/page.tsx
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Ghost } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -11,7 +11,7 @@ type BlogPost = {
     id: string;
     slug: string;
     title: string;
-    excerpt: string | null;       // markdown-safe
+    excerpt: string | null;
     category: string | null;
     cover_image_url: string | null;
     reading_time: number | null;
@@ -46,34 +46,32 @@ export default async function BlogIndexPage() {
     const posts: BlogPost[] = data ?? [];
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white">
-            <div className="mx-auto max-w-5xl px-4 pb-16 pt-10 space-y-10">
+        <main className="min-h-screen bg-[#050505]">
+            <div className="mx-auto max-w-4xl px-6 pt-24 pb-20 sm:pt-32 space-y-12">
                 {/* Header */}
-                <section className="space-y-3">
-                    <p className="inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/2 px-3 py-1 text-[11px] text-white/60">
-                        <span className="relative inline-flex h-2.5 w-2.5 items-center justify-center">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/40" />
-                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
-                        </span>
+                <header className="text-center max-w-2xl mx-auto space-y-5">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/50">
+                        <Ghost className="h-3 w-3 text-emerald-400" />
                         GhostSweep Blog
-                    </p>
-
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-light tracking-tight sm:text-4xl text-white">
-                            Understand and shrink your digital footprint.
-                        </h1>
-                        <p className="max-w-2xl text-sm text-white/60">
-                            Deep dives on data breaches, forgotten accounts, privacy laws,
-                            and practical ways to reduce the number of companies holding your
-                            personal data.
-                        </p>
                     </div>
-                </section>
 
-                {/* If no posts */}
+                    <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white leading-[1.08]">
+                        Privacy insights.
+                        <br />
+                        <span className="text-white/30">Practical guides.</span>
+                    </h1>
+                    <p className="text-base text-white/45 font-light leading-relaxed max-w-lg mx-auto">
+                        Deep dives on data breaches, forgotten accounts, privacy laws,
+                        and practical ways to reduce your digital footprint.
+                    </p>
+                </header>
+
+                {/* Empty state */}
                 {posts.length === 0 && (
-                    <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-sm text-white/60">
-                        No articles published yet. Check back soon.
+                    <div className="rounded-2xl border border-white/5 bg-white/2 p-8 text-center">
+                        <p className="text-sm text-white/40">
+                            No articles published yet. Check back soon.
+                        </p>
                     </div>
                 )}
 
@@ -86,49 +84,58 @@ export default async function BlogIndexPage() {
                                 <Link
                                     key={post.id}
                                     href={`/home/blogs/${post.slug}`}
-                                    className="group flex h-full flex-col rounded-lg border border-white/5 bg-white/2 p-4 shadow-sm transition hover:border-white/10 hover:bg-white/3 backdrop-blur-sm"
+                                    className="group flex h-full flex-col rounded-2xl border border-white/5 bg-white/2 overflow-hidden hover:border-white/10 transition-all duration-300"
                                 >
-                                    {/* Optional cover image */}
+                                    {/* Cover image */}
                                     {post.cover_image_url && (
-                                        <div className="mb-3 overflow-hidden rounded-lg border border-white/5">
+                                        <div className="overflow-hidden border-b border-white/5">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={post.cover_image_url}
                                                 alt={post.title}
-                                                className="h-40 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                                                className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                                             />
                                         </div>
                                     )}
 
-                                    <div className="flex-1 space-y-2">
-                                        <div className="flex items-center gap-2 text-[11px] text-white/60">
+                                    <div className="flex-1 p-6 space-y-3">
+                                        {/* Meta */}
+                                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/30">
                                             {post.category && (
-                                                <span className="rounded-full border border-white/5 bg-white/2 px-2 py-0.5 text-[10px] uppercase tracking-wide">
+                                                <span className="rounded-full border border-white/5 bg-white/3 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/40">
                                                     {post.category}
                                                 </span>
                                             )}
                                             {dateLabel && <span>{dateLabel}</span>}
                                             {post.reading_time && (
-                                                <span>· {post.reading_time} min read</span>
+                                                <span>
+                                                    · {post.reading_time} min read
+                                                </span>
                                             )}
                                         </div>
 
-                                        <h2 className="text-base font-light leading-snug group-hover:text-white text-white/90">
+                                        {/* Title */}
+                                        <h2 className="text-base font-medium text-white leading-snug group-hover:text-emerald-400 transition-colors">
                                             {post.title}
                                         </h2>
 
+                                        {/* Excerpt */}
                                         {post.excerpt && (
-                                            <div className="text-xs text-white/60 line-clamp-3 prose prose-invert prose-[0.78rem] max-w-none">
-                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            <div className="text-xs text-white/40 line-clamp-3 prose prose-invert prose-[0.78rem] max-w-none">
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                >
                                                     {post.excerpt}
                                                 </ReactMarkdown>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="mt-3 inline-flex items-center text-[11px] font-light text-white">
-                                        Read article
-                                        <ArrowRight className="ml-1 h-3 w-3" />
+                                    <div className="px-6 pb-5">
+                                        <span className="inline-flex items-center text-xs text-white/30 group-hover:text-emerald-400 transition-colors">
+                                            Read article
+                                            <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                                        </span>
                                     </div>
                                 </Link>
                             );

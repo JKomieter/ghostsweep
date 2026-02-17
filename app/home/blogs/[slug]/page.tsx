@@ -1,8 +1,8 @@
-// app/blog/[slug]/page.tsx
+// app/home/blogs/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 
 import ReactMarkdown from "react-markdown";
@@ -34,7 +34,6 @@ function formatDate(dateStr: string | null) {
 
 type PageParams = { params: Promise<{ slug: string }> };
 
-// Generate metadata for blog posts
 export async function generateMetadata(
     rawParams: PageParams
 ): Promise<Metadata> {
@@ -53,16 +52,16 @@ export async function generateMetadata(
         .maybeSingle();
 
     if (!data) {
-        return {
-            title: "Post Not Found | GhostSweep Blog",
-        };
+        return { title: "Post Not Found | GhostSweep Blog" };
     }
 
     const post = data as BlogPost;
 
     return {
         title: `${post.title} | GhostSweep Blog`,
-        description: post.excerpt || `Read "${post.title}" on the GhostSweep blog. Digital privacy and security insights.`,
+        description:
+            post.excerpt ||
+            `Read "${post.title}" on the GhostSweep blog.`,
         keywords: [
             post.title,
             post.category || "privacy",
@@ -72,26 +71,31 @@ export async function generateMetadata(
         ],
         openGraph: {
             title: post.title,
-            description: post.excerpt || `Read this article on privacy and security.`,
+            description:
+                post.excerpt || `Read this article on privacy and security.`,
             url: `https://ghostsweep.com/home/blogs/${slug}`,
             type: "article",
             authors: ["GhostSweep"],
-            publishedTime: post.published_at ? new Date(post.published_at).toISOString() : undefined,
+            publishedTime: post.published_at
+                ? new Date(post.published_at).toISOString()
+                : undefined,
             images: post.cover_image_url
                 ? [
-                    {
-                        url: post.cover_image_url,
-                        width: 1200,
-                        height: 630,
-                        alt: post.title,
-                    },
-                ]
+                      {
+                          url: post.cover_image_url,
+                          width: 1200,
+                          height: 630,
+                          alt: post.title,
+                      },
+                  ]
                 : [],
         },
         twitter: {
             card: "summary_large_image",
             title: post.title,
-            description: post.excerpt || `Read this article on the GhostSweep blog.`,
+            description:
+                post.excerpt ||
+                `Read this article on the GhostSweep blog.`,
             images: post.cover_image_url ? [post.cover_image_url] : [],
         },
         alternates: {
@@ -121,51 +125,54 @@ export default async function BlogPostPage(rawParams: PageParams) {
     const post = data as BlogPost;
     const dateLabel = formatDate(post.published_at);
 
-    // Custom renderers to make markdown look clean + on-brand
     const components: Components = {
         h1: (props) => (
             <h1
-                className="mt-6 mb-3 text-2xl font-light tracking-tight text-white"
+                className="mt-10 mb-4 text-2xl font-semibold tracking-tight text-white"
                 {...props}
             />
         ),
         h2: (props) => (
             <h2
-                className="mt-6 mb-3 text-xl font-light tracking-tight text-white"
+                className="mt-10 mb-4 text-xl font-semibold tracking-tight text-white"
                 {...props}
             />
         ),
         h3: (props) => (
             <h3
-                className="mt-5 mb-2 text-lg font-light text-white"
+                className="mt-8 mb-3 text-lg font-medium text-white"
                 {...props}
             />
         ),
         p: (props) => (
             <p
-                className="my-3 text-sm leading-relaxed text-white/60"
+                className="my-4 text-[15px] leading-[1.8] text-white/50"
                 {...props}
             />
         ),
         ul: (props) => (
             <ul
-                className="my-3 list-disc pl-5 text-sm text-white/60 space-y-1"
+                className="my-4 list-disc pl-5 text-[15px] text-white/50 space-y-1.5"
                 {...props}
             />
         ),
         ol: (props) => (
             <ol
-                className="my-3 list-decimal pl-5 text-sm text-white/60 space-y-1"
+                className="my-4 list-decimal pl-5 text-[15px] text-white/50 space-y-1.5"
                 {...props}
             />
         ),
-        li: (props) => <li className="leading-relaxed" {...props} />,
+        li: (props) => <li className="leading-[1.8]" {...props} />,
         a: ({ href, children, ...rest }) => (
             <a
                 href={href}
                 target={href?.startsWith("http") ? "_blank" : undefined}
-                rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="font-light text-white underline underline-offset-4 hover:text-white/80"
+                rel={
+                    href?.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                }
+                className="text-emerald-400 underline underline-offset-4 hover:text-emerald-300 transition-colors"
                 {...rest}
             >
                 {children}
@@ -173,24 +180,24 @@ export default async function BlogPostPage(rawParams: PageParams) {
         ),
         blockquote: (props) => (
             <blockquote
-                className="my-4 border-l-2 border-white/20 pl-4 text-sm italic text-white/60"
+                className="my-6 border-l-2 border-emerald-500/30 pl-5 text-[15px] italic text-white/40"
                 {...props}
             />
         ),
         code: (props) => (
             <code
-                className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] font-mono text-white"
+                className="rounded bg-white/5 px-1.5 py-0.5 text-[13px] font-mono text-emerald-400"
                 {...props}
             />
         ),
         pre: (props) => (
             <pre
-                className="my-4 overflow-x-auto rounded-lg bg-white/5 border border-white/10 p-3 text-[11px] font-mono text-white"
+                className="my-6 overflow-x-auto rounded-xl bg-white/3 border border-white/5 p-4 text-[13px] font-mono text-white/70"
                 {...props}
             />
         ),
         img: ({ src = "", alt = "", ...rest }) => (
-            <span className="my-4 block overflow-hidden rounded-lg border border-white/5">
+            <span className="my-6 block overflow-hidden rounded-xl border border-white/5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={src}
@@ -203,43 +210,43 @@ export default async function BlogPostPage(rawParams: PageParams) {
     };
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white">
-            <div className="mx-auto max-w-3xl px-4 pb-16 pt-10 space-y-8">
-                {/* Back link */}
-                <div className="flex items-center justify-between">
-                    <Link
-                        href="/home/blogs"
-                        className="inline-flex items-center gap-1 text-[11px] text-white/60 hover:text-white transition-colors"
-                    >
-                        <ArrowLeft className="h-3 w-3" />
-                        Back to blog
-                    </Link>
-                </div>
+        <main className="min-h-screen bg-[#050505]">
+            <div className="mx-auto max-w-2xl px-6 pt-24 pb-20 sm:pt-32 space-y-10">
+                {/* Back */}
+                <Link
+                    href="/home/blogs"
+                    className="inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white transition-colors"
+                >
+                    <ArrowLeft className="h-3 w-3" />
+                    Back to blog
+                </Link>
 
                 {/* Header */}
-                <header className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/60">
+                <header className="space-y-5">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/30">
                         {post.category && (
-                            <span className="rounded-full border border-white/5 bg-white/2 px-2 py-0.5 text-[10px] uppercase tracking-wide">
+                            <span className="rounded-full border border-white/5 bg-white/3 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/40">
                                 {post.category}
                             </span>
                         )}
                         {dateLabel && <span>{dateLabel}</span>}
-                        {post.reading_time && <span>· {post.reading_time} min read</span>}
+                        {post.reading_time && (
+                            <span>· {post.reading_time} min read</span>
+                        )}
                     </div>
 
-                    <h1 className="text-3xl font-light tracking-tight text-white">
+                    <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
                         {post.title}
                     </h1>
 
                     {post.excerpt && (
-                        <p className="max-w-2xl text-sm text-white/60">
+                        <p className="text-base text-white/45 font-light leading-relaxed max-w-xl">
                             {post.excerpt}
                         </p>
                     )}
 
                     {post.cover_image_url && (
-                        <div className="mt-3 overflow-hidden rounded-lg border border-white/5 h-96 w-full">
+                        <div className="mt-4 overflow-hidden rounded-2xl border border-white/5 h-80 sm:h-96 w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.cover_image_url}
@@ -250,37 +257,38 @@ export default async function BlogPostPage(rawParams: PageParams) {
                     )}
                 </header>
 
-                {/* Markdown Content */}
+                {/* Content */}
                 <article>
                     {post.content_md ? (
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw]}
                             components={components}
-                            // className="prose prose-invert prose-sm max-w-none"
                         >
                             {post.content_md}
                         </ReactMarkdown>
                     ) : (
-                        <p className="text-sm text-white/60">
+                        <p className="text-sm text-white/40">
                             No content yet for this article.
                         </p>
                     )}
                 </article>
 
                 {/* Footer CTA */}
-                <section className="mt-8 rounded-lg border border-white/5 bg-white/2 p-4 space-y-2 backdrop-blur-sm">
-                    <h2 className="text-sm font-light tracking-tight text-white">
-                        See your own digital footprint with GhostSweep
+                <section className="mt-12 rounded-2xl border border-white/10 bg-white/3 p-7 space-y-4">
+                    <h2 className="text-base font-semibold text-white">
+                        See your own digital footprint
                     </h2>
-                    <p className="text-xs text-white/60 max-w-xl">
-                        Connect your Gmail in read-only mode and see which companies still
-                        hold your data, what’s been breached, and where to start cleaning up.
+                    <p className="text-sm text-white/40 leading-relaxed max-w-lg">
+                        Connect your inbox in read-only mode and see which companies
+                        still hold your data, what&apos;s been breached, and where to start
+                        cleaning up.
                     </p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center gap-2 rounded-full bg-white text-black px-4 py-1.5 text-xs font-light shadow-sm hover:bg-white/90 transition"
+                        className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
                     >
+                        <Sparkles className="h-3.5 w-3.5" />
                         Start a free scan
                         <ArrowRight className="h-3 w-3" />
                     </Link>

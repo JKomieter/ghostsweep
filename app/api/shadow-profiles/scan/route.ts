@@ -34,6 +34,44 @@ export async function POST() {
       );
     }
 
+    // Check plan — free users limited to 1 scan per week
+    const { data: plan } = await supabase
+      .from("user_subscriptions")
+      .select("current_plan")
+      .eq("user_id", user.id)
+      .single();
+
+    const isPremium =
+      plan?.current_plan === "pro" || plan?.current_plan === "premium";
+
+    if (!isPremium) {
+      const oneWeekAgo = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      const { data: recentScan } = await supabase
+        .from("shadow_scans")
+        .select("id, created_at")
+        .eq("user_id", user.id)
+        .gte("created_at", oneWeekAgo)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (recentScan) {
+        const nextAvailable = new Date(
+          new Date(recentScan.created_at).getTime() + 7 * 24 * 60 * 60 * 1000
+        );
+        return NextResponse.json(
+          {
+            error: "Free plan allows 1 scan per week",
+            nextAvailableAt: nextAvailable.toISOString(),
+          },
+          { status: 429 }
+        );
+      }
+    }
+
     // Create a shadow_scans row
     const { data: scan, error: scanError } = await supabase
       .from("shadow_scans")
