@@ -135,6 +135,8 @@ export default function TeaserScan() {
   const [results, setResults] = useState<TeaserProfile[]>([]);
   const [foundCount, setFoundCount] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [scansRemaining, setScansRemaining] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -280,6 +282,10 @@ export default function TeaserScan() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Scan failed" }));
+        if (res.status === 429) {
+          setIsRateLimited(true);
+          throw new Error(err.error || "Daily scan limit reached.");
+        }
         throw new Error(err.error || "Scan failed to start");
       }
 
@@ -287,6 +293,11 @@ export default function TeaserScan() {
 
       if (!data.scan_id) {
         throw new Error("No scan ID returned");
+      }
+
+      // Track remaining scans
+      if (typeof data.scans_remaining === "number") {
+        setScansRemaining(data.scans_remaining);
       }
 
       // Step 2: connect to SSE progress stream
@@ -307,6 +318,7 @@ export default function TeaserScan() {
     setResults([]);
     setProgress(0);
     setFoundCount(0);
+    setIsRateLimited(false);
     setUsername("");
     setEmail("");
     setErrorMsg("");
@@ -366,7 +378,9 @@ export default function TeaserScan() {
           </div>
 
           <p className="mt-4 text-[10px] text-white/20 text-center">
-            We don&apos;t store your data. This is a preview of what GhostSweep can find.
+            {scansRemaining !== null
+              ? `${scansRemaining} free scan${scansRemaining !== 1 ? "s" : ""} remaining today`
+              : "3 free scans per day · No account required"}
           </p>
         </div>
       )}
@@ -451,14 +465,29 @@ export default function TeaserScan() {
 
           {/* Error state */}
           {status === "error" && (
-            <div className="px-5 py-6 text-center space-y-3">
+            <div className="px-5 py-6 text-center space-y-4">
               <p className="text-sm text-red-400">{errorMsg}</p>
-              <button
-                onClick={reset}
-                className="rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-medium text-white/60 hover:bg-white/10 transition"
-              >
-                Try again
-              </button>
+              {isRateLimited ? (
+                <div className="space-y-3">
+                  <p className="text-xs text-white/40">
+                    Create a free account for more scans and full deletion tools.
+                  </p>
+                  <Link
+                    href="/login"
+                    className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]"
+                  >
+                    Sign up free
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              ) : (
+                <button
+                  onClick={reset}
+                  className="rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-medium text-white/60 hover:bg-white/10 transition"
+                >
+                  Try again
+                </button>
+              )}
             </div>
           )}
 
