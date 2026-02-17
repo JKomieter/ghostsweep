@@ -6,7 +6,7 @@ import {
     ArrowRight,
     ShieldCheck,
     Mail,
-    Scan,
+    ScanSearch,
     Trash2,
     Eye,
     Lock,
@@ -82,7 +82,7 @@ export default function HowItWorksPage() {
         },
         {
             num: "02",
-            icon: Scan,
+            icon: ScanSearch,
             title: "We scan everywhere",
             description:
                 "Your inbox reveals accounts you forgot about. Our Identity Shadow scanner searches the web using your email, phone, or username to find profiles you didn't even know existed. Every discovery is cross-referenced against breach databases.",
