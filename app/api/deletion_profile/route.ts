@@ -17,6 +17,7 @@ export async function GET() {
 
         const {data, error} = await supabase.from("deletion_profiles")
             .select("full_name, country")
+            .eq("user_id", user.id)
             .single()
 
         if (error && error.code ===  "PGRST116" || !data) {

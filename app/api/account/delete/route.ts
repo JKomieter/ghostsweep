@@ -9,7 +9,7 @@ export async function POST() {
         error: userError,
     } = await supabase.auth.getUser();
 
-    console.log("Deleting user:", user);
+    console.log("Deleting user ID:", user?.id);
 
     if (userError) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

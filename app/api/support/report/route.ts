@@ -13,7 +13,17 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { email, issueType, summary } = await req.json()
+    const body = await req.json()
+    const { issueType, summary } = body
+    // Always use the authenticated user's email — do not trust user-supplied email
+    const email = user.email
+
+    if (!issueType || typeof issueType !== 'string' || issueType.length > 100) {
+        return NextResponse.json({ error: 'Invalid issueType' }, { status: 400 })
+    }
+    if (!summary || typeof summary !== 'string' || summary.trim().length < 10 || summary.length > 5000) {
+        return NextResponse.json({ error: 'summary must be between 10 and 5000 characters' }, { status: 400 })
+    }
 
     const { error } = await supabase.from("reports")
         .insert({
