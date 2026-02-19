@@ -22,6 +22,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get('code');
     const error = searchParams.get('error');
+    const returnedState = searchParams.get('state') || '';
+
+    // Verify CSRF state matches what was set in the cookie
+    const cookieState = req.cookies.get('microsoft_oauth_state')?.value;
+    if (!cookieState || !returnedState || cookieState !== returnedState) {
+        const url = req.nextUrl.clone();
+        url.pathname = '/dashboard';
+        url.searchParams.set('microsoft_oauth_error', '1');
+        return NextResponse.redirect(url);
+    }
 
     if (error) {
         console.error('OAuth error:', error);

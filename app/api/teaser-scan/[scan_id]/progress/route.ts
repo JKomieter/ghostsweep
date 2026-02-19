@@ -19,6 +19,15 @@ export async function GET(
 ) {
   const { scan_id } = await params;
 
+  // Validate scan_id is a UUID to prevent path traversal / injection
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_REGEX.test(scan_id)) {
+    return new Response(
+      JSON.stringify({ error: "Invalid scan ID" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   const upstream = await fetch(
     `${ORCHESTRATION_URL}/api/scan/teaser/${scan_id}/progress`,
     {

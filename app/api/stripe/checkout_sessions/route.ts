@@ -76,6 +76,18 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Whitelist allowed price IDs to prevent probing arbitrary Stripe prices
+        const ALLOWED_PRICE_IDS = [
+            process.env.STRIPE_MONTHLY_PRICE_ID,
+            process.env.STRIPE_YEARLY_PRICE_ID,
+        ].filter(Boolean);
+        if (!ALLOWED_PRICE_IDS.includes(price_id)) {
+            return NextResponse.json(
+                { error: "Invalid pricing plan." },
+                { status: 400 }
+            );
+        }
+
         // Check existing subscription
         const { data: subRow } = await supabase
             .from("user_subscriptions")
