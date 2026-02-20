@@ -25,9 +25,10 @@ import {
     Inbox,
     MailX,
     DollarSign,
+    User,
     Linkedin,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { GmailLogo } from "@/svgs";
 import TeaserScan from "./_components/teaser-scan";
 
@@ -156,7 +157,14 @@ function CountUp({
 }
 
 // ─── Hero ──────────────────────────────────────────────────────
-function Hero() {
+function Hero({ onScan }: { onScan?: (username: string) => void }) {
+    const [heroInput, setHeroInput] = useState("");
+
+    const handleHeroScan = () => {
+        if (!heroInput.trim()) return;
+        onScan?.(heroInput.trim());
+    };
+
     return (
         <section className="relative isolate overflow-hidden pt-24 pb-20 sm:pt-36 sm:pb-32">
             {/* Background glow */}
@@ -187,21 +195,49 @@ function Hero() {
                     </span>.
                 </p>
 
-                {/* CTA */}
-                <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+                {/* Inline shadow scan — the "Aha" moment before the paywall */}
+                <div className="mt-12 w-full max-w-sm mx-auto">
+                    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 pl-4 pr-1.5 py-1.5 focus-within:border-purple-500/30 transition backdrop-blur-sm">
+                        <User className="h-3.5 w-3.5 text-white/25 shrink-0" />
+                        <input
+                            type="text"
+                            placeholder="your_username"
+                            value={heroInput}
+                            onChange={(e) => setHeroInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleHeroScan()}
+                            className="flex-1 min-w-0 bg-transparent text-sm text-white placeholder-white/25 focus:outline-none"
+                            autoComplete="off"
+                            spellCheck={false}
+                        />
+                        <button
+                            onClick={handleHeroScan}
+                            disabled={!heroInput.trim()}
+                            className="rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-400 disabled:opacity-25 transition active:scale-95 shrink-0"
+                        >
+                            Scan free
+                        </button>
+                    </div>
+                    <p className="text-[10px] text-white/20 text-center mt-2">
+                        No account needed · 3 real profiles instantly · No credit card ever
+                    </p>
+                </div>
+
+                {/* Secondary CTAs */}
+                <div className="mt-5 flex items-center justify-center gap-5 text-sm text-white/35">
                     <Link
                         href="/login"
-                        className="group relative inline-flex items-center gap-2.5 rounded-full bg-emerald-500 px-8 py-4 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_60px_-10px_rgba(16,185,129,0.4)]"
+                        className="inline-flex items-center gap-1.5 hover:text-white/60 transition"
                     >
-                        Start Free Scan
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        Connect Gmail for full scan
+                        <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
+                    <span className="text-white/10">·</span>
                     <Link
                         href="/home/how-it-works"
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-4 text-sm text-white/70 hover:text-white hover:bg-white/10 transition"
+                        className="inline-flex items-center gap-1 hover:text-white/60 transition"
                     >
-                        See how it works
-                        <ChevronRight className="h-3.5 w-3.5" />
+                        How it works
+                        <ChevronRight className="h-3 w-3" />
                     </Link>
                 </div>
 
@@ -502,9 +538,17 @@ function HowItWorksSection() {
 }
 
 // ─── Identity Shadow Feature Spotlight ─────────────────────────
-function IdentityShadowSection() {
+function IdentityShadowSection({
+    defaultUsername = "",
+    scanKey = 0,
+    autoStart = false,
+}: {
+    defaultUsername?: string;
+    scanKey?: number;
+    autoStart?: boolean;
+}) {
     return (
-        <section className="py-28 border-t border-white/5 relative overflow-hidden">
+        <section className="py-28 border-t border-white/5 relative overflow-hidden" id="shadow-scan">
             {/* Subtle background glow */}
             <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-3xl" />
 
@@ -526,7 +570,11 @@ function IdentityShadowSection() {
 
                 {/* Live teaser scan */}
                 <div className="max-w-2xl mx-auto mb-16">
-                    <TeaserScan />
+                    <TeaserScan
+                        key={scanKey}
+                        defaultUsername={defaultUsername}
+                        autoStart={autoStart}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -713,16 +761,16 @@ function PricingSection() {
             name: "Free",
             price: "$0",
             period: "",
-            description: "See what's hiding in your inbox and across the web.",
-            cta: "Start Free",
+            description: "3 real shadow profiles right now — no account, no credit card.",
+            cta: "Start Free Scan",
             href: "/login",
             featured: false,
             features: [
-                "1 inbox scan",
+                "Teaser scan (3 live results, no sign-up)",
+                "1 full inbox scan after sign-up",
                 "5 shadow profiles visible",
-                "1 shadow scan per week",
+                "10 shadow scans per week",
                 "Breach risk summary",
-                "Basic security score",
             ],
         },
         {
@@ -774,6 +822,13 @@ function PricingSection() {
                         <br />
                         <span className="text-white/30">Real results.</span>
                     </h2>
+                    <p className="mt-5 text-sm text-white/35">
+                        The free scan above gives you{" "}
+                        <span className="text-purple-400">3 real shadow profiles</span>{" "}
+                        right now — no account ever needed.
+                        <br />
+                        Plans unlock the full picture.
+                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -996,6 +1051,19 @@ function FinalCTA() {
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function HomePage() {
+    const [scanTrigger, setScanTrigger] = useState<{ username: string; key: number }>({
+        username: "",
+        key: 0,
+    });
+    const scanSectionRef = useRef<HTMLDivElement>(null);
+
+    const handleHeroScan = useCallback((username: string) => {
+        setScanTrigger((prev) => ({ username, key: prev.key + 1 }));
+        setTimeout(() => {
+            scanSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 80);
+    }, []);
+
     return (
         <main className="min-h-screen bg-[#050505] selection:bg-emerald-500/30">
             <script
@@ -1007,11 +1075,17 @@ export default function HomePage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
 
-            <Hero />
+            <Hero onScan={handleHeroScan} />
+            <div ref={scanSectionRef}>
+                <IdentityShadowSection
+                    defaultUsername={scanTrigger.username}
+                    scanKey={scanTrigger.key}
+                    autoStart={scanTrigger.key > 0}
+                />
+            </div>
             <DashboardPreview />
             <WhatWeDoSection />
             <HowItWorksSection />
-            <IdentityShadowSection />
             <PrivacySection />
             <PricingSection />
             <FAQSection />
