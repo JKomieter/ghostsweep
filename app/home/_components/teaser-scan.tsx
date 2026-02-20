@@ -124,8 +124,14 @@ function BlurredRow({ index }: { index: number }) {
 }
 
 // ─── TeaserScan ────────────────────────────────────────────────
-export default function TeaserScan() {
-  const [username, setUsername] = useState("");
+export default function TeaserScan({
+  defaultUsername = "",
+  autoStart = false,
+}: {
+  defaultUsername?: string;
+  autoStart?: boolean;
+}) {
+  const [username, setUsername] = useState(defaultUsername);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "scanning" | "done" | "error">(
     "idle"
@@ -156,6 +162,17 @@ export default function TeaserScan() {
       abortRef.current?.abort();
     };
   }, []);
+
+  // Auto-start when triggered from the Hero inline scan form
+  const startScanRef = useRef<((u?: string) => Promise<void>) | null>(null);
+  useEffect(() => {
+    startScanRef.current = startScan;
+  });
+  useEffect(() => {
+    if (!autoStart || !defaultUsername) return;
+    startScanRef.current?.(defaultUsername);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally runs only on mount
 
   /** Parse SSE lines from the buffered text and process each JSON payload */
   const processLine = useCallback((line: string) => {
@@ -254,8 +271,10 @@ export default function TeaserScan() {
     [processLine]
   );
 
-  const startScan = useCallback(async () => {
-    if (!username.trim()) return;
+  const startScan = useCallback(async (overrideUsername?: string) => {
+    const targetUsername = (overrideUsername ?? username).trim();
+    if (!targetUsername) return;
+    if (overrideUsername !== undefined) setUsername(overrideUsername);
 
     // Abort any previous stream
     abortRef.current?.abort();
@@ -274,7 +293,7 @@ export default function TeaserScan() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: username.trim(),
+          username: targetUsername,
           email: email.trim() || undefined,
         }),
         signal: controller.signal,
@@ -368,7 +387,7 @@ export default function TeaserScan() {
               />
             </div>
             <button
-              onClick={startScan}
+              onClick={() => startScan()}
               disabled={!canScan}
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-purple-500 py-3.5 text-sm font-semibold text-white transition hover:bg-purple-400 disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.98]"
             >
