@@ -127,7 +127,7 @@ export default function DashboardTitle() {
     // Plan
     const { data: plan } = useQuery({
         queryKey: ["plan"],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "pro"; has_used_trial: boolean }> => {
             const res = await fetch("/api/plan");
             if (!res.ok) throw new Error("Failed to fetch plan data");
             return res.json();
@@ -198,7 +198,7 @@ export default function DashboardTitle() {
                     : ""
                     }. The riskiest ones are waiting in your dashboard.`,
                 action: plan?.current_plan === "free" ? {
-                    label: "Upgrade",
+                    label: plan?.has_used_trial ? "Upgrade" : "Start Free Trial",
                     onClick: () => {
                         window.location.href = "/dashboard/billing?plan=monthly";
                     },
@@ -338,7 +338,7 @@ export default function DashboardTitle() {
                     toast.error("Monthly sweep limit reached", {
                         description: "Go Professional for unlimited sweeps.",
                         action: {
-                            label: "Upgrade",
+                            label: plan?.has_used_trial ? "Upgrade" : "Start Free Trial",
                             onClick: () => {
                                 window.location.href = "/dashboard/billing?plan=monthly";
                             },
@@ -603,6 +603,7 @@ export default function DashboardTitle() {
                     setSelectedProvider(provider);
                 }}
                 planIsFree={plan?.current_plan === "free"}
+                hasUsedTrial={plan?.has_used_trial ?? false}
                 isConnecting={isConnecting}
                 onStartConnectAction={() => setIsConnecting(true)}
                 onSweepAction={onSweep}

@@ -119,6 +119,15 @@ export default function DashboardUrgencyPanel() {
         refetchOnWindowFocus: false,
     });
 
+    const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+        queryKey: ["plan"],
+        queryFn: async () => {
+            const res = await fetch("/api/plan");
+            if (!res.ok) throw new Error("Failed to fetch plan");
+            return res.json();
+        },
+    });
+
     const isLoading = status === "pending";
     const isError = status === "error";
 
@@ -149,10 +158,10 @@ export default function DashboardUrgencyPanel() {
 
                 {!isLoading && !isError ? (
                     gated ? (
-                        <Link href="/dashboard/billing">
+                        <Link href="/dashboard/billing?plan=monthly">
                             <Button size="sm" className="h-8 rounded-md border-0 bg-white text-black hover:bg-white/90 transition-colors">
                                 <Lock className="h-3.5 w-3.5 mr-1.5" />
-                                Upgrade
+                                {planData?.has_used_trial ? "Upgrade" : "Start Free Trial"}
                             </Button>
                         </Link>
                     ) : (
@@ -214,9 +223,9 @@ export default function DashboardUrgencyPanel() {
                             </div>
 
                             {gated ? (
-                                <Link href="/dashboard/billing" className="shrink-0">
+                                <Link href="/dashboard/billing?plan=monthly" className="shrink-0">
                                     <Button size="sm" className="h-8 rounded-md border-0 bg-white text-black hover:bg-white/90">
-                                        Unlock
+                                        {planData?.has_used_trial ? "Unlock" : "Start Free Trial"}
                                     </Button>
                                 </Link>
                             ) : null}
@@ -291,9 +300,9 @@ export default function DashboardUrgencyPanel() {
                                             <Lock className="h-3 w-3" />
                                             {hiddenCount.toLocaleString()} more hidden
                                         </div>
-                                        <Link href="/dashboard/billing">
+                                        <Link href="/dashboard/billing?plan=monthly">
                                             <Button size="sm" className="h-7 text-xs rounded-md border-0 bg-white text-black hover:bg-white/90">
-                                                Upgrade
+                                                {planData?.has_used_trial ? "Upgrade" : "Start Free Trial"}
                                             </Button>
                                         </Link>
                                     </div>
@@ -317,9 +326,9 @@ export default function DashboardUrgencyPanel() {
                         </div>
 
                         {gated ? (
-                            <Link href="/dashboard/billing">
+                            <Link href="/dashboard/billing?plan=monthly">
                                 <Button className="bg-white text-black hover:bg-white/90">
-                                    Upgrade now
+                                    {planData?.has_used_trial ? "Upgrade Now" : "Start Free Trial"}
                                 </Button>
                             </Link>
                         ) : (

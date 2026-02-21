@@ -8,6 +8,7 @@ import Link from "next/link";
 type PlanData = {
     current_plan: "free" | "pro";
     renews_at: string | null;
+    has_used_trial: boolean;
 };
 
 type OverviewData = {
@@ -245,14 +246,18 @@ export default function FreemiumUpgradeTeaser() {
                 {/* CTA */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <Link
-                        href="/dashboard/billing"
+                        href="/dashboard/billing?plan=monthly"
                         className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 px-6 py-3 text-sm font-semibold text-black transition group"
                     >
-                        Unlock Everything
+                        {planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}
                         <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                     <div className="flex items-center gap-3 text-sm text-white/50">
-                        <span>Starting at $19.99/month</span>
+                        {planData?.has_used_trial ? (
+                            <span>Starting at $19.99/month</span>
+                        ) : (
+                            <span>3-day free trial, then $19.99/mo</span>
+                        )}
                         <span className="text-white/20">•</span>
                         <span>Cancel anytime</span>
                     </div>

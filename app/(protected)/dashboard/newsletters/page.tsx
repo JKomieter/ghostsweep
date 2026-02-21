@@ -105,6 +105,16 @@ export default function NewslettersPage() {
   
   const queryClient = useQueryClient();
 
+  // Fetch plan for trial eligibility
+  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+    queryKey: ["plan"],
+    queryFn: async () => {
+      const res = await fetch("/api/plan");
+      if (!res.ok) throw new Error("Failed to fetch plan");
+      return res.json();
+    },
+  });
+
   // Fetch newsletters data
   const {
     data,
@@ -422,7 +432,7 @@ export default function NewslettersPage() {
                 <Button 
                   size="sm" 
                   className="h-8 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-semibold shadow-lg shadow-red-500/20 gap-1.5"
-                  onClick={() => isPro ? setShowNukeModal(true) : alert('Upgrade to Pro to use Nuke the Noise!')}
+                  onClick={() => isPro ? setShowNukeModal(true) : (window.location.href = "/dashboard/billing?plan=monthly")}
                   disabled={batchUnsubscribing || nukeInProgress}
                 >
                   <Zap className="h-3.5 w-3.5" />
@@ -573,10 +583,10 @@ export default function NewslettersPage() {
               We're only showing {previewCount} of them.
             </p>
             <p className="text-white/40 text-sm mb-6">
-              Upgrade to unsubscribe in bulk and reclaim your inbox.
+              {planData?.has_used_trial ? "Upgrade" : "Start your free trial"} to unsubscribe in bulk and reclaim your inbox.
             </p>
-            <a href="/dashboard/billing" className="inline-flex items-center justify-center rounded-lg bg-blue-500 hover:bg-blue-400 px-6 py-3 text-sm font-semibold text-white transition">
-              Clean Your Inbox →
+            <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-blue-500 hover:bg-blue-400 px-6 py-3 text-sm font-semibold text-white transition">
+              {planData?.has_used_trial ? "Upgrade to Pro →" : "Start Free Trial →"}
             </a>
           </div>
         )}

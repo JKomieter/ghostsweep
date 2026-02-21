@@ -99,7 +99,15 @@ export default function SubscriptionsPage() {
   
   const queryClient = useQueryClient();
 
-  // Fetch subscriptions data
+  // Fetch plan for trial eligibility
+  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+    queryKey: ["plan"],
+    queryFn: async () => {
+      const res = await fetch("/api/plan");
+      if (!res.ok) throw new Error("Failed to fetch plan");
+      return res.json();
+    },
+  });
   const {
     data,
     isLoading: loading,
@@ -503,8 +511,8 @@ export default function SubscriptionsPage() {
             <p className="text-white/40 text-sm mb-6">
               Upgrade to see the full list, view costs, and cancel them with one click.
             </p>
-            <a href="/dashboard/billing" className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-400 px-6 py-3 text-sm font-semibold text-white transition">
-              Stop the Bleeding →
+            <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-400 px-6 py-3 text-sm font-semibold text-white transition">
+              {planData?.has_used_trial ? "Upgrade to Pro →" : "Start Free Trial →"}
             </a>
           </div>
         )}

@@ -58,35 +58,45 @@ export async function POST(req: Request) {
   try {
     switch (event.type) {
       // ================================================================
-      // CHECKOUT COMPLETED - First time user subscribes (with trial)
-      // This fires when user completes checkout and subscription is created
+      // CHECKOUT COMPLETED - First time user subscribes
+      // Edge function will auto-detect if new user and add 3-day trial
       // ================================================================
       case "checkout.session.completed": {
-        const session = event.data.object 
+        const session = event.data.object
         const supabaseUserId = session.metadata?.supabase_user_id
-        
+
         if (!supabaseUserId) {
           console.warn("⚠️ checkout.session.completed missing supabase_user_id")
           break
         }
 
         const stripeCustomerId = session.customer as string
-        const priceId = session.metadata?.price_id || ""
-        const referralCode = session.metadata?.referral_code || null
-        const referrerStripeCustomerId = session.metadata?.referrer_stripe_customer_id || null
-        const renewsAt = getRenewalDate(priceId)
+        const subscriptionId = session.subscription as string
+
+        // Get the actual subscription to get the current_period_end
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const priceId = subscription.items.data[0].price.id
+        
+        // Calculate when the subscription would normally renew (before trial extension)
+        const renewsAt = subscription.items.data[0].current_period_end
+          ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
+          : getRenewalDate(priceId)
 
         console.log(`✅ Checkout completed for user ${supabaseUserId}`)
 
-        if (referrerStripeCustomerId) {
+        // Handle referral credits
+        const referrerStripeCustomerId = session.metadata?.referrer_stripe_customer_id
+        const referrerSupabaseId = session.metadata?.referrer_supabase_id
+
+        if (referrerStripeCustomerId && referrerSupabaseId) {
           const REFERRAL_REWARD_CENTS = 1999; // $19.99
 
           try {
-            // 1. Apply ONLY the incremental reward to Stripe
+            // 1. Apply credit to Stripe
             await stripe.customers.createBalanceTransaction(
               referrerStripeCustomerId,
               {
-                amount: -REFERRAL_REWARD_CENTS, // Just the $19.99, not the running total
+                amount: -REFERRAL_REWARD_CENTS,
                 currency: 'usd',
                 description: `Referral reward for bringing in user ${supabaseUserId}`,
               }
@@ -94,11 +104,10 @@ export async function POST(req: Request) {
 
             console.log(`💰 $19.99 credit added to Stripe for ${referrerStripeCustomerId}`);
 
-            // 2. Update Supabase via Edge Function
-            // We pass the STATIC amount to add, the edge function handles the math
+            // 2. Update Supabase
             const { error: edgeError } = await supabase.functions.invoke('update-referral-credits', {
               body: {
-                referrerUserId: session.metadata?.referrer_supabase_id, // Make sure you pass this in checkout metadata!
+                referrerUserId: referrerSupabaseId,
                 referredUserId: supabaseUserId,
                 creditsToAdd: REFERRAL_REWARD_CENTS
               },
@@ -114,15 +123,14 @@ export async function POST(req: Request) {
           }
         }
 
-        // Edge function will auto-detect if this is a new trial
-        // and override renewsAt to 7 days if needed
-        const { error: updateError } = await supabase.functions.invoke(
+        // Edge function will detect if first-time user and extend renewsAt by 3 days
+        const { data: updateData, error: updateError } = await supabase.functions.invoke(
           "update-subscription",
           {
             body: {
               userId: supabaseUserId,
               stripeCustomerId,
-              renewsAt, // Pass the normal renewal date; edge function will override if trial
+              renewsAt, // Edge function will extend this if first-time user
             },
             headers: {
               "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
@@ -132,15 +140,16 @@ export async function POST(req: Request) {
 
         if (updateError) {
           console.error("❌ Error updating subscription:", updateError)
+        } else {
+          const wasExtended = updateData?.trial_extended ? " (3-day trial added)" : ""
+          console.log(`✨ User ${supabaseUserId} subscribed${wasExtended}`)
         }
 
-        console.log(`✨ User ${supabaseUserId} subscribed (renews: ${renewsAt})`)
         break
       }
 
       // ================================================================
       // TRIAL WILL END - Fires 3 days before trial ends
-      // Stripe sends this automatically when trial_period_days is set
       // ================================================================
       case "customer.subscription.trial_will_end": {
         const subscription = event.data.object as Stripe.Subscription
@@ -158,18 +167,15 @@ export async function POST(req: Request) {
           break
         }
 
-        const subRow = { user_id: data.userId }
-
         const trialEndDate = subscription.trial_end
           ? new Date(subscription.trial_end * 1000).toISOString()
           : null
 
-        // Edge function checks if trial actually ended or just ending soon
         const { error: trialError } = await supabase.functions.invoke(
           "trial-will-end-notification",
           {
             body: {
-              userId: subRow.user_id,
+              userId: data.userId,
               trialEndDate,
             },
             headers: {
@@ -182,18 +188,18 @@ export async function POST(req: Request) {
           console.error("❌ Error sending trial reminder:", trialError)
         }
 
-        console.log(`⏰ Trial notification sent for user ${subRow.user_id} (ends: ${trialEndDate})`)
+        console.log(`⏰ Trial notification sent for user ${data.userId} (ends: ${trialEndDate})`)
         break
       }
 
       // ================================================================
       // SUBSCRIPTION UPDATED - Fires when subscription changes
-      // This includes: trial → paid, plan changes, cancellations scheduled
+      // This handles: plan changes, trial → paid conversion, renewals
       // ================================================================
       case "customer.subscription.updated": {
-        const subscription = event.data.object
+        const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
-        
+
         const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
           body: { stripeCustomerId: customerId },
           headers: {
@@ -202,37 +208,49 @@ export async function POST(req: Request) {
         })
 
         if (error || !data?.userId) {
-          console.error(`❌ Customer subscription updated but no user found for customer ${customerId}:`, error)
+          console.error(`❌ Subscription updated but no user found for customer ${customerId}:`, error)
           break
         }
 
-        const subRow = { user_id: data.userId }
+        // Check if this is a trial → paid conversion
+        const previousAttributes = event.data.previous_attributes
+        const wasInTrial = previousAttributes?.status === 'trialing'
+        const isNowActive = subscription.status === 'active'
 
         const currentPeriodEnd = subscription.items.data[0].current_period_end
-        const priceId = subscription.items.data[0].price.id || subscription.items.data[0].plan.id
+        const renewsAt = currentPeriodEnd
+          ? new Date(currentPeriodEnd * 1000).toISOString()
+          : getNextMonthDate()
 
-        const renewsAt = currentPeriodEnd ? new Date(currentPeriodEnd * 1000).toISOString() : getRenewalDate(priceId)
-
-        // Edge function will detect if user was on trial and convert them
-        const { error: updateError } = await supabase.functions.invoke(
-          "update-subscription",
-          {
-            body: {
-              userId: subRow.user_id,
-              stripeCustomerId: customerId,
-              renewsAt,
-            },
-            headers: {
-              "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+        // Only update if subscription is active or past_due
+        if (subscription.status === 'active' || subscription.status === 'past_due') {
+          const { error: updateError } = await supabase.functions.invoke(
+            "update-subscription",
+            {
+              body: {
+                userId: data.userId,
+                stripeCustomerId: customerId,
+                renewsAt,
+              },
+              headers: {
+                "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+              }
             }
-          }
-        )
+          )
 
-        if (updateError) {
-          console.error("❌ Error updating subscription:", updateError)
+          if (updateError) {
+            console.error("❌ Error updating subscription:", updateError)
+          }
+
+          if (wasInTrial && isNowActive) {
+            console.log(`✅ User ${data.userId} converted from trial to paid (renews: ${renewsAt})`)
+          } else {
+            console.log(`✅ Subscription updated for user ${data.userId} (status: ${subscription.status})`)
+          }
+        } else {
+          console.log(`ℹ️ Subscription update ignored (status: ${subscription.status})`)
         }
 
-        console.log(`✅ Subscription updated for user ${subRow.user_id} (status: ${subscription.status})`)
         break
       }
 
@@ -251,17 +269,15 @@ export async function POST(req: Request) {
         })
 
         if (error || !data?.userId) {
-          console.error(`❌ Customer subscription deleted but no user found for customer ${customerId}:`, error)
+          console.error(`❌ Subscription deleted but no user found for customer ${customerId}:`, error)
           break
         }
-
-        const subRow = { user_id: data.userId }
 
         const { error: updateError } = await supabase.functions.invoke(
           'downgrade-user-subscription',
           {
             body: {
-              userId: subRow.user_id,
+              userId: data.userId,
             },
             headers: {
               "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
@@ -273,9 +289,63 @@ export async function POST(req: Request) {
           console.error("❌ Error downgrading user:", updateError)
         }
 
-        console.log(`✅ User ${subRow.user_id} downgraded to Free`)
+        console.log(`✅ User ${data.userId} downgraded to Free`)
         break
       }
+
+      // // ================================================================
+      // // PAYMENT SUCCEEDED - Renewal payment succeeded
+      // // ================================================================
+      // case "invoice.payment_succeeded": {
+      //   const invoice = event.data.object as Stripe.Invoice
+      //   const customerId = invoice.customer as string
+
+      //   // Skip if this is the first invoice (already handled by checkout.session.completed)
+      //   if (invoice.billing_reason === 'subscription_create') {
+      //     console.log(`ℹ️ Skipping initial invoice for customer ${customerId}`)
+      //     break
+      //   }
+
+      //   const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
+      //     body: { stripeCustomerId: customerId },
+      //     headers: {
+      //       "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+      //     }
+      //   })
+
+      //   if (error || !data?.userId) {
+      //     console.error(`❌ Payment succeeded but no user found for customer ${customerId}:`, error)
+      //     break
+      //   }
+
+      //   const subscriptionId = invoice.subscription as string
+      //   if (subscriptionId) {
+      //     const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+      //     const renewsAt = new Date(subscription.current_period_end * 1000).toISOString()
+
+      //     const { error: updateError } = await supabase.functions.invoke(
+      //       "update-subscription",
+      //       {
+      //         body: {
+      //           userId: data.userId,
+      //           stripeCustomerId: customerId,
+      //           renewsAt,
+      //         },
+      //         headers: {
+      //           "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
+      //         }
+      //       }
+      //     )
+
+      //     if (updateError) {
+      //       console.error("❌ Error updating subscription after payment:", updateError)
+      //     }
+
+      //     console.log(`✅ Payment succeeded for user ${data.userId} (next renewal: ${renewsAt})`)
+      //   }
+
+      //   break
+      // }
 
       // ================================================================
       // PAYMENT FAILED - Renewal payment failed
@@ -296,13 +366,11 @@ export async function POST(req: Request) {
           break
         }
 
-        const subRow = { user_id: data.userId }
-
         const { error: notifError } = await supabase.functions.invoke(
           'payment-failed-notification',
           {
             body: {
-              userId: subRow.user_id,
+              userId: data.userId,
             },
             headers: {
               "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
@@ -314,7 +382,7 @@ export async function POST(req: Request) {
           console.warn("⚠️ Failed to create notification:", notifError)
         }
 
-        console.log(`⚠️ Payment failed for user ${subRow.user_id}`)
+        console.log(`⚠️ Payment failed for user ${data.userId}`)
         break
       }
 
