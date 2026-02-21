@@ -58,11 +58,11 @@ export default async function BillingPage({ searchParams }: PageProps) {
     const planConfig =
         selectedPlan === "monthly"
             ? {
-                label: "Value Hunter — Monthly",
+                label: "GhostSweep Pro — Monthly",
                 priceCents: PRO_MONTHLY_PRICE_CENTS,
                 priceLabel: "$19.99 / month",
                 interval: "monthly" as BillingInterval,
-                subline: "Perfect for a one-time savings extraction and inbox audit.",
+                subline: "3-day free trial, then $19.99/mo. Cancel anytime.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
                 priceId: "price_1SwHKrK2SUgcYUhjU6WHuXUn",
             }
@@ -165,29 +165,37 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 ) : (
                     <>
                         {/* Plan toggle */}
-                        <div className="inline-flex rounded-lg border border-white/5 bg-white/2 p-1 text-xs">
-                            <Link
-                                href="/dashboard/billing?plan=monthly"
-                                className={cn(
-                                    "px-3 py-1.5 rounded-md transition-colors",
-                                    selectedPlan === "monthly"
-                                        ? "bg-white text-black font-light"
-                                        : "text-white/60 hover:text-white/80"
-                                )}
-                            >
-                                Monthly · $19.99
-                            </Link>
-                            <Link
-                                href="/dashboard/billing?plan=yearly"
-                                className={cn(
-                                    "px-3 py-1.5 rounded-md transition-colors",
-                                    selectedPlan === "yearly"
-                                        ? "bg-white text-black font-light"
-                                        : "text-white/60 hover:text-white/80"
-                                )}
-                            >
-                                Yearly · $149
-                            </Link>
+                        <div className="space-y-2">
+                            <div className="inline-flex rounded-lg border border-white/5 bg-white/2 p-1 text-xs">
+                                <Link
+                                    href="/dashboard/billing?plan=monthly"
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5",
+                                        selectedPlan === "monthly"
+                                            ? "bg-white text-black font-light"
+                                            : "text-white/60 hover:text-white/80"
+                                    )}
+                                >
+                                    Monthly · $19.99
+                                    <span className="rounded-full bg-purple-500 px-1.5 py-0.5 text-[9px] font-bold text-white uppercase tracking-wide leading-none">
+                                        Free Trial
+                                    </span>
+                                </Link>
+                                <Link
+                                    href="/dashboard/billing?plan=yearly"
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5",
+                                        selectedPlan === "yearly"
+                                            ? "bg-white text-black font-light"
+                                            : "text-white/60 hover:text-white/80"
+                                    )}
+                                >
+                                    Yearly · $149
+                                    <span className="rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-black uppercase tracking-wide leading-none">
+                                        Save 38%
+                                    </span>
+                                </Link>
+                            </div>
                         </div>
 
                         {/* Selected plan summary */}
@@ -214,6 +222,16 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 </span>
                             </div>
 
+                            {selectedPlan === "monthly" && (
+                                <div className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-purple-500/10 px-4 py-3">
+                                    <span className="text-lg">🎁</span>
+                                    <div>
+                                        <p className="text-xs font-semibold text-purple-300">3-day free trial included</p>
+                                        <p className="text-[11px] text-purple-300/60 mt-0.5">You won&apos;t be charged until your trial ends. Cancel anytime.</p>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="h-px bg-white/5" />
 
                             <div className="grid gap-2 text-xs text-white/60">
@@ -237,13 +255,21 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                         {/* Checkout */}
                         <section className="space-y-3 max-w-md">
-                            <p className="text-sm text-white/60">
-                                You&apos;re upgrading to{" "}
-                                <span className="font-light text-white">
-                                    {planConfig.priceLabel}
-                                </span>
-                                .
-                            </p>
+                            {selectedPlan === "monthly" ? (
+                                <p className="text-sm text-white/60">
+                                    Start your{" "}
+                                    <span className="font-semibold text-purple-300">3-day free trial</span>
+                                    {" "}— then <span className="font-light text-white">$19.99/mo</span>. No charge today.
+                                </p>
+                            ) : (
+                                <p className="text-sm text-white/60">
+                                    You&apos;re upgrading to{" "}
+                                    <span className="font-light text-white">
+                                        {planConfig.priceLabel}
+                                    </span>
+                                    .
+                                </p>
+                            )}
 
                             <CheckoutForm priceId={planConfig.priceId} />
                         </section>
@@ -253,6 +279,9 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 Payments are securely processed by Stripe. GhostSweep never stores
                                 your card details.
                             </p>
+                            {selectedPlan === "monthly" && (
+                                <p>Free trial is 3 days. You can cancel before it ends at no cost.</p>
+                            )}
                         </footer>
                     </>
                 )}

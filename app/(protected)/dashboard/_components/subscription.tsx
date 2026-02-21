@@ -29,7 +29,7 @@ export default function SubscriptionModal({
     // Load plan when modal opens
     const {data, status} = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "pro"; has_used_trial: boolean }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -46,9 +46,7 @@ export default function SubscriptionModal({
     })
 
     const handleUpgrade = () => {
-        // TODO: replace with your Stripe Checkout / upgrade flow
-        // e.g. window.location.href = "/api/create-checkout-session"
-        window.location.href = "/dashboard/billing";
+        window.location.href = `/dashboard/billing?plan=monthly`;
     };
 
     const handleManageBilling = async () => {
@@ -157,7 +155,7 @@ export default function SubscriptionModal({
                         {/* Upgrade button for Free users */}
                         {!isPro && (
                             <Button className="w-full justify-center" variant="outline" size="sm" onClick={handleUpgrade} disabled={loading}>
-                                Upgrade to Professional
+                                {data?.has_used_trial ? "Upgrade to Professional" : "Start Free Trial"}
                             </Button>
                         )}
 

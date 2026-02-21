@@ -777,8 +777,9 @@ function PricingSection() {
             name: "Pro",
             price: "$19.99",
             period: "/mo",
-            description: "Full visibility. Full control. No limits.",
-            cta: "Get Pro",
+            badge: "3-Day Free Trial",
+            description: "Try free for 3 days. Then $19.99/mo. Cancel anytime.",
+            cta: "Start Free Trial",
             href: "/login?plan=monthly",
             featured: false,
             features: [
@@ -796,7 +797,7 @@ function PricingSection() {
             price: "$149",
             period: "/yr",
             badge: "Save 38%",
-            description: "Everything in Pro. Best value.",
+            description: "Everything in Pro. Saves $91 vs monthly billing.",
             cta: "Get Annual",
             href: "/login?plan=annual",
             featured: true,
@@ -842,7 +843,11 @@ function PricingSection() {
                             }`}
                         >
                             {plan.badge && (
-                                <div className="absolute -top-3 right-8 rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-bold text-black uppercase tracking-wide">
+                                <div className={`absolute -top-3 right-8 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide ${
+                                    plan.featured
+                                        ? "bg-emerald-500 text-black"
+                                        : "bg-purple-500 text-white"
+                                }`}>
                                     {plan.badge}
                                 </div>
                             )}

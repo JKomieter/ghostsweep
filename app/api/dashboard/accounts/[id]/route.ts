@@ -9,28 +9,6 @@ export async function GET(
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Check plan - free users cannot access account details
-  const { data: planRow } = await supabase
-    .from("user_subscriptions")
-    .select("current_plan, renews_at")
-    .eq("user_id", user.id)
-    .maybeSingle();
-    
-  let plan = "free";
-  if (planRow && planRow.current_plan === "pro") {
-    const now = new Date();
-    const renewsAt = planRow.renews_at ? new Date(planRow.renews_at) : null;
-    if (renewsAt && renewsAt > now) plan = "pro";
-  }
-
-  if (plan === "free") {
-    return NextResponse.json({ 
-      error: "Upgrade required", 
-      message: "Account details are available on the Pro plan",
-      requiresUpgrade: true 
-    }, { status: 403 });
-  }
-
   const { id } = await params;
 
   // Fetch the user service with related service data

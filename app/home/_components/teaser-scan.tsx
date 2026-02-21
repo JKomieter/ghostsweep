@@ -345,6 +345,9 @@ export default function TeaserScan({
 
   const canScan = username.trim().length > 0;
   const hiddenCount = Math.max(0, results.length - VISIBLE_COUNT);
+  const loginHref = email.trim()
+    ? `/login?email=${encodeURIComponent(email.trim())}`
+    : "/login";
 
   return (
     <div className="w-full" ref={sectionRef}>
@@ -460,15 +463,15 @@ export default function TeaserScan({
                   {/* Upgrade overlay */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center justify-end pb-6">
                     <div className="text-center space-y-3">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs text-white/60">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs text-amber-400">
                         <Lock className="h-3 w-3" />
                         <span>
-                          +{hiddenCount} more profile{hiddenCount !== 1 ? "s" : ""} found
+                          +{hiddenCount} more profile{hiddenCount !== 1 ? "s" : ""} found — sign up to unlock
                         </span>
                       </div>
                       <div>
                         <Link
-                          href="/login"
+                          href={loginHref}
                           className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]"
                         >
                           Sign up to reveal all
@@ -492,7 +495,7 @@ export default function TeaserScan({
                     Create a free account for more scans and full deletion tools.
                   </p>
                   <Link
-                    href="/login"
+                    href={loginHref}
                     className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]"
                   >
                     Sign up free
@@ -529,7 +532,7 @@ export default function TeaserScan({
                     Scan again
                   </button>
                   <Link
-                    href="/login"
+                    href={loginHref}
                     className="group inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-5 py-2.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
                   >
                     Get full access
