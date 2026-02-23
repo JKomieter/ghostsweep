@@ -127,7 +127,7 @@ export default function DashboardTitle() {
     // Plan
     const { data: plan } = useQuery({
         queryKey: ["plan"],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro"; has_used_trial: boolean }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }> => {
             const res = await fetch("/api/plan");
             if (!res.ok) throw new Error("Failed to fetch plan data");
             return res.json();
@@ -197,7 +197,7 @@ export default function DashboardTitle() {
                     ? `, including ${latestSweep.breachesFound} breached`
                     : ""
                     }. The riskiest ones are waiting in your dashboard.`,
-                action: plan?.current_plan === "free" ? {
+                action: (plan?.current_plan === "free" || (plan?.current_plan === "buster" && (plan?.scan_credits_remaining ?? 0) === 0)) ? {
                     label: plan?.has_used_trial ? "Upgrade" : "Start Free Trial",
                     onClick: () => {
                         window.location.href = "/dashboard/billing?plan=monthly";
@@ -273,7 +273,9 @@ export default function DashboardTitle() {
         lastNotifiedStatus,
         queryClient,
         latestSweep?.errorMessage,
-        plan?.current_plan
+        plan?.current_plan,
+        plan?.has_used_trial,
+        plan?.scan_credits_remaining
     ]);
 
     const getElapsedMinutes = useCallback(() => {
@@ -290,7 +292,7 @@ export default function DashboardTitle() {
         if (elapsedMinutes >= 3 && !sweepLongNotified) {
             setSweepLongNotified(true);
             toast.info("Sweep in progress", {
-                description: "Processing your inbox. This can take up to 5 minutes depending on your email volume. You can leave this window open and we'll keep working.",
+                description: "Processing your inbox. This can take up to 20 minutes depending on your email volume. You can leave this window open and we'll keep working.",
             });
         }
 
@@ -603,7 +605,7 @@ export default function DashboardTitle() {
                     setSelectedProvider(provider);
                 }}
                 planIsFree={plan?.current_plan === "free"}
-                hasUsedTrial={plan?.has_used_trial ?? false}
+                scanCreditsRemaining={plan?.current_plan === "buster" ? (plan?.scan_credits_remaining ?? 0) : undefined}
                 isConnecting={isConnecting}
                 onStartConnectAction={() => setIsConnecting(true)}
                 onSweepAction={onSweep}

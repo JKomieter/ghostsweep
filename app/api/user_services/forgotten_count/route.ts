@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         // Get plan
         const { data: subscriptionData, error: subscriptionError } = await supabase
             .from("user_subscriptions")
-            .select("current_plan")
+            .select("current_plan, scan_credits_remaining")
             .eq("user_id", user.id)
             .maybeSingle();
 
@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "pro";
-        const isPro = currentPlan === "pro";
+        const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "buster" | "pro";
+        const isPro = currentPlan === "pro" || currentPlan === "buster";
 
         // Query params
         const { searchParams } = new URL(request.url);

@@ -42,7 +42,7 @@ export async function POST() {
       .single();
 
     const isPremium =
-      plan?.current_plan === "pro" || plan?.current_plan === "premium";
+      plan?.current_plan === "pro" || plan?.current_plan === "buster";
 
     if (!isPremium) {
       const oneWeekAgo = new Date(

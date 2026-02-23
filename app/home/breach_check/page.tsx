@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useMemo } from "react";
+import { useState, FormEvent } from "react";
 import { ShieldCheck, Loader2, AlertTriangle, Ghost } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -104,7 +104,7 @@ export default function BreachCheckPage() {
                         Check your exposure.
                     </h1>
                     <p className="text-base text-white/45 font-light leading-relaxed max-w-lg mx-auto">
-                        A breached account isn't just a privacy risk — it's a
+                        A breached account isn&apos;t just a privacy risk — it&apos;s a
                         financial liability. See if your email or domain appears in
                         known data leaks.
                     </p>

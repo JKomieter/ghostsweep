@@ -7,8 +7,10 @@ import { toast } from "sonner";
 
 export default function CheckoutForm({
     priceId,
+    mode = "subscription",
 }: {
     priceId: string;
+    mode?: "subscription" | "payment";
 }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -34,6 +36,7 @@ export default function CheckoutForm({
                 },
                 body: JSON.stringify({
                     price_id: priceId,
+                    mode,
                     ...(referralCode ? { referral_code: referralCode } : {}),
                 }),
             });

@@ -158,7 +158,7 @@ export async function GET() {
     ).length;
 
     const isPremium =
-      plan?.current_plan === "pro"
+      plan?.current_plan === "pro" || plan?.current_plan === "buster";
     const FREE_TIER_LIMIT = 5;
     const visibleProfiles = isPremium
       ? enrichedProfiles

@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, CheckCircle2, Filter, Calendar, Mail, Clock, Info, AlertTriangle, Zap, Loader2 } from "lucide-react";
+import { ExternalLink, CheckCircle2, Filter, Calendar, Mail, Clock, Info, AlertTriangle, Zap, Loader2, Trash2 } from "lucide-react";
 
 type Newsletter = {
   id: string;
@@ -102,6 +102,7 @@ export default function NewslettersPage() {
   const [batchUnsubscribing, setBatchUnsubscribing] = useState(false);
   const [showNukeModal, setShowNukeModal] = useState(false);
   const [nukeInProgress, setNukeInProgress] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   
   const queryClient = useQueryClient();
 
@@ -169,6 +170,25 @@ export default function NewslettersPage() {
   const markAsUnsubscribed = (id: string) => {
     updateStatusMutation.mutate({ ids: [id], status: "unsubscribed" });
   };
+
+  const hardDeleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/dashboard/newsletters?id=${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to delete");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["newsletters"] });
+      setConfirmDeleteId(null);
+    },
+    onError: (err: Error) => {
+      alert(err.message);
+      setConfirmDeleteId(null);
+    },
+  });
 
   // Bulk Nuke mutation - unsubscribe AND delete all emails from selected senders
   const bulkNukeMutation = useMutation({
@@ -557,6 +577,28 @@ export default function NewslettersPage() {
                         <CheckCircle2 className="h-3 w-3 mr-1" />
                         {updateStatusMutation.isPending ? "Updating..." : "Mark Unsubscribed"}
                       </Button>
+
+                      {confirmDeleteId === newsletter.id ? (
+                        <Button
+                          size="sm"
+                          className="border border-red-500/50 text-red-400 bg-red-500/10 hover:bg-red-500/20 text-xs gap-1"
+                          onClick={() => hardDeleteMutation.mutate(newsletter.id)}
+                          disabled={hardDeleteMutation.isPending}
+                        >
+                          <AlertTriangle className="h-3 w-3" />
+                          Confirm delete
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-white/20 hover:text-red-400 hover:bg-red-500/5 text-xs"
+                          onClick={() => setConfirmDeleteId(newsletter.id)}
+                          title="Permanently remove this newsletter"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>

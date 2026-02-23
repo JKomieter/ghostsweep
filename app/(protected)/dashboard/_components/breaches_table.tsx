@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/components/ui/table";
@@ -54,7 +52,7 @@ export default function Breaches() {
     const isFree = currentPlan === "free";
     const showUpgradeBanner = isFree && totalCount > 0;
 
-    const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }>({
         queryKey: ["plan"],
         queryFn: async () => {
             const res = await fetch("/api/plan");

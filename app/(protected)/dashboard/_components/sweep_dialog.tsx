@@ -33,6 +33,7 @@ export default function SweepDialog({
   onChangeSelectedAction,
   planIsFree,
   hasUsedTrial,
+  scanCreditsRemaining,
   isConnecting,
     onStartConnectAction,
   onSweepAction,
@@ -52,6 +53,7 @@ export default function SweepDialog({
   onChangeSelectedAction: (email: string, provider: "gmail" | "outlook") => void;
   planIsFree: boolean;
   hasUsedTrial?: boolean;
+  scanCreditsRemaining?: number;
   isConnecting: boolean;
   onStartConnectAction: () => void;
   onSweepAction: () => void;
@@ -137,7 +139,7 @@ export default function SweepDialog({
                   <span className="font-medium text-white truncate max-w-[200px] sm:max-w-[260px]">{selectedEmail}</span>
                 </p>
               )}
-              <p className="text-white/50">The sweep runs in the background and typically takes 3-5 minutes. You&apos;ll be notified when it completes.</p>
+              <p className="text-white/50">The sweep runs in the background and typically takes 10-20 minutes. You&apos;ll be notified when it completes.</p>
               
               {/* Scan Depth Indicator - Value Discovery */}
               <div className={`rounded-lg border p-3 ${planIsFree ? 'border-white/10 bg-white/5' : 'border-emerald-500/30 bg-emerald-500/10'}`}>
@@ -172,6 +174,34 @@ export default function SweepDialog({
               
               {planIsFree && (
                 <p className="text-xs text-yellow-200/80 border-l-2 border-yellow-500/30 pl-3">Free plan: Up to 10 accounts shown.</p>
+              )}
+
+              {/* Buster credits remaining */}
+              {!planIsFree && scanCreditsRemaining !== undefined && (
+                <div className={`rounded-lg border p-3 flex items-center gap-3 ${
+                  scanCreditsRemaining <= 1
+                    ? "border-orange-500/30 bg-orange-500/10"
+                    : "border-amber-500/30 bg-amber-500/10"
+                }`}>
+                  <div className="flex gap-1">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          i <= scanCreditsRemaining
+                            ? scanCreditsRemaining <= 1 ? "bg-orange-400" : "bg-amber-400"
+                            : "bg-white/15"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className={`text-xs font-medium ${
+                    scanCreditsRemaining <= 1 ? "text-orange-300" : "text-amber-300"
+                  }`}>
+                    {scanCreditsRemaining} of 3 sweep credit{scanCreditsRemaining !== 1 ? "s" : ""} remaining
+                    {scanCreditsRemaining === 1 && " — last one!"}
+                  </p>
+                </div>
               )}
             </>
           ) : (

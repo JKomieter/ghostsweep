@@ -6,9 +6,10 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 
 type PlanData = {
-    current_plan: "free" | "pro";
+    current_plan: "free" | "buster" | "pro";
     renews_at: string | null;
     has_used_trial: boolean;
+    scan_credits_remaining?: number;
 };
 
 type OverviewData = {
@@ -74,6 +75,7 @@ export default function FreemiumUpgradeTeaser() {
     };
 
     // Only show for free users after sweep is completed
+    const isBusterAudited = planData?.current_plan === "buster" && (planData?.scan_credits_remaining ?? 0) === 0;
     const isFree = planData?.current_plan === "free";
     const sweepCompleted = sweepData?.status === "completed";
     const hasData = (overviewData?.totalValue || 0) > 0 || 
