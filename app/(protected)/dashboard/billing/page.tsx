@@ -6,15 +6,66 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import CheckoutForm from "../_components/checkout";
-import { ShieldCheck, CalendarClock } from "lucide-react";
+import { ShieldCheck, CalendarClock, Zap, Check } from "lucide-react";
 
-const PRO_MONTHLY_PRICE_CENTS = 1999; // $19.99
-const PRO_YEARLY_PRICE_CENTS = 14900; // $149.00
-
-type BillingInterval = "monthly" | "yearly";
+type PlanTab = "buster" | "pro" | "sentinel";
 
 type PageProps = {
-    searchParams?: Promise<{ plan?: string, canceled?: string }>;
+    searchParams?: Promise<{ plan?: string; canceled?: string }>;
+};
+
+const PLANS = {
+    buster: {
+        label: 'The "Buster"',
+        price: "$19",
+        period: "one-time",
+        tagline: "Pay once, stay clean. No recurring bill.",
+        priceId: process.env.STRIPE_PRICE_BUSTER!,
+        mode: "payment" as const,
+        badge: null as string | null,
+        badgeStyle: "",
+        features: [
+            "3 scan credits (Work, Personal, Old School)",
+            "Full Maigret OSINT deep-web search",
+            "Every ghost account & gift card unlocked",
+            "PDF Identity Audit + 1Password-ready CSV",
+            "One-click account deletion links",
+        ],
+    },
+    pro: {
+        label: "Pro",
+        price: "$14.99",
+        period: "/ mo",
+        tagline: "Unlimited connections and real-time monitoring.",
+        priceId: process.env.STRIPE_PRICE_PRO!,
+        mode: "subscription" as const,
+        badge: null as string | null,
+        badgeStyle: "",
+        features: [
+            "Everything in Buster",
+            "Unlimited inbox connections",
+            "Real-time breach alerts",
+            "Weekly shadow web re-scan",
+            'Newsletter "Ghost" unsubscribe',
+        ],
+    },
+    sentinel: {
+        label: "Sentinel",
+        price: "$89",
+        period: "/ yr",
+        tagline: "Best value — save 50%+ vs monthly.",
+        priceId: process.env.STRIPE_PRICE_SENTINEL!,
+        mode: "subscription" as const,
+        badge: "Save 50%+",
+        badgeStyle: "bg-emerald-500 text-black",
+        features: [
+            "Everything in Pro",
+            'Priority "Shadow Watch" scan queue',
+            "Gift card expiry alerts",
+            "Monthly Identity Health Report (PDF)",
+            "Priority deletion support",
+        ],
+    },
 };
 
 function formatDate(d: string) {
@@ -41,40 +92,30 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
     const { data: sub } = await supabase
         .from("user_subscriptions")
-        .select("current_plan, renews_at")
+        .select("current_plan, renews_at, scan_credits_remaining")
         .eq("user_id", user.id)
         .maybeSingle();
 
-        console.log("User visited billing page:", JSON.stringify(sub));
+    console.log("User visited billing page:", JSON.stringify(sub));
 
-    const isPro = sub?.current_plan === "pro";
+    const currentPlan = sub?.current_plan ?? "free";
+    const isPro = currentPlan === "pro";
+    const isSentinel = currentPlan === "sentinel";
+    const isBuster = currentPlan === "buster";
+    const isPaid = isPro || isBuster || isSentinel;
     const renewsAt = sub?.renews_at ?? null;
-    const wasCanceled = params?.canceled === "true"; // Add this
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const creditsRemaining = (sub as any)?.scan_credits_remaining ?? 0;
+    const wasCanceled = params?.canceled === "true";
 
-    // Selected interval from URL (?plan=yearly)
-    const selectedPlan: BillingInterval =
-        params?.plan === "yearly" ? "yearly" : "monthly";
+    // Selected tab from URL (?plan=buster|pro|sentinel), default pro
+    const rawTab = params?.plan;
+    const selectedTab: PlanTab =
+        rawTab === "buster" ? "buster"
+        : rawTab === "sentinel" ? "sentinel"
+        : "pro";
 
-    const planConfig =
-        selectedPlan === "monthly"
-            ? {
-                label: "GhostSweep Pro — Monthly",
-                priceCents: PRO_MONTHLY_PRICE_CENTS,
-                priceLabel: "$19.99 / month",
-                interval: "monthly" as BillingInterval,
-                subline: "3-day free trial, then $19.99/mo. Cancel anytime.",
-                // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
-                priceId: process.env.STRIPE_PRICE_PRO!,
-            }
-            : {
-                label: "Savings Pro — Yearly",
-                priceCents: PRO_YEARLY_PRICE_CENTS,
-                priceLabel: "$149 / year",
-                interval: "yearly" as BillingInterval,
-                subline: "Save 35% vs monthly. Continuous monitoring for new value.",
-                // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
-                priceId: process.env.STRIPE_PRICE_SENTINEL!,
-            };
+    const planConfig = PLANS[selectedTab];
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-[#050505] px-4 py-8">
@@ -85,12 +126,12 @@ export default async function BillingPage({ searchParams }: PageProps) {
                         GhostSweep Billing
                     </h1>
                     <p className="text-sm text-white/60">
-                        Manage your Professional plan and billing details.
+                        Manage your plan and billing details.
                     </p>
                 </header>
 
-                {/* ADD THIS: Canceled message */}
-                {wasCanceled && !isPro && (
+                {/* Canceled notice */}
+                {wasCanceled && !isPaid && (
                     <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
                         <p className="text-sm text-amber-300">
                             Checkout was canceled. You can try again whenever you&apos;re ready.
@@ -98,40 +139,70 @@ export default async function BillingPage({ searchParams }: PageProps) {
                     </div>
                 )}
 
-                {/* ✅ Already Pro UI */}
-                {isPro ? (
+                {/* Already on a paid plan */}
+                {isPaid ? (
                     <section className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-4">
                         <div className="flex items-start gap-3">
                             <div className="mt-0.5 rounded-full bg-emerald-500/20 p-2.5 text-emerald-400">
                                 <ShieldCheck className="h-5 w-5" />
                             </div>
-
                             <div className="flex-1">
                                 <p className="text-sm font-light text-white">
-                                    You’re already on GhostSweep Professional
+                                    {isBuster
+                                        ? 'You own The "Buster" — one-time purchase'
+                                        : isSentinel
+                                        ? "You're on GhostSweep Sentinel"
+                                        : "You're on GhostSweep Pro"}
                                 </p>
 
-                                {renewsAt ? (
+                                {isBuster ? (
+                                    <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 w-fit">
+                                        <Zap className="h-3.5 w-3.5 text-amber-400" />
+                                        <span className="text-xs text-amber-300">
+                                            {creditsRemaining} of 3 scan credits remaining
+                                        </span>
+                                    </div>
+                                ) : renewsAt ? (
                                     <p className="mt-2 text-xs text-white/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
-                                        Renews on <span className="font-light text-white">{formatDate(renewsAt)}</span>
+                                        Renews on{" "}
+                                        <span className="font-light text-white">
+                                            {formatDate(renewsAt)}
+                                        </span>
                                     </p>
                                 ) : (
                                     <p className="mt-2 text-xs text-white/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
-                                        No renewal date on file (one-time purchase or manual subscription).
+                                        No renewal date on file.
                                     </p>
                                 )}
 
-                                <div className="mt-4 grid gap-2 text-xs text-white/60">
-                                    <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">
-                                        What you can do here
-                                    </p>
-                                    <ul className="space-y-1">
-                                        <li>• Keep using Professional features right now</li>
-                                        <li>• Switch monthly/yearly only if you add recurring subscriptions later</li>
-                                    </ul>
-                                </div>
+                                {/* Buster upsell */}
+                                {isBuster && (
+                                    <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                                        <p className="text-xs font-medium text-emerald-400">
+                                            Want unlimited scans &amp; real-time monitoring?
+                                        </p>
+                                        <p className="text-xs text-white/50">
+                                            Upgrade to Pro ($14.99/mo) or Sentinel ($89/yr) to remove
+                                            the 3-credit limit and get continuous protection.
+                                        </p>
+                                        <div className="flex gap-2 pt-1 flex-wrap">
+                                            <Link
+                                                href="/dashboard/billing?plan=pro"
+                                                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs bg-emerald-500 text-black hover:bg-emerald-400 transition font-medium"
+                                            >
+                                                Pro — $14.99/mo
+                                            </Link>
+                                            <Link
+                                                href="/dashboard/billing?plan=sentinel"
+                                                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition"
+                                            >
+                                                Sentinel — $89/yr
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                                     <Link
@@ -143,7 +214,6 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     >
                                         Back to dashboard
                                     </Link>
-
                                     <Link
                                         href="/dashboard/support"
                                         className={cn(
@@ -154,134 +224,130 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         Billing help
                                     </Link>
                                 </div>
-
-                                {/* Optional note if you *don’t* have portal yet */}
-                                <p className="mt-3 text-[11px] text-white/40">
-                                    Tip: If you want cancellations/plan changes, add Stripe Billing Portal later.
-                                </p>
                             </div>
                         </div>
                     </section>
                 ) : (
                     <>
-                        {/* Plan toggle */}
-                        <div className="space-y-2">
-                            <div className="inline-flex rounded-lg border border-white/5 bg-white/2 p-1 text-xs">
-                                <Link
-                                    href="/dashboard/billing?plan=monthly"
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5",
-                                        selectedPlan === "monthly"
-                                            ? "bg-white text-black font-light"
-                                            : "text-white/60 hover:text-white/80"
-                                    )}
-                                >
-                                    Monthly · $19.99
-                                    <span className="rounded-full bg-purple-500 px-1.5 py-0.5 text-[9px] font-bold text-white uppercase tracking-wide leading-none">
-                                        Free Trial
-                                    </span>
-                                </Link>
-                                <Link
-                                    href="/dashboard/billing?plan=yearly"
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5",
-                                        selectedPlan === "yearly"
-                                            ? "bg-white text-black font-light"
-                                            : "text-white/60 hover:text-white/80"
-                                    )}
-                                >
-                                    Yearly · $149
-                                    <span className="rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold text-black uppercase tracking-wide leading-none">
-                                        Save 38%
-                                    </span>
-                                </Link>
-                            </div>
+                        {/* Plan tabs */}
+                        <div className="flex rounded-lg border border-white/5 bg-white/2 p-1 text-xs gap-1">
+                            {(["buster", "pro", "sentinel"] as PlanTab[]).map((tab) => {
+                                const isActive = selectedTab === tab;
+                                const label =
+                                    tab === "buster" ? "Buster · $19" :
+                                    tab === "pro" ? "Pro · $14.99/mo" :
+                                    "Sentinel · $89/yr";
+                                return (
+                                    <Link
+                                        key={tab}
+                                        href={`/dashboard/billing?plan=${tab}`}
+                                        className={cn(
+                                            "flex-1 text-center px-2 py-1.5 rounded-md transition-colors whitespace-nowrap",
+                                            isActive
+                                                ? tab === "buster"
+                                                    ? "bg-amber-500/20 text-amber-300 font-medium"
+                                                    : tab === "sentinel"
+                                                    ? "bg-emerald-500/20 text-emerald-300 font-medium"
+                                                    : "bg-white text-black font-medium"
+                                                : "text-white/50 hover:text-white/80"
+                                        )}
+                                    >
+                                        {label}
+                                    </Link>
+                                );
+                            })}
                         </div>
 
-                        {/* Selected plan summary */}
-                        <section className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-4">
-                            <div className="flex items-baseline justify-between gap-3">
-                                <div>
-                                    <p className="text-sm font-light text-white/80">
+                        {/* Plan summary card */}
+                        <section
+                            className={cn(
+                                "rounded-lg border p-6 space-y-4",
+                                selectedTab === "buster"
+                                    ? "border-amber-500/25 bg-amber-500/5"
+                                    : selectedTab === "sentinel"
+                                    ? "border-emerald-500/30 bg-emerald-500/5"
+                                    : "border-white/5 bg-white/2"
+                            )}
+                        >
+                            <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <p className={cn(
+                                        "text-sm font-medium",
+                                        selectedTab === "buster" ? "text-amber-300"
+                                        : selectedTab === "sentinel" ? "text-emerald-400"
+                                        : "text-white"
+                                    )}>
                                         {planConfig.label}
                                     </p>
-                                    <p className="mt-1 text-3xl font-light text-white">
-                                        {planConfig.priceLabel}
-                                    </p>
-                                    <p className="mt-1 text-xs text-white/60">
-                                        {planConfig.subline}
-                                    </p>
+                                    {selectedTab === "buster" && (
+                                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-amber-500 text-black">
+                                            One-Time
+                                        </span>
+                                    )}
+                                    {planConfig.badge && (
+                                        <span className={cn(
+                                            "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+                                            planConfig.badgeStyle
+                                        )}>
+                                            {planConfig.badge}
+                                        </span>
+                                    )}
                                 </div>
-                                <span className={cn(
-                                    "rounded-lg border px-3 py-1 text-[11px] font-medium",
-                                    selectedPlan === "yearly" 
-                                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                                        : "border-white/5 bg-white/2 text-white/80"
+                                <p className={cn(
+                                    "mt-1 text-3xl font-light",
+                                    selectedTab === "buster" ? "text-amber-400"
+                                    : selectedTab === "sentinel" ? "text-emerald-400"
+                                    : "text-white"
                                 )}>
-                                    {selectedPlan === "yearly" ? "Savings Pro" : "Value Hunter"}
-                                </span>
+                                    {planConfig.price}
+                                    <span className="text-base text-white/40 ml-1">
+                                        {planConfig.period}
+                                    </span>
+                                </p>
+                                <p className="mt-1 text-xs text-white/50">{planConfig.tagline}</p>
                             </div>
-
-                            {selectedPlan === "monthly" && (
-                                <div className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-purple-500/10 px-4 py-3">
-                                    <span className="text-lg">🎁</span>
-                                    <div>
-                                        <p className="text-xs font-semibold text-purple-300">3-day free trial included</p>
-                                        <p className="text-[11px] text-purple-300/60 mt-0.5">You won&apos;t be charged until your trial ends. Cancel anytime.</p>
-                                    </div>
-                                </div>
-                            )}
 
                             <div className="h-px bg-white/5" />
 
-                            <div className="grid gap-2 text-xs text-white/60">
-                                <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">What you get</p>
-                                {selectedPlan === "monthly" ? (
-                                    <ul className="space-y-1">
-                                        <li>• Unlimited Coupon Discovery</li>
-                                        <li>• Gift Card & Rewards Rescue</li>
-                                        <li>• Account Deletion Engine</li>
-                                    </ul>
-                                ) : (
-                                    <ul className="space-y-1">
-                                        <li>• Everything in Monthly</li>
-                                        <li>• Expiring Points Alerts</li>
-                                        <li>• Continuous value monitoring</li>
-                                        <li>• Save 35% vs Monthly</li>
-                                    </ul>
-                                )}
+                            <div className="space-y-2">
+                                <p className="text-[11px] font-medium uppercase tracking-widest text-white/35">
+                                    What you get
+                                </p>
+                                <ul className="space-y-2">
+                                    {planConfig.features.map((f) => (
+                                        <li key={f} className="flex items-start gap-2 text-xs text-white/60">
+                                            <Check className={cn(
+                                                "h-3.5 w-3.5 shrink-0 mt-0.5",
+                                                selectedTab === "buster" ? "text-amber-400" : "text-emerald-400"
+                                            )} />
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </section>
 
                         {/* Checkout */}
-                        <section className="space-y-3 max-w-md">
-                            {selectedPlan === "monthly" ? (
-                                <p className="text-sm text-white/60">
-                                    Start your{" "}
-                                    <span className="font-semibold text-purple-300">3-day free trial</span>
-                                    {" "}— then <span className="font-light text-white">$19.99/mo</span>. No charge today.
-                                </p>
-                            ) : (
-                                <p className="text-sm text-white/60">
-                                    You&apos;re upgrading to{" "}
-                                    <span className="font-light text-white">
-                                        {planConfig.priceLabel}
-                                    </span>
-                                    .
-                                </p>
-                            )}
-
-                            <CheckoutForm priceId={planConfig.priceId} />
+                        <section className="space-y-3">
+                            <p className="text-sm text-white/60">
+                                You&apos;re upgrading to{" "}
+                                <span className="font-medium text-white">
+                                    {planConfig.label}
+                                    {" — "}
+                                    {planConfig.price}
+                                    {planConfig.period !== "one-time" ? " " + planConfig.period : " (one-time)"}
+                                </span>
+                                .
+                            </p>
+                            <CheckoutForm
+                                priceId={planConfig.priceId}
+                                mode={planConfig.mode}
+                            />
                         </section>
 
-                        <footer className="space-y-1 text-[11px] text-white/40">
-                            <p>
-                                Payments are securely processed by Stripe. GhostSweep never stores
-                                your card details.
-                            </p>
-                            {selectedPlan === "monthly" && (
-                                <p>Free trial is 3 days. You can cancel before it ends at no cost.</p>
-                            )}
+                        <footer className="text-[11px] text-white/35">
+                            Payments processed securely by Stripe. GhostSweep never stores your card
+                            details.{selectedTab !== "buster" && " Cancel anytime."}
                         </footer>
                     </>
                 )}

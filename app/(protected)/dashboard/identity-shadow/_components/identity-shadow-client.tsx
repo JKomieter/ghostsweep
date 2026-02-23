@@ -209,7 +209,7 @@ export default function IdentityShadowClient() {
   const criticalCount = data?.criticalCount ?? 0;
   const score = data?.securityScore;
 
-  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+  const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean }>({
     queryKey: ["plan"],
     queryFn: async () => {
       const res = await fetch("/api/plan");
@@ -411,8 +411,8 @@ export default function IdentityShadowClient() {
                     )
                   )}
 
-                {/* Upgrade banner when there are hidden profiles */}
-                {hiddenCount > 0 && (
+                {/* Upgrade banner — only for free users */}
+                {hiddenCount > 0 && planData?.current_plan === "free" && (
                   <div className="md:col-span-2 flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-5 py-4">
                     <div>
                       <p className="text-sm font-medium text-white">
@@ -458,7 +458,6 @@ export default function IdentityShadowClient() {
                     profile_url: p.profile_url,
                   }))}
                   isPremium={isPremium}
-                  hasUsedTrial={hasUsedTrial}
                 />
               )}
             </div>

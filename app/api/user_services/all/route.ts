@@ -20,7 +20,7 @@ export async function GET() {
     // Assumes: user_subscriptions.user_id, current_plan = 'free' | 'pro'
     const { data: sub, error: subErr } = await supabase
         .from("user_subscriptions")
-        .select("current_plan")
+        .select("current_plan, scan_credits_remaining")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -32,7 +32,8 @@ export async function GET() {
         );
     }
 
-    const isPro = (sub?.current_plan ?? "free") === "pro";
+    const isPro = (sub?.current_plan ?? "free") === "pro" ||
+        sub?.current_plan === "buster";
     const limit = isPro ? undefined : FREE_LIMIT;
 
     // 3) Fetch user services (limit for Free)

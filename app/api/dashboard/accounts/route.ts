@@ -11,13 +11,17 @@ export async function GET(req: NextRequest) {
   let plan = "free";
   const { data: planRow } = await supabase
     .from("user_subscriptions")
-    .select("current_plan, renews_at")
+    .select("current_plan, renews_at, scan_credits_remaining")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (planRow && planRow.current_plan === "pro") {
-    const now = new Date();
-    const renewsAt = planRow.renews_at ? new Date(planRow.renews_at) : null;
-    if (renewsAt && renewsAt > now) plan = "pro";
+  if (planRow) {
+    if (planRow.current_plan === "pro") {
+      const now = new Date();
+      const renewsAt = planRow.renews_at ? new Date(planRow.renews_at) : null;
+      if (renewsAt && renewsAt > now) plan = "pro";
+    } else if (planRow.current_plan === "buster") {
+      plan = "pro"; // buster always has full access
+    }
   }
 
   // Filters

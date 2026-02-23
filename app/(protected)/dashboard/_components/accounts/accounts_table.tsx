@@ -1,5 +1,5 @@
 import Input from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Trash2, AlertTriangle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -100,8 +100,9 @@ export default function AccountsTable({
     const queryClient = useQueryClient();
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-    const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }>({
         queryKey: ["plan"],
         queryFn: async () => {
             const res = await fetch("/api/plan");
@@ -158,6 +159,26 @@ export default function AccountsTable({
             toast.success("Updated whitelist status");
         },
         onError: () => toast.error("Failed to update whitelist status")
+    });
+
+    const hardDeleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/dashboard/accounts?id=${id}`, { method: "DELETE" });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to delete account");
+            }
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success("Account permanently removed");
+            setConfirmDeleteId(null);
+            queryClient.invalidateQueries({ queryKey: ["accounts"] });
+        },
+        onError: (error: Error) => {
+            toast.error(error.message);
+            setConfirmDeleteId(null);
+        },
     });
 
     const columns = useMemo<ColumnDef<AccountRow>[]>(() => [
@@ -289,6 +310,7 @@ export default function AccountsTable({
                 const domain = row.original.domain;
                 const isDeleted = row.original.status === "deleted";
                 const isWhitelisted = row.original.is_whitelisted;
+                const id = row.original.id;
 
                 if (isDeleted) return null;
 
@@ -306,16 +328,38 @@ export default function AccountsTable({
                             variant="ghost" 
                             size="sm"
                             className={`text-xs ${isWhitelisted ? 'text-emerald-400' : 'text-white/40 hover:text-white'}`}
-                            onClick={() => toggleWhitelist.mutate({ id: row.original.id, currentStatus: isWhitelisted })}
+                            onClick={() => toggleWhitelist.mutate({ id, currentStatus: isWhitelisted })}
                         >
                             {isWhitelisted ? "Trusted" : "Whitelist"}
                         </Button>
+                        {confirmDeleteId === id ? (
+                            <Button
+                                size="sm"
+                                className="h-7 border border-red-500/50 text-red-400 bg-red-500/10 hover:bg-red-500/20 text-[10px] gap-1 px-2"
+                                onClick={() => hardDeleteMutation.mutate(id)}
+                                disabled={hardDeleteMutation.isPending}
+                            >
+                                <AlertTriangle className="h-3 w-3" />
+                                Confirm
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-white/20 hover:text-red-400 hover:bg-red-500/5 px-1.5"
+                                onClick={() => setConfirmDeleteId(id)}
+                                title="Permanently remove this account"
+                            >
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
+                        )}
                     </div>
                 );
             },
         },
-    ], [toggleWhitelist]);
+    ], [toggleWhitelist, confirmDeleteId, setConfirmDeleteId, hardDeleteMutation]);
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data: accounts,
         columns,

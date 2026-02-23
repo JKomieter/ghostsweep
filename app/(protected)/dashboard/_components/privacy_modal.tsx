@@ -47,7 +47,7 @@ export default function PrivacyToolsModal({
 
     const { data: plan, status } = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro" }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -64,7 +64,7 @@ export default function PrivacyToolsModal({
     })
 
     const loadingPlan = status === "pending"
-    const isPro = plan?.current_plan === "pro";
+    const isPro = plan?.current_plan === "pro" || plan?.current_plan === "buster";
 
     const handleUpgrade = () => {
         // Replace with your real upgrade flow / checkout

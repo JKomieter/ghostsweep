@@ -96,11 +96,12 @@ export default function SubscriptionsPage() {
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<string[]>([]);
   const [modalSub, setModalSub] = useState<Subscription | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   
   const queryClient = useQueryClient();
 
   // Fetch plan for trial eligibility
-  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean; scan_credits_remaining?: number }>({
     queryKey: ["plan"],
     queryFn: async () => {
       const res = await fetch("/api/plan");
@@ -166,6 +167,25 @@ export default function SubscriptionsPage() {
     updateStatusMutation.mutate({ ids: [id], status: "kept" });
   };
 
+  const hardDeleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/dashboard/subscriptions?id=${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to delete");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      setConfirmDeleteId(null);
+    },
+    onError: (err: Error) => {
+      alert(err.message);
+      setConfirmDeleteId(null);
+    },
+  });
+
   const bulkCancel = () => {
     if (!selected.length) return;
     if (confirm(`Are you sure you want to open cancellation pages for ${selected.length} subscription(s)?`)) {
@@ -180,7 +200,7 @@ export default function SubscriptionsPage() {
   };
 
   // UI helpers
-  const isPro = data?.plan === "pro";
+  const isPro = planData?.current_plan === "pro" || planData?.current_plan === "buster";
   const blurred = data?.blurred;
   const previewOnly = data?.previewOnly;
   const monthlyTotal = data?.monthlyTotal || 0;
@@ -477,6 +497,28 @@ export default function SubscriptionsPage() {
                               >
                                 Keep
                               </Button>
+
+                              {confirmDeleteId === sub.id ? (
+                                <Button
+                                  size="sm"
+                                  className="h-8 border border-red-500/50 text-red-400 bg-red-500/10 hover:bg-red-500/20 text-[10px] sm:text-xs gap-1"
+                                  onClick={() => hardDeleteMutation.mutate(sub.id)}
+                                  disabled={hardDeleteMutation.isPending}
+                                >
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Confirm delete
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 text-white/20 hover:text-red-400 hover:bg-red-500/5 text-[10px] sm:text-xs"
+                                  onClick={() => setConfirmDeleteId(sub.id)}
+                                  title="Permanently remove this subscription"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
                             </div>
                           )}
                         </div>

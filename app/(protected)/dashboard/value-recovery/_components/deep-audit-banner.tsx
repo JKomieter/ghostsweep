@@ -7,8 +7,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type PlanData = {
-    current_plan: "free" | "pro";
+    current_plan: "free" | "buster" | "pro";
     has_used_trial: boolean;
+    scan_credits_remaining?: number;
 };
 
 type ValueRecoveryData = {

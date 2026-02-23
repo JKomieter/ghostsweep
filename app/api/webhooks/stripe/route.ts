@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       case "checkout.session.completed": {
         const session = event.data.object
         const supabaseUserId = session.metadata?.supabase_user_id
-
+        
         if (!supabaseUserId) {
           console.warn("⚠️ checkout.session.completed missing supabase_user_id")
           break
@@ -131,6 +131,7 @@ export async function POST(req: Request) {
               userId: supabaseUserId,
               stripeCustomerId,
               renewsAt, // Edge function will extend this if first-time user
+              mode: session.mode, // "subscription" or "payment"
             },
             headers: {
               "x-ghostsweep-secret": process.env.FUNCTION_SECRET!

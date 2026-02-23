@@ -761,59 +761,100 @@ function PricingSection() {
             name: "Free",
             price: "$0",
             period: "",
-            description: "3 real shadow profiles right now — no account, no credit card.",
-            cta: "Start Free Scan",
+            oneTime: false,
+            badge: null as string | null,
+            badgeStyle: "",
+            description: "See what's hiding in your inbox and across the web.",
+            cta: "Start Free",
             href: "/login",
             featured: false,
+            accentClass: "text-white",
+            checkClass: "text-white/25",
+            borderClass: "border-white/5 bg-white/2",
+            ctaClass: "bg-white/5 border border-white/10 text-white hover:bg-white/10",
             features: [
-                "Teaser scan (3 live results, no sign-up)",
-                "1 full inbox scan after sign-up",
-                "5 shadow profiles visible",
-                "10 shadow scans per week",
-                "Breach risk summary",
+                { text: "1 inbox scan (link your Gmail)", locked: false },
+                { text: "5 ghost profiles visible (rest blurred)", locked: false },
+                { text: "Breach summary — times your email leaked", locked: false },
+                { text: "Gift cards & hidden accounts found", locked: true },
+                { text: "Full ghost account list", locked: true },
+            ],
+        },
+        {
+            name: 'The "Buster"',
+            price: "$19",
+            period: "",
+            oneTime: true,
+            badge: "One-Time Pass",
+            badgeStyle: "bg-amber-500 text-black",
+            description: "Deep audit on up to 3 emails. Pay once, no recurring bill.",
+            cta: "Buy Once — $19",
+            href: "/login?plan=buster",
+            featured: false,
+            accentClass: "text-amber-400",
+            checkClass: "text-amber-400",
+            borderClass: "border-amber-500/20 bg-amber-500/[0.04]",
+            ctaClass: "bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25",
+            features: [
+                { text: "3 scan credits (Work, Personal, Old School)", locked: false },
+                { text: "Full Maigret OSINT deep-web search", locked: false },
+                { text: "Every ghost account & gift card unlocked", locked: false },
+                { text: "PDF Identity Audit + 1Password-ready CSV", locked: false },
+                { text: "One-click account deletion links", locked: false },
+                { text: "No subscription — pay once, stay clean", locked: false },
             ],
         },
         {
             name: "Pro",
-            price: "$19.99",
+            price: "$14.99",
             period: "/mo",
+            oneTime: false,
             badge: "3-Day Free Trial",
-            description: "Try free for 3 days. Then $19.99/mo. Cancel anytime.",
+            badgeStyle: "bg-purple-500 text-white",
+            description: "Full visibility, unlimited connections, and real-time monitoring.",
             cta: "Start Free Trial",
             href: "/login?plan=monthly",
             featured: false,
+            accentClass: "text-emerald-400",
+            checkClass: "text-emerald-400/60",
+            borderClass: "border-white/5 bg-white/2",
+            ctaClass: "bg-white/5 border border-white/10 text-white hover:bg-white/10",
             features: [
-                "Unlimited inbox scans",
-                "Unlimited shadow profiles",
-                "Unlimited shadow scans",
-                "Breach monitoring & alerts",
-                "Account deletion tools",
-                "Coupon & gift card recovery",
-                "Bulk newsletter unsubscribe",
+                { text: "Everything in Buster", locked: false },
+                { text: "Unlimited inbox connections", locked: false },
+                { text: "Real-time breach alerts", locked: false },
+                { text: "Weekly shadow web re-scan", locked: false },
+                { text: 'Newsletter "Ghost" unsubscribe', locked: false },
             ],
         },
         {
-            name: "Annual",
-            price: "$149",
+            name: "Sentinel",
+            price: "$89",
             period: "/yr",
-            badge: "Save 38%",
-            description: "Everything in Pro. Saves $91 vs monthly billing.",
-            cta: "Get Annual",
+            oneTime: false,
+            badge: "Best Value — Save 50%+",
+            badgeStyle: "bg-emerald-500 text-black",
+            description: "Everything in Pro. Best value — save 50%+ vs monthly.",
+            cta: "Get Sentinel",
             href: "/login?plan=annual",
             featured: true,
+            accentClass: "text-emerald-400",
+            checkClass: "text-emerald-400",
+            borderClass: "border-emerald-500/30 bg-white/5 shadow-2xl shadow-emerald-900/20",
+            ctaClass: "bg-emerald-500 text-black hover:bg-emerald-400",
             features: [
-                "Everything in Pro",
-                "Expiring points alerts",
-                "Continuous monitoring",
-                "Weekly shadow report",
-                "Priority support",
+                { text: "Everything in Pro", locked: false },
+                { text: 'Priority "Shadow Watch" scan queue', locked: false },
+                { text: "Gift card expiry alerts", locked: false },
+                { text: "Monthly Identity Health Report (PDF)", locked: false },
+                { text: "Priority deletion support", locked: false },
             ],
         },
     ];
 
     return (
         <section className="py-28 border-t border-white/5" id="pricing">
-            <div className="mx-auto max-w-5xl px-6">
+            <div className="mx-auto max-w-6xl px-6">
                 <div className="text-center mb-16">
                     <p className="text-sm uppercase tracking-[0.2em] text-white/25 mb-6">
                         Pricing
@@ -823,76 +864,58 @@ function PricingSection() {
                         <br />
                         <span className="text-white/30">Real results.</span>
                     </h2>
-                    <p className="mt-5 text-sm text-white/35">
-                        The free scan above gives you{" "}
-                        <span className="text-purple-400">3 real shadow profiles</span>{" "}
-                        right now — no account ever needed.
-                        <br />
-                        Plans unlock the full picture.
-                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                     {plans.map((plan) => (
                         <div
                             key={plan.name}
-                            className={`relative rounded-2xl border p-8 flex flex-col ${
-                                plan.featured
-                                    ? "border-emerald-500/30 bg-white/5 shadow-2xl shadow-emerald-900/20"
-                                    : "border-white/5 bg-white/2"
-                            }`}
+                            className={`relative rounded-2xl border p-7 flex flex-col ${plan.borderClass}`}
                         >
                             {plan.badge && (
-                                <div className={`absolute -top-3 right-8 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide ${
-                                    plan.featured
-                                        ? "bg-emerald-500 text-black"
-                                        : "bg-purple-500 text-white"
-                                }`}>
+                                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide ${plan.badgeStyle}`}>
                                     {plan.badge}
                                 </div>
                             )}
-                            <div className="mb-2 text-sm font-medium text-white/60">
+                            <div className="mb-1 text-sm font-medium text-white/60">
                                 {plan.name}
                             </div>
-                            <div className="flex items-baseline gap-1 mb-3">
-                                <span
-                                    className={`text-4xl font-light ${
-                                        plan.featured ? "text-emerald-400" : "text-white"
-                                    }`}
-                                >
+                            <div className="flex items-baseline gap-1 mb-1">
+                                <span className={`text-4xl font-light ${plan.accentClass}`}>
                                     {plan.price}
                                 </span>
                                 {plan.period && (
                                     <span className="text-white/30 text-sm">{plan.period}</span>
                                 )}
                             </div>
-                            <p className="text-xs text-white/40 mb-8 min-h-8">
+                            {plan.oneTime && (
+                                <p className="text-[11px] text-amber-400/70 font-medium mb-1">
+                                    One-time payment
+                                </p>
+                            )}
+                            <p className="text-xs text-white/35 mb-6 mt-1">
                                 {plan.description}
                             </p>
-                            <ul className="space-y-3 mb-8 flex-1">
+                            <ul className="space-y-2.5 mb-8 flex-1">
                                 {plan.features.map((feature) => (
                                     <li
-                                        key={feature}
-                                        className="flex items-center gap-2.5 text-sm text-white/60"
+                                        key={feature.text}
+                                        className="flex items-start gap-2 text-xs"
                                     >
-                                        <Check
-                                            className={`h-3.5 w-3.5 shrink-0 ${
-                                                plan.featured
-                                                    ? "text-emerald-400"
-                                                    : "text-white/30"
-                                            }`}
-                                        />
-                                        {feature}
+                                        {feature.locked ? (
+                                            <Lock className="h-3.5 w-3.5 shrink-0 mt-0.5 text-white/15" />
+                                        ) : (
+                                            <Check className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${plan.checkClass}`} />
+                                        )}
+                                        <span className={feature.locked ? "text-white/20" : "text-white/60"}>
+                                            {feature.text}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
                             <Link
                                 href={plan.href}
-                                className={`w-full flex items-center justify-center rounded-lg py-3 text-sm font-medium transition ${
-                                    plan.featured
-                                        ? "bg-emerald-500 text-black hover:bg-emerald-400"
-                                        : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
-                                }`}
+                                className={`w-full flex items-center justify-center rounded-lg py-2.5 text-sm font-medium transition ${plan.ctaClass}`}
                             >
                                 {plan.cta}
                             </Link>

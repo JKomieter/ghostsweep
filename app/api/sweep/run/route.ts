@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     // ✅ CHECK FREE USER MONTHLY LIMIT
     const { data: subscriptionData, error: subError } = await supabase
       .from("user_subscriptions")
-      .select("current_plan")
+      .select("current_plan, scan_credits_remaining")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -89,7 +89,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const currentPlan = (subscriptionData?.current_plan ?? "free") as "free" | "pro";
+    const rawPlan = subscriptionData?.current_plan ?? "free";
+    const isBusterActive = rawPlan === "buster" && (subscriptionData?.scan_credits_remaining ?? 0) > 0;
+    const currentPlan: "free" | "pro" = (rawPlan === "pro" || isBusterActive) ? "pro" : "free";
     
     // If free user, check if they've already completed a scan this month
     if (currentPlan === "free") {

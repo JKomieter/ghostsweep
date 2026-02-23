@@ -11,13 +11,17 @@ export async function GET(req: NextRequest) {
   let plan = "free";
   const { data: planRow } = await supabase
     .from("user_subscriptions")
-    .select("current_plan, renews_at")
+    .select("current_plan, renews_at, scan_credits_remaining")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (planRow && planRow.current_plan === "pro") {
-    const now = new Date();
-    const renewsAt = planRow.renews_at ? new Date(planRow.renews_at) : null;
-    if (renewsAt && renewsAt > now) plan = "pro";
+  if (planRow) {
+    if (planRow.current_plan === "pro") {
+      const now = new Date();
+      const renewsAt = planRow.renews_at ? new Date(planRow.renews_at) : null;
+      if (renewsAt && renewsAt > now) plan = "pro";
+    } else if (planRow.current_plan === "buster") {
+      plan = "pro"; // buster always has full access
+    }
   }
 
   // Filters
@@ -207,6 +211,38 @@ export async function PATCH(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error in PATCH /api/dashboard/subscriptions:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ error: "id is required" }, { status: 400 });
+  }
+
+  try {
+    const { error } = await supabase
+      .from("found_values")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .eq("type", "subscription");
+
+    if (error) {
+      console.error("Error permanently deleting subscription:", error);
+      return NextResponse.json({ error: "Failed to delete subscription" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error in DELETE /api/dashboard/subscriptions:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

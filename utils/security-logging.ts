@@ -49,7 +49,7 @@ export async function logLoginSecurityEvent(event: LoginSecurityEvent): Promise<
 /**
  * Detect suspicious login patterns
  */
-export async function checkSuspiciousActivity(email: string, ip: string): Promise<{
+export async function checkSuspiciousActivity(email: string, _ip: string): Promise<{
     isSuspicious: boolean;
     riskLevel: 'low' | 'medium' | 'high';
     reason?: string;

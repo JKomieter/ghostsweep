@@ -12,14 +12,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is Pro
+    // Check if user is Pro or active Buster
     const { data: subscription } = await supabase
       .from("user_subscriptions")
-      .select("current_plan")
+      .select("current_plan, scan_credits_remaining")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (subscription?.current_plan !== "pro") {
+    const isPaid = subscription?.current_plan === "pro" ||
+      subscription?.current_plan === "buster";
+
+    if (!isPaid) {
       return NextResponse.json(
         { error: "Upgrade to Pro to use Nuke the Noise" },
         { status: 403 }

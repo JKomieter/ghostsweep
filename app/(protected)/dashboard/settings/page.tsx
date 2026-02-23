@@ -35,10 +35,12 @@ import {
     FileText,
     Zap,
     Settings,
+    Download,
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import ConnectAccountModal from "./_components/connect-account-modal";
+import { usePrivacyReport } from "@/hooks/use-privacy-report";
 
 // Type definitions
 type EmailAccount = { 
@@ -50,7 +52,8 @@ type EmailAccount = {
 };
 
 type PlanData = { 
-    current_plan: "free" | "pro";
+    current_plan: "free" | "buster" | "pro";
+    scan_credits_remaining?: number;
     renews_at?: string | null;
     has_used_trial: boolean;
 };
@@ -308,7 +311,8 @@ export default function SettingsPage() {
     const gmailAccounts = emailAccounts?.gmailAccounts || [];
     const microsoftAccounts = emailAccounts?.microsoftAccounts || [];
     const totalAccounts = gmailAccounts.length + microsoftAccounts.length;
-    const isPro = planData?.current_plan === "pro";
+    const isPro = planData?.current_plan === "pro" || planData?.current_plan === "buster";
+    const { requestReport, isGenerating: isReportGenerating } = usePrivacyReport();
 
     return (
         <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
@@ -578,6 +582,21 @@ export default function SettingsPage() {
                                 <li>• Only metadata about services</li>
                             </ul>
                         </div>
+
+                        {/* Privacy Report */}
+                        <Button
+                            variant="outline"
+                            onClick={requestReport}
+                            disabled={isReportGenerating}
+                            className="w-full border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                        >
+                            {isReportGenerating ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                                <Download className="h-4 w-4 mr-2" />
+                            )}
+                            {isReportGenerating ? "Generating report…" : "Download Privacy Report"}
+                        </Button>
 
                         {/* Action button */}
                         <Button

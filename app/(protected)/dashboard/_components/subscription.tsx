@@ -29,7 +29,7 @@ export default function SubscriptionModal({
     // Load plan when modal opens
     const {data, status} = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro"; has_used_trial: boolean }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -70,7 +70,7 @@ export default function SubscriptionModal({
         }
     };
     const loading = status === "pending"
-    const isPro = data?.current_plan === "pro";
+    const isPro = data?.current_plan === "pro" || data?.current_plan === "buster";
 
     const renewalLabel = isPro 
 

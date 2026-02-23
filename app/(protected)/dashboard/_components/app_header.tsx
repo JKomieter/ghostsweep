@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus } from "lucide-react";
+import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus, FileText } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import {
     DropdownMenu,
@@ -21,6 +21,7 @@ import SlidingSidebar from "./app_sidebar";
 import Notifications from "./notifications";
 import { usePathname } from "next/navigation";
 import useGetUser from "@/hooks/use-get-user";
+import { usePrivacyReport } from "@/hooks/use-privacy-report";
 
 type LatestSweepResponse = {
     sweepId: string | null;
@@ -38,12 +39,13 @@ export default function Header() {
     const [openSupport, setOpenSupport] = useState(false)
     const [currentTime, setCurrentTime] = useState(() => Date.now())
     const {data: user} = useGetUser()
+    const { requestReport, isGenerating: isReportGenerating } = usePrivacyReport()
 
     const pathname = usePathname();
 
     const { data, status } = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "pro"; has_used_trial: boolean }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -110,7 +112,17 @@ export default function Header() {
         }
     }
 
-    const plan = data?.current_plan === "pro" ? "Professional" : "Free"
+    const isBusterActive = data?.current_plan === "buster" && (data?.scan_credits_remaining ?? 0) > 0;
+    const isBusterAudited = data?.current_plan === "buster" && (data?.scan_credits_remaining ?? 0) === 0;
+    const isPaidUser = data?.current_plan === "pro" || data?.current_plan === "buster";
+    const creditsRemaining = data?.scan_credits_remaining ?? 0;
+    const plan = data?.current_plan === "pro"
+        ? "Professional"
+        : isBusterActive
+        ? `Buster (${creditsRemaining}/3)`
+        : isBusterAudited
+        ? "Audited"
+        : "Free";
 
     return (
         <div className={`relative flex ${isInProgress ? 'h-[88px]' : 'h-14'}`}>
@@ -131,8 +143,12 @@ export default function Header() {
                             <div className="h-7 w-20 bg-neutral-200 rounded-full animate-pulse" />
                         ) : (
                             <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
-                                data?.current_plan === "pro" 
-                                    ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30" 
+                                data?.current_plan === "pro"
+                                    ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30"
+                                    : isBusterActive
+                                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                    : isBusterAudited
+                                    ? "bg-zinc-800 text-zinc-400 border border-zinc-700"
                                     : "bg-gray-900 text-gray-300 border border-gray-700"
                             }`}>
                                 {plan}
@@ -142,7 +158,7 @@ export default function Header() {
 
                     <div className="flex flex-row items-center space-x-4">
                         <div className="flex items-center gap-2">
-                            {data?.current_plan !== "pro" && (
+                            {!isPaidUser && (
                                 <Link href="/dashboard/billing?plan=monthly">
                                     <Button variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
                                         <Sparkles className="h-3.5 w-3.5" />
@@ -209,6 +225,14 @@ export default function Header() {
                                     <DropdownMenuItem onClick={() => setOpenSupport(true)}>
                                         <HelpCircle className="mr-2 h-4 w-4" />
                                         Help & Support
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onClick={requestReport}
+                                        disabled={isReportGenerating}
+                                        className="cursor-pointer"
+                                    >
+                                        <FileText className="mr-2 h-4 w-4" />
+                                        {isReportGenerating ? "Generating report…" : "Privacy Report"}
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={() => handleLogout()} className="text-red-400 focus:text-red-400">
