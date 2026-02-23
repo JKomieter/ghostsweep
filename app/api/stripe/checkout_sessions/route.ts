@@ -8,7 +8,7 @@ import { Redis } from '@upstash/redis';
 const redis = Redis.fromEnv();
 const checkoutRateLimit = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(3, '60 s'), // Premium users don't need to spam checkout
+    limiter: Ratelimit.slidingWindow(5, '60 s'),
     analytics: true,
     prefix: 'ratelimit:checkout',
 });

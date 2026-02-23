@@ -23,6 +23,7 @@ import { usePathname } from "next/navigation";
 import useGetUser from "@/hooks/use-get-user";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
 
+
 type LatestSweepResponse = {
     sweepId: string | null;
     status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;

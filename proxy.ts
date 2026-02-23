@@ -11,7 +11,7 @@ const redis = new Redis({
 
 const ratelimit = new Ratelimit({
     redis: redis,
-    limiter: Ratelimit.slidingWindow(100, '1 m'),
+    limiter: Ratelimit.slidingWindow(300, '1 m'),
     analytics: false,  // Disabled to reduce Redis calls
 });
 
@@ -205,8 +205,11 @@ export async function proxy(request: NextRequest) {
         );
     }
 
-    // Rate limiting
-    if (!WHITELISTED_IPS.includes(ip)) {
+    // Rate limiting — skip for API routes (each has its own auth check or
+    // dedicated rate limiter; the global cap only protects page/HTML routes
+    // against bots and scrapers).
+    const isApiRoute = pathname.startsWith('/api/');
+    if (!isApiRoute && !WHITELISTED_IPS.includes(ip)) {
         const { success, limit, remaining, reset } = await ratelimit.limit(ip);
         if (!success) {
             const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));

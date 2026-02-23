@@ -6,26 +6,26 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-// Rate limiter for login attempts per IP: 10 attempts per 15 minutes
+// Rate limiter for login attempts per IP: 20 attempts per 15 minutes
 export const loginRateLimitByIP = new Ratelimit({
     redis: redis,
-    limiter: Ratelimit.slidingWindow(10, '15 m'),
+    limiter: Ratelimit.slidingWindow(20, '15 m'),
     analytics: false,
 });
 
-// Rate limiter for login attempts per email: 5 attempts per 15 minutes
+// Rate limiter for login attempts per email: 10 attempts per 15 minutes
 export const loginRateLimitByEmail = new Ratelimit({
     redis: redis,
-    limiter: Ratelimit.slidingWindow(5, '15 m'),
+    limiter: Ratelimit.slidingWindow(10, '15 m'),
     analytics: false,
 });
 
 // Track failed login attempts for account lockout
 const FAILED_ATTEMPTS_KEY = (email: string) => `failed_attempts:${email.toLowerCase()}`;
 const ACCOUNT_LOCKED_KEY = (email: string) => `account_locked:${email.toLowerCase()}`;
-const LOCKOUT_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
-const MAX_FAILED_ATTEMPTS = 5;
-const CAPTCHA_THRESHOLD = 3; // Show CAPTCHA after 3 failed attempts
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
+const MAX_FAILED_ATTEMPTS = 10;
+const CAPTCHA_THRESHOLD = 5; // Show CAPTCHA after 5 failed attempts
 
 export interface LoginRateLimitResult {
     allowed: boolean;

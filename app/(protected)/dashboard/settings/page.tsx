@@ -42,6 +42,7 @@ import { createClient } from "@/utils/supabase/client";
 import ConnectAccountModal from "./_components/connect-account-modal";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
 
+
 // Type definitions
 type EmailAccount = { 
     id: string; 

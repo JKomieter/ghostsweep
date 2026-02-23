@@ -12,17 +12,17 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-// Authenticated users: 30 checks per hour
+// Authenticated users: 100 checks per hour
 const authedLimit = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(30, "1 h"),
+    limiter: Ratelimit.slidingWindow(100, "1 h"),
     prefix: "ratelimit:breach_check:authed",
 });
 
-// Unauthenticated users: 5 checks per hour per IP
+// Unauthenticated users: 15 checks per hour per IP
 const anonLimit = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(5, "1 h"),
+    limiter: Ratelimit.slidingWindow(15, "1 h"),
     prefix: "ratelimit:breach_check:anon",
 });
 
