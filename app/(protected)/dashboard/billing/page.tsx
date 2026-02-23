@@ -64,7 +64,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 interval: "monthly" as BillingInterval,
                 subline: "Perfect for a one-time savings extraction and inbox audit.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
-                priceId: "price_1SwHKrK2SUgcYUhjU6WHuXUn",
+                priceId: process.env.STRIPE_PRICE_PRO!,
             }
             : {
                 label: "Savings Pro — Yearly",
@@ -73,7 +73,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 interval: "yearly" as BillingInterval,
                 subline: "Save 35% vs monthly. Continuous monitoring for new value.",
                 // NOTE: this should be a PRICE id (price_xxx), not a product id (prod_xxx)
-                priceId: "price_1SVNecK2SUgcYUhjSkW1DnwS",
+                priceId: process.env.STRIPE_PRICE_SENTINEL!,
             };
 
     return (
