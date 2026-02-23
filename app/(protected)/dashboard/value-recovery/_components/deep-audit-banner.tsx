@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 type PlanData = {
     current_plan: "free" | "pro";
+    has_used_trial: boolean;
 };
 
 type ValueRecoveryData = {
@@ -155,15 +156,17 @@ export default function DeepAuditBanner() {
 
                 {/* CTA */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <Link href="/dashboard/billing">
+                    <Link href="/dashboard/billing?plan=monthly">
                         <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold px-6 py-5 text-base gap-2 shadow-lg shadow-amber-500/20">
                             <Sparkles className="h-4 w-4" />
-                            Unlock Deep Audit — $19.99
+                            {planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </Link>
                     <div className="text-sm text-white/40">
-                        One-time scan • 5 years of history • Keep everything you find
+                        {planData?.has_used_trial
+                            ? "$19.99/mo • 5 years of history"
+                            : "3-day free trial • then $19.99/mo • Cancel anytime"}
                     </div>
                 </div>
             </div>

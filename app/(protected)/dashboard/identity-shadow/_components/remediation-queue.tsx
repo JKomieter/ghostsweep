@@ -13,16 +13,18 @@ type BreachEntry = {
 export default function RemediationQueue({
   profiles,
   isPremium,
+  hasUsedTrial = false,
 }: {
   profiles: BreachEntry[];
   isPremium: boolean;
+  hasUsedTrial?: boolean;
 }) {
   const breachedProfiles = profiles.filter((p) => p.has_breach);
 
   const handleReveal = () => {
     if (!isPremium) {
       // Navigate to billing / checkout
-      window.location.href = "/dashboard/billing";
+      window.location.href = "/dashboard/billing?plan=monthly";
     }
   };
 
@@ -88,7 +90,7 @@ export default function RemediationQueue({
             onClick={handleReveal}
             className="w-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 text-xs gap-1.5"
           >
-            Upgrade to Pro
+            {hasUsedTrial ? "Upgrade to Pro" : "Start Free Trial"}
             <ArrowRight className="h-3 w-3" />
           </Button>
         </div>

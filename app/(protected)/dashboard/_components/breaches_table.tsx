@@ -54,6 +54,16 @@ export default function Breaches() {
     const isFree = currentPlan === "free";
     const showUpgradeBanner = isFree && totalCount > 0;
 
+    const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+        queryKey: ["plan"],
+        queryFn: async () => {
+            const res = await fetch("/api/plan");
+            if (!res.ok) throw new Error("Failed to fetch plan");
+            return res.json();
+        },
+    });
+    const trialLabel = planData?.has_used_trial ? "Upgrade to Professional" : "Start Free Trial";
+
     return (
         <div className="rounded-lg border border-white/5 bg-white/2 p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
             <div className="mb-4">
@@ -65,7 +75,7 @@ export default function Breaches() {
                             We found <strong className="text-white">{totalCount}</strong> breaches linked to your data.
                             <Link href="/dashboard/billing?plan=monthly">
                                 <button className="text-white/90 underline underline-offset-2 ml-1 hover:text-white">
-                                    Upgrade to Professional
+                                    {trialLabel}
                                 </button>
                             </Link>{" "}
                             to unlock the breach list and details.

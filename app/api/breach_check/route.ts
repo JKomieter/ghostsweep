@@ -1,8 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 // HIBP API base + key
 const HIBP_API_BASE = "https://haveibeenpwned.com/api/v3";
 const HIBP_API_KEY = process.env.HIBP_API_KEY;
+
+const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+// Authenticated users: 30 checks per hour
+const authedLimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, "1 h"),
+    prefix: "ratelimit:breach_check:authed",
+});
+
+// Unauthenticated users: 5 checks per hour per IP
+const anonLimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, "1 h"),
+    prefix: "ratelimit:breach_check:anon",
+});
+
+// Max query length to prevent oversized payloads
+const MAX_QUERY_LENGTH = 254;
 
 // --------- helpers ----------
 
@@ -39,6 +64,31 @@ function isEmail(input: string): boolean {
 
 export async function POST(req: NextRequest) {
     try {
+        // Determine if the requester is authenticated
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        // Apply rate limiting — stricter for anonymous callers
+        const ip =
+            req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+            req.headers.get("x-real-ip") ??
+            "unknown";
+
+        const rateLimitKey = user ? user.id : ip;
+        const limiter = user ? authedLimit : anonLimit;
+        const { success, reset } = await limiter.limit(rateLimitKey);
+
+        if (!success) {
+            const retryAfter = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
+            return NextResponse.json(
+                { error: "Too many requests. Please wait before trying again." },
+                {
+                    status: 429,
+                    headers: { "Retry-After": String(retryAfter) },
+                }
+            );
+        }
+
         if (!HIBP_API_KEY) {
             console.error("Missing HIBP_API_KEY env");
             return NextResponse.json(
@@ -57,6 +107,14 @@ export async function POST(req: NextRequest) {
         }
 
         const query = String(body.query).trim();
+
+        if (query.length === 0 || query.length > MAX_QUERY_LENGTH) {
+            return NextResponse.json(
+                { error: `Query must be between 1 and ${MAX_QUERY_LENGTH} characters` },
+                { status: 400 }
+            );
+        }
+
         const isAccount = isEmail(query);
 
         if (isAccount) {
@@ -171,7 +229,7 @@ export async function POST(req: NextRequest) {
     } catch (err) {
         console.error("breach-check fatal:", err);
         return NextResponse.json(
-            { error: "Internal Server Error", details: String(err) },
+            { error: "Internal Server Error" },
             { status: 500 }
         );
     }

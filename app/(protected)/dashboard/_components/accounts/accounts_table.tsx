@@ -20,7 +20,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { formatDate } from "@/utils/format_date";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { RowSelectionState, VisibilityState, ColumnDef, useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { toast } from "sonner";
 
@@ -100,6 +100,16 @@ export default function AccountsTable({
     const queryClient = useQueryClient();
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+    const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+        queryKey: ["plan"],
+        queryFn: async () => {
+            const res = await fetch("/api/plan");
+            if (!res.ok) throw new Error("Failed to fetch plan");
+            return res.json();
+        },
+    });
+    const upgradeLabel = planData?.has_used_trial ? "Upgrade to Pro →" : "Start Free Trial →";
 
     const isLoading = accountsStatus === "pending";
     const accounts = accountsResult?.accounts || [];
@@ -468,7 +478,7 @@ export default function AccountsTable({
                     <h3 className="text-xl text-white font-semibold mb-3">Your Digital Shadow Is Bigger</h3>
                     <p className="text-white/60 mb-2 max-w-md mx-auto">
                         You have <span className="text-purple-400 font-bold">{accountsResult.totalCount} accounts</span> scattered across the internet.
-                        We're only showing {accountsResult.previewCount} of them.
+                        We&apos;re only showing {accountsResult.previewCount} of them.
                     </p>
                     {accountsResult.breachedCount > 0 && (
                         <p className="text-red-400 text-sm mb-4">
@@ -478,8 +488,8 @@ export default function AccountsTable({
                     <p className="text-white/40 text-sm mb-6">
                         Upgrade to see all accounts, delete them, and protect your privacy.
                     </p>
-                    <Link href="/dashboard/billing" className="inline-flex items-center justify-center rounded-lg bg-purple-500 hover:bg-purple-400 px-6 py-3 text-sm font-semibold text-white transition">
-                        Take Control →
+                    <Link href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-purple-500 hover:bg-purple-400 px-6 py-3 text-sm font-semibold text-white transition">
+                        {upgradeLabel}
                     </Link>
                 </div>
             )}

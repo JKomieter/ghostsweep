@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import AccountSelect from "./account_select";
 import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
+import Link from "next/link";
 
 type LatestSweep = {
   status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;
@@ -31,6 +32,7 @@ export default function SweepDialog({
   selectedProvider,
   onChangeSelectedAction,
   planIsFree,
+  hasUsedTrial,
   isConnecting,
     onStartConnectAction,
   onSweepAction,
@@ -49,6 +51,7 @@ export default function SweepDialog({
   selectedProvider: "gmail" | "outlook" | null;
   onChangeSelectedAction: (email: string, provider: "gmail" | "outlook") => void;
   planIsFree: boolean;
+  hasUsedTrial?: boolean;
   isConnecting: boolean;
   onStartConnectAction: () => void;
   onSweepAction: () => void;
@@ -151,9 +154,13 @@ export default function SweepDialog({
                     </p>
                     <div className="flex items-center gap-2 pt-1 border-t border-white/10">
                       <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                      <p className="text-xs text-amber-300">
-                        Upgrade to Pro for <span className="font-semibold">5 years</span> of value recovery
-                      </p>
+                      <Link
+                        href="/dashboard/billing?plan=monthly"
+                        className="text-xs text-amber-300 hover:text-amber-200 underline underline-offset-2 transition-colors"
+                      >
+                        {hasUsedTrial ? "Upgrade to Pro" : "Start free trial"} for{" "}
+                        <span className="font-semibold">5 years</span> of value recovery →
+                      </Link>
                     </div>
                   </div>
                 ) : (

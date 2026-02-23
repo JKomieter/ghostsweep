@@ -209,6 +209,16 @@ export default function IdentityShadowClient() {
   const criticalCount = data?.criticalCount ?? 0;
   const score = data?.securityScore;
 
+  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+    queryKey: ["plan"],
+    queryFn: async () => {
+      const res = await fetch("/api/plan");
+      if (!res.ok) throw new Error("Failed to fetch plan");
+      return res.json();
+    },
+  });
+  const hasUsedTrial = planData?.has_used_trial ?? false;
+
   return (
     <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
       {/* Onboarding guidance modal for first-time visitors */}
@@ -413,10 +423,10 @@ export default function IdentityShadowClient() {
                       </p>
                     </div>
                     <Link
-                      href="/dashboard/billing"
+                      href="/dashboard/billing?plan=monthly"
                       className="shrink-0 rounded-md bg-emerald-500/15 border border-emerald-500/30 px-4 py-2 text-xs font-mono uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/25 transition-colors"
                     >
-                      Upgrade
+                      {hasUsedTrial ? "Upgrade" : "Start Free Trial"}
                     </Link>
                   </div>
                 )}
@@ -448,6 +458,7 @@ export default function IdentityShadowClient() {
                     profile_url: p.profile_url,
                   }))}
                   isPremium={isPremium}
+                  hasUsedTrial={hasUsedTrial}
                 />
               )}
             </div>

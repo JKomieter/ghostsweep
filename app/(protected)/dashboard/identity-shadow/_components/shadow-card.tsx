@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, EyeOff, Trash2, RotateCcw, X } from "lucide-react";
+import { ExternalLink, EyeOff, Trash2, RotateCcw, X, AlertTriangle } from "lucide-react";
 
 export type ShadowProfileStatus = "active" | "ignored" | "deleted";
 
@@ -26,6 +27,7 @@ export default function ShadowCard({
   onStatusChange: (id: string, status: ShadowProfileStatus) => void;
   onDelete: (id: string) => void;
 }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const isHighRisk = profile.has_breach || profile.risk_level >= 4;
   const isMediumRisk = profile.risk_level >= 2 && profile.risk_level < 4;
 
@@ -181,16 +183,34 @@ export default function ShadowCard({
             >
               <RotateCcw className="h-3 w-3" />
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onDelete(profile.id)}
-              className="border-white/10 text-white/40 hover:text-red-500 hover:border-red-500/40 hover:bg-red-500/5"
-              title="Remove permanently"
-            >
-              <X className="h-3 w-3" />
-            </Button>
           </>
+        )}
+        {/* Hard delete — available from any status */}
+        {confirmDelete ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setConfirmDelete(false);
+              onDelete(profile.id);
+            }}
+            className="border-red-500/50 text-red-400 bg-red-500/10 hover:bg-red-500/20 font-mono text-[10px] uppercase tracking-wider gap-1 px-2"
+            title="Confirm permanent deletion"
+          >
+            <AlertTriangle className="h-3 w-3" />
+            Confirm
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setConfirmDelete(true)}
+            onBlur={() => setConfirmDelete(false)}
+            className="border-white/10 text-white/40 hover:text-red-500 hover:border-red-500/40 hover:bg-red-500/5"
+            title="Remove permanently"
+          >
+            <X className="h-3 w-3" />
+          </Button>
         )}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { getSecurityEventHistory } from '@/utils/security-logging';
 
 /**
@@ -14,7 +15,15 @@ export async function GET(request: NextRequest) {
         const authHeader = request.headers.get('authorization');
         const adminToken = process.env.ADMIN_API_TOKEN;
 
-        if (!adminToken || !authHeader || authHeader !== `Bearer ${adminToken}`) {
+        if (!adminToken || !authHeader) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const provided = Buffer.from(authHeader);
+        const expected = Buffer.from(`Bearer ${adminToken}`);
+        const tokenValid =
+            provided.length === expected.length &&
+            crypto.timingSafeEqual(provided, expected);
+        if (!tokenValid) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }

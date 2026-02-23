@@ -52,6 +52,7 @@ type EmailAccount = {
 type PlanData = { 
     current_plan: "free" | "pro";
     renews_at?: string | null;
+    has_used_trial: boolean;
 };
 
 type OverviewData = {
@@ -670,10 +671,10 @@ export default function SettingsPage() {
                                 </Button>
                             </div>
                         ) : (
-                            <Link href="/dashboard/billing" className="block">
+                            <Link href="/dashboard/billing?plan=monthly" className="block">
                                 <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
                                     <Crown className="h-4 w-4 mr-2" />
-                                    Upgrade to Pro
+                                    {planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}
                                 </Button>
                             </Link>
                         )}

@@ -432,7 +432,6 @@ function SignUpForm({
                         value={confirmPassword}
                         onChange={setConfirmPassword}
                         required
-                        disableCopyPaste
                         className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
@@ -521,11 +520,13 @@ function ConfirmEmail({ email = "email address" }: { email?: string }) {
 function LoginContent() {
     const searchParams = useSearchParams();
     const referralCode = searchParams.get("ref");
+    const emailParam = searchParams.get("email");
     const hasReferral = Boolean(referralCode);
+    const hasEmailParam = Boolean(emailParam);
     const [mode, setMode] = useState<Mode>(() =>
-        hasReferral ? "signup" : "signin"
+        hasReferral || hasEmailParam ? "signup" : "signin"
     );
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState(emailParam ?? "");
 
     useEffect(() => {
         if (referralCode) {

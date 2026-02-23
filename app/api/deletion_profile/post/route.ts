@@ -15,7 +15,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { full_name, country } = await req.json();
+        const body = await req.json();
+        const { full_name, country } = body;
+
+        if (!full_name || typeof full_name !== 'string' || full_name.trim().length === 0 || full_name.length > 200) {
+            return NextResponse.json({ error: 'full_name must be a non-empty string up to 200 characters' }, { status: 400 });
+        }
+        if (!country || typeof country !== 'string' || country.length > 100) {
+            return NextResponse.json({ error: 'country must be a non-empty string up to 100 characters' }, { status: 400 });
+        }
 
         await supabase.from("deletion_profiles")
             .upsert({
