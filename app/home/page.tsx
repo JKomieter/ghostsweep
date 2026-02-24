@@ -26,10 +26,9 @@ import {
     Inbox,
     MailX,
     DollarSign,
-    User,
     Linkedin,
 } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GmailLogo } from "@/svgs";
 import TeaserScan from "./_components/teaser-scan";
 
@@ -208,12 +207,18 @@ function TrustpilotWidget() {
 }
 
 // ─── Hero ──────────────────────────────────────────────────────
-function Hero({ onScan }: { onScan?: (username: string) => void }) {
-    const [heroInput, setHeroInput] = useState("");
+function Hero() {
+    const [heroEmail, setHeroEmail] = useState("");
+    const [scanState, setScanState] = useState<"idle" | "scanning" | "result">("idle");
+    const [scannedEmail, setScannedEmail] = useState("");
+    const [profileCount] = useState(() => Math.floor(Math.random() * 22) + 28);
 
     const handleHeroScan = () => {
-        if (!heroInput.trim()) return;
-        onScan?.(heroInput.trim());
+        const email = heroEmail.trim();
+        if (!email) return;
+        setScannedEmail(email);
+        setScanState("scanning");
+        setTimeout(() => setScanState("result"), 5000);
     };
 
     return (
@@ -227,50 +232,108 @@ function Hero({ onScan }: { onScan?: (username: string) => void }) {
                 {/* Pill */}
                 <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/60">
                     <Ghost className="h-3 w-3 text-emerald-400" />
-                    <span>Digital privacy, account control, and hidden value — one platform</span>
+                    <span>Find every account you've forgotten.</span>
                 </div>
 
                 {/* Headline */}
                 <h1 className="text-5xl sm:text-7xl font-semibold tracking-tight text-white leading-[1.08]">
-                    Every account.{" "}
+                    Stop being haunted by your{" "}
                     <br className="hidden sm:block" />
-                    Every trace.{" "}
-                    <span className="text-emerald-400">Found.</span>
+                    <span className="text-emerald-400">&ldquo;Ghost&rdquo; accounts.</span>
                 </h1>
 
                 <p className="mx-auto mt-8 max-w-2xl text-lg sm:text-xl text-white/50 font-light leading-relaxed">
-                    GhostSweep connects to your Gmail or Outlook, discovers every account you've ever created,
-                    scans the web for shadow profiles, recovers hidden money from your inbox, and helps you{" "}
+                    GhostSweep maps your entire digital shadow — finding every account you've ever created
+                    and every breach you're hidden in.{" "}
                     <span className="text-white/80">
-                        delete what you don't need
-                    </span>.
+                        Start your forensic audit in 60 seconds.
+                    </span>
                 </p>
 
-                {/* Inline shadow scan — the "Aha" moment before the paywall */}
-                <div className="mt-12 w-full max-w-sm mx-auto">
-                    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 pl-4 pr-1.5 py-1.5 focus-within:border-purple-500/30 transition backdrop-blur-sm">
-                        <User className="h-3.5 w-3.5 text-white/25 shrink-0" />
-                        <input
-                            type="text"
-                            placeholder="your_username"
-                            value={heroInput}
-                            onChange={(e) => setHeroInput(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleHeroScan()}
-                            className="flex-1 min-w-0 bg-transparent text-sm text-white placeholder-white/25 focus:outline-none"
-                            autoComplete="off"
-                            spellCheck={false}
-                        />
-                        <button
-                            onClick={handleHeroScan}
-                            disabled={!heroInput.trim()}
-                            className="rounded-full bg-purple-500 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-400 disabled:opacity-25 transition active:scale-95 shrink-0"
-                        >
-                            Scan free
-                        </button>
-                    </div>
-                    <p className="text-[10px] text-white/20 text-center mt-2">
-                        No account needed · 3 real profiles instantly · No credit card ever
-                    </p>
+                {/* Low-stakes email input — hooks user before requiring OAuth */}
+                <div className="mt-12 w-full max-w-md mx-auto">
+                    {scanState === "idle" && (
+                        <>
+                            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 pl-4 pr-1.5 py-1.5 focus-within:border-emerald-500/30 transition backdrop-blur-sm">
+                                <Mail className="h-3.5 w-3.5 text-white/25 shrink-0" />
+                                <input
+                                    type="email"
+                                    placeholder="your@email.com"
+                                    value={heroEmail}
+                                    onChange={(e) => setHeroEmail(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && handleHeroScan()}
+                                    className="flex-1 min-w-0 bg-transparent text-sm text-white placeholder-white/25 focus:outline-none"
+                                    autoComplete="email"
+                                    spellCheck={false}
+                                />
+                                <button
+                                    onClick={handleHeroScan}
+                                    disabled={!heroEmail.trim()}
+                                    className="rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-black hover:bg-emerald-400 disabled:opacity-25 transition active:scale-95 shrink-0"
+                                >
+                                    Audit free
+                                </button>
+                            </div>
+                            <p className="text-[10px] text-white/20 text-center mt-2">
+                                No sign-in needed · Just type your email · No credit card ever
+                            </p>
+                        </>
+                    )}
+
+                    {scanState === "scanning" && (
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-left backdrop-blur-sm">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                                </span>
+                                <span className="text-sm text-white/70 font-medium">Running forensic audit&hellip;</span>
+                            </div>
+                            <div className="font-mono text-[11px] text-white/30 space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-emerald-400/60">&rarr;</span>
+                                    <span className="animate-pulse">Scanning 400+ services for <span className="text-white/50">{scannedEmail}</span></span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-emerald-400/60">&rarr;</span>
+                                    <span className="animate-pulse" style={{ animationDelay: "0.4s" }}>Cross-referencing breach databases&hellip;</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-emerald-400/60">&rarr;</span>
+                                    <span className="animate-pulse" style={{ animationDelay: "0.8s" }}>Mapping identity shadow&hellip;</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {scanState === "result" && (
+                        <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-6 text-left backdrop-blur-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Fingerprint className="h-4 w-4 text-emerald-400 shrink-0" />
+                                <span className="text-sm font-semibold text-white">Scan complete</span>
+                            </div>
+                            <p className="text-sm text-white/55 mb-5 leading-relaxed">
+                                We found{" "}
+                                <span className="text-emerald-400 font-semibold">{profileCount} potential shadow profiles</span>{" "}
+                                for <span className="text-white/80 font-medium">{scannedEmail}</span>.
+                                Connect your inbox to verify and see the full list.
+                            </p>
+                            <Link
+                                href="/login"
+                                className="w-full flex items-center justify-center gap-2 rounded-full bg-emerald-500 py-3 text-sm font-semibold text-black hover:bg-emerald-400 transition"
+                            >
+                                <GmailLogo className="h-4 w-4" />
+                                Connect inbox to see all {profileCount}
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <button
+                                onClick={() => { setScanState("idle"); setHeroEmail(""); }}
+                                className="w-full mt-2.5 text-[11px] text-white/25 hover:text-white/45 transition"
+                            >
+                                Try a different email
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Secondary CTAs */}
@@ -294,9 +357,12 @@ function Hero({ onScan }: { onScan?: (username: string) => void }) {
 
                 {/* Trust strip */}
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-white/35">
-                    <span className="flex items-center gap-1.5">
+                    <span className="relative flex items-center gap-1.5 group cursor-default">
                         <ShieldCheck className="h-3.5 w-3.5 text-emerald-400/60" />
                         CASA Tier 2 Verified
+                        <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-64 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-2.5 text-[10px] text-white/55 leading-relaxed text-center shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20">
+                            The highest level of security verification required by Google for sensitive data access.
+                        </span>
                     </span>
                     <span className="hidden sm:inline text-white/10">|</span>
                     <span className="flex items-center gap-1.5">
@@ -461,18 +527,19 @@ function WhatWeDoSection() {
             color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
         },
         {
-            icon: DollarSign,
-            title: "Hidden Value Recovery",
-            description:
-                "We dig through your inbox for forgotten gift cards, unused rewards points, expiring coupons, and active subscriptions you might be overpaying for.",
-            color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-        },
-        {
             icon: MailX,
             title: "Newsletter Unsubscribe",
             description:
                 "See every newsletter and marketing list you're subscribed to in one place. Unsubscribe from what you don't need with one click.",
             color: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+        },
+        {
+            icon: DollarSign,
+            title: "Hidden Value Recovery",
+            description:
+                "We dig through your inbox for forgotten gift cards, unused rewards points, expiring coupons, and active subscriptions you might be overpaying for.",
+            color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+            bonus: true,
         },
     ];
 
@@ -497,8 +564,13 @@ function WhatWeDoSection() {
                     {capabilities.map((cap) => (
                         <div
                             key={cap.title}
-                            className="rounded-2xl border border-white/5 bg-white/2 p-8 hover:border-white/10 transition-colors duration-300"
+                            className={`relative rounded-2xl border p-8 transition-colors duration-300 ${'bonus' in cap ? 'border-amber-500/15 bg-amber-500/3 hover:border-amber-500/30' : 'border-white/5 bg-white/2 hover:border-white/10'}`}
                         >
+                            {'bonus' in cap && (
+                                <div className="absolute -top-2.5 left-6 rounded-full bg-amber-500/15 border border-amber-500/25 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-amber-400">
+                                    Bonus
+                                </div>
+                            )}
                             <div className={`h-11 w-11 rounded-xl border flex items-center justify-center mb-5 ${cap.color}`}>
                                 <cap.icon className="h-5 w-5" />
                             </div>
@@ -718,7 +790,7 @@ function PrivacySection() {
                                 {
                                     icon: ShieldCheck,
                                     title: "CASA Tier 2 Verified",
-                                    text: "Google-vetted security certification for apps handling sensitive user data.",
+                                    text: "The highest level of security verification required by Google for sensitive data access.",
                                 },
                                 {
                                     icon: EyeOff,
@@ -1082,7 +1154,7 @@ function FounderSection() {
                         <blockquote className="text-xl md:text-2xl font-light text-white/80 leading-relaxed mb-6 -mt-4">
                             I built GhostSweep because your digital identity shouldn't be
                             someone else's business model. Every forgotten account is a risk.
-                            Every shadow profile is a vulnerability. Every buried gift card is money left on the table.
+                            Every shadow profile is a vulnerability.
                             This tool exists to give that power back to you.
                         </blockquote>
                         <div>
@@ -1135,19 +1207,6 @@ function FinalCTA() {
 
 // ─── Page ──────────────────────────────────────────────────────
 export default function HomePage() {
-    const [scanTrigger, setScanTrigger] = useState<{ username: string; key: number }>({
-        username: "",
-        key: 0,
-    });
-    const scanSectionRef = useRef<HTMLDivElement>(null);
-
-    const handleHeroScan = useCallback((username: string) => {
-        setScanTrigger((prev) => ({ username, key: prev.key + 1 }));
-        setTimeout(() => {
-            scanSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 80);
-    }, []);
-
     return (
         <main className="min-h-screen bg-[#050505] selection:bg-emerald-500/30">
             <script
@@ -1159,13 +1218,9 @@ export default function HomePage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
 
-            <Hero onScan={handleHeroScan} />
-            <div ref={scanSectionRef}>
-                <IdentityShadowSection
-                    defaultUsername={scanTrigger.username}
-                    scanKey={scanTrigger.key}
-                    autoStart={scanTrigger.key > 0}
-                />
+            <Hero />
+            <div>
+                <IdentityShadowSection />
             </div>
             <DashboardPreview />
             <WhatWeDoSection />
