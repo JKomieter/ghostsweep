@@ -5,6 +5,51 @@ const baseUrl = process.env.NODE_ENV === "production" ?
 "https://ghostsweep-orchestration.fly.dev" :
 "http://localhost:4000";
 
+/** GET /api/report — returns the user's most recent report URL (fresh signed URL) */
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = await supabase.auth.getSession().then(
+      (res) => res.data.session?.access_token
+    );
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const res = await fetch(`${baseUrl}/api/report/${user.id}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.status === 404) {
+      return NextResponse.json({ url: null, generatedAt: null });
+    }
+
+    if (!res.ok) {
+      return NextResponse.json({ url: null, generatedAt: null });
+    }
+
+    const data = await res.json();
+    // Orchestration returns { url, generatedAt } — pass through
+    return NextResponse.json({
+      url: data.url ?? null,
+      generatedAt: data.generatedAt ?? data.generated_at ?? null,
+    });
+  } catch (error) {
+    console.error("[report] Fetch latest error:", error);
+    return NextResponse.json({ url: null, generatedAt: null });
+  }
+}
+
 export async function POST() {
   try {
     const supabase = await createClient();

@@ -313,7 +313,7 @@ export default function SettingsPage() {
     const microsoftAccounts = emailAccounts?.microsoftAccounts || [];
     const totalAccounts = gmailAccounts.length + microsoftAccounts.length;
     const isPro = planData?.current_plan === "pro" || planData?.current_plan === "buster";
-    const { requestReport, isGenerating: isReportGenerating } = usePrivacyReport();
+    const { requestReport, downloadLatestReport, isGenerating: isReportGenerating, isLoadingLatest: isReportLatestLoading, latestReport } = usePrivacyReport();
 
     return (
         <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
@@ -585,10 +585,25 @@ export default function SettingsPage() {
                         </div>
 
                         {/* Privacy Report */}
+                        {latestReport && (
+                            <Button
+                                variant="outline"
+                                onClick={downloadLatestReport}
+                                className="w-full border-cyan-500/50 bg-cyan-500/5 text-cyan-300 hover:bg-cyan-500/15"
+                            >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download Last Report
+                                {latestReport.generatedAt && (
+                                    <span className="ml-auto text-xs text-cyan-500/70">
+                                        {new Date(latestReport.generatedAt).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </Button>
+                        )}
                         <Button
                             variant="outline"
                             onClick={requestReport}
-                            disabled={isReportGenerating}
+                            disabled={isReportGenerating || isReportLatestLoading}
                             className="w-full border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
                         >
                             {isReportGenerating ? (
@@ -596,7 +611,7 @@ export default function SettingsPage() {
                             ) : (
                                 <Download className="h-4 w-4 mr-2" />
                             )}
-                            {isReportGenerating ? "Generating report…" : "Download Privacy Report"}
+                            {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
                         </Button>
 
                         {/* Action button */}

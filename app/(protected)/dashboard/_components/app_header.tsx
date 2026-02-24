@@ -40,7 +40,7 @@ export default function Header() {
     const [openSupport, setOpenSupport] = useState(false)
     const [currentTime, setCurrentTime] = useState(() => Date.now())
     const {data: user} = useGetUser()
-    const { requestReport, isGenerating: isReportGenerating } = usePrivacyReport()
+    const { requestReport, downloadLatestReport, isGenerating: isReportGenerating, latestReport } = usePrivacyReport()
 
     const pathname = usePathname();
 
@@ -227,13 +227,27 @@ export default function Header() {
                                         <HelpCircle className="mr-2 h-4 w-4" />
                                         Help & Support
                                     </DropdownMenuItem>
+                                    {latestReport && (
+                                        <DropdownMenuItem
+                                            onClick={downloadLatestReport}
+                                            className="cursor-pointer text-cyan-400 focus:text-cyan-300"
+                                        >
+                                            <FileText className="mr-2 h-4 w-4" />
+                                            Download Last Report
+                                            {latestReport.generatedAt && (
+                                                <span className="ml-auto text-xs opacity-60">
+                                                    {new Date(latestReport.generatedAt).toLocaleDateString()}
+                                                </span>
+                                            )}
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem
                                         onClick={requestReport}
                                         disabled={isReportGenerating}
                                         className="cursor-pointer"
                                     >
                                         <FileText className="mr-2 h-4 w-4" />
-                                        {isReportGenerating ? "Generating report…" : "Privacy Report"}
+                                        {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={() => handleLogout()} className="text-red-400 focus:text-red-400">
