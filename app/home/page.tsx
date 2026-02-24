@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import {
     ArrowRight,
     Check,
@@ -156,6 +157,56 @@ function CountUp({
     );
 }
 
+// ─── Trustpilot ────────────────────────────────────────────────
+declare global {
+    interface Window {
+        Trustpilot?: { loadFromElement: (el: HTMLElement, reinitialize?: boolean) => void };
+    }
+}
+
+function TrustpilotWidget() {
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Script may already be loaded if user navigated back
+        if (window.Trustpilot && ref.current) {
+            window.Trustpilot.loadFromElement(ref.current, true);
+        }
+    }, []);
+
+    return (
+        <>
+            <Script
+                src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+                strategy="lazyOnload"
+                onLoad={() => {
+                    if (window.Trustpilot && ref.current) {
+                        window.Trustpilot.loadFromElement(ref.current, true);
+                    }
+                }}
+            />
+            <div
+                ref={ref}
+                className="trustpilot-widget"
+                data-locale="en-US"
+                data-template-id="56278e9abfbbba0bdcd568bc"
+                data-businessunit-id="698a0804abb8a0a2645298d1"
+                data-style-height="52px"
+                data-style-width="100%"
+                data-token="a4f1da35-84f9-4ce7-a194-d98c7539f15d"
+            >
+                <a
+                    href="https://www.trustpilot.com/review/ghostsweep.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Trustpilot
+                </a>
+            </div>
+        </>
+    );
+}
+
 // ─── Hero ──────────────────────────────────────────────────────
 function Hero({ onScan }: { onScan?: (username: string) => void }) {
     const [heroInput, setHeroInput] = useState("");
@@ -262,6 +313,11 @@ function Hero({ onScan }: { onScan?: (username: string) => void }) {
                         <GmailLogo className="h-3.5 w-3.5" />
                         Google Verified App
                     </span>
+                </div>
+
+                {/* Trustpilot */}
+                <div className="mt-6 max-w-xs mx-auto">
+                    <TrustpilotWidget />
                 </div>
             </div>
         </section>
