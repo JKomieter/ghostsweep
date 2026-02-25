@@ -107,7 +107,7 @@ export default function NewslettersPage() {
   const queryClient = useQueryClient();
 
   // Fetch plan for trial eligibility
-  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+  const { data: planData } = useQuery<{ current_plan: string }>({
     queryKey: ["plan"],
     queryFn: async () => {
       const res = await fetch("/api/plan");
@@ -625,10 +625,10 @@ export default function NewslettersPage() {
               We're only showing {previewCount} of them.
             </p>
             <p className="text-white/40 text-sm mb-6">
-              {planData?.has_used_trial ? "Upgrade" : "Start your free trial"} to unsubscribe in bulk and reclaim your inbox.
+              Upgrade to unsubscribe in bulk and reclaim your inbox.
             </p>
             <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-blue-500 hover:bg-blue-400 px-6 py-3 text-sm font-semibold text-white transition">
-              {planData?.has_used_trial ? "Upgrade to Pro →" : "Start Free Trial →"}
+              Upgrade to Pro →
             </a>
           </div>
         )}

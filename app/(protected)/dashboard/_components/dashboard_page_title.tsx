@@ -127,7 +127,7 @@ export default function DashboardTitle() {
     // Plan
     const { data: plan } = useQuery({
         queryKey: ["plan"],
-        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }> => {
             const res = await fetch("/api/plan");
             if (!res.ok) throw new Error("Failed to fetch plan data");
             return res.json();
@@ -198,7 +198,7 @@ export default function DashboardTitle() {
                     : ""
                     }. The riskiest ones are waiting in your dashboard.`,
                 action: (plan?.current_plan === "free" || (plan?.current_plan === "buster" && (plan?.scan_credits_remaining ?? 0) === 0)) ? {
-                    label: plan?.has_used_trial ? "Upgrade" : "Start Free Trial",
+                    label: "Upgrade",
                     onClick: () => {
                         window.location.href = "/dashboard/billing?plan=monthly";
                     },
@@ -274,7 +274,6 @@ export default function DashboardTitle() {
         queryClient,
         latestSweep?.errorMessage,
         plan?.current_plan,
-        plan?.has_used_trial,
         plan?.scan_credits_remaining
     ]);
 
@@ -340,7 +339,7 @@ export default function DashboardTitle() {
                     toast.error("Monthly sweep limit reached", {
                         description: "Go Professional for unlimited sweeps.",
                         action: {
-                            label: plan?.has_used_trial ? "Upgrade" : "Start Free Trial",
+                            label: "Upgrade",
                             onClick: () => {
                                 window.location.href = "/dashboard/billing?plan=monthly";
                             },

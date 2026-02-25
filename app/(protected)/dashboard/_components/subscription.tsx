@@ -29,7 +29,7 @@ export default function SubscriptionModal({
     // Load plan when modal opens
     const {data, status} = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -155,7 +155,7 @@ export default function SubscriptionModal({
                         {/* Upgrade button for Free users */}
                         {!isPro && (
                             <Button className="w-full justify-center" variant="outline" size="sm" onClick={handleUpgrade} disabled={loading}>
-                                {data?.has_used_trial ? "Upgrade to Professional" : "Start Free Trial"}
+                                Upgrade to Professional
                             </Button>
                         )}
 

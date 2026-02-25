@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 
 type PlanData = {
     current_plan: "free" | "buster" | "pro";
-    has_used_trial: boolean;
     scan_credits_remaining?: number;
 };
 
@@ -160,14 +159,12 @@ export default function DeepAuditBanner() {
                     <Link href="/dashboard/billing?plan=monthly">
                         <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold px-6 py-5 text-base gap-2 shadow-lg shadow-amber-500/20">
                             <Sparkles className="h-4 w-4" />
-                            {planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}
+                            Upgrade to Pro
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </Link>
                     <div className="text-sm text-white/40">
-                        {planData?.has_used_trial
-                            ? "$7.99/mo • 5 years of history"
-                            : "3-day free trial • then $7.99/mo • Cancel anytime"}
+                        $7.99/mo • 5 years of history
                     </div>
                 </div>
             </div>

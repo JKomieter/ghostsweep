@@ -59,7 +59,6 @@ export async function POST(req: Request) {
     switch (event.type) {
       // ================================================================
       // CHECKOUT COMPLETED - First time user subscribes
-      // Edge function will auto-detect if new user and add 3-day trial
       // ================================================================
       case "checkout.session.completed": {
         const session = event.data.object
@@ -77,7 +76,6 @@ export async function POST(req: Request) {
         const subscription = await stripe.subscriptions.retrieve(subscriptionId)
         const priceId = subscription.items.data[0].price.id
         
-        // Calculate when the subscription would normally renew (before trial extension)
         const renewsAt = subscription.items.data[0].current_period_end
           ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
           : getRenewalDate(priceId)
@@ -123,14 +121,13 @@ export async function POST(req: Request) {
           }
         }
 
-        // Edge function will detect if first-time user and extend renewsAt by 3 days
         const { data: updateData, error: updateError } = await supabase.functions.invoke(
           "update-subscription",
           {
             body: {
               userId: supabaseUserId,
               stripeCustomerId,
-              renewsAt, // Edge function will extend this if first-time user
+              renewsAt,
               mode: session.mode, // "subscription" or "payment"
             },
             headers: {
@@ -142,60 +139,15 @@ export async function POST(req: Request) {
         if (updateError) {
           console.error("❌ Error updating subscription:", updateError)
         } else {
-          const wasExtended = updateData?.trial_extended ? " (3-day trial added)" : ""
-          console.log(`✨ User ${supabaseUserId} subscribed${wasExtended}`)
+          console.log(`✨ User ${supabaseUserId} subscribed`)
         }
 
-        break
-      }
-
-      // ================================================================
-      // TRIAL WILL END - Fires 3 days before trial ends
-      // ================================================================
-      case "customer.subscription.trial_will_end": {
-        const subscription = event.data.object as Stripe.Subscription
-        const customerId = subscription.customer as string
-
-        const { data, error } = await supabase.functions.invoke('get-userId-by-stripe', {
-          body: { stripeCustomerId: customerId },
-          headers: {
-            "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
-          }
-        })
-
-        if (error || !data?.userId) {
-          console.error(`❌ Trial ending but no user found for customer ${customerId}:`, error)
-          break
-        }
-
-        const trialEndDate = subscription.trial_end
-          ? new Date(subscription.trial_end * 1000).toISOString()
-          : null
-
-        const { error: trialError } = await supabase.functions.invoke(
-          "trial-will-end-notification",
-          {
-            body: {
-              userId: data.userId,
-              trialEndDate,
-            },
-            headers: {
-              "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
-            }
-          }
-        )
-
-        if (trialError) {
-          console.error("❌ Error sending trial reminder:", trialError)
-        }
-
-        console.log(`⏰ Trial notification sent for user ${data.userId} (ends: ${trialEndDate})`)
         break
       }
 
       // ================================================================
       // SUBSCRIPTION UPDATED - Fires when subscription changes
-      // This handles: plan changes, trial → paid conversion, renewals
+      // This handles: plan changes, renewals
       // ================================================================
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription
@@ -212,11 +164,6 @@ export async function POST(req: Request) {
           console.error(`❌ Subscription updated but no user found for customer ${customerId}:`, error)
           break
         }
-
-        // Check if this is a trial → paid conversion
-        const previousAttributes = event.data.previous_attributes
-        const wasInTrial = previousAttributes?.status === 'trialing'
-        const isNowActive = subscription.status === 'active'
 
         const currentPeriodEnd = subscription.items.data[0].current_period_end
         const renewsAt = currentPeriodEnd
@@ -243,11 +190,7 @@ export async function POST(req: Request) {
             console.error("❌ Error updating subscription:", updateError)
           }
 
-          if (wasInTrial && isNowActive) {
-            console.log(`✅ User ${data.userId} converted from trial to paid (renews: ${renewsAt})`)
-          } else {
-            console.log(`✅ Subscription updated for user ${data.userId} (status: ${subscription.status})`)
-          }
+          console.log(`✅ Subscription updated for user ${data.userId} (status: ${subscription.status})`)
         } else {
           console.log(`ℹ️ Subscription update ignored (status: ${subscription.status})`)
         }

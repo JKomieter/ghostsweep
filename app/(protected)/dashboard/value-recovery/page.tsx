@@ -70,7 +70,7 @@ export default function ValueRecoveryPage() {
   const queryClient = useQueryClient();
 
   // Plan query for trial eligibility
-  const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+  const { data: planData } = useQuery<{ current_plan: string }>({
     queryKey: ["plan"],
     queryFn: async () => {
       const res = await fetch("/api/plan");
@@ -386,7 +386,7 @@ export default function ValueRecoveryPage() {
                 Unlock gift cards, coupons, rewards points, and refunds hiding deeper in your inbox.
               </p>
               <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 px-6 py-3 text-sm font-semibold text-black transition shadow-lg shadow-amber-500/20">
-                <span>{planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}</span>
+                <span>Upgrade to Pro</span>
                 <span>→</span>
               </a>
             </div>

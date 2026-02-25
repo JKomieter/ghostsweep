@@ -119,7 +119,7 @@ export default function DashboardUrgencyPanel() {
         refetchOnWindowFocus: false,
     });
 
-    const { data: planData } = useQuery<{ current_plan: string; has_used_trial: boolean }>({
+    const { data: planData } = useQuery<{ current_plan: string }>({
         queryKey: ["plan"],
         queryFn: async () => {
             const res = await fetch("/api/plan");
@@ -161,7 +161,7 @@ export default function DashboardUrgencyPanel() {
                         <Link href="/dashboard/billing?plan=monthly">
                             <Button size="sm" className="h-8 rounded-md border-0 bg-white text-black hover:bg-white/90 transition-colors">
                                 <Lock className="h-3.5 w-3.5 mr-1.5" />
-                                {planData?.has_used_trial ? "Upgrade" : "Start Free Trial"}
+                                Upgrade to Pro →
                             </Button>
                         </Link>
                     ) : (
@@ -225,7 +225,7 @@ export default function DashboardUrgencyPanel() {
                             {gated ? (
                                 <Link href="/dashboard/billing?plan=monthly" className="shrink-0">
                                     <Button size="sm" className="h-8 rounded-md border-0 bg-white text-black hover:bg-white/90">
-                                        {planData?.has_used_trial ? "Unlock" : "Start Free Trial"}
+                                        Unlock
                                     </Button>
                                 </Link>
                             ) : null}
@@ -302,7 +302,7 @@ export default function DashboardUrgencyPanel() {
                                         </div>
                                         <Link href="/dashboard/billing?plan=monthly">
                                             <Button size="sm" className="h-7 text-xs rounded-md border-0 bg-white text-black hover:bg-white/90">
-                                                {planData?.has_used_trial ? "Upgrade" : "Start Free Trial"}
+                                        Upgrade
                                             </Button>
                                         </Link>
                                     </div>
@@ -328,7 +328,7 @@ export default function DashboardUrgencyPanel() {
                         {gated ? (
                             <Link href="/dashboard/billing?plan=monthly">
                                 <Button className="bg-white text-black hover:bg-white/90">
-                                    {planData?.has_used_trial ? "Upgrade Now" : "Start Free Trial"}
+                                    Upgrade Now
                                 </Button>
                             </Link>
                         ) : (

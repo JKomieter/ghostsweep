@@ -32,7 +32,6 @@ export default function SweepDialog({
   selectedProvider,
   onChangeSelectedAction,
   planIsFree,
-  hasUsedTrial,
   scanCreditsRemaining,
   isConnecting,
     onStartConnectAction,
@@ -52,7 +51,6 @@ export default function SweepDialog({
   selectedProvider: "gmail" | "outlook" | null;
   onChangeSelectedAction: (email: string, provider: "gmail" | "outlook") => void;
   planIsFree: boolean;
-  hasUsedTrial?: boolean;
   scanCreditsRemaining?: number;
   isConnecting: boolean;
   onStartConnectAction: () => void;
@@ -160,7 +158,7 @@ export default function SweepDialog({
                         href="/dashboard/billing?plan=monthly"
                         className="text-xs text-amber-300 hover:text-amber-200 underline underline-offset-2 transition-colors"
                       >
-                        {hasUsedTrial ? "Upgrade to Pro" : "Start free trial"} for{" "}
+                        Upgrade to Pro for{" "}
                         <span className="font-semibold">5 years</span> of value recovery →
                       </Link>
                     </div>

@@ -102,7 +102,7 @@ export default function AccountsTable({
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }>({
+    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }>({
         queryKey: ["plan"],
         queryFn: async () => {
             const res = await fetch("/api/plan");
@@ -110,7 +110,7 @@ export default function AccountsTable({
             return res.json();
         },
     });
-    const upgradeLabel = planData?.has_used_trial ? "Upgrade to Pro →" : "Start Free Trial →";
+    const upgradeLabel = "Upgrade to Pro →";
 
     const isLoading = accountsStatus === "pending";
     const accounts = accountsResult?.accounts || [];

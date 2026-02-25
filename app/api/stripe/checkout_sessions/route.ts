@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
         // Check existing subscription
         const { data: subRow } = await supabase
             .from("user_subscriptions")
-            .select("stripe_customer_id, current_plan, trial_started_at")
+            .select("stripe_customer_id, current_plan")
             .eq("user_id", user.id)
             .maybeSingle();
 
@@ -114,8 +114,6 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             );
         }
-
-        const hasUsedTrial = Boolean(subRow?.trial_started_at);
 
         let stripeCustomerId = subRow?.stripe_customer_id as string | null;
 
@@ -184,11 +182,7 @@ export async function POST(req: NextRequest) {
             customer_update: { address: 'auto' },
             billing_address_collection: 'auto',
             allow_promotion_codes: true,
-            ...(price_mode === 'subscription' ? {
-                subscription_data: {        
-                    ...(hasUsedTrial ? {} : { trial_period_days: 3 }),
-                },
-            } : {}),
+
             ...(shouldApplyReferralDiscount
                 ? { discounts: [{ promotion_code: 'SWEEP50' }] }
                 : {}),

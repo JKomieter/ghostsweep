@@ -46,7 +46,7 @@ export default function Header() {
 
     const { data, status } = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }> => {
+        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -163,7 +163,7 @@ export default function Header() {
                                 <Link href="/dashboard/billing?plan=monthly">
                                     <Button variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
                                         <Sparkles className="h-3.5 w-3.5" />
-                                        {data?.has_used_trial ? "Upgrade" : "Start Free Trial"}
+                                        Upgrade
                                     </Button>
                                 </Link>
                             )}

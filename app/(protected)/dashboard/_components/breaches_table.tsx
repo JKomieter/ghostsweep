@@ -52,7 +52,7 @@ export default function Breaches() {
     const isFree = currentPlan === "free";
     const showUpgradeBanner = isFree && totalCount > 0;
 
-    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; has_used_trial: boolean; scan_credits_remaining?: number }>({
+    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }>({
         queryKey: ["plan"],
         queryFn: async () => {
             const res = await fetch("/api/plan");
@@ -60,7 +60,7 @@ export default function Breaches() {
             return res.json();
         },
     });
-    const trialLabel = planData?.has_used_trial ? "Upgrade to Professional" : "Start Free Trial";
+    const trialLabel = "Upgrade to Professional";
 
     return (
         <div className="rounded-lg border border-white/5 bg-white/2 p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">

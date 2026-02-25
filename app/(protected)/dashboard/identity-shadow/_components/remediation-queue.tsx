@@ -13,11 +13,9 @@ type BreachEntry = {
 export default function RemediationQueue({
   profiles,
   isPremium,
-  hasUsedTrial = false,
 }: {
   profiles: BreachEntry[];
   isPremium: boolean;
-  hasUsedTrial?: boolean;
 }) {
   const breachedProfiles = profiles.filter((p) => p.has_breach);
 
@@ -90,7 +88,7 @@ export default function RemediationQueue({
             onClick={handleReveal}
             className="w-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 text-xs gap-1.5"
           >
-            {hasUsedTrial ? "Upgrade to Pro" : "Start Free Trial"}
+            Upgrade to Pro
             <ArrowRight className="h-3 w-3" />
           </Button>
         </div>

@@ -8,7 +8,6 @@ import Link from "next/link";
 type PlanData = {
     current_plan: "free" | "buster" | "pro";
     renews_at: string | null;
-    has_used_trial: boolean;
     scan_credits_remaining?: number;
 };
 
