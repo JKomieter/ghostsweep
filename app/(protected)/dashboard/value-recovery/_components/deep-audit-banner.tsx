@@ -166,8 +166,8 @@ export default function DeepAuditBanner() {
                     </Link>
                     <div className="text-sm text-white/40">
                         {planData?.has_used_trial
-                            ? "$19.99/mo • 5 years of history"
-                            : "3-day free trial • then $19.99/mo • Cancel anytime"}
+                            ? "$7.99/mo • 5 years of history"
+                            : "3-day free trial • then $7.99/mo • Cancel anytime"}
                     </div>
                 </div>
             </div>

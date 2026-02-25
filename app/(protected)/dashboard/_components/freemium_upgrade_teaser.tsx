@@ -246,23 +246,48 @@ export default function FreemiumUpgradeTeaser() {
                 </div>
 
                 {/* CTA */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Buster Pass */}
+                    <Link
+                        href="/dashboard/billing?plan=buster"
+                        className="group flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 hover:border-emerald-500/40 hover:bg-emerald-500/5 p-4 transition"
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-white/50">Buster Pass</span>
+                            <ArrowRight className="h-3.5 w-3.5 text-white/30 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                        <div className="text-xl font-semibold text-white">$12.99</div>
+                        <div className="text-[11px] text-white/40">One-Time</div>
+                        <div className="mt-1 text-xs text-white/50 italic">Lowers the barrier for the skeptic.</div>
+                    </Link>
+
+                    {/* Monthly Sub */}
                     <Link
                         href="/dashboard/billing?plan=monthly"
-                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 px-6 py-3 text-sm font-semibold text-black transition group"
+                        className="group flex flex-col gap-1 rounded-xl border border-white/10 bg-white/5 hover:border-emerald-500/40 hover:bg-emerald-500/5 p-4 transition"
                     >
-                        {planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-white/50">Monthly</span>
+                            <ArrowRight className="h-3.5 w-3.5 text-white/30 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                        <div className="text-xl font-semibold text-white">$7.99</div>
+                        <div className="text-[11px] text-white/40">per month</div>
+                        <div className="mt-1 text-xs text-white/50 italic">Cheaper than a sandwich.</div>
                     </Link>
-                    <div className="flex items-center gap-3 text-sm text-white/50">
-                        {planData?.has_used_trial ? (
-                            <span>Starting at $19.99/month</span>
-                        ) : (
-                            <span>3-day free trial, then $19.99/mo</span>
-                        )}
-                        <span className="text-white/20">•</span>
-                        <span>Cancel anytime</span>
-                    </div>
+
+                    {/* Annual Sub */}
+                    <Link
+                        href="/dashboard/billing?plan=annual"
+                        className="group flex flex-col gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/60 hover:bg-emerald-500/10 p-4 transition"
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Annual Sentinel</span>
+                            <ArrowRight className="h-3.5 w-3.5 text-emerald-400/50 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                        <div className="text-xl font-semibold text-white">$59.99</div>
+                        <div className="text-[11px] text-white/40">per year &mdash; just $4.99/mo</div>
+                        <div className="mt-1 text-xs text-emerald-400/70 italic">The &ldquo;Golden Ticket.&rdquo; Under $5/mo.</div>
+                    </Link>
                 </div>
             </div>
         </div>

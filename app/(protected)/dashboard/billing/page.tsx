@@ -16,8 +16,8 @@ type PageProps = {
 
 const PLANS = {
     buster: {
-        label: 'The "Buster"',
-        price: "$19",
+        label: "Buster Pass",
+        price: "$12.99",
         period: "one-time",
         tagline: "Pay once, stay clean. No recurring bill.",
         priceId: process.env.STRIPE_PRICE_BUSTER!,
@@ -33,8 +33,8 @@ const PLANS = {
         ],
     },
     pro: {
-        label: "Pro",
-        price: "$14.99",
+        label: "Monthly Sub",
+        price: "$7.99",
         period: "/ mo",
         tagline: "Unlimited connections and real-time monitoring.",
         priceId: process.env.STRIPE_PRICE_PRO!,
@@ -50,10 +50,10 @@ const PLANS = {
         ],
     },
     sentinel: {
-        label: "Sentinel",
-        price: "$89",
+        label: "Annual Sentinel",
+        price: "$59.99",
         period: "/ yr",
-        tagline: "Best value — save 50%+ vs monthly.",
+        tagline: "The Golden Ticket — just $4.99/mo.",
         priceId: process.env.STRIPE_PRICE_SENTINEL!,
         mode: "subscription" as const,
         badge: "Save 50%+",
@@ -184,7 +184,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                             Want unlimited scans &amp; real-time monitoring?
                                         </p>
                                         <p className="text-xs text-white/50">
-                                            Upgrade to Pro ($14.99/mo) or Sentinel ($89/yr) to remove
+                                            Upgrade to Monthly ($7.99/mo) or Annual Sentinel ($59.99/yr) to remove
                                             the 3-credit limit and get continuous protection.
                                         </p>
                                         <div className="flex gap-2 pt-1 flex-wrap">
@@ -192,13 +192,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                                 href="/dashboard/billing?plan=pro"
                                                 className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs bg-emerald-500 text-black hover:bg-emerald-400 transition font-medium"
                                             >
-                                                Pro — $14.99/mo
+                                                Monthly — $7.99/mo
                                             </Link>
                                             <Link
                                                 href="/dashboard/billing?plan=sentinel"
                                                 className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition"
                                             >
-                                                Sentinel — $89/yr
+                                                Annual Sentinel — $59.99/yr
                                             </Link>
                                         </div>
                                     </div>
@@ -234,9 +234,9 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             {(["buster", "pro", "sentinel"] as PlanTab[]).map((tab) => {
                                 const isActive = selectedTab === tab;
                                 const label =
-                                    tab === "buster" ? "Buster · $19" :
-                                    tab === "pro" ? "Pro · $14.99/mo" :
-                                    "Sentinel · $89/yr";
+                                    tab === "buster" ? "Buster · $12.99" :
+                                    tab === "pro" ? "Monthly · $7.99/mo" :
+                                    "Annual · $59.99/yr";
                                 return (
                                     <Link
                                         key={tab}

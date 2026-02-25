@@ -670,7 +670,7 @@ export default function SettingsPage() {
                                         </Badge>
                                         {isPro && (
                                             <span className="text-xs text-muted-foreground">
-                                                $19.99/month
+                                                $7.99/month
                                             </span>
                                         )}
                                     </div>

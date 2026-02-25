@@ -89,7 +89,7 @@ export async function POST(req: Request) {
         const referrerSupabaseId = session.metadata?.referrer_supabase_id
 
         if (referrerStripeCustomerId && referrerSupabaseId) {
-          const REFERRAL_REWARD_CENTS = 1999; // $19.99
+          const REFERRAL_REWARD_CENTS = 799; // $7.99
 
           try {
             // 1. Apply credit to Stripe
@@ -102,7 +102,7 @@ export async function POST(req: Request) {
               }
             );
 
-            console.log(`💰 $19.99 credit added to Stripe for ${referrerStripeCustomerId}`);
+            console.log(`💰 $7.99 credit added to Stripe for ${referrerStripeCustomerId}`);
 
             // 2. Update Supabase
             const { error: edgeError } = await supabase.functions.invoke('update-referral-credits', {
