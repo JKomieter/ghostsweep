@@ -19,7 +19,7 @@ type TeaserProfile = {
   profile_url: string;
 };
 
-const VISIBLE_COUNT = 3;
+const VISIBLE_COUNT = 15;
 
 // ─── ProgressBar ───────────────────────────────────────────────
 function ProgressBar({ progress }: { progress: number }) {
@@ -449,9 +449,11 @@ export default function TeaserScan({
           {results.length > 0 && (
             <div>
               {/* Visible results */}
+              <div className="max-h-60 scroll-y-auto">
               {results.slice(0, VISIBLE_COUNT).map((profile, i) => (
                 <ResultRow key={profile.profile_url} profile={profile} index={i} />
               ))}
+              </div>
 
               {/* Blurred results */}
               {hiddenCount > 0 && (
