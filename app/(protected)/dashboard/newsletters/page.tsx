@@ -493,7 +493,8 @@ export default function NewslettersPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-3 mb-2">
                         <h3 className="font-semibold text-white text-lg truncate max-w-[200px] sm:max-w-md">
-                          {blurred && !isPro ? "████████" : newsletter.name}
+                          {/* {blurred && !isPro ? "████████" : newsletter.name} */}
+                          {newsletter?.name}
                         </h3>
                         
                         <Badge variant="outline" className={`text-[10px] uppercase tracking-wider ${getFrequencyColor(newsletter.newsletter_frequency)}`}>

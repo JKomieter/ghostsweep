@@ -259,7 +259,7 @@ export async function GET(req: NextRequest) {
   // Free tier: Only send a preview (first 5 accounts) with blurred names
   // This prevents free users from seeing all their data in devtools
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 5;
+  const PREVIEW_LIMIT = 10;
   
   // For free users, only return a preview slice
   const accountsToReturn = isFree ? accounts.slice(0, PREVIEW_LIMIT) : accounts;
@@ -269,9 +269,12 @@ export async function GET(req: NextRequest) {
     if (isFree) {
       return {
         ...acc,
-        name: acc.name ? acc.name.substring(0, 2) + "••••••" : null,
-        domain: acc.domain ? "••••••." + (acc.domain.split('.').pop() || "com") : null,
-        email: acc.email ? acc.email.substring(0, 2) + "••••••@••••••.com" : null,
+        // name: acc.name ? acc.name.substring(0, 2) + "••••••" : null,
+        name: acc.name,
+        // domain: acc.domain ? "••••••." + (acc.domain.split('.').pop() || "com") : null,
+        domain: (acc.domain.split('.').pop() || "com"),
+        // email: acc.email ? acc.email.substring(0, 2) + "••••••@••••••.com" : null,
+        email: acc.email
       };
     }
     return acc;

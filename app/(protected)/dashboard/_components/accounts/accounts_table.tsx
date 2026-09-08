@@ -102,14 +102,14 @@ export default function AccountsTable({
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-    const { data: planData } = useQuery<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }>({
-        queryKey: ["plan"],
-        queryFn: async () => {
-            const res = await fetch("/api/plan");
-            if (!res.ok) throw new Error("Failed to fetch plan");
-            return res.json();
-        },
-    });
+    // const { } = useQuery<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }>({
+    //     queryKey: ["plan"],
+    //     queryFn: async () => {
+    //         const res = await fetch("/api/plan");
+    //         if (!res.ok) throw new Error("Failed to fetch plan");
+    //         return res.json();
+    //     },
+    // });
     const upgradeLabel = "Upgrade to Pro →";
 
     const isLoading = accountsStatus === "pending";
