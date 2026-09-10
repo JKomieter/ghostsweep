@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
 
   // Free tier: blur newsletter names and limit data
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 5;
+  const PREVIEW_LIMIT = 10;
   
   // For free users, only return a preview slice
   const newslettersToReturn = isFree ? newsletters.slice(0, PREVIEW_LIMIT) : newsletters;
@@ -158,8 +158,8 @@ export async function GET(req: NextRequest) {
     if (isFree) {
       return {
         ...nl,
-        name: nl.name ? nl.name.substring(0, 2) + "••••••" : null,
-        unsubscribe_url: null, // Don't expose unsubscribe URLs to free users
+        name: nl.name,
+        unsubscribe_url: nl.unsubscribe_url, // Don't expose unsubscribe URLs to free users
       };
     }
     return nl;
