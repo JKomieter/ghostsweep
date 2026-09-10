@@ -326,6 +326,18 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
+    if (pathname.includes("unsubscribe")) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/home/unsubscribe';
+        return NextResponse.redirect(url);
+    }
+
+    if (pathname.includes("support")) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/home/support';
+        return NextResponse.redirect(url);
+    }
+
     // Update session
     const response = await updateSession(request);
 
