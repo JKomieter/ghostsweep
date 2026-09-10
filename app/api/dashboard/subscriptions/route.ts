@@ -129,7 +129,7 @@ export async function GET(req: NextRequest) {
 
   // Free tier: blur service names and amounts, limit data returned
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 3;
+  const PREVIEW_LIMIT = 7;
   
   // For free users, only return a preview slice
   const allSubs = subscriptions || [];
@@ -140,10 +140,10 @@ export async function GET(req: NextRequest) {
     if (isFree) {
       return {
         ...sub,
-        source: sub.source ? sub.source.substring(0, 2) + "••••••" : null,
-        amount: "••.••",
-        original_email_id: null, // Don't expose email IDs
-        cancellation_url: null, // Can't cancel without paying
+        // source: sub.source ? sub.source.substring(0, 2) + "••••••" : null,
+        // amount: "••.••",
+        // original_email_id: null, // Don't expose email IDs
+        // cancellation_url: null, // Can't cancel without paying
       };
     }
     return {

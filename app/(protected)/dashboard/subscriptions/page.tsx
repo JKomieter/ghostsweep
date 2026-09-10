@@ -389,11 +389,13 @@ export default function SubscriptionsPage() {
                           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
                             <div className="min-w-0">
                               <h3 className="font-semibold text-white text-lg truncate">
-                                {blurred && !isPro ? "██████" : sub.service_name}
+                                {/* {blurred && !isPro ? "██████" : sub.service_name} */}
+                                {sub.service_name}
                               </h3>
                               {sub.plan_details && (
                                 <p className="text-sm text-white/50 mt-0.5 truncate">
-                                  {blurred && !isPro ? "████" : sub.plan_details}
+                                  {/* {blurred && !isPro ? "████" : sub.plan_details} */}
+                                  {sub.plan_details}
                                 </p>
                               )}
                               <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -413,7 +415,8 @@ export default function SubscriptionsPage() {
                             
                             <div className="sm:text-right shrink-0">
                               <div className="text-2xl font-light text-red-400">
-                                {blurred && !isPro ? "$██" : formatCurrency(monthlyAmount)}
+                                {/* {blurred && !isPro ? "$██" : formatCurrency(monthlyAmount)} */}
+                                {formatCurrency(monthlyAmount)}
                               </div>
                               <div className="text-xs text-white/40">per month</div>
                             </div>
@@ -422,7 +425,10 @@ export default function SubscriptionsPage() {
                           <div className="text-sm text-white/60 mb-4 space-y-0.5">
                             <div className="flex justify-between sm:block">
                               <span className="sm:inline">Annual cost: </span>
-                              <span className="text-red-300 font-medium">{blurred && !isPro ? "$███" : formatCurrency(annualAmount)}</span>
+                              <span className="text-red-300 font-medium">
+                                {/* {blurred && !isPro ? "$███" : formatCurrency(annualAmount)} */}
+                                {formatCurrency(annualAmount)}
+                                </span>
                             </div>
                             {sub.next_billing_date && (
                               <div className="flex justify-between sm:block">
@@ -461,7 +467,8 @@ export default function SubscriptionsPage() {
                                 size="sm" 
                                 className="bg-red-600 hover:bg-red-500 text-white text-[10px] sm:text-xs h-8"
                                 onClick={() => sub.cancel_url && window.open(sub.cancel_url, '_blank')}
-                                disabled={blurred && !isPro || !sub.cancel_url}
+                                // disabled={blurred && !isPro || !sub.cancel_url}
+                                disabled={!sub.cancel_url}
                               >
                                 <ExternalLink className="h-3 w-3 mr-1" />
                                 Cancel
@@ -472,7 +479,7 @@ export default function SubscriptionsPage() {
                                 size="sm" 
                                 className="border-white/20 text-white/70 hover:bg-white/10 text-[10px] sm:text-xs h-8"
                                 onClick={() => setModalSub(sub)}
-                                disabled={blurred && !isPro}
+                                // disabled={blurred && !isPro}
                               >
                                 Steps
                               </Button>
@@ -482,7 +489,8 @@ export default function SubscriptionsPage() {
                                 size="sm" 
                                 className="text-emerald-400 hover:bg-emerald-500/10 text-[10px] sm:text-xs h-8"
                                 onClick={() => markAsCanceled(sub.id)}
-                                disabled={updateStatusMutation.isPending || (blurred && !isPro)}
+                                // disabled={updateStatusMutation.isPending || (blurred && !isPro)}
+                                disabled={updateStatusMutation.isPending}
                               >
                                 <Check className="h-3 w-3 mr-1" />
                                 {updateStatusMutation.isPending ? "..." : "Mark Canceled"}
@@ -493,7 +501,8 @@ export default function SubscriptionsPage() {
                                 size="sm" 
                                 className="text-blue-400 hover:bg-blue-500/10 text-[10px] sm:text-xs h-8"
                                 onClick={() => markAsKept(sub.id)}
-                                disabled={updateStatusMutation.isPending || (blurred && !isPro)}
+                                // disabled={updateStatusMutation.isPending || (blurred && !isPro)}
+                                disabled={updateStatusMutation.isPending}
                               >
                                 Keep
                               </Button>

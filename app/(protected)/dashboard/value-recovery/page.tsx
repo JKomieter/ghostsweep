@@ -70,14 +70,14 @@ export default function ValueRecoveryPage() {
   const queryClient = useQueryClient();
 
   // Plan query for trial eligibility
-  const { data: planData } = useQuery<{ current_plan: string }>({
-    queryKey: ["plan"],
-    queryFn: async () => {
-      const res = await fetch("/api/plan");
-      if (!res.ok) throw new Error("Failed to fetch plan");
-      return res.json();
-    },
-  });
+  // const { data: planData } = useQuery<{ current_plan: string }>({
+  //   queryKey: ["plan"],
+  //   queryFn: async () => {
+  //     const res = await fetch("/api/plan");
+  //     if (!res.ok) throw new Error("Failed to fetch plan");
+  //     return res.json();
+  //   },
+  // });
 
   // Bulk select
   const toggleSelect = (id: string) => setSelected(sel => sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id]);
@@ -182,7 +182,8 @@ export default function ValueRecoveryPage() {
             <div className="text-4xl font-light text-white flex items-baseline gap-3">
               <span className="text-emerald-400">
                 {loading ? <Skeleton className="h-10 w-32" /> : (
-                  previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(total)
+                  // previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(total)
+                    formatCurrency(total)
                 )}
               </span>
               <span className="text-lg font-light text-white/40">recoverable</span>

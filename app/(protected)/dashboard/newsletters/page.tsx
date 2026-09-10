@@ -541,7 +541,7 @@ export default function NewslettersPage() {
                           size="sm" 
                           className="bg-blue-600 hover:bg-blue-500 text-white text-xs whitespace-nowrap"
                           onClick={() => window.open(newsletter.unsubscribe_url!, '_blank')}
-                          disabled={blurred && !isPro}
+                          // disabled={blurred && !isPro}
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           Unsubscribe
@@ -551,7 +551,7 @@ export default function NewslettersPage() {
                           size="sm" 
                           className="bg-blue-600 hover:bg-blue-500 text-white text-xs whitespace-nowrap"
                           onClick={() => window.open(`mailto:unsubscribe@${newsletter?.from_address?.split('@')[1] || 'newsletter.com'}?subject=Unsubscribe`, '_blank')}
-                          disabled={blurred && !isPro}
+                          // disabled={blurred && !isPro}
                         >
                           <Mail className="h-3 w-3 mr-1" />
                           Email to Unsubscribe
@@ -562,7 +562,7 @@ export default function NewslettersPage() {
                           size="sm" 
                           className="border-white/20 text-white/70 hover:bg-white/10 text-xs whitespace-nowrap"
                           onClick={() => setModalNewsletter(newsletter)}
-                          disabled={blurred && !isPro}
+                          // disabled={blurred && !isPro}
                         >
                           Manual Instructions
                         </Button>

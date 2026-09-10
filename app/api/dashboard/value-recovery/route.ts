@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
 
   // Free tier: blur codes, block copy, block links, limit data returned
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 3;
+  const PREVIEW_LIMIT = 10;
   
   // For free users, only return a preview slice
   const allValues = values || [];
@@ -80,15 +80,15 @@ export async function GET(req: NextRequest) {
     if (isFree) {
       return {
         ...val,
-        source: val.source ? val.source.substring(0, 2) + "••••••" : null,
-        amount: "••.••",
-        code: val.code ? "••••-••••-••••" : null, // Hide gift card codes
-        redemption_url: null, // Can't redeem without paying
-        original_email_id: null,
-        // Always include risk protection fields - they're safety critical
-        risk_level: val.risk_level || "unknown",
-        is_verified: val.is_verified ?? false,
-        warning_message: val.warning_message,
+        // source: val.source ? val.source.substring(0, 2) + "••••••" : null,
+        // amount: "••.••",
+        // code: val.code ? "••••-••••-••••" : null, // Hide gift card codes
+        // redemption_url: null, // Can't redeem without paying
+        // original_email_id: null,
+        // // Always include risk protection fields - they're safety critical
+        // risk_level: val.risk_level || "unknown",
+        // is_verified: val.is_verified ?? false,
+        // warning_message: val.warning_message,
       };
     }
     return {
