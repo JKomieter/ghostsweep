@@ -67,15 +67,16 @@ function formatCurrency(amount: number) {
 }
 
 function getMonthlyAmount(amount: string, frequency: string) {
-  const num = Number(amount) || 0;
+  // `amount` is provided in cents; convert to dollars first
+  const dollars = (Number(amount) || 0) / 100;
   switch (frequency) {
-    case "daily": return num * 30;
-    case "weekly": return num * 4.33;
-    case "biweekly": return num * 2.17;
-    case "monthly": return num;
-    case "quarterly": return num / 3;
-    case "annual": return num / 12;
-    default: return num;
+    case "daily": return dollars * 30;
+    case "weekly": return dollars * 4.33;
+    case "biweekly": return dollars * 2.17;
+    case "monthly": return dollars;
+    case "quarterly": return dollars / 3;
+    case "annual": return dollars / 12;
+    default: return dollars;
   }
 }
 
