@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // TODO: Replace with your actual Supabase URL and anon key
-export async function GET(req: NextRequest) {
+export async function GET() {
   const supabase = await createClient();
   
       // 1) Auth
@@ -24,23 +24,38 @@ export async function GET(req: NextRequest) {
   // Convert from cents to dollars
   const totalValue = (valueRows?.reduce((sum, row) => sum + Number(row.amount), 0) || 0) / 100;
 
+  // Helper: convert an amount (in cents) to its monthly equivalent based on frequency
+  const getMonthlyAmount = (amount: string | number, freq: string) => {
+    const num = Number(amount) || 0; // amount is in cents
+    switch (freq) {
+      case "daily": return num * 30;
+      case "weekly": return num * 4.33;
+      case "biweekly": return num * 2.17;
+      case "monthly": return num;
+      case "quarterly": return num / 3;
+      case "annual": return num / 12;
+      default: return num;
+    }
+  };
+
   // Active subscriptions
   const { data: subRows } = await supabase
     .from("found_values")
-    .select("amount, service_name")
+    .select("id, amount, billing_frequency, service_name")
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "active");
-  // Deduplicate subscriptions by normalized service_name and convert from cents to dollars
+  // Deduplicate subscriptions by normalized service_name (fallback to id), convert to monthly cents and then to dollars
   const seenSubs = new Set<string>();
-  let uniqueSubsCents = 0;
+  let uniqueMonthlyCents = 0;
   for (const row of (subRows || [])) {
-    const name = (row.service_name || "").toString().toLowerCase().trim();
-    if (name && seenSubs.has(name)) continue;
-    if (name) seenSubs.add(name);
-    uniqueSubsCents += Number(row.amount) || 0;
+    const keyRaw = (row.service_name || "").toString();
+    const key = keyRaw.trim().length ? keyRaw.toLowerCase().trim() : row.id;
+    if (seenSubs.has(key)) continue;
+    seenSubs.add(key);
+    uniqueMonthlyCents += getMonthlyAmount(row.amount, row.billing_frequency || "monthly");
   }
-  const totalSubs = uniqueSubsCents / 100;
+  const totalSubs = uniqueMonthlyCents / 100;
   const uniqueSubsCount = seenSubs.size;
 
   // Newsletters count (include both spam and newsletter category services)
