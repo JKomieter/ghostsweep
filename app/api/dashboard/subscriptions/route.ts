@@ -136,21 +136,20 @@ export async function GET(req: NextRequest) {
   const subsToReturn = isFree ? allSubs.slice(0, PREVIEW_LIMIT) : allSubs;
   
   // For free users, blur subscription details; for all users, convert amount from cents to dollars
-  const processedSubs = subsToReturn.map(sub => {
+  // Deduplicate returned subscriptions by normalized `service_name`, preserving first occurrence
+  const seen = new Set<string>();
+  const processedSubs: Array<Record<string, unknown>> = [];
+  for (const sub of subsToReturn) {
+    const key = (sub.service_name || "").toString().toLowerCase().trim();
+    if (key && seen.has(key)) continue;
+    if (key) seen.add(key);
+
     if (isFree) {
-      return {
-        ...sub,
-        // source: sub.source ? sub.source.substring(0, 2) + "••••••" : null,
-        // amount: "••.••",
-        // original_email_id: null, // Don't expose email IDs
-        // cancellation_url: null, // Can't cancel without paying
-      };
+      processedSubs.push({ ...sub });
+    } else {
+      processedSubs.push({ ...sub, amount: Number(sub.amount) / 100 });
     }
-    return {
-      ...sub,
-      amount: Number(sub.amount) / 100, // Convert from cents to dollars
-    };
-  });
+  }
 
   return NextResponse.json({
     plan,
