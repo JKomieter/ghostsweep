@@ -97,35 +97,45 @@ export async function GET(req: NextRequest) {
   // Only calculate totals for active subscriptions
   const { data: activeSubscriptions } = await supabase
     .from("found_values")
-    .select("amount, billing_frequency")
+    .select("id, amount, billing_frequency, service_name")
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "active");
-
-  // Convert from cents to dollars
-  const monthlyTotal = (activeSubscriptions || []).reduce((sum, sub) => {
+  // Deduplicate active subscriptions by normalized `service_name` (fallback to id) and convert from cents to dollars
+  const seenActive = new Set<string>();
+  const monthlyCents = (activeSubscriptions || []).reduce((sum, sub) => {
+    const keyRaw = (sub.service_name || "") .toString();
+    const key = keyRaw.trim().length ? keyRaw.toLowerCase().trim() : sub.id;
+    if (seenActive.has(key)) return sum;
+    seenActive.add(key);
     return sum + getMonthlyAmount(sub.amount, sub.billing_frequency || "monthly");
-  }, 0) / 100;
+  }, 0);
 
+  const monthlyTotal = monthlyCents / 100;
   const annualTotal = monthlyTotal * 12;
 
   // Calculate lifetime savings from canceled subscriptions
   const { data: canceledSubs } = await supabase
     .from("found_values")
-    .select("amount, billing_frequency, recovered_at")
+    .select("id, amount, billing_frequency, recovered_at, service_name")
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "canceled");
-
-  // Convert from cents to dollars
-  const lifetimeSavings = (canceledSubs || []).reduce((sum, sub) => {
+  // Deduplicate canceled subscriptions by normalized `service_name` (fallback to id) and convert from cents to dollars
+  const seenCanceled = new Set<string>();
+  const lifetimeCents = (canceledSubs || []).reduce((sum, sub) => {
+    const keyRaw = (sub.service_name || "").toString();
+    const key = keyRaw.trim().length ? keyRaw.toLowerCase().trim() : sub.id;
+    if (seenCanceled.has(key)) return sum;
+    seenCanceled.add(key);
     const monthlySaving = getMonthlyAmount(sub.amount, sub.billing_frequency || "monthly");
-    // Estimate savings based on when they canceled (assume they've saved for at least 1 month)
     const monthsSaved = sub.recovered_at ? 
       Math.max(1, Math.floor((Date.now() - new Date(sub.recovered_at).getTime()) / (1000 * 60 * 60 * 24 * 30))) : 
       1;
     return sum + (monthlySaving * monthsSaved);
-  }, 0) / 100;
+  }, 0);
+
+  const lifetimeSavings = lifetimeCents / 100;
 
   // Free tier: blur service names and amounts, limit data returned
   const isFree = plan === "free";
