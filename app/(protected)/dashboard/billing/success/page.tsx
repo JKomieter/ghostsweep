@@ -213,7 +213,7 @@ export default async function SuccessPage({
                         </Link>
 
                         <Link
-                            href="/dashboard/user_services"
+                            href="/dashboard/accounts"
                             className="inline-flex w-full items-center justify-center rounded-md border border-white/5 bg-white/2 px-3 py-2 text-sm text-white hover:border-white/10 hover:bg-white/3"
                         >
                             View accounts

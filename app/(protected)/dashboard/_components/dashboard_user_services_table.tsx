@@ -165,7 +165,7 @@ export default function DashboardUrgencyPanel() {
                             </Button>
                         </Link>
                     ) : (
-                        <Link href="/dashboard/user_services">
+                        <Link href="/dashboard/accounts">
                             <Button size="sm" variant="ghost" className="h-8 text-white/60 hover:text-white hover:bg-white/5">
                                 View all →
                             </Button>
@@ -332,7 +332,7 @@ export default function DashboardUrgencyPanel() {
                                 </Button>
                             </Link>
                         ) : (
-                            <Link href="/dashboard/user_services">
+                            <Link href="/dashboard/accounts">
                                 <Button variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
                                     Go to accounts
                                 </Button>
