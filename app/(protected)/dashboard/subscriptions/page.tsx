@@ -68,7 +68,7 @@ function formatCurrency(amount: number) {
 
 function getMonthlyAmount(amount: string, frequency: string) {
   // `amount` is provided in cents; convert to dollars first
-  const dollars = (Number(amount) || 0) / 100;
+  const dollars = (Number(amount) || 0);
   switch (frequency) {
     case "daily": return dollars * 30;
     case "weekly": return dollars * 4.33;
@@ -232,7 +232,7 @@ export default function SubscriptionsPage() {
         
         {/* Stats Header */}
         <div className="relative mx-auto max-w-5xl rounded-xl border border-white/10 bg-black/40 p-1 backdrop-blur-xl shadow-2xl mb-10 overflow-hidden">
-          <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-red-500/20 via-orange-500/20 to-yellow-500/20 blur opacity-50" />
+          <div className="absolute -inset-1 rounded-xl bg-linear-to-r from-red-500/20 via-orange-500/20 to-yellow-500/20 blur opacity-50" />
           <div className="relative rounded-lg bg-[#0A0A0A] p-6 sm:p-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="md:col-span-2">

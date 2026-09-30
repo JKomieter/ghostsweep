@@ -27,12 +27,21 @@ export async function GET(req: NextRequest) {
   // Active subscriptions
   const { data: subRows } = await supabase
     .from("found_values")
-    .select("amount")
+    .select("amount, service_name")
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "active");
-  // Convert from cents to dollars
-  const totalSubs = (subRows?.reduce((sum, row) => sum + Number(row.amount), 0) || 0) / 100;
+  // Deduplicate subscriptions by normalized service_name and convert from cents to dollars
+  const seenSubs = new Set<string>();
+  let uniqueSubsCents = 0;
+  for (const row of (subRows || [])) {
+    const name = (row.service_name || "").toString().toLowerCase().trim();
+    if (name && seenSubs.has(name)) continue;
+    if (name) seenSubs.add(name);
+    uniqueSubsCents += Number(row.amount) || 0;
+  }
+  const totalSubs = uniqueSubsCents / 100;
+  const uniqueSubsCount = seenSubs.size;
 
   // Newsletters count (include both spam and newsletter category services)
   const { data: allUserServices } = await supabase
@@ -80,6 +89,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     totalValue,
     totalSubs,
+    uniqueSubsCount,
     newsletters,
     oldAccounts,
     recent: recent || [],
