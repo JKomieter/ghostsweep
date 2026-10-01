@@ -78,7 +78,7 @@ export async function GET() {
   const { data: userServices, error: usErr } = await supabase
     .from("user_services")
     .select(
-      "id, email_count, last_seen_at, first_seen_at, service:services(id,name,domain)"
+      "id, email_count, last_seen_at, first_seen_at, is_spam, service:services(id,name,domain,category)"
     )
     .eq("user_id", userId);
 
@@ -89,7 +89,16 @@ export async function GET() {
     );
   }
 
-  const rows = userServices ?? [];
+  const allRows = userServices ?? [];
+
+  // Exclude services that are spam or newsletters
+  const rows = allRows.filter((r) => {
+    const service = Array.isArray(r.service) ? r.service[0] : r.service;
+    const isSpam = r.is_spam === true;
+    const isNewsletter = service?.category === "Newsletter";
+    return !(isSpam || isNewsletter);
+  });
+
   const totalServices = rows.length;
 
   const oneYearAgo = yearsAgoDate(1).getTime();
@@ -114,10 +123,11 @@ export async function GET() {
       if (lastSeen < fourYearsAgo) inactive4y += 1;
     }
 
-    const y =
-      safeYear(r.first_seen_at ?? r.last_seen_at ?? null) ??
-      safeYear(r.last_seen_at ?? null);
+  }
 
+  // Compute oldestYear across all user services (including spam/newsletters)
+  for (const r of allRows) {
+    const y = safeYear(r.first_seen_at ?? r.last_seen_at ?? null);
     if (typeof y === "number") {
       if (oldestYear === null) oldestYear = y;
       else oldestYear = Math.min(oldestYear, y);
@@ -164,7 +174,9 @@ export async function GET() {
   for (const r of rows) {
     const service = Array.isArray(r.service) ? r.service[0] : r.service;
     if (service?.domain && breachedDomains.has(service.domain)) {
-      breachedServiceIds.add(r.id);
+      // Use the canonical service id when available, otherwise fall back to the user_service id
+      const key = service?.id ?? r.id;
+      breachedServiceIds.add(String(key));
     }
   }
 
@@ -174,8 +186,8 @@ export async function GET() {
   const scored = rows
     .map((r) => {
       const service = Array.isArray(r.service) ? r.service[0] : r.service;
-      const serviceId = service?.id ?? null;
-      const isBreached = serviceId ? breachedServiceIds.has(serviceId) : false;
+      const serviceKey = service?.id ?? r.id;
+      const isBreached = breachedServiceIds.has(String(serviceKey));
 
       const lastSeenMs = r.last_seen_at ? new Date(r.last_seen_at).getTime() : null;
       const emails = typeof r.email_count === "number" ? r.email_count : 0;
