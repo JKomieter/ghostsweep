@@ -121,7 +121,7 @@ export async function POST(req: Request) {
           }
         }
 
-        const { data: updateData, error: updateError } = await supabase.functions.invoke(
+        const { error: updateError } = await supabase.functions.invoke(
           "update-subscription",
           {
             body: {
