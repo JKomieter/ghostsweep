@@ -31,10 +31,10 @@ export default function AccountSelect({
         onChangeAction(email, prov);
       }}
     >
-      <SelectTrigger className="w-full bg-black/40 border-white/20 text-white">
+      <SelectTrigger className="w-full bg-background/40 border-foreground/20 text-foreground">
         <SelectValue placeholder="Select an account" />
       </SelectTrigger>
-      <SelectContent className="bg-[#0a0a0a] border-white/20">
+      <SelectContent className="bg-card border-foreground/20">
         {gmailAccounts.map((acc) => (
           <SelectItem key={acc.id} value={`gmail:${acc.gmail_address}`}>
             <div className="flex items-center gap-2">

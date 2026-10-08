@@ -197,9 +197,9 @@ export default function AccountDetailsPage({ accountId }: Props) {
     };
 
     const riskColor = useMemo(() => {
-        if (account?.is_breached) return "text-red-400";
-        if (account?.days_since_last_seen && account.days_since_last_seen > 365) return "text-amber-400";
-        return "text-emerald-400";
+        if (account?.is_breached) return "text-red-600 dark:text-red-400";
+        if (account?.days_since_last_seen && account.days_since_last_seen > 365) return "text-amber-700 dark:text-amber-400";
+        return "text-emerald-600 dark:text-emerald-400";
     }, [account]);
 
     const riskLabel = useMemo(() => {
@@ -219,8 +219,8 @@ export default function AccountDetailsPage({ accountId }: Props) {
     if (status === "error" || !account) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-                <AlertTriangle className="h-12 w-12 text-red-400" />
-                <p className="text-white/60">Failed to load account details</p>
+                <AlertTriangle className="h-12 w-12 text-red-600 dark:text-red-400" />
+                <p className="text-foreground/60">Failed to load account details</p>
                 <Link href="/dashboard/accounts">
                     <Button variant="outline">Back to Accounts</Button>
                 </Link>
@@ -236,14 +236,14 @@ export default function AccountDetailsPage({ accountId }: Props) {
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="flex items-start gap-4">
                     <Link href="/dashboard/accounts" className="shrink-0">
-                        <Button variant="ghost" size="sm" className="gap-2 px-2 border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
+                        <Button variant="ghost" size="sm" className="gap-2 px-2 border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3">
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline text-sm">Back</span>
                         </Button>
                     </Link>
 
                     {/* Logo */}
-                    <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-white/10 bg-white/5 shrink-0 flex items-center justify-center">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-foreground/10 bg-foreground/5 shrink-0 flex items-center justify-center">
                         {account.logo_url ? (
                             <Image 
                                 src={account.logo_url} 
@@ -253,7 +253,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                 className="h-full w-full object-cover" 
                             />
                         ) : (
-                            <span className="text-white/40 text-xl font-bold">
+                            <span className="text-foreground/40 text-xl font-bold">
                                 {account.name?.substring(0, 1).toUpperCase()}
                             </span>
                         )}
@@ -261,7 +261,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
 
                     <div className="min-w-0 space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                            <h1 className="text-2xl font-semibold text-white truncate">
+                            <h1 className="text-2xl font-semibold text-foreground truncate">
                                 {account.name}
                             </h1>
                             {account.is_breached && (
@@ -271,7 +271,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                 </Badge>
                             )}
                             {account.is_whitelisted && (
-                                <Badge className="gap-1 bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                                <Badge className="gap-1 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30">
                                     <ShieldCheck className="h-3 w-3" />
                                     Trusted
                                 </Badge>
@@ -284,11 +284,11 @@ export default function AccountDetailsPage({ accountId }: Props) {
                             )}
                         </div>
 
-                        <div className="flex items-center gap-3 text-sm text-white/50">
+                        <div className="flex items-center gap-3 text-sm text-foreground/50">
                             {account.domain && (
                                 <button
                                     onClick={copyDomain}
-                                    className="flex items-center gap-1 hover:text-white/80 transition-colors"
+                                    className="flex items-center gap-1 hover:text-foreground/80 transition-colors"
                                 >
                                     <Globe className="h-3.5 w-3.5" />
                                     {account.domain}
@@ -321,7 +321,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                     <Button
                         variant="outline"
                         size="sm"
-                        className={account.is_whitelisted ? "text-emerald-400 border-emerald-500/30" : ""}
+                        className={account.is_whitelisted ? "text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : ""}
                         onClick={() => toggleWhitelist.mutate(!account.is_whitelisted)}
                         disabled={toggleWhitelist.isPending}
                     >
@@ -343,7 +343,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
             </div>
 
             {/* Risk Status Banner */}
-            <Card className="border-white/5 bg-white/2">
+            <Card className="border-foreground/5 bg-foreground/2">
                 <CardContent className="py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -356,7 +356,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                             )}
                             <div>
                                 <p className={`font-medium ${riskColor}`}>{riskLabel}</p>
-                                <p className="text-sm text-white/50">
+                                <p className="text-sm text-foreground/50">
                                     {account.is_breached
                                         ? "This account was found in a data breach. Consider changing your password or deleting the account."
                                         : account.days_since_last_seen && account.days_since_last_seen > 365
@@ -371,23 +371,23 @@ export default function AccountDetailsPage({ accountId }: Props) {
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="bg-transparent border-b border-white/5 w-full justify-start">
+                <TabsList className="bg-transparent border-b border-foreground/5 w-full justify-start">
                     <TabsTrigger
                         value="overview"
-                        className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white text-white/60 rounded-none"
+                        className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"
                     >
                         Overview
                     </TabsTrigger>
                     <TabsTrigger
                         value="deletion"
-                        className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white text-white/60 rounded-none"
+                        className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"
                     >
                         Deletion
                     </TabsTrigger>
                     {account.is_breached && (
                         <TabsTrigger
                             value="breaches"
-                            className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white text-white/60 rounded-none"
+                            className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"
                         >
                             Breaches
                         </TabsTrigger>
@@ -398,48 +398,48 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 <TabsContent value="overview" className="space-y-6 mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Account Info */}
-                        <Card className="border-white/5 bg-white/2">
+                        <Card className="border-foreground/5 bg-foreground/2">
                             <CardHeader>
                                 <CardTitle className="text-lg">Account Information</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-white/50 flex items-center gap-2">
+                                    <span className="text-foreground/50 flex items-center gap-2">
                                         <Mail className="h-4 w-4" />
                                         Email
                                     </span>
-                                    <span className="text-white">{account.email || "Unknown"}</span>
+                                    <span className="text-foreground">{account.email || "Unknown"}</span>
                                 </div>
-                                <Separator className="bg-white/5" />
+                                <Separator className="bg-foreground/5" />
                                 <div className="flex justify-between items-center">
-                                    <span className="text-white/50 flex items-center gap-2">
+                                    <span className="text-foreground/50 flex items-center gap-2">
                                         <Calendar className="h-4 w-4" />
                                         First Seen
                                     </span>
-                                    <span className="text-white">
+                                    <span className="text-foreground">
                                         {account.first_seen_at ? formatDate(account.first_seen_at) : "Unknown"}
                                     </span>
                                 </div>
-                                <Separator className="bg-white/5" />
+                                <Separator className="bg-foreground/5" />
                                 <div className="flex justify-between items-center">
-                                    <span className="text-white/50 flex items-center gap-2">
+                                    <span className="text-foreground/50 flex items-center gap-2">
                                         <Clock className="h-4 w-4" />
                                         Last Seen
                                     </span>
-                                    <span className="text-white">
+                                    <span className="text-foreground">
                                         {account.last_seen_at ? formatDate(account.last_seen_at) : "Unknown"}
                                     </span>
                                 </div>
-                                <Separator className="bg-white/5" />
+                                <Separator className="bg-foreground/5" />
                                 <div className="flex justify-between items-center">
-                                    <span className="text-white/50">Email Count</span>
-                                    <span className="text-white">{account.email_count} emails</span>
+                                    <span className="text-foreground/50">Email Count</span>
+                                    <span className="text-foreground">{account.email_count} emails</span>
                                 </div>
                             </CardContent>
                         </Card>
 
                         {/* Quick Actions */}
-                        <Card className="border-white/5 bg-white/2">
+                        <Card className="border-foreground/5 bg-foreground/2">
                             <CardHeader>
                                 <CardTitle className="text-lg">Quick Actions</CardTitle>
                                 <CardDescription>Manage this account</CardDescription>
@@ -457,7 +457,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                 )}
                                 <Button
                                     variant="outline"
-                                    className={`w-full justify-start gap-2 ${account.is_whitelisted ? "text-emerald-400" : ""}`}
+                                    className={`w-full justify-start gap-2 ${account.is_whitelisted ? "text-emerald-600 dark:text-emerald-400" : ""}`}
                                     onClick={() => toggleWhitelist.mutate(!account.is_whitelisted)}
                                     disabled={toggleWhitelist.isPending}
                                 >
@@ -472,7 +472,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                 Mark as Deleted
                                             </Button>
                                         </AlertDialogTrigger>
-                                        <AlertDialogContent className="bg-[#0A0A0A] border-white/10">
+                                        <AlertDialogContent className="bg-card border-foreground/10">
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>Mark account as deleted?</AlertDialogTitle>
                                                 <AlertDialogDescription>
@@ -508,7 +508,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                     Permanently Delete
                                                 </Button>
                                             </AlertDialogTrigger>
-                                            <AlertDialogContent className="bg-[#0A0A0A] border-white/10">
+                                            <AlertDialogContent className="bg-card border-foreground/10">
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle>Permanently delete this account?</AlertDialogTitle>
                                                     <AlertDialogDescription>
@@ -537,16 +537,16 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 <TabsContent value="deletion" className="space-y-6 mt-6">
                     {/* Deletion Request Status Banner */}
                     {account.deletion_request && (
-                        <Card className="border-white/5 bg-white/2">
+                        <Card className="border-foreground/5 bg-foreground/2">
                             <CardHeader className="pb-3">
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     Deletion Request
                                     <Badge variant="outline" className={`ml-2 ${
-                                        account.deletion_request.status === "completed" ? "border-emerald-500/30 text-emerald-400" :
-                                        account.deletion_request.status === "sent" || account.deletion_request.status === "received" ? "border-blue-500/30 text-blue-400" :
-                                        account.deletion_request.status === "in_progress" || account.deletion_request.status === "needs_verification" ? "border-amber-500/30 text-amber-400" :
-                                        account.deletion_request.status === "failed" || account.deletion_request.status === "expired" ? "border-red-500/30 text-red-400" :
-                                        "border-slate-500/30 text-slate-400"
+                                        account.deletion_request.status === "completed" ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400" :
+                                        account.deletion_request.status === "sent" || account.deletion_request.status === "received" ? "border-blue-500/30 text-blue-600 dark:text-blue-400" :
+                                        account.deletion_request.status === "in_progress" || account.deletion_request.status === "needs_verification" ? "border-amber-500/30 text-amber-700 dark:text-amber-400" :
+                                        account.deletion_request.status === "failed" || account.deletion_request.status === "expired" ? "border-red-500/30 text-red-600 dark:text-red-400" :
+                                        "border-foreground/30 text-muted-foreground"
                                     }`}>
                                         {account.deletion_request.status === "drafted" && "Drafted"}
                                         {account.deletion_request.status === "sent" && "Sent"}
@@ -562,25 +562,25 @@ export default function AccountDetailsPage({ accountId }: Props) {
                             <CardContent className="space-y-3">
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                     <div>
-                                        <p className="text-white/50">Created</p>
-                                        <p className="text-white">{formatDate(account.deletion_request.created_at)}</p>
+                                        <p className="text-foreground/50">Created</p>
+                                        <p className="text-foreground">{formatDate(account.deletion_request.created_at)}</p>
                                     </div>
                                     {account.deletion_request.sent_at && (
                                         <div>
-                                            <p className="text-white/50">Sent</p>
-                                            <p className="text-white">{formatDate(account.deletion_request.sent_at)}</p>
+                                            <p className="text-foreground/50">Sent</p>
+                                            <p className="text-foreground">{formatDate(account.deletion_request.sent_at)}</p>
                                         </div>
                                     )}
                                     {account.deletion_request.completed_at && (
                                         <div>
-                                            <p className="text-white/50">Completed</p>
-                                            <p className="text-white">{formatDate(account.deletion_request.completed_at)}</p>
+                                            <p className="text-foreground/50">Completed</p>
+                                            <p className="text-foreground">{formatDate(account.deletion_request.completed_at)}</p>
                                         </div>
                                     )}
                                     {account.deletion_request.follow_up_count !== null && account.deletion_request.follow_up_count > 0 && (
                                         <div>
-                                            <p className="text-white/50">Follow-ups</p>
-                                            <p className="text-white">{account.deletion_request.follow_up_count}</p>
+                                            <p className="text-foreground/50">Follow-ups</p>
+                                            <p className="text-foreground">{account.deletion_request.follow_up_count}</p>
                                         </div>
                                     )}
                                 </div>
@@ -588,7 +588,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                         </Card>
                     )}
 
-                    <Card className="border-white/5 bg-white/2">
+                    <Card className="border-foreground/5 bg-foreground/2">
                         <CardHeader>
                             <CardTitle className="text-lg">
                                 {account.deletion_request ? "Deletion Instructions" : "Delete Your Account"}
@@ -603,20 +603,20 @@ export default function AccountDetailsPage({ accountId }: Props) {
                         <CardContent className="space-y-6">
                             {account.deletion_request?.status === "completed" ? (
                                 <div className="flex items-center gap-3 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                    <CheckCircle2 className="h-6 w-6 text-emerald-400" />
+                                    <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                                     <div>
-                                        <p className="font-medium text-emerald-400">Account Deleted</p>
-                                        <p className="text-sm text-white/60">
+                                        <p className="font-medium text-emerald-600 dark:text-emerald-400">Account Deleted</p>
+                                        <p className="text-sm text-foreground/60">
                                             This deletion request has been completed.
                                         </p>
                                     </div>
                                 </div>
                             ) : isDeleted ? (
                                 <div className="flex items-center gap-3 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                    <CheckCircle2 className="h-6 w-6 text-emerald-400" />
+                                    <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                                     <div>
-                                        <p className="font-medium text-emerald-400">Account Deleted</p>
-                                        <p className="text-sm text-white/60">
+                                        <p className="font-medium text-emerald-600 dark:text-emerald-400">Account Deleted</p>
+                                        <p className="text-sm text-foreground/60">
                                             You marked this account as deleted.
                                         </p>
                                     </div>
@@ -626,7 +626,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                     {/* Playbook info banner */}
                                     {account.playbook && (
                                         <div className="flex flex-wrap items-center gap-3 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                            <Badge variant="outline" className="border-blue-500/30 text-blue-400">
+                                            <Badge variant="outline" className="border-blue-500/30 text-blue-600 dark:text-blue-400">
                                                 {account.playbook.deletion_method === "self_service" && "Self Service"}
                                                 {account.playbook.deletion_method === "email" && "Email Required"}
                                                 {account.playbook.deletion_method === "form" && "Form Submission"}
@@ -637,10 +637,10 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                             </Badge>
                                             {account.playbook.deletion_difficulty && (
                                                 <Badge variant="outline" className={`
-                                                    ${account.playbook.deletion_difficulty === "easy" ? "border-emerald-500/30 text-emerald-400" : ""}
-                                                    ${account.playbook.deletion_difficulty === "medium" ? "border-amber-500/30 text-amber-400" : ""}
-                                                    ${account.playbook.deletion_difficulty === "hard" ? "border-orange-500/30 text-orange-400" : ""}
-                                                    ${account.playbook.deletion_difficulty === "very_hard" ? "border-red-500/30 text-red-400" : ""}
+                                                    ${account.playbook.deletion_difficulty === "easy" ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400" : ""}
+                                                    ${account.playbook.deletion_difficulty === "medium" ? "border-amber-500/30 text-amber-700 dark:text-amber-400" : ""}
+                                                    ${account.playbook.deletion_difficulty === "hard" ? "border-orange-500/30 text-orange-700 dark:text-orange-400" : ""}
+                                                    ${account.playbook.deletion_difficulty === "very_hard" ? "border-red-500/30 text-red-600 dark:text-red-400" : ""}
                                                 `}>
                                                     {account.playbook.deletion_difficulty === "easy" && "Easy"}
                                                     {account.playbook.deletion_difficulty === "medium" && "Medium Difficulty"}
@@ -649,7 +649,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                 </Badge>
                                             )}
                                             {account.playbook.confidence !== null && account.playbook.confidence >= 0.8 && (
-                                                <Badge variant="outline" className="border-emerald-500/30 text-emerald-400">
+                                                <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
                                                     Verified
                                                 </Badge>
                                             )}
@@ -694,13 +694,13 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                     const stepDescription = isStringStep ? step : step.description;
 
                                                     return (
-                                                        <div key={index} className="flex items-start gap-4 p-4 rounded-lg bg-white/2 border border-white/5">
-                                                            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 shrink-0">
+                                                        <div key={index} className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                                 {stepNumber}
                                                             </div>
                                                             <div>
-                                                                {!isStringStep && <p className="font-medium text-white">{stepTitle}</p>}
-                                                                <p className={`text-sm ${isStringStep ? "text-white" : "text-white/60 mt-1"}`}>
+                                                                {!isStringStep && <p className="font-medium text-foreground">{stepTitle}</p>}
+                                                                <p className={`text-sm ${isStringStep ? "text-foreground" : "text-foreground/60 mt-1"}`}>
                                                                     {stepDescription}
                                                                 </p>
                                                             </div>
@@ -710,13 +710,13 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                             </>
                                         ) : (
                                             <>
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-white/2 border border-white/5">
-                                                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 shrink-0">
+                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                         1
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-white">Visit the website</p>
-                                                        <p className="text-sm text-white/60 mt-1">
+                                                        <p className="font-medium text-foreground">Visit the website</p>
+                                                        <p className="text-sm text-foreground/60 mt-1">
                                                             Go to {account.name}&apos;s website and log into your account.
                                                         </p>
                                                         {account.domain && (
@@ -733,25 +733,25 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-white/2 border border-white/5">
-                                                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 shrink-0">
+                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                         2
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-white">Find account settings</p>
-                                                        <p className="text-sm text-white/60 mt-1">
+                                                        <p className="font-medium text-foreground">Find account settings</p>
+                                                        <p className="text-sm text-foreground/60 mt-1">
                                                             Navigate to your account settings or privacy settings. Look for options like &quot;Delete Account&quot;, &quot;Close Account&quot;, or &quot;Deactivate&quot;.
                                                         </p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-white/2 border border-white/5">
-                                                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 shrink-0">
+                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                         3
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-white">Request deletion</p>
-                                                        <p className="text-sm text-white/60 mt-1">
+                                                        <p className="font-medium text-foreground">Request deletion</p>
+                                                        <p className="text-sm text-foreground/60 mt-1">
                                                             Follow their process to delete your account. You may need to confirm via email.
                                                         </p>
                                                     </div>
@@ -762,26 +762,26 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                         {/* Additional playbook info */}
                                         {account.playbook?.data_retention_notes && (
                                             <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                                <p className="font-medium text-amber-400 mb-1">Data Retention</p>
-                                                <p className="text-sm text-white/70">{account.playbook.data_retention_notes}</p>
+                                                <p className="font-medium text-amber-700 dark:text-amber-400 mb-1">Data Retention</p>
+                                                <p className="text-sm text-foreground/70">{account.playbook.data_retention_notes}</p>
                                             </div>
                                         )}
 
                                         {account.playbook?.identity_verification_notes && (
                                             <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                                <p className="font-medium text-blue-400 mb-1">Identity Verification</p>
-                                                <p className="text-sm text-white/70">{account.playbook.identity_verification_notes}</p>
+                                                <p className="font-medium text-blue-600 dark:text-blue-400 mb-1">Identity Verification</p>
+                                                <p className="text-sm text-foreground/70">{account.playbook.identity_verification_notes}</p>
                                             </div>
                                         )}
 
                                         {/* Mark as deleted step */}
-                                        <div className="flex items-start gap-4 p-4 rounded-lg bg-white/2 border border-white/5">
-                                            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-400 shrink-0">
+                                        <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                                                 ✓
                                             </div>
                                             <div>
-                                                <p className="font-medium text-white">Mark as deleted</p>
-                                                <p className="text-sm text-white/60 mt-1">
+                                                <p className="font-medium text-foreground">Mark as deleted</p>
+                                                <p className="text-sm text-foreground/60 mt-1">
                                                     Once you&apos;ve deleted your account, mark it as deleted here to track your progress.
                                                 </p>
                                                 <AlertDialog>
@@ -791,7 +791,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                             I&apos;ve Deleted This Account
                                                         </Button>
                                                     </AlertDialogTrigger>
-                                                    <AlertDialogContent className="bg-[#0A0A0A] border-white/10">
+                                                    <AlertDialogContent className="bg-card border-foreground/10">
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                                                             <AlertDialogDescription>
@@ -821,10 +821,10 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 {/* Breaches Tab */}
                 {account.is_breached && (
                     <TabsContent value="breaches" className="space-y-6 mt-6">
-                        <Card className="border-white/5 bg-white/2">
+                        <Card className="border-foreground/5 bg-foreground/2">
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
-                                    <ShieldAlert className="h-5 w-5 text-red-400" />
+                                    <ShieldAlert className="h-5 w-5 text-red-600 dark:text-red-400" />
                                     Data Breaches
                                 </CardTitle>
                                 <CardDescription>
@@ -840,24 +840,24 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                 className="p-4 rounded-lg bg-red-500/5 border border-red-500/20"
                                             >
                                                 <div className="flex items-center justify-between">
-                                                    <h4 className="font-medium text-white">{breach.breach_name}</h4>
+                                                    <h4 className="font-medium text-foreground">{breach.breach_name}</h4>
                                                     <Badge variant="destructive">
                                                         {formatDate(breach.breach_date)}
                                                     </Badge>
                                                 </div>
                                                 {breach.description && (
-                                                    <p className="text-sm text-white/60 mt-2">{breach.description}</p>
+                                                    <p className="text-sm text-foreground/60 mt-2">{breach.description}</p>
                                                 )}
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
                                     <div className="text-center py-8">
-                                        <ShieldAlert className="h-12 w-12 text-red-400/50 mx-auto mb-3" />
-                                        <p className="text-white/60">
+                                        <ShieldAlert className="h-12 w-12 text-red-600/50 dark:text-red-400/50 mx-auto mb-3" />
+                                        <p className="text-foreground/60">
                                             This account was found in a breach, but details are not available.
                                         </p>
-                                        <p className="text-sm text-white/40 mt-1">
+                                        <p className="text-sm text-foreground/40 mt-1">
                                             We recommend changing your password for this service.
                                         </p>
                                     </div>
@@ -868,7 +868,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                         {/* Recommendations */}
                         <Card className="border-amber-500/20 bg-amber-500/5">
                             <CardHeader>
-                                <CardTitle className="text-lg flex items-center gap-2 text-amber-400">
+                                <CardTitle className="text-lg flex items-center gap-2 text-amber-700 dark:text-amber-400">
                                     <AlertTriangle className="h-5 w-5" />
                                     Recommended Actions
                                 </CardTitle>
@@ -876,19 +876,19 @@ export default function AccountDetailsPage({ accountId }: Props) {
                             <CardContent className="space-y-3">
                                 <div className="flex items-center gap-3">
                                     <div className="h-2 w-2 rounded-full bg-amber-400" />
-                                    <p className="text-white/80">Change your password on {account.name}</p>
+                                    <p className="text-foreground/80">Change your password on {account.name}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="h-2 w-2 rounded-full bg-amber-400" />
-                                    <p className="text-white/80">Enable two-factor authentication if available</p>
+                                    <p className="text-foreground/80">Enable two-factor authentication if available</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="h-2 w-2 rounded-full bg-amber-400" />
-                                    <p className="text-white/80">Check if you used the same password elsewhere</p>
+                                    <p className="text-foreground/80">Check if you used the same password elsewhere</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <div className="h-2 w-2 rounded-full bg-amber-400" />
-                                    <p className="text-white/80">Consider deleting the account if no longer needed</p>
+                                    <p className="text-foreground/80">Consider deleting the account if no longer needed</p>
                                 </div>
                             </CardContent>
                         </Card>

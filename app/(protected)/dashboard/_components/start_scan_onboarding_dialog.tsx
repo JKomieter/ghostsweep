@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -36,7 +37,9 @@ export default function StartScanOnboardingDialog() {
         refetchOnWindowFocus: false,
     });
 
-    const shouldShow = Boolean(data?.shouldShowPopup) && !dismissed;
+    // Don't interrupt checkout (new users who picked a paid plan land straight on billing)
+    const onBilling = usePathname().startsWith("/dashboard/billing");
+    const shouldShow = Boolean(data?.shouldShowPopup) && !dismissed && !onBilling;
 
     // 2) Open 2s after we know we should show
     React.useEffect(() => {
@@ -61,47 +64,47 @@ export default function StartScanOnboardingDialog() {
 
     return (
         <Dialog open={open} onOpenChange={(v) => (v ? setOpen(true) : onClose())}>
-            <DialogContent className="sm:max-w-md bg-[#050505] border-white/10 text-white">
+            <DialogContent className="sm:max-w-md bg-background border-foreground/10 text-foreground">
                 <DialogHeader>
                     <DialogTitle className="text-xl">Start your first sweep</DialogTitle>
-                    <DialogDescription className="text-white/60">
+                    <DialogDescription className="text-foreground/60">
                         Connect Gmail so GhostSweep can discover accounts linked to your email.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
                     {/* What will happen */}
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+                    <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-4 space-y-2">
                         <div className="flex items-start gap-3">
-                            <Shield size={30} className="mt-0.5 text-emerald-300" />
+                            <Shield size={30} className="mt-0.5 text-emerald-700 dark:text-emerald-300" />
                             <div className="text-sm">
-                                <p className="font-medium text-white">You stay in control</p>
-                                <p className="text-xs text-white/60 leading-relaxed">
+                                <p className="font-medium text-foreground">You stay in control</p>
+                                <p className="text-xs text-foreground/60 leading-relaxed">
                                     During Google OAuth, please allow the requested access so we can scan safely.
-                                    <span className="text-white/70"> We don’t run the scan automatically.</span>
+                                    <span className="text-foreground/70"> We don’t run the scan automatically.</span>
                                 </p>
                             </div>
                         </div>
 
                         <div className="flex items-start gap-3">
-                            <Mail size={24} className="mt-0.5 text-emerald-300" />
+                            <Mail size={24} className="mt-0.5 text-emerald-700 dark:text-emerald-300" />
                             <div className="text-sm">
-                                <p className="font-medium text-white">Next step after connecting</p>
-                                <p className="text-xs text-white/60 leading-relaxed">
-                                    Once you're back in GhostSweep, you’ll click <span className="text-white/80 font-medium">Run Sweep</span> to start scanning.
+                                <p className="font-medium text-foreground">Next step after connecting</p>
+                                <p className="text-xs text-foreground/60 leading-relaxed">
+                                    Once you're back in GhostSweep, you’ll click <span className="text-foreground/80 font-medium">Run Sweep</span> to start scanning.
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     {/* Bullet checklist */}
-                    <div className="space-y-2 text-xs text-white/70">
+                    <div className="space-y-2 text-xs text-foreground/70">
                         <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-300" />
+                            <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
                             <span>OAuth → grant access → return to dashboard</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-300" />
+                            <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
                             <span>Click “Run Sweep” to start the scan</span>
                         </div>
                     </div>
@@ -110,14 +113,14 @@ export default function StartScanOnboardingDialog() {
                     <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                         <Button
                             variant="outline"
-                            className="border-white/15 bg-[#050505]"
+                            className="border-foreground/15 bg-background"
                             onClick={onClose}
                         >
                             Not now
                         </Button>
                         <a href="/api/google/oauth/start" className="w-auto">
                             <Button
-                                className="bg-white text-black hover:bg-zinc-100 w-full"
+                                className="bg-foreground text-background hover:bg-foreground/90 w-full"
                                 onClick={() => setIsConnecting(true)}
                             >
                                 {isConnecting ? (
@@ -136,9 +139,9 @@ export default function StartScanOnboardingDialog() {
                     </div>
 
                     {/* Small footer help */}
-                    {/* <div className="pt-2 border-t border-white/10 text-[11px] text-white/45 leading-relaxed">
+                    {/* <div className="pt-2 border-t border-foreground/10 text-[11px] text-foreground/45 leading-relaxed">
                         Prefer to do this later? You can connect Gmail anytime from{" "}
-                        <Link href="/dashboard/settings" className="text-white/70 underline underline-offset-2 hover:text-white">
+                        <Link href="/dashboard/settings" className="text-foreground/70 underline underline-offset-2 hover:text-foreground">
                             Settings
                         </Link>
                         .

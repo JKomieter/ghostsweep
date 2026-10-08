@@ -85,13 +85,13 @@ export default function SelectorManager({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
           Selectors
         </span>
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"
+            className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors flex items-center gap-1"
           >
             <Plus className="h-3 w-3" />
             Add
@@ -108,27 +108,27 @@ export default function SelectorManager({
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !hasSpace && handleAdd()}
             placeholder="email, phone, or username"
-            className="w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 font-mono"
+            className="w-full rounded-md bg-foreground/5 border border-foreground/10 px-3 py-2 text-sm text-foreground placeholder:text-foreground/20 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 font-mono"
             autoFocus
           />
           {detectedType && (
             <div className="space-y-1.5 px-1">
               <div className="flex items-center gap-1.5">
-                {detectedType === "email" && <Mail className="h-3 w-3 text-emerald-400/70" />}
-                {detectedType === "phone" && <Phone className="h-3 w-3 text-blue-400/70" />}
-                {detectedType === "username" && <User className="h-3 w-3 text-amber-400/70" />}
-                <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">
-                  Detected as <span className={detectedType === "email" ? "text-emerald-400/70" : detectedType === "phone" ? "text-blue-400/70" : "text-amber-400/70"}>{detectedType}</span>
+                {detectedType === "email" && <Mail className="h-3 w-3 text-emerald-600/70 dark:text-emerald-400/70" />}
+                {detectedType === "phone" && <Phone className="h-3 w-3 text-blue-600/70 dark:text-blue-400/70" />}
+                {detectedType === "username" && <User className="h-3 w-3 text-amber-700/70 dark:text-amber-400/70" />}
+                <span className="text-[10px] font-mono uppercase tracking-wider text-foreground/30">
+                  Detected as <span className={detectedType === "email" ? "text-emerald-600/70 dark:text-emerald-400/70" : detectedType === "phone" ? "text-blue-600/70 dark:text-blue-400/70" : "text-amber-700/70 dark:text-amber-400/70"}>{detectedType}</span>
                 </span>
               </div>
               {hasSpace && (
-                <p className="text-[10px] text-red-400/80">
+                <p className="text-[10px] text-red-600/80 dark:text-red-400/80">
                   Usernames can&apos;t contain spaces. Add each word as a separate selector.
                 </p>
               )}
               {detectedType === "username" && !hasSpace && (
-                <p className="text-[10px] text-white/25 leading-relaxed">
-                  Add usernames you actually use online — not your legal name. No spaces allowed. Hyphens, underscores, and dots are fine (e.g. <span className="font-mono text-white/40">john_doe</span>, <span className="font-mono text-white/40">j-doe99</span>). Add each username as a separate selector.
+                <p className="text-[10px] text-foreground/25 leading-relaxed">
+                  Add usernames you actually use online — not your legal name. No spaces allowed. Hyphens, underscores, and dots are fine (e.g. <span className="font-mono text-foreground/40">john_doe</span>, <span className="font-mono text-foreground/40">j-doe99</span>). Add each username as a separate selector.
                 </p>
               )}
             </div>
@@ -138,7 +138,7 @@ export default function SelectorManager({
               size="sm"
               onClick={handleAdd}
               disabled={addMutation.isPending || !value.trim() || hasSpace}
-              className="flex-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 text-xs"
+              className="flex-1 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 text-xs"
             >
               {addMutation.isPending ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -153,7 +153,7 @@ export default function SelectorManager({
                 setIsAdding(false);
                 setValue("");
               }}
-              className="text-white/40 hover:text-white/60 text-xs"
+              className="text-foreground/40 hover:text-foreground/60 text-xs"
             >
               Cancel
             </Button>
@@ -164,33 +164,33 @@ export default function SelectorManager({
       {/* Selector list */}
       <div className="space-y-1">
         {selectors.length === 0 && !isAdding && (
-          <p className="text-xs text-white/20 py-2">
+          <p className="text-xs text-foreground/20 py-2">
             No selectors added yet. Add an email, phone, or username to begin scanning.
           </p>
         )}
         {selectors.map((sel) => (
           <div
             key={sel.id}
-            className="group/sel flex items-center justify-between rounded-md px-2.5 py-2 hover:bg-white/3 transition-colors"
+            className="group/sel flex items-center justify-between rounded-md px-2.5 py-2 hover:bg-foreground/3 transition-colors"
           >
             <div className="flex items-center gap-2 min-w-0">
               {sel.selector_type === "email" ? (
-                <Mail className="h-3 w-3 text-emerald-400/50 shrink-0" />
+                <Mail className="h-3 w-3 text-emerald-600/50 dark:text-emerald-400/50 shrink-0" />
               ) : sel.selector_type === "phone" ? (
-                <Phone className="h-3 w-3 text-blue-400/50 shrink-0" />
+                <Phone className="h-3 w-3 text-blue-600/50 dark:text-blue-400/50 shrink-0" />
               ) : (
-                <User className="h-3 w-3 text-amber-400/50 shrink-0" />
+                <User className="h-3 w-3 text-amber-700/50 dark:text-amber-400/50 shrink-0" />
               )}
-              <span className="text-xs font-mono text-white/60 truncate">
+              <span className="text-xs font-mono text-foreground/60 truncate">
                 {sel.selector_value}
               </span>
-              <span className="text-[9px] font-mono uppercase tracking-wider text-white/20 shrink-0">
+              <span className="text-[9px] font-mono uppercase tracking-wider text-foreground/20 shrink-0">
                 {sel.selector_type}
               </span>
             </div>
             <button
               onClick={() => deleteMutation.mutate(sel.id)}
-              className="opacity-0 group-hover/sel:opacity-100 text-white/30 hover:text-red-400 transition-all p-0.5"
+              className="opacity-0 group-hover/sel:opacity-100 text-foreground/30 hover:text-red-600 dark:hover:text-red-400 transition-all p-0.5"
             >
               <X className="h-3 w-3" />
             </button>

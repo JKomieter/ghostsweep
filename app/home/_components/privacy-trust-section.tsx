@@ -38,14 +38,14 @@ export function PrivacyTrustSection() {
   return (
     <section className="space-y-8">
       <div className="space-y-3 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-zinc-300">
-          <Shield className="h-3 w-3 text-zinc-400" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
+          <Shield className="h-3 w-3 text-muted-foreground" />
           How GhostSweep treats your data
         </div>
-        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
           Privacy, explained simply
         </h2>
-        <p className="mx-auto max-w-xl text-sm text-zinc-400">
+        <p className="mx-auto max-w-xl text-sm text-muted-foreground">
           A clear overview of what GhostSweep can see, what it can't, and how we handle your data.
         </p>
       </div>
@@ -60,20 +60,20 @@ export function PrivacyTrustSection() {
             <div key={item.id}>
               <button
                 onClick={() => setOpenId(isOpen ? null : item.id)}
-                className="w-full rounded-xl border border-white/10 bg-[#050509] p-4 text-left hover:bg-white/5 transition"
+                className="w-full rounded-xl border border-foreground/10 bg-background p-4 text-left hover:bg-foreground/5 transition"
               >
                 <div className="flex items-start gap-3">
-                  <Icon className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white text-sm sm:text-base">
+                    <h3 className="font-semibold text-foreground text-sm sm:text-base">
                       {item.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                       {item.description}
                     </p>
                   </div>
                   <ChevronDown
-                    className={`h-5 w-5 text-zinc-400 flex-shrink-0 transition-transform ${
+                    className={`h-5 w-5 text-muted-foreground flex-shrink-0 transition-transform ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -81,7 +81,7 @@ export function PrivacyTrustSection() {
               </button>
 
               {isOpen && (
-                <div className="border-b border-l border-r border-white/10 bg-white/2 p-4 text-sm text-zinc-400 rounded-b-xl">
+                <div className="border-b border-l border-r border-foreground/10 bg-foreground/2 p-4 text-sm text-muted-foreground rounded-b-xl">
                   {item.details}
                 </div>
               )}
@@ -92,30 +92,30 @@ export function PrivacyTrustSection() {
 
       {/* Trust Badges */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-sm font-medium text-white mb-1">No selling</div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+        <div className="rounded-xl border border-foreground/10 bg-background p-5">
+          <div className="text-sm font-medium text-foreground mb-1">No selling</div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             We don't sell your data, run ads, or track you across other
             websites. Your privacy is the product, not the price.
           </p>
         </div>
-        <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-sm font-medium text-white mb-1">Revoke anytime</div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+        <div className="rounded-xl border border-foreground/10 bg-background p-5">
+          <div className="text-sm font-medium text-foreground mb-1">Revoke anytime</div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Disconnect Gmail or Outlook from GhostSweep settings anytime. We
             lose access immediately.
           </p>
         </div>
-        <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-sm font-medium text-white mb-1">Encrypted</div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+        <div className="rounded-xl border border-foreground/10 bg-background p-5">
+          <div className="text-sm font-medium text-foreground mb-1">Encrypted</div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Data in transit and at rest uses AES-256 encryption. Even our team
             can't decrypt your account mappings.
           </p>
         </div>
-        <div className="rounded-xl border border-white/10 bg-[#050509] p-5">
-          <div className="text-sm font-medium text-white mb-1">GDPR ready</div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+        <div className="rounded-xl border border-foreground/10 bg-background p-5">
+          <div className="text-sm font-medium text-foreground mb-1">GDPR ready</div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Full compliance with GDPR, CCPA, and other data protection laws. You
             own your data.
           </p>

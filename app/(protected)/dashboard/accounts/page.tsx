@@ -105,16 +105,16 @@ function AccountsPageContent() {
 
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList className="bg-transparent border-b border-white/5">
+                    <TabsList className="bg-transparent border-b border-foreground/5">
                         <TabsTrigger 
                             value="accounts" 
-                            className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white text-white/60 rounded-none"
+                            className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"
                         >
                             Accounts
                         </TabsTrigger>
                         <TabsTrigger 
                             value="deletions" 
-                            className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white data-[state=active]:text-white text-white/60 rounded-none"
+                            className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"
                         >
                             Deletions
                         </TabsTrigger>
@@ -156,7 +156,7 @@ function AccountsPageContent() {
 // Main component with Suspense wrapper
 export default function AccountsPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen p-8 text-white/60">Loading...</div>}>
+        <Suspense fallback={<div className="min-h-screen p-8 text-foreground/60">Loading...</div>}>
             <AccountsPageContent />
         </Suspense>
     );

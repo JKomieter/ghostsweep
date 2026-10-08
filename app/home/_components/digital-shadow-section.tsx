@@ -401,15 +401,15 @@ function NetworkGraphPreview() {
 
     return (
         <div className="relative w-full">
-            <div className="rounded-2xl border border-white/5 bg-gradient-to-b from-[#0a0a0a] to-black overflow-hidden shadow-2xl">
+            <div className="rounded-2xl border border-foreground/5 bg-gradient-to-b from-card to-background overflow-hidden shadow-2xl">
                 {/* Header */}
-                <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/5 bg-black/40 backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-foreground/5 bg-background/40 backdrop-blur-xl">
                     <div className="min-w-0">
-                        <div className="text-base font-semibold text-white flex items-center gap-2">
-                            <span className="text-cyan-400">⚡</span>
+                        <div className="text-base font-semibold text-foreground flex items-center gap-2">
+                            <span className="text-cyan-600 dark:text-cyan-400">⚡</span>
                             Digital Shadow Map
                         </div>
-                        <div className="text-xs text-white/50 mt-0.5">
+                        <div className="text-xs text-foreground/50 mt-0.5">
                             Your data flow: You → Services → Data Brokers
                         </div>
                     </div>
@@ -431,23 +431,23 @@ function NetworkGraphPreview() {
                             className="absolute z-50 pointer-events-none"
                             style={{ left: hovered.x, top: hovered.y }}
                         >
-                            <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-3 shadow-2xl">
-                                <div className="text-sm font-semibold text-white">{hovered.title}</div>
-                                <div className="text-xs text-white/60 mt-1">{hovered.desc}</div>
+                            <div className="bg-background/90 backdrop-blur-xl border border-foreground/10 rounded-xl px-4 py-3 shadow-2xl">
+                                <div className="text-sm font-semibold text-foreground">{hovered.title}</div>
+                                <div className="text-xs text-foreground/60 mt-1">{hovered.desc}</div>
                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-3 border-t border-white/5 bg-black/20 backdrop-blur">
+                <div className="px-6 py-3 border-t border-foreground/5 bg-background/20 backdrop-blur">
                     <div className="flex items-center justify-between text-xs">
-                        <div className="text-white/50">
-                            <span className="text-cyan-400 font-medium">{MOCK_SERVICES.length} services</span>
+                        <div className="text-foreground/50">
+                            <span className="text-cyan-600 dark:text-cyan-400 font-medium">{MOCK_SERVICES.length} services</span>
                             {" • "}
-                            <span className="text-red-400 font-medium">{MOCK_BROKERS.length} brokers</span>
+                            <span className="text-red-600 dark:text-red-400 font-medium">{MOCK_BROKERS.length} brokers</span>
                         </div>
-                        <div className="text-white/40">
+                        <div className="text-foreground/65">
                             Hover nodes to see details
                         </div>
                     </div>
@@ -461,7 +461,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
     return (
         <div className="flex items-center gap-2">
             <div className={`h-2.5 w-2.5 rounded-full ${color} shadow-lg`} />
-            <span className="text-white/70 text-xs font-medium hidden sm:inline">{label}</span>
+            <span className="text-foreground/70 text-xs font-medium hidden sm:inline">{label}</span>
         </div>
     );
 }
@@ -470,8 +470,8 @@ export function DigitalShadowSection() {
     return (
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
             <div className="mb-6">
-                <h2 className="text-2xl font-bold text-white">Your Digital Shadow</h2>
-                <p className="text-sm text-white/60 mt-2 max-w-2xl">
+                <h2 className="text-2xl font-bold text-foreground">Your Digital Shadow</h2>
+                <p className="text-sm text-foreground/60 mt-2 max-w-2xl">
                     See how your online accounts connect to data brokers. Each line represents a potential data flow.
                 </p>
             </div>

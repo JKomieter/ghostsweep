@@ -76,10 +76,10 @@ export default function SubscriptionModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChangeAction}>
-            <DialogContent className="sm:max-w-md bg-[#0f0f0f] border border-white/10">
+            <DialogContent className="sm:max-w-md bg-card border border-foreground/10">
                 <DialogHeader>
                     <DialogTitle className="text-lg flex items-center gap-2">
-                        <Crown className="h-4 w-4 text-yellow-400" />
+                        <Crown className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
                         Subscription & Billing
                     </DialogTitle>
                     <DialogDescription className="text-xs text-muted-foreground">
@@ -96,15 +96,15 @@ export default function SubscriptionModal({
 
                         {loading ? (
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-6 w-24 rounded-full bg-white/10" />
+                                <Skeleton className="h-6 w-24 rounded-full bg-foreground/10" />
                             </div>
                         ) : data ? (
                             <div className="flex items-center gap-2">
                                 <Badge
                                     className={
                                         isPro
-                                            ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/40"
-                                            : "bg-zinc-700/40 text-zinc-100 border border-zinc-500/40"
+                                            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40"
+                                            : "bg-foreground/10 text-foreground border border-foreground/40"
                                     }
                                 >
                                     {isPro ? "Professional" : "Free"}
@@ -121,13 +121,13 @@ export default function SubscriptionModal({
                                 )}
                             </div>
                         ) : (
-                            <p className="text-xs text-red-400">
+                            <p className="text-xs text-red-600 dark:text-red-400">
                                 Couldn’t load your plan. Please try again.
                             </p>
                         )}
 
                         {status == "error" && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400">
+                            <p className="flex items-center gap-1 text-[11px] text-red-600 dark:text-red-400">
                                 <AlertCircle className="h-3 w-3" />
                                 Problem gettiing your current plan
                             </p>
@@ -140,7 +140,7 @@ export default function SubscriptionModal({
                             <p className="text-xs font-medium text-muted-foreground">
                                 Renewal date
                             </p>
-                            <p className="text-sm text-white">
+                            <p className="text-sm text-foreground">
                                 {renewalLabel ?? "Next renewal date unavailable"}
                             </p>
                             <p className="text-[11px] text-muted-foreground">
@@ -179,7 +179,7 @@ export default function SubscriptionModal({
                         </p>
 
                         {billingError && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400">
+                            <p className="flex items-center gap-1 text-[11px] text-red-600 dark:text-red-400">
                                 <AlertCircle className="h-3 w-3" />
                                 {billingError}
                             </p>

@@ -70,14 +70,14 @@ export function QuickExposureCheck() {
   return (
     <section className="space-y-8">
       <div className="space-y-3 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-zinc-300">
-          <AlertTriangle className="h-3 w-3 text-zinc-400" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
+          <AlertTriangle className="h-3 w-3 text-muted-foreground" />
           Optional quick exposure check
         </div>
-        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
           Check for known breaches
         </h2>
-        <p className="mx-auto max-w-xl text-sm text-zinc-400">
+        <p className="mx-auto max-w-xl text-sm text-muted-foreground">
           Enter an email or domain to see if it appears in the breach data GhostSweep is monitoring.
         </p>
       </div>
@@ -85,7 +85,7 @@ export function QuickExposureCheck() {
       <div className="mx-auto max-w-2xl space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
               <Mail className="h-5 w-5" />
             </div>
             <input
@@ -93,14 +93,14 @@ export function QuickExposureCheck() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="you@example.com or example.com"
-              className="w-full rounded-full border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-white placeholder:text-zinc-500 focus:border-white/20 focus:bg-white/10 focus:outline-none transition"
+              className="w-full rounded-full border border-foreground/10 bg-foreground/5 py-4 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:border-foreground/20 focus:bg-foreground/10 focus:outline-none transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={status === "loading" || !query.trim()}
-            className="w-full rounded-full bg-white py-3 text-sm font-medium text-black hover:bg-zinc-100 disabled:opacity-50 transition flex items-center justify-center gap-2"
+            className="w-full rounded-full bg-foreground py-3 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50 transition flex items-center justify-center gap-2"
           >
             {status === "loading" ? (
               <>
@@ -117,7 +117,7 @@ export function QuickExposureCheck() {
         </form>
 
         {status === "error" && error && (
-          <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-200">
+          <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-800 dark:text-red-200">
             <p className="font-medium">Something went wrong</p>
             <p className="text-xs mt-1">{error}</p>
           </div>
@@ -125,11 +125,11 @@ export function QuickExposureCheck() {
 
         {status === "success" && !hasResults && (
           <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/5 p-4">
-            <div className="flex items-center gap-2 text-emerald-200 font-medium">
+            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-200 font-medium">
               <ShieldCheck className="h-4 w-4" />
               No breaches in this dataset
             </div>
-            <p className="text-xs text-emerald-100/80 mt-2">
+            <p className="text-xs text-emerald-800/80 dark:text-emerald-100/80 mt-2">
               This email or domain doesn't appear in the breach records GhostSweep is currently tracking. It doesn't guarantee complete safety, but it's a positive signal.
             </p>
           </div>
@@ -139,10 +139,10 @@ export function QuickExposureCheck() {
         {hasResults && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-white">
+              <h3 className="text-sm font-medium text-foreground">
                 Breaches found ({breaches.length})
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-muted-foreground">
                 Known incidents where this email or domain appeared.
               </p>
             </div>
@@ -169,40 +169,40 @@ export function QuickExposureCheck() {
                 return (
                   <div
                     key={breach.Id ?? `${breach.Name}-${breach.Domain}-${breach.BreachDate}`}
-                    className="rounded-lg border border-white/10 bg-[#050509] p-4 space-y-2"
+                    className="rounded-lg border border-foreground/10 bg-background p-4 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-sm font-medium text-foreground">
                           {title}
                         </p>
-                        <p className="text-xs text-zinc-400 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {breach.Domain || "Unknown domain"} • {dateLabel}
                         </p>
                       </div>
-                      <span className="inline-flex items-center rounded-full bg-white/5 px-2 py-1 text-[10px] font-medium text-zinc-200 whitespace-nowrap">
+                      <span className="inline-flex items-center rounded-full bg-foreground/5 px-2 py-1 text-[10px] font-medium text-foreground/85 whitespace-nowrap">
                         {isSensitive ? "Sensitive dataset" : "Breach record"}
                       </span>
                     </div>
 
                     <p
-                      className="text-xs text-zinc-400 leading-relaxed"
+                      className="text-xs text-muted-foreground leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: safeHtml }}
                     />
 
                     {Array.isArray(breach.DataClasses) && breach.DataClasses.length > 0 && (
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="text-[11px] text-muted-foreground">
                         Data types:{" "}
-                        <span className="font-medium text-zinc-300">
+                        <span className="font-medium text-foreground/75">
                           {breach.DataClasses.join(", ")}
                         </span>
                       </p>
                     )}
 
                     {typeof pwnCount === "number" && (
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="text-[11px] text-muted-foreground">
                         Approx.{" "}
-                        <span className="font-semibold text-zinc-200">
+                        <span className="font-semibold text-foreground/85">
                           {pwnCount.toLocaleString()}
                         </span>{" "}
                         accounts included in this incident.
@@ -214,8 +214,8 @@ export function QuickExposureCheck() {
             </div>
 
             <Link
-              href="/login"
-              className="inline-flex w-full items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-medium text-zinc-50 hover:bg-white/10 transition gap-2"
+              href="/login?mode=signup"
+              className="inline-flex w-full items-center justify-center rounded-full border border-foreground/15 bg-foreground/5 px-5 py-2.5 text-xs font-medium text-foreground hover:bg-foreground/10 transition gap-2"
             >
               Open full GhostSweep dashboard
               <ArrowRight className="h-3.5 w-3.5" />

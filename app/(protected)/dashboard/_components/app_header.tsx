@@ -19,6 +19,7 @@ import { SupportModal } from "./support-modal";
 import { toast } from "sonner";
 import SlidingSidebar from "./app_sidebar";
 import Notifications from "./notifications";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { usePathname } from "next/navigation";
 import useGetUser from "@/hooks/use-get-user";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
@@ -120,7 +121,7 @@ export default function Header() {
     const plan = data?.current_plan === "pro"
         ? "Professional"
         : isBusterActive
-        ? `Buster (${creditsRemaining}/3)`
+        ? `Buster (${creditsRemaining}/10)`
         : isBusterAudited
         ? "Audited"
         : "Free";
@@ -145,12 +146,12 @@ export default function Header() {
                         ) : (
                             <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
                                 data?.current_plan === "pro"
-                                    ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30"
+                                    ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30"
                                     : isBusterActive
-                                    ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                    ? "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
                                     : isBusterAudited
-                                    ? "bg-zinc-800 text-zinc-400 border border-zinc-700"
-                                    : "bg-gray-900 text-gray-300 border border-gray-700"
+                                    ? "bg-foreground/12 text-muted-foreground border border-foreground/15"
+                                    : "bg-foreground/12 text-foreground/75 border border-foreground/15"
                             }`}>
                                 {plan}
                             </span>
@@ -171,7 +172,7 @@ export default function Header() {
                             {/* Connect Account Dropdown */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="hidden sm:flex gap-1.5 text-xs border-white/20 hover:bg-white/5">
+                                    <Button variant="outline" size="sm" className="hidden sm:flex gap-1.5 text-xs border-foreground/20 hover:bg-foreground/5">
                                         <Plus className="h-3.5 w-3.5" />
                                         Connect
                                     </Button>
@@ -202,9 +203,9 @@ export default function Header() {
                             
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-9 gap-2 px-2 hover:bg-white/5">
-                                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center">
-                                            <span className="text-[10px] font-semibold text-cyan-400">{userInitials}</span>
+                                    <Button variant="ghost" className="h-9 gap-2 px-2 hover:bg-foreground/5">
+                                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-foreground/10 flex items-center justify-center">
+                                            <span className="text-[10px] font-semibold text-cyan-600 dark:text-cyan-400">{userInitials}</span>
                                         </div>
                                         <ChevronDown className="h-3 w-3 text-muted-foreground" />
                                     </Button>
@@ -230,7 +231,7 @@ export default function Header() {
                                     {latestReport && (
                                         <DropdownMenuItem
                                             onClick={downloadLatestReport}
-                                            className="cursor-pointer text-cyan-400 focus:text-cyan-300"
+                                            className="cursor-pointer text-cyan-600 dark:text-cyan-400 focus:text-cyan-700 dark:focus:text-cyan-300"
                                         >
                                             <FileText className="mr-2 h-4 w-4" />
                                             Download Last Report
@@ -250,13 +251,14 @@ export default function Header() {
                                         {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={() => handleLogout()} className="text-red-400 focus:text-red-400">
+                                    <DropdownMenuItem onClick={() => handleLogout()} className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400">
                                         <LogOut className="mr-2 h-4 w-4" />
                                         Log out
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
+                        <ThemeToggle />
                         <Notifications />
                     </div>
                 </div>
@@ -268,14 +270,14 @@ export default function Header() {
                     <div className="mx-auto flex items-center justify-between gap-3 border-b border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-sm px-4 py-2.5 text-xs text-cyan-100">
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                                <Loader2 className="h-4 w-4 animate-spin text-cyan-600 dark:text-cyan-400" />
                                 <div className="absolute inset-0 h-4 w-4 animate-ping opacity-20 rounded-full bg-cyan-400" />
                             </div>
                             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                                <span className="font-medium text-white">
+                                <span className="font-medium text-foreground">
                                     {latestSweep.phaseLabel ?? "Scanning your inbox…"}
                                 </span>
-                                <div className="flex items-center gap-2 text-cyan-300/70">
+                                <div className="flex items-center gap-2 text-cyan-700/70 dark:text-cyan-300/70">
                                     {typeof latestSweep.messagesProcessed === "number" && (
                                         <span>• {latestSweep.messagesProcessed.toLocaleString()} messages</span>
                                     )}
@@ -291,12 +293,12 @@ export default function Header() {
                                     <div className="h-1.5 w-28 overflow-hidden rounded-full bg-cyan-900/50">
                                         <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
                                     </div>
-                                    <span className="text-[10px] font-mono text-cyan-300">{latestSweep.progress}%</span>
+                                    <span className="text-[10px] font-mono text-cyan-700 dark:text-cyan-300">{latestSweep.progress}%</span>
                                 </div>
                             )}
                             {pathname !== "/dashboard" && (
                                 <Link href="/dashboard">
-                                    <Button size="sm" variant="ghost" className="h-7 text-[11px] text-cyan-100 hover:bg-white/10 border border-cyan-500/30">
+                                    <Button size="sm" variant="ghost" className="h-7 text-[11px] text-cyan-800 dark:text-cyan-100 hover:bg-foreground/10 border border-cyan-500/30">
                                         View details
                                     </Button>
                                 </Link>

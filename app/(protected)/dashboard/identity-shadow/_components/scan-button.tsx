@@ -38,25 +38,25 @@ export default function ScanButton({
     <div className="flex items-center gap-3">
       {/* Progress info shown while scanning */}
       {isScanning && status && (
-        <div className="hidden sm:flex items-center gap-3 text-xs text-white/40 font-mono">
+        <div className="hidden sm:flex items-center gap-3 text-xs text-foreground/40 font-mono">
           {message && (
-            <span className="max-w-[180px] truncate text-white/25">
+            <span className="max-w-[180px] truncate text-foreground/25">
               {message}
             </span>
           )}
           {foundCount > 0 && (
-            <span className="text-emerald-400/60">
+            <span className="text-emerald-600/60 dark:text-emerald-400/60">
               {foundCount} found
             </span>
           )}
           <div className="flex items-center gap-1.5">
-            <div className="h-1 w-16 rounded-full bg-white/5 overflow-hidden">
+            <div className="h-1 w-16 rounded-full bg-foreground/5 overflow-hidden">
               <div
                 className="h-full rounded-full bg-emerald-400/60 transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="text-[10px] tabular-nums text-white/30">
+            <span className="text-[10px] tabular-nums text-foreground/30">
               {progress}%
             </span>
           </div>
@@ -67,7 +67,7 @@ export default function ScanButton({
         onClick={onScan}
         disabled={isScanning}
         size="sm"
-        className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50 transition-all text-xs font-mono uppercase tracking-wider gap-1.5"
+        className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50 transition-all text-xs font-mono uppercase tracking-wider gap-1.5"
       >
         {isScanning ? (
           <>

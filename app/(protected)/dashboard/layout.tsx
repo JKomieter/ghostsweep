@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Header from "./_components/app_header"
 import StartScanOnboardingDialog from "./_components/start_scan_onboarding_dialog"
 import { DashboardProvider } from "./_components/dashboard-provider"
+import PendingPlanRedirect from "./_components/pending-plan-redirect"
 
 export const metadata: Metadata = {
     title: "Dashboard | GhostSweep Account Management",
@@ -29,6 +30,7 @@ export default function DashboardLayout({
     return (
         <DashboardProvider>
             <main className="bg-background relative">
+                <PendingPlanRedirect />
                 <Header />
                 {children}
                 <StartScanOnboardingDialog />

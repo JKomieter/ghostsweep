@@ -87,7 +87,7 @@ export default function NotificationDropdown() {
             <DropdownMenuContent
                 align="end"
                 sideOffset={8}
-                className="w-80 max-h-96 overflow-y-auto border border-white/10 bg-[#050505]/95 backdrop-blur-md"
+                className="w-80 max-h-96 overflow-y-auto border border-foreground/10 bg-background/95 backdrop-blur-md"
             >
                 <DropdownMenuLabel className="flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground">
                     <span>Notifications</span>
@@ -97,10 +97,10 @@ export default function NotificationDropdown() {
                         </span>
                     )}
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuSeparator className="bg-foreground/10" />
 
                 {isError && (
-                    <div className="px-3 py-6 text-center text-xs text-red-400">
+                    <div className="px-3 py-6 text-center text-xs text-red-600 dark:text-red-400">
                         Failed to load notifications
                     </div>
                 )}
@@ -123,14 +123,14 @@ export default function NotificationDropdown() {
                         <DropdownMenuItem
                             key={n.id}
                             className={cn(
-                                "flex flex-col items-start gap-1 px-3 py-2.5 focus:bg-white/5",
-                                !n.read && "bg-white/3"
+                                "flex flex-col items-start gap-1 px-3 py-2.5 focus:bg-foreground/5",
+                                !n.read && "bg-foreground/3"
                             )}
                             // later you can onClick → open details / mark as read
                             onSelect={(e) => e.preventDefault()}
                         >
                             <div className="flex w-full items-start justify-between gap-2">
-                                <div className="text-xs font-medium text-white">
+                                <div className="text-xs font-medium text-foreground">
                                     {n.title ?? prettyTypeLabel(n.type)}
                                 </div>
                                 <span className="text-[10px] text-muted-foreground">
@@ -146,7 +146,7 @@ export default function NotificationDropdown() {
 
                             {/* Small type pill */}
                             <div className="mt-1 flex items-center gap-2">
-                                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                                <span className="rounded-full bg-foreground/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
                                     {prettyTypeLabel(n.type)}
                                 </span>
                                 {!n.read && (

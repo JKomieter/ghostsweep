@@ -25,7 +25,7 @@ const PLANS = {
         badge: null as string | null,
         badgeStyle: "",
         features: [
-            "3 scan credits (Work, Personal, Old School)",
+            "10 scan credits (Work, Personal, Old School)",
             "Full Maigret OSINT deep-web search",
             "Every ghost account & gift card unlocked",
             "PDF Identity Audit + 1Password-ready CSV",
@@ -118,14 +118,14 @@ export default async function BillingPage({ searchParams }: PageProps) {
     const planConfig = PLANS[selectedTab];
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-[#050505] px-4 py-8">
-            <div className="w-full max-w-xl mx-auto rounded-lg border border-white/5 bg-white/2 p-6 md:p-8 shadow-lg space-y-8">
+        <main className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
+            <div className="w-full max-w-xl mx-auto rounded-lg border border-foreground/5 bg-foreground/2 p-6 md:p-8 shadow-lg space-y-8">
                 {/* Header */}
                 <header className="space-y-2">
-                    <h1 className="text-3xl font-light tracking-tight text-white">
+                    <h1 className="text-3xl font-light tracking-tight text-foreground">
                         GhostSweep Billing
                     </h1>
-                    <p className="text-sm text-white/60">
+                    <p className="text-sm text-foreground/60">
                         Manage your plan and billing details.
                     </p>
                 </header>
@@ -133,7 +133,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 {/* Canceled notice */}
                 {wasCanceled && !isPaid && (
                     <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
-                        <p className="text-sm text-amber-300">
+                        <p className="text-sm text-amber-700 dark:text-amber-300">
                             Checkout was canceled. You can try again whenever you&apos;re ready.
                         </p>
                     </div>
@@ -141,13 +141,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                 {/* Already on a paid plan */}
                 {isPaid ? (
-                    <section className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-4">
+                    <section className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-4">
                         <div className="flex items-start gap-3">
-                            <div className="mt-0.5 rounded-full bg-emerald-500/20 p-2.5 text-emerald-400">
+                            <div className="mt-0.5 rounded-full bg-emerald-500/20 p-2.5 text-emerald-600 dark:text-emerald-400">
                                 <ShieldCheck className="h-5 w-5" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-sm font-light text-white">
+                                <p className="text-sm font-light text-foreground">
                                     {isBuster
                                         ? 'You own The "Buster" — one-time purchase'
                                         : isSentinel
@@ -157,21 +157,21 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                                 {isBuster ? (
                                     <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 w-fit">
-                                        <Zap className="h-3.5 w-3.5 text-amber-400" />
-                                        <span className="text-xs text-amber-300">
+                                        <Zap className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
+                                        <span className="text-xs text-amber-700 dark:text-amber-300">
                                             {creditsRemaining} of 3 scan credits remaining
                                         </span>
                                     </div>
                                 ) : renewsAt ? (
-                                    <p className="mt-2 text-xs text-white/60 flex items-center gap-2">
+                                    <p className="mt-2 text-xs text-foreground/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
                                         Renews on{" "}
-                                        <span className="font-light text-white">
+                                        <span className="font-light text-foreground">
                                             {formatDate(renewsAt)}
                                         </span>
                                     </p>
                                 ) : (
-                                    <p className="mt-2 text-xs text-white/60 flex items-center gap-2">
+                                    <p className="mt-2 text-xs text-foreground/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
                                         No renewal date on file.
                                     </p>
@@ -180,10 +180,10 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 {/* Buster upsell */}
                                 {isBuster && (
                                     <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
-                                        <p className="text-xs font-medium text-emerald-400">
+                                        <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
                                             Want unlimited scans &amp; real-time monitoring?
                                         </p>
-                                        <p className="text-xs text-white/50">
+                                        <p className="text-xs text-foreground/50">
                                             Upgrade to Monthly ($7.99/mo) or Annual Sentinel ($59.99/yr) to remove
                                             the 3-credit limit and get continuous protection.
                                         </p>
@@ -196,7 +196,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                             </Link>
                                             <Link
                                                 href="/dashboard/billing?plan=sentinel"
-                                                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition"
+                                                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition"
                                             >
                                                 Annual Sentinel — $59.99/yr
                                             </Link>
@@ -209,7 +209,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         href="/dashboard"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
-                                            "bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 text-white"
+                                            "bg-foreground/2 hover:bg-foreground/3 border border-foreground/5 hover:border-foreground/10 text-foreground"
                                         )}
                                     >
                                         Back to dashboard
@@ -218,7 +218,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         href="/dashboard/support"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
-                                            "bg-white/2 hover:bg-white/3 border border-white/5 hover:border-white/10 text-emerald-400"
+                                            "bg-foreground/2 hover:bg-foreground/3 border border-foreground/5 hover:border-foreground/10 text-emerald-600 dark:text-emerald-400"
                                         )}
                                     >
                                         Billing help
@@ -230,7 +230,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 ) : (
                     <>
                         {/* Plan tabs */}
-                        <div className="flex rounded-lg border border-white/5 bg-white/2 p-1 text-xs gap-1">
+                        <div className="flex rounded-lg border border-foreground/5 bg-foreground/2 p-1 text-xs gap-1">
                             {(["buster", "pro", "sentinel"] as PlanTab[]).map((tab) => {
                                 const isActive = selectedTab === tab;
                                 const label =
@@ -245,11 +245,11 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                             "flex-1 text-center px-2 py-1.5 rounded-md transition-colors whitespace-nowrap",
                                             isActive
                                                 ? tab === "buster"
-                                                    ? "bg-amber-500/20 text-amber-300 font-medium"
+                                                    ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 font-medium"
                                                     : tab === "sentinel"
-                                                    ? "bg-emerald-500/20 text-emerald-300 font-medium"
-                                                    : "bg-white text-black font-medium"
-                                                : "text-white/50 hover:text-white/80"
+                                                    ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-medium"
+                                                    : "bg-foreground text-background font-medium"
+                                                : "text-foreground/50 hover:text-foreground/80"
                                         )}
                                     >
                                         {label}
@@ -266,16 +266,16 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     ? "border-amber-500/25 bg-amber-500/5"
                                     : selectedTab === "sentinel"
                                     ? "border-emerald-500/30 bg-emerald-500/5"
-                                    : "border-white/5 bg-white/2"
+                                    : "border-foreground/5 bg-foreground/2"
                             )}
                         >
                             <div>
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <p className={cn(
                                         "text-sm font-medium",
-                                        selectedTab === "buster" ? "text-amber-300"
-                                        : selectedTab === "sentinel" ? "text-emerald-400"
-                                        : "text-white"
+                                        selectedTab === "buster" ? "text-amber-700 dark:text-amber-300"
+                                        : selectedTab === "sentinel" ? "text-emerald-600 dark:text-emerald-400"
+                                        : "text-foreground"
                                     )}>
                                         {planConfig.label}
                                     </p>
@@ -295,30 +295,30 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                 </div>
                                 <p className={cn(
                                     "mt-1 text-3xl font-light",
-                                    selectedTab === "buster" ? "text-amber-400"
-                                    : selectedTab === "sentinel" ? "text-emerald-400"
-                                    : "text-white"
+                                    selectedTab === "buster" ? "text-amber-700 dark:text-amber-400"
+                                    : selectedTab === "sentinel" ? "text-emerald-600 dark:text-emerald-400"
+                                    : "text-foreground"
                                 )}>
                                     {planConfig.price}
-                                    <span className="text-base text-white/40 ml-1">
+                                    <span className="text-base text-foreground/40 ml-1">
                                         {planConfig.period}
                                     </span>
                                 </p>
-                                <p className="mt-1 text-xs text-white/50">{planConfig.tagline}</p>
+                                <p className="mt-1 text-xs text-foreground/50">{planConfig.tagline}</p>
                             </div>
 
-                            <div className="h-px bg-white/5" />
+                            <div className="h-px bg-foreground/5" />
 
                             <div className="space-y-2">
-                                <p className="text-[11px] font-medium uppercase tracking-widest text-white/35">
+                                <p className="text-[11px] font-medium uppercase tracking-widest text-foreground/35">
                                     What you get
                                 </p>
                                 <ul className="space-y-2">
                                     {planConfig.features.map((f) => (
-                                        <li key={f} className="flex items-start gap-2 text-xs text-white/60">
+                                        <li key={f} className="flex items-start gap-2 text-xs text-foreground/60">
                                             <Check className={cn(
                                                 "h-3.5 w-3.5 shrink-0 mt-0.5",
-                                                selectedTab === "buster" ? "text-amber-400" : "text-emerald-400"
+                                                selectedTab === "buster" ? "text-amber-700 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
                                             )} />
                                             {f}
                                         </li>
@@ -329,9 +329,9 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                         {/* Checkout */}
                         <section className="space-y-3">
-                            <p className="text-sm text-white/60">
+                            <p className="text-sm text-foreground/60">
                                 You&apos;re upgrading to{" "}
-                                <span className="font-medium text-white">
+                                <span className="font-medium text-foreground">
                                     {planConfig.label}
                                     {" — "}
                                     {planConfig.price}
@@ -345,7 +345,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             />
                         </section>
 
-                        <footer className="text-[11px] text-white/35">
+                        <footer className="text-[11px] text-foreground/35">
                             Payments processed securely by Stripe. GhostSweep never stores your card
                             details.{selectedTab !== "buster" && " Cancel anytime."}
                         </footer>

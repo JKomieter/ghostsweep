@@ -433,10 +433,10 @@ export default function DashboardTitle() {
             {/* HEADER */}
             <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-1">
-                    <h1 className="text-lg font-semibold text-white md:text-xl">
+                    <h1 className="text-lg font-semibold text-foreground md:text-xl">
                         GhostSweep Dashboard
                     </h1>
-                    <p className="text-xs text-white/60 md:text-sm">
+                    <p className="text-xs text-foreground/60 md:text-sm">
                         Map your accounts, breaches, and deletion requests in one place.
                     </p>
                 </div>
@@ -445,17 +445,17 @@ export default function DashboardTitle() {
                     {/* Email status pill */}
                     <div className={`inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                         connectedEmail 
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100" 
-                            : "border-yellow-500/30 bg-yellow-500/10 text-yellow-200"
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-100" 
+                            : "border-yellow-500/30 bg-yellow-500/10 text-yellow-800 dark:text-yellow-200"
                     }`}>
                         {connectedEmail ? (
                             <div className="flex items-center gap-1.5">
                                 <EmailIcon type={gmailAddress ? "gmail" : "outlook"} />
-                                <span className="text-emerald-200 max-w-[150px] sm:max-w-none truncate">
+                                <span className="text-emerald-800 dark:text-emerald-200 max-w-[150px] sm:max-w-none truncate">
                                     {connectedEmail}
                                 </span>
                                 {totalAccountsCount > 1 && (
-                                    <span className="ml-0.5 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-100 whitespace-nowrap">
+                                    <span className="ml-0.5 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100 whitespace-nowrap">
                                         +{totalAccountsCount - 1} more
                                     </span>
                                 )}
@@ -490,7 +490,7 @@ export default function DashboardTitle() {
 
             {/* Background sweep banner */}
             {isInProgress && latestSweep && (
-                <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-800 dark:text-cyan-100 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -498,7 +498,7 @@ export default function DashboardTitle() {
                                 {getPhaseLabel(latestSweep.phase, latestSweep.phaseLabel)}
                             </span>
                         </div>
-                        <div className="text-[11px] text-cyan-200/80">
+                        <div className="text-[11px] text-cyan-800/80 dark:text-cyan-200/80">
                             {latestSweep.phaseStep && latestSweep.phaseCount ? (
                                 <>
                                     Phase {latestSweep.phaseStep} of {latestSweep.phaseCount}
@@ -526,7 +526,7 @@ export default function DashboardTitle() {
                                         style={{ width: `${latestSweep.progress}%` }}
                                     />
                                 </div>
-                                <span className="text-[11px] font-semibold text-cyan-200">
+                                <span className="text-[11px] font-semibold text-cyan-800 dark:text-cyan-200">
                                     {latestSweep.progress}%
                                 </span>
                             </>
@@ -537,7 +537,7 @@ export default function DashboardTitle() {
                             variant="ghost"
                             disabled={isCancelling || latestSweep.status === "cancelled"}
                             onClick={() => onCancelSweep.mutate()}
-                            className="h-8 text-[11px] text-cyan-100 hover:bg-white/10"
+                            className="h-8 text-[11px] text-cyan-800 dark:text-cyan-100 hover:bg-foreground/10"
                         >
                             {latestSweep.status === "cancelled"
                                 ? "Stopping…"
@@ -557,10 +557,10 @@ export default function DashboardTitle() {
               latestSweep.errorMessage.toLowerCase().includes('reconnect')) && (
                 <div className="mb-4 flex flex-col gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-3">
-                        <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+                        <AlertTriangle className="h-5 w-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
                         <div>
-                            <p className="font-medium text-amber-100">Account Reconnection Required</p>
-                            <p className="text-xs text-amber-200/80 mt-0.5">
+                            <p className="font-medium text-amber-800 dark:text-amber-100">Account Reconnection Required</p>
+                            <p className="text-xs text-amber-800/80 dark:text-amber-200/80 mt-0.5">
                                 Your email access token has expired. Please reconnect your account to continue scanning.
                             </p>
                         </div>
@@ -568,7 +568,7 @@ export default function DashboardTitle() {
                     <div className="flex gap-2 ml-8 sm:ml-0">
                         {gmailData?.accounts && gmailData.accounts.length > 0 && (
                             <a href="/api/google/oauth/start">
-                                <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-100 hover:bg-amber-500/20 text-xs">
+                                <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-800 dark:text-amber-100 hover:bg-amber-500/20 text-xs">
                                     <RefreshCw className="h-3.5 w-3.5" />
                                     Reconnect Gmail
                                 </Button>
@@ -576,7 +576,7 @@ export default function DashboardTitle() {
                         )}
                         {microsoftData?.accounts && microsoftData.accounts.length > 0 && (
                             <a href="/api/microsoft/oauth">
-                                <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-100 hover:bg-amber-500/20 text-xs">
+                                <Button size="sm" variant="outline" className="gap-1.5 border-amber-500/30 text-amber-800 dark:text-amber-100 hover:bg-amber-500/20 text-xs">
                                     <RefreshCw className="h-3.5 w-3.5" />
                                     Reconnect Outlook
                                 </Button>

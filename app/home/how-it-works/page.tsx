@@ -119,7 +119,7 @@ export default function HowItWorksPage() {
     ];
 
     return (
-        <main className="min-h-screen bg-[#050505]">
+        <main className="min-h-screen bg-background">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
@@ -136,18 +136,18 @@ export default function HowItWorksPage() {
                 </div>
 
                 <div className="mx-auto max-w-3xl px-6 text-center">
-                    <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/50">
-                        <Ghost className="h-3 w-3 text-emerald-400" />
+                    <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
+                        <Ghost className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         How GhostSweep works
                     </div>
 
-                    <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
+                    <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-foreground leading-[1.08]">
                         Connect. Discover.
                         <br />
-                        <span className="text-white/30">Take control.</span>
+                        <span className="text-foreground/55">Take control.</span>
                     </h1>
 
-                    <p className="mx-auto mt-8 max-w-xl text-lg text-white/45 font-light leading-relaxed">
+                    <p className="mx-auto mt-8 max-w-xl text-lg text-foreground/65 font-light leading-relaxed">
                         Four steps to understanding your entire digital footprint — every account, every shadow profile, every dollar hiding in your inbox.
                     </p>
                 </div>
@@ -159,29 +159,29 @@ export default function HowItWorksPage() {
                     {steps.map((step) => (
                         <div
                             key={step.num}
-                            className="group rounded-2xl border border-white/5 bg-white/2 p-8 sm:p-10 hover:border-white/10 transition-colors duration-300"
+                            className="group rounded-2xl border border-foreground/5 bg-foreground/2 p-8 sm:p-10 hover:border-foreground/10 transition-colors duration-300"
                         >
                             <div className="flex flex-col sm:flex-row items-start gap-6">
                                 <div className="shrink-0 h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                    <step.icon className="h-6 w-6 text-emerald-400" />
+                                    <step.icon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div className="flex-1">
-                                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">
+                                    <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-widest">
                                         Step {step.num}
                                     </span>
-                                    <h2 className="text-xl sm:text-2xl font-semibold text-white mt-1 mb-3">
+                                    <h2 className="text-xl sm:text-2xl font-semibold text-foreground mt-1 mb-3">
                                         {step.title}
                                     </h2>
-                                    <p className="text-sm text-white/45 leading-relaxed mb-6 max-w-2xl">
+                                    <p className="text-sm text-foreground/65 leading-relaxed mb-6 max-w-2xl">
                                         {step.description}
                                     </p>
                                     <ul className="space-y-2.5">
                                         {step.details.map((detail) => (
                                             <li
                                                 key={detail}
-                                                className="flex items-start gap-2.5 text-sm text-white/55"
+                                                className="flex items-start gap-2.5 text-sm text-foreground/55"
                                             >
-                                                <CheckCircle className="h-4 w-4 text-emerald-400/60 mt-0.5 shrink-0" />
+                                                <CheckCircle className="h-4 w-4 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                                 {detail}
                                             </li>
                                         ))}
@@ -194,13 +194,13 @@ export default function HowItWorksPage() {
             </section>
 
             {/* What we look for */}
-            <section className="py-28 border-t border-white/5">
+            <section className="py-28 border-t border-foreground/5">
                 <div className="mx-auto max-w-4xl px-6">
                     <div className="text-center mb-16">
-                        <p className="text-sm uppercase tracking-[0.2em] text-white/25 mb-6">
+                        <p className="text-sm uppercase tracking-[0.2em] text-foreground/50 mb-6">
                             What we find
                         </p>
-                        <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+                        <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
                             Three categories of discovery.
                         </h2>
                     </div>
@@ -212,36 +212,36 @@ export default function HowItWorksPage() {
                                 title: "Hidden Value",
                                 description:
                                     "Gift card codes, unused rewards points, expiring coupons, and subscriptions you're overpaying for.",
-                                color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+                                color: "text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
                             },
                             {
                                 icon: Fingerprint,
                                 title: "Shadow Profiles",
                                 description:
                                     "Accounts that exist under your email, phone, or username — often without your knowledge. Found across hundreds of services.",
-                                color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+                                color: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
                             },
                             {
                                 icon: ShieldCheck,
                                 title: "Safety Risks",
                                 description:
                                     "Breached services, compromised credentials, and forgotten accounts leaking your data to anyone who looks.",
-                                color: "text-red-400 bg-red-500/10 border-red-500/20",
+                                color: "text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/20",
                             },
                         ].map((card) => (
                             <div
                                 key={card.title}
-                                className="rounded-2xl border border-white/5 bg-white/2 p-8 hover:border-white/10 transition-colors duration-300"
+                                className="rounded-2xl border border-foreground/5 bg-foreground/2 p-8 hover:border-foreground/10 transition-colors duration-300"
                             >
                                 <div
                                     className={`h-11 w-11 rounded-xl border flex items-center justify-center mb-5 ${card.color}`}
                                 >
                                     <card.icon className="h-5 w-5" />
                                 </div>
-                                <h3 className="text-base font-medium text-white mb-2">
+                                <h3 className="text-base font-medium text-foreground mb-2">
                                     {card.title}
                                 </h3>
-                                <p className="text-sm text-white/40 leading-relaxed">
+                                <p className="text-sm text-foreground/65 leading-relaxed">
                                     {card.description}
                                 </p>
                             </div>
@@ -251,25 +251,25 @@ export default function HowItWorksPage() {
             </section>
 
             {/* Privacy guarantee */}
-            <section className="py-20 border-t border-white/5">
+            <section className="py-20 border-t border-foreground/5">
                 <div className="mx-auto max-w-3xl px-6">
-                    <div className="rounded-2xl border border-white/10 bg-white/3 p-8 sm:p-10">
+                    <div className="rounded-2xl border border-foreground/10 bg-foreground/3 p-8 sm:p-10">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                                <Lock className="h-5 w-5 text-emerald-400" />
+                            <div className="h-10 w-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center">
+                                <Lock className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                             </div>
-                            <h3 className="text-lg font-semibold text-white">
+                            <h3 className="text-lg font-semibold text-foreground">
                                 Privacy guarantee
                             </h3>
                         </div>
 
-                        <p className="text-sm text-white/45 leading-relaxed mb-6">
+                        <p className="text-sm text-foreground/65 leading-relaxed mb-6">
                             GhostSweep uses transient, RAM-only processing. Your raw email data is never stored, never sold, never shared. Nothing happens automatically — you preview and approve every action.
                         </p>
 
-                        <div className="flex flex-wrap gap-6 text-xs text-white/35">
+                        <div className="flex flex-wrap gap-6 text-xs text-foreground/55">
                             <span className="flex items-center gap-1.5">
-                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400/60" />
+                                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600/60 dark:text-emerald-400/60" />
                                 CASA Tier 2 Verified
                             </span>
                             <span className="flex items-center gap-1.5">
@@ -286,19 +286,19 @@ export default function HowItWorksPage() {
             </section>
 
             {/* CTA */}
-            <section className="py-28 border-t border-white/5">
+            <section className="py-28 border-t border-foreground/5">
                 <div className="mx-auto max-w-3xl px-6 text-center">
-                    <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
+                    <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground leading-tight">
                         Ready to see your
                         <br />
                         full digital footprint?
                     </h2>
-                    <p className="mx-auto mt-6 max-w-md text-base text-white/40 leading-relaxed">
+                    <p className="mx-auto mt-6 max-w-md text-base text-foreground/65 leading-relaxed">
                         Free scan. Results in under two minutes. Upgrade only when you want full control.
                     </p>
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link
-                            href="/login"
+                            href="/login?mode=signup"
                             className="group inline-flex items-center gap-2.5 rounded-full bg-emerald-500 px-8 py-4 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_60px_-10px_rgba(16,185,129,0.4)]"
                         >
                             <Sparkles className="h-4 w-4" />
@@ -307,7 +307,7 @@ export default function HowItWorksPage() {
                         </Link>
                         <Link
                             href="/home#pricing"
-                            className="text-sm text-white/40 hover:text-white transition"
+                            className="text-sm text-foreground/65 hover:text-foreground transition"
                         >
                             Compare plans →
                         </Link>

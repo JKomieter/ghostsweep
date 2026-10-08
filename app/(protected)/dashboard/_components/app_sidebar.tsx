@@ -97,25 +97,25 @@ export default function SlidingSidebar() {
             {/* Sidebar */}
             <aside
                 className={`fixed inset-y-0 left-0 z-50 flex w-64 max-w-full flex-col 
-                bg-[#0b0b0b] border-r border-white/10
+                bg-background border-r border-foreground/10
                 transition-transform duration-200 h-screen
                 ${open ? "translate-x-0" : "-translate-x-full"}`}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-white/10">
-                    <span className="text-sm font-semibold text-white">GhostSweep</span>
+                <div className="flex items-center justify-between p-4 border-b border-foreground/10">
+                    <span className="text-sm font-semibold text-foreground">GhostSweep</span>
                     <button
                         onClick={() => setOpen(false)}
-                        className="rounded-lg border border-white/10 p-1.5 text-white/70 hover:bg-white/10 transition-colors"
+                        className="rounded-lg border border-foreground/10 p-1.5 text-foreground/70 hover:bg-foreground/10 transition-colors"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 </div>
 
                 {/* User Info - New Section */}
-                <div className="px-4 py-3 border-b border-white/10">
-                    <p className="text-xs text-white/50">Signed in as</p>
-                    <p className="text-sm font-medium text-white truncate">{user?.email}</p>
+                <div className="px-4 py-3 border-b border-foreground/10">
+                    <p className="text-xs text-foreground/50">Signed in as</p>
+                    <p className="text-sm font-medium text-foreground truncate">{user?.email}</p>
                 </div>
 
                 {/* Nav */}
@@ -132,8 +132,8 @@ export default function SlidingSidebar() {
                                     className={cn(
                                         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                                         isSelected(item.href)
-                                            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                            : "text-white/70 hover:bg-white/10 hover:text-white"
+                                            ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
+                                            : "text-foreground/70 hover:bg-foreground/10 hover:text-foreground"
                                     )}
                                 >
                                     <Icon className="h-4 w-4 shrink-0" />
@@ -144,14 +144,14 @@ export default function SlidingSidebar() {
                     </div>
 
                     {/* Divider */}
-                    <div className="my-2 h-px bg-white/10" />
+                    <div className="my-2 h-px bg-foreground/10" />
 
 
                     {/* Logout - Bottom */}
-                    <div className="mt-auto pt-4 border-t border-white/10">
+                    <div className="mt-auto pt-4 border-t border-foreground/10">
                         <button
                             onClick={handleLogout}
-                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-colors"
+                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-500/10 hover:text-red-800 dark:hover:text-red-200 transition-colors"
                         >
                             <LogOut className="h-4 w-4 shrink-0" />
                             <span>Log out</span>

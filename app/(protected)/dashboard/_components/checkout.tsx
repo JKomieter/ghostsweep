@@ -74,13 +74,13 @@ export default function CheckoutForm({
     return (
         <div className="space-y-3">
             {referralCode && (
-                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-400 flex items-center gap-2">
+                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
                     <Zap className="h-4 w-4 fill-emerald-400" />
                     <span>Referral applied: <strong>50% off</strong> first month!</span>
                 </div>
             )}
             {error && (
-                <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">
+                <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-800 dark:text-red-200">
                     {error}
                 </div>
             )}

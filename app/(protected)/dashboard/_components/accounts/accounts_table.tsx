@@ -215,27 +215,27 @@ export default function AccountsTable({
                 return (
                     <div className="flex items-start gap-3">
                         {/* Logo */}
-                        <div className="h-8 w-8 rounded-full bg-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-full bg-foreground/10 overflow-hidden shrink-0 flex items-center justify-center">
                             {logo ? (
                                 <Image src={logo} alt={name} width={32} height={32} className="h-full w-full object-cover" />
                             ) : (
-                                <span className="text-white/40 text-xs font-bold">{name.substring(0, 1).toUpperCase()}</span>
+                                <span className="text-foreground/40 text-xs font-bold">{name.substring(0, 1).toUpperCase()}</span>
                             )}
                         </div>
 
                         <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                                <span className="text-white font-medium">{name}</span>
+                                <span className="text-foreground font-medium">{name}</span>
                                 {isBreached && <div className="h-1.5 w-1.5 rounded-full bg-red-400" title="Breached" />}
                                 {daysSinceLastSeen && daysSinceLastSeen > 365 && !isWhitelisted && <div className="h-1.5 w-1.5 rounded-full bg-amber-400" title="Unused" />}
                                 {isWhitelisted && (
-                                    <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-medium border border-emerald-500/20">
+                                    <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium border border-emerald-500/20">
                                         Safe
                                     </span>
                                 )}
                             </div>
                             {email && (
-                                <div className="text-xs text-white/50">{email}</div>
+                                <div className="text-xs text-foreground/50">{email}</div>
                             )}
                         </div>
                     </div>
@@ -246,7 +246,7 @@ export default function AccountsTable({
             accessorKey: "category",
             header: "Category",
             cell: ({ row }) => (
-                <span className="text-sm text-white/80">{row.original.category}</span>
+                <span className="text-sm text-foreground/80">{row.original.category}</span>
             ),
         },
         {
@@ -262,24 +262,24 @@ export default function AccountsTable({
                 if (deletionRequest) {
                     const drStatus = deletionRequest.status;
                     const statusConfig: Record<string, { label: string; color: string }> = {
-                        drafted: { label: "Drafted", color: "text-slate-400" },
-                        sent: { label: "Sent", color: "text-blue-400" },
-                        received: { label: "Received", color: "text-blue-400" },
-                        needs_verification: { label: "Needs Verification", color: "text-amber-400" },
-                        in_progress: { label: "In Progress", color: "text-amber-400" },
-                        completed: { label: "Deleted", color: "text-emerald-400" },
-                        failed: { label: "Failed", color: "text-red-400" },
-                        expired: { label: "Expired", color: "text-orange-400" },
+                        drafted: { label: "Drafted", color: "text-muted-foreground" },
+                        sent: { label: "Sent", color: "text-blue-600 dark:text-blue-400" },
+                        received: { label: "Received", color: "text-blue-600 dark:text-blue-400" },
+                        needs_verification: { label: "Needs Verification", color: "text-amber-700 dark:text-amber-400" },
+                        in_progress: { label: "In Progress", color: "text-amber-700 dark:text-amber-400" },
+                        completed: { label: "Deleted", color: "text-emerald-600 dark:text-emerald-400" },
+                        failed: { label: "Failed", color: "text-red-600 dark:text-red-400" },
+                        expired: { label: "Expired", color: "text-orange-700 dark:text-orange-400" },
                     };
-                    const config = statusConfig[drStatus] || { label: drStatus, color: "text-white/60" };
+                    const config = statusConfig[drStatus] || { label: drStatus, color: "text-foreground/60" };
                     return <span className={`text-sm ${config.color}`}>{config.label}</span>;
                 }
 
-                if (isWhitelisted) return <span className="text-emerald-400 text-sm">Trusted</span>;
-                if (isBreached) return <span className="text-red-400 text-sm">Breached</span>;
-                if (daysSinceLastSeen && daysSinceLastSeen > 365) return <span className="text-amber-400 text-sm">Unused</span>;
+                if (isWhitelisted) return <span className="text-emerald-600 dark:text-emerald-400 text-sm">Trusted</span>;
+                if (isBreached) return <span className="text-red-600 dark:text-red-400 text-sm">Breached</span>;
+                if (daysSinceLastSeen && daysSinceLastSeen > 365) return <span className="text-amber-700 dark:text-amber-400 text-sm">Unused</span>;
 
-                return <span className="text-white/60 text-sm">Active</span>;
+                return <span className="text-foreground/60 text-sm">Active</span>;
             },
         },
         {
@@ -290,17 +290,17 @@ export default function AccountsTable({
                 const daysSince = row.original.days_since_last_seen;
 
                 if (!lastSeen) {
-                    return <span className="text-white/40 text-sm">Unknown</span>;
+                    return <span className="text-foreground/40 text-sm">Unknown</span>;
                 }
 
                 if (daysSince !== null) {
-                    if (daysSince === 0) return <span className="text-white/80 text-sm">Today</span>;
-                    if (daysSince < 30) return <span className="text-white/80 text-sm">{daysSince}d ago</span>;
-                    if (daysSince < 365) return <span className="text-white/80 text-sm">{Math.floor(daysSince / 30)}m ago</span>;
-                    return <span className="text-white/80 text-sm">{Math.floor(daysSince / 365)}y ago</span>;
+                    if (daysSince === 0) return <span className="text-foreground/80 text-sm">Today</span>;
+                    if (daysSince < 30) return <span className="text-foreground/80 text-sm">{daysSince}d ago</span>;
+                    if (daysSince < 365) return <span className="text-foreground/80 text-sm">{Math.floor(daysSince / 30)}m ago</span>;
+                    return <span className="text-foreground/80 text-sm">{Math.floor(daysSince / 365)}y ago</span>;
                 }
 
-                return <span className="text-white/80 text-sm">{formatDate(lastSeen)}</span>;
+                return <span className="text-foreground/80 text-sm">{formatDate(lastSeen)}</span>;
             },
         },
         {
@@ -319,7 +319,7 @@ export default function AccountsTable({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-xs text-white/60 hover:text-white"
+                            className="text-xs text-foreground/60 hover:text-foreground"
                             onClick={() => window.open(`https://${domain}`, "_blank")}
                         >
                             Visit
@@ -327,7 +327,7 @@ export default function AccountsTable({
                         <Button
                             variant="ghost" 
                             size="sm"
-                            className={`text-xs ${isWhitelisted ? 'text-emerald-400' : 'text-white/40 hover:text-white'}`}
+                            className={`text-xs ${isWhitelisted ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground/40 hover:text-foreground'}`}
                             onClick={() => toggleWhitelist.mutate({ id, currentStatus: isWhitelisted })}
                         >
                             {isWhitelisted ? "Trusted" : "Whitelist"}
@@ -335,7 +335,7 @@ export default function AccountsTable({
                         {confirmDeleteId === id ? (
                             <Button
                                 size="sm"
-                                className="h-7 border border-red-500/50 text-red-400 bg-red-500/10 hover:bg-red-500/20 text-[10px] gap-1 px-2"
+                                className="h-7 border border-red-500/50 text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 text-[10px] gap-1 px-2"
                                 onClick={() => hardDeleteMutation.mutate(id)}
                                 disabled={hardDeleteMutation.isPending}
                             >
@@ -346,7 +346,7 @@ export default function AccountsTable({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 text-white/20 hover:text-red-400 hover:bg-red-500/5 px-1.5"
+                                className="h-7 text-foreground/20 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/5 px-1.5"
                                 onClick={() => setConfirmDeleteId(id)}
                                 title="Permanently remove this account"
                             >
@@ -382,11 +382,11 @@ export default function AccountsTable({
                 <div className="flex flex-1 items-center gap-2">
                     {/* Search */}
                     <div className="relative max-w-sm w-full md:w-64">
-                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-white/40" />
+                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-foreground/40" />
                         <Input
                         id="search"
                             placeholder="Search accounts..."
-                            className="pl-8 bg-black/20 border-white/10 h-9 text-sm"
+                            className="pl-8 bg-background/20 border-foreground/10 h-9 text-sm"
                             value={search}
                             onChange={setSearch}
                         />
@@ -394,10 +394,10 @@ export default function AccountsTable({
                     
                     {/* Email Filter */}
                     <Select value={emailFilter} onValueChange={setEmailFilter}>
-                        <SelectTrigger className="w-[180px] h-9 bg-black/20 border-white/10 text-xs">
+                        <SelectTrigger className="w-[180px] h-9 bg-background/20 border-foreground/10 text-xs">
                           <SelectValue placeholder="Filter by Email" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0A0A0A] border-white/10">
+                        <SelectContent className="bg-card border-foreground/10">
                             <SelectItem value="all">All Emails</SelectItem>
                             {availableEmails.map((email) => (
                                 <SelectItem key={email} value={email}>{email}</SelectItem>
@@ -408,25 +408,25 @@ export default function AccountsTable({
 
                 <div className="flex items-center gap-3">
                     {/* Whitelist Toggle */}
-                    <div className="flex items-center space-x-2 border-r border-white/10 pr-4 mr-2">
+                    <div className="flex items-center space-x-2 border-r border-foreground/10 pr-4 mr-2">
                         <Switch 
                             id="whitelist-mode" 
                             checked={whitelistedFilter === "true"}
                             onCheckedChange={(checked) => setWhitelistedFilter(checked ? "true" : "")}
                         />
-                        <Label htmlFor="whitelist-mode" className="text-xs text-white/70">Show Trusted Only</Label>
+                        <Label htmlFor="whitelist-mode" className="text-xs text-foreground/70">Show Trusted Only</Label>
                     </div>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="bg-black/20 border-white/10 h-9">
+                            <Button variant="outline" size="sm" className="bg-background/20 border-foreground/10 h-9">
                                 {status === "all" ? "All Status" : 
                                  status === "breached" ? "Breached" :
                                  status === "unused" ? "Unused" : 
                                  status === "deleted" ? "Deletions" : status}
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-[#0A0A0A] border-white/10">
+                        <DropdownMenuContent className="bg-card border-foreground/10">
                             <DropdownMenuItem onClick={() => setStatus("all")}>All Accounts</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setStatus("breached")}>Breached</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setStatus("unused")}>Unused</DropdownMenuItem>
@@ -438,7 +438,7 @@ export default function AccountsTable({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:text-red-300 h-9"
+                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 h-9"
                             onClick={() => markAsDeleted.mutate(selectedIds)}
                             disabled={markAsDeleted.isPending}
                         >
@@ -453,13 +453,13 @@ export default function AccountsTable({
             </div>
 
             {/* Table */}
-            <div className="rounded-lg border border-white/5 bg-white/2 overflow-hidden">
+            <div className="rounded-lg border border-foreground/5 bg-foreground/2 overflow-hidden">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-white/5 hover:bg-white/2">
+                            <TableRow key={headerGroup.id} className="border-foreground/5 hover:bg-foreground/2">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="text-white/40 font-medium">
+                                    <TableHead key={header.id} className="text-foreground/40 font-medium">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -475,7 +475,7 @@ export default function AccountsTable({
                         {isLoading ? (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    <Spinner className="h-6 w-6 text-white/40 mx-auto" />
+                                    <Spinner className="h-6 w-6 text-foreground/40 mx-auto" />
                                 </TableCell>
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (
@@ -483,7 +483,7 @@ export default function AccountsTable({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
+                                    className="border-foreground/5 hover:bg-foreground/5 cursor-pointer transition-colors"
                                     onClick={(e) => {
                                         // Don't navigate if clicking on checkbox, buttons, or other interactive elements
                                         const target = e.target as HTMLElement;
@@ -506,7 +506,7 @@ export default function AccountsTable({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center text-white/40">
+                                <TableCell colSpan={columns.length} className="h-24 text-center text-foreground/40">
                                     No accounts found.
                                 </TableCell>
                             </TableRow>
@@ -519,17 +519,17 @@ export default function AccountsTable({
             {accountsResult?.previewOnly && (
                 <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-500/10 to-transparent p-8 text-center">
                     <div className="text-5xl mb-4">👻</div>
-                    <h3 className="text-xl text-white font-semibold mb-3">Your Digital Shadow Is Bigger</h3>
-                    <p className="text-white/60 mb-2 max-w-md mx-auto">
-                        You have <span className="text-purple-400 font-bold">{accountsResult.totalCount} accounts</span> scattered across the internet.
+                    <h3 className="text-xl text-foreground font-semibold mb-3">Your Digital Shadow Is Bigger</h3>
+                    <p className="text-foreground/60 mb-2 max-w-md mx-auto">
+                        You have <span className="text-purple-600 dark:text-purple-400 font-bold">{accountsResult.totalCount} accounts</span> scattered across the internet.
                         We&apos;re only showing {accountsResult.previewCount} of them.
                     </p>
                     {accountsResult.breachedCount > 0 && (
-                        <p className="text-red-400 text-sm mb-4">
+                        <p className="text-red-600 dark:text-red-400 text-sm mb-4">
                             ⚠️ {accountsResult.breachedCount} account(s) found in data breaches
                         </p>
                     )}
-                    <p className="text-white/40 text-sm mb-6">
+                    <p className="text-foreground/40 text-sm mb-6">
                         Upgrade to see all accounts, delete them, and protect your privacy.
                     </p>
                     <Link href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-purple-500 hover:bg-purple-400 px-6 py-3 text-sm font-semibold text-white transition">

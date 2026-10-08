@@ -26,26 +26,26 @@ export const metadata: Metadata = {
 export default function GlobalNotFound() {
     return (
         <html lang="en" className={inter.className}>
-            <body className='antialiased bg-black'>
+            <body className='antialiased bg-background'>
                 <div className="min-h-screen faint-grid-bg flex justify-center items-center flex-col px-4">
                     {/* Animated Ghost Icon */}
                     <div className='animate-[wiggle_1s_ease-in-out_infinite] mb-8'>
-                        <Ghost className="w-32 md:w-40 h-32 md:h-40 text-cyan-400/60 hover:text-cyan-400/80 transition-colors duration-300" />
+                        <Ghost className="w-32 md:w-40 h-32 md:h-40 text-cyan-600/60 dark:text-cyan-400/60 hover:text-cyan-600/80 dark:hover:text-cyan-400/80 transition-colors duration-300" />
                     </div>
 
                     {/* Main Content */}
                     <div className="text-center max-w-2xl">
                         <div className="mb-6">
-                            <span className="inline-block px-4 py-2 bg-cyan-400/10 text-cyan-400 rounded-full text-sm font-semibold">
+                            <span className="inline-block px-4 py-2 bg-cyan-400/10 text-cyan-600 dark:text-cyan-400 rounded-full text-sm font-semibold">
                                 Error 404
                             </span>
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight">
+                        <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-4 leading-tight">
                             Page Not Found
                         </h1>
 
-                        <p className="text-lg md:text-xl text-gray-400 mb-8 leading-relaxed">
+                        <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
                             The path you&apos;re looking for seems to have vanished into the digital shadow. Let&apos;s get you back on track.
                         </p>
 
@@ -62,7 +62,7 @@ export default function GlobalNotFound() {
                             <Link href='/help'>
                                 <Button 
                                     variant="outline"
-                                    className='cursor-pointer px-8 py-6 text-base font-semibold border-gray-600 text-gray-300 hover:bg-gray-900 hover:text-white' 
+                                    className='cursor-pointer px-8 py-6 text-base font-semibold border-foreground/15 text-foreground/75 hover:bg-foreground/12 hover:text-foreground' 
                                     size={'lg'}
                                 >
                                     Get Help
@@ -72,9 +72,9 @@ export default function GlobalNotFound() {
                     </div>
 
                     {/* Helpful Text */}
-                    <p className="mt-16 text-sm text-gray-500 text-center">
+                    <p className="mt-16 text-sm text-muted-foreground text-center">
                         If you believe this is an error, please{' '}
-                        <Link href='/support' className="text-cyan-400 hover:text-cyan-300 underline">
+                        <Link href='/support' className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline">
                             contact support
                         </Link>
                     </p>

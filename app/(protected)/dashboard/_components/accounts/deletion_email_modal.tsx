@@ -159,7 +159,7 @@ export default function DeletionEmailModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-lg bg-[#050505] border border-white/10">
+            <DialogContent className="sm:max-w-lg bg-background border border-foreground/10">
                 <DialogHeader className="space-y-2">
                     <DialogTitle className="flex flex-col gap-1">
                         <span className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -183,8 +183,8 @@ export default function DeletionEmailModal({
                                 className={cn(
                                     "text-xs",
                                     isBreached
-                                        ? "bg-red-500/20 text-red-300 border-red-500/30"
-                                        : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                                        ? "bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/30"
+                                        : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
                                 )}
                             >
                                 {isBreached ? "Breached" : "No known breach"}
@@ -196,7 +196,7 @@ export default function DeletionEmailModal({
                         </p>
 
                         {isErrorTemplate && (
-                            <p className="text-[11px] text-red-400">
+                            <p className="text-[11px] text-red-600 dark:text-red-400">
                                 Couldn&apos;t load template. Try again, or use &quot;Open in email client&quot;.
                             </p>
                         )}
@@ -209,7 +209,7 @@ export default function DeletionEmailModal({
                         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
                             From (your email)
                         </div>
-                        <div className="rounded-md border border-white/10 bg-black/60 px-3 py-2 font-mono text-[11px] text-emerald-200">
+                        <div className="rounded-md border border-foreground/10 bg-background/60 px-3 py-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-200">
                             {userEmail || "—"}
                         </div>
                     </div>
@@ -218,7 +218,7 @@ export default function DeletionEmailModal({
                         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
                             To (service deletion email)
                         </div>
-                        <div className="rounded-md border border-white/10 bg-black/60 px-3 py-2 font-mono text-[11px] text-emerald-200">
+                        <div className="rounded-md border border-foreground/10 bg-background/60 px-3 py-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-200">
                             {toAddress || "No deletion email in playbook yet"}
                         </div>
                     </div>
@@ -229,7 +229,7 @@ export default function DeletionEmailModal({
                             Subject (editable)
                         </div>
                         {isLoadingTemplate ? (
-                            <div className="rounded-md border border-white/10 bg-black/60 px-3 py-2 font-mono text-[11px] text-slate-100">
+                            <div className="rounded-md border border-foreground/10 bg-background/60 px-3 py-2 font-mono text-[11px] text-foreground">
                                 <div className="flex flex-row gap-2 items-center">
                                     <Spinner className="h-3 w-3" /> Generating subject…
                                 </div>
@@ -239,7 +239,7 @@ export default function DeletionEmailModal({
                                 id="subject"
                                 value={subject}
                                 onChange={setSubject}
-                                className="bg-black/60 border-white/10 text-[11px] font-mono"
+                                className="bg-background/60 border-foreground/10 text-[11px] font-mono"
                                 placeholder="Subject will appear here"
                             />
                         )}
@@ -253,7 +253,7 @@ export default function DeletionEmailModal({
                     </div>
 
                     {isLoadingTemplate ? (
-                        <div className="rounded-md border border-white/10 bg-black/70 p-3 text-[11px] text-slate-100 font-mono">
+                        <div className="rounded-md border border-foreground/10 bg-background/70 p-3 text-[11px] text-foreground font-mono">
                             <div className="flex flex-row items-center gap-2">
                                 <Spinner className="h-4 w-4" /> Generating deletion request template…
                             </div>
@@ -262,7 +262,7 @@ export default function DeletionEmailModal({
                         <Textarea
                             value={body}
                             onChange={(e) => setBody(e.target.value)}
-                            className="min-h-[220px] max-h-64 bg-black/70 border-white/10 text-[11px] font-mono leading-relaxed text-slate-100"
+                            className="min-h-[220px] max-h-64 bg-background/70 border-foreground/10 text-[11px] font-mono leading-relaxed text-foreground"
                             placeholder="Email body will appear here."
                         />
                     )}
