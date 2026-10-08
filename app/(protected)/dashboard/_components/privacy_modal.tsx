@@ -108,10 +108,10 @@ export default function PrivacyToolsModal({
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChangeAction}>
-                <DialogContent className="sm:max-w-md bg-[#0f0f0f] border border-white/10">
+                <DialogContent className="sm:max-w-md bg-card border border-foreground/10">
                     <DialogHeader>
                         <DialogTitle className="text-lg flex items-center gap-2">
-                            <ShieldCheck className="h-4 w-4 text-cyan-300" />
+                            <ShieldCheck className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
                             Privacy tools
                         </DialogTitle>
                         <DialogDescription className="text-xs text-muted-foreground">
@@ -121,19 +121,19 @@ export default function PrivacyToolsModal({
 
                     <div className="mt-4 space-y-6">
                         {/* Plan info / context */}
-                        <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-[#111111] px-3 py-2">
+                        <div className="flex items-center justify-between gap-2 rounded-lg border border-foreground/10 bg-card px-3 py-2">
                             <div className="flex flex-col">
                                 <span className="text-xs text-muted-foreground">
                                     Plan access
                                 </span>
                                 {loadingPlan ? (
-                                    <Skeleton className="mt-1 h-4 w-24 bg-white/10" />
+                                    <Skeleton className="mt-1 h-4 w-24 bg-foreground/10" />
                                 ) : plan ? (
-                                    <span className="text-sm text-white">
+                                    <span className="text-sm text-foreground">
                                         {isPro ? "Professional – full privacy tools unlocked" : "Free – limited tools"}
                                     </span>
                                 ) : (
-                                    <span className="text-sm text-red-400">
+                                    <span className="text-sm text-red-600 dark:text-red-400">
                                         Couldn’t load plan
                                     </span>
                                 )}
@@ -142,8 +142,8 @@ export default function PrivacyToolsModal({
                                 <Badge
                                     className={
                                         isPro
-                                            ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/40"
-                                            : "bg-zinc-700/40 text-zinc-100 border border-zinc-500/40"
+                                            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40"
+                                            : "bg-foreground/10 text-foreground border border-foreground/40"
                                     }
                                 >
                                     {isPro ? "Professional" : "Free"}
@@ -152,22 +152,22 @@ export default function PrivacyToolsModal({
                         </div>
 
                         {status === "error" && (
-                            <p className="flex items-center gap-1 text-[11px] text-red-400">
+                            <p className="flex items-center gap-1 text-[11px] text-red-600 dark:text-red-400">
                                 <AlertCircle className="h-3 w-3" />
                                 Problem getting your current plan
                             </p>
                         )}
 
                         {/* Data removal email template (Pro only) */}
-                        <div className="space-y-2 rounded-lg border border-white/10 bg-[#111111] p-3">
+                        <div className="space-y-2 rounded-lg border border-foreground/10 bg-card p-3">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex flex-col gap-1">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium text-white">
+                                        <span className="text-sm font-medium text-foreground">
                                             Data removal email templates
                                         </span>
                                         {!isPro && (
-                                            <Badge className="bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[10px]">
+                                            <Badge className="bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 text-[10px]">
                                                 Professional
                                             </Badge>
                                         )}
@@ -202,13 +202,13 @@ export default function PrivacyToolsModal({
                         </div>
 
                         {/* Delete all sweep data */}
-                        <div className="space-y-2 rounded-lg border border-red-500/40 bg-[#180d0d] p-3">
+                        <div className="space-y-2 rounded-lg border border-red-500/40 bg-card p-3">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-sm font-medium text-red-200">
+                                    <span className="text-sm font-medium text-red-800 dark:text-red-200">
                                         Delete all sweep data
                                     </span>
-                                    <p className="text-[11px] text-red-200/80">
+                                    <p className="text-[11px] text-red-800/80 dark:text-red-200/80">
                                         Permanently remove your detected services, breach history,
                                         and scan events from GhostSweep. This does not disconnect
                                         your Gmail account.
@@ -217,7 +217,7 @@ export default function PrivacyToolsModal({
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="border-red-500/60 text-red-200 hover:bg-red-500/10 hover:text-red-100 shrink-0 inline-flex items-center gap-1"
+                                    className="border-red-500/60 text-red-800 dark:text-red-200 hover:bg-red-500/10 hover:text-red-800 dark:hover:text-red-100 shrink-0 inline-flex items-center gap-1"
                                     onClick={() => {
                                         setDeleteError(null);
                                         setDeleteSuccess(null);
@@ -229,22 +229,22 @@ export default function PrivacyToolsModal({
                                 </Button>
                             </div>
                             {deleteSuccess && (
-                                <p className="text-[11px] text-emerald-300 mt-1">
+                                <p className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-1">
                                     {deleteSuccess}
                                 </p>
                             )}
                             {deleteError && (
-                                <p className="text-[11px] text-red-400 mt-1">
+                                <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">
                                     {deleteError}
                                 </p>
                             )}
                         </div>
 
                         {/* Download data (future) */}
-                        <div className="space-y-2 rounded-lg border border-white/10 bg-[#111111] p-3 opacity-70">
+                        <div className="space-y-2 rounded-lg border border-foreground/10 bg-card p-3 opacity-70">
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-sm font-medium text-white">
+                                    <span className="text-sm font-medium text-foreground">
                                         Download your data
                                     </span>
                                     <p className="text-[11px] text-muted-foreground">
@@ -280,7 +280,7 @@ export default function PrivacyToolsModal({
 
             {/* Confirm delete all sweep data */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent className="bg-[#0f0f0f] border border-white/10">
+                <AlertDialogContent className="bg-card border border-foreground/10">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
                             Delete all GhostSweep data for this account?

@@ -24,7 +24,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
             {/* Hidden trigger so you can control it from parent */}
             <DialogTrigger className="hidden">Support</DialogTrigger>
 
-            <DialogContent className="max-w-md border border-white/10 bg-[#050505]">
+            <DialogContent className="max-w-md border border-foreground/10 bg-background">
                 <DialogHeader>
                     <DialogTitle className="text-base font-semibold">
                         Support & Help
@@ -37,7 +37,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                 <div className="mt-3 space-y-3 text-sm">
                     {/* Help Center */}
                     <Link href="/help" onClick={() => onOpenChangeAction(false)}>
-                        <div className="group flex items-start gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-3 hover:border-primary/60 hover:bg-white/5 transition">
+                        <div className="group flex items-start gap-3 rounded-lg border border-foreground/10 bg-background/40 px-3 py-3 hover:border-primary/60 hover:bg-foreground/5 transition">
                             <div className="mt-0.5 rounded-full bg-primary/10 p-1.5">
                                 <HelpCircle className="h-3.5 w-3.5 text-primary" />
                             </div>
@@ -55,7 +55,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                         href="mailto:support@ghostsweep.com?subject=GhostSweep%20Support"
                         onClick={() => onOpenChangeAction(false)}
                     >
-                        <div className="group flex items-start gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-3 hover:border-primary/60 hover:bg-white/5 transition">
+                        <div className="group flex items-start gap-3 rounded-lg border border-foreground/10 bg-background/40 px-3 py-3 hover:border-primary/60 hover:bg-foreground/5 transition">
                             <div className="mt-0.5 rounded-full bg-primary/10 p-1.5">
                                 <Mail className="h-3.5 w-3.5 text-primary" />
                             </div>
@@ -73,9 +73,9 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
 
                     {/* Report an Issue */}
                     <Link href="/support/report" onClick={() => onOpenChangeAction(false)}>
-                        <div className="group flex items-start gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-3 hover:border-primary/60 hover:bg-white/5 transition">
+                        <div className="group flex items-start gap-3 rounded-lg border border-foreground/10 bg-background/40 px-3 py-3 hover:border-primary/60 hover:bg-foreground/5 transition">
                             <div className="mt-0.5 rounded-full bg-red-500/10 p-1.5">
-                                <Bug className="h-3.5 w-3.5 text-red-400" />
+                                <Bug className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                             </div>
                             <div className="space-y-0.5">
                                 <p className="text-xs font-medium">Report an issue</p>
@@ -87,7 +87,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                     </Link>
                 </div>
 
-                <Separator className="my-3 border-white/10" />
+                <Separator className="my-3 border-foreground/10" />
 
                 <div className="flex items-center justify-between">
                     <p className="text-[11px] text-muted-foreground">

@@ -61,7 +61,7 @@ const securityPageSchema = {
 
 export default function SecurityPage() {
     return (
-        <main className="min-h-screen bg-[#050505]">
+        <main className="min-h-screen bg-background">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -72,18 +72,18 @@ export default function SecurityPage() {
             <div className="mx-auto max-w-4xl px-6 pt-24 pb-20 sm:pt-32 space-y-20">
                 {/* Hero */}
                 <section className="text-center max-w-3xl mx-auto space-y-6">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/50">
-                        <Shield className="h-3 w-3 text-emerald-400" />
+                    <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
+                        <Shield className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         Google OAuth · Zero-storage scanning · You control all actions
                     </div>
 
-                    <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-[1.08]">
+                    <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-foreground leading-[1.08]">
                         Your security.
                         <br />
-                        <span className="text-white/30">Our obsession.</span>
+                        <span className="text-foreground/55">Our obsession.</span>
                     </h1>
 
-                    <p className="mx-auto max-w-xl text-lg text-white/45 font-light leading-relaxed">
+                    <p className="mx-auto max-w-xl text-lg text-foreground/65 font-light leading-relaxed">
                         We help you find money and clean up accounts. That means your
                         security gets treated like a bank would — transient processing,
                         zero-knowledge storage, and you control every action.
@@ -91,7 +91,7 @@ export default function SecurityPage() {
 
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Link
-                            href="/login"
+                            href="/login?mode=signup"
                             className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
                         >
                             Start Secure Scan
@@ -99,7 +99,7 @@ export default function SecurityPage() {
                         </Link>
                         <Link
                             href="/home/privacy"
-                            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm text-white/60 hover:text-white hover:bg-white/10 transition"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-6 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/10 transition"
                         >
                             Read privacy policy
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -128,13 +128,13 @@ export default function SecurityPage() {
                     ].map((card) => (
                         <div
                             key={card.title}
-                            className="rounded-2xl border border-white/5 bg-white/2 p-6"
+                            className="rounded-2xl border border-foreground/5 bg-foreground/2 p-6"
                         >
-                            <card.icon className="h-5 w-5 text-emerald-400 mb-3" />
-                            <p className="text-sm font-medium text-white mb-1.5">
+                            <card.icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mb-3" />
+                            <p className="text-sm font-medium text-foreground mb-1.5">
                                 {card.title}
                             </p>
-                            <p className="text-xs text-white/40 leading-relaxed">
+                            <p className="text-xs text-foreground/65 leading-relaxed">
                                 {card.text}
                             </p>
                         </div>
@@ -142,21 +142,21 @@ export default function SecurityPage() {
                 </section>
 
                 {/* Core principle */}
-                <section className="rounded-2xl border border-white/10 bg-white/3 p-8 sm:p-10">
+                <section className="rounded-2xl border border-foreground/10 bg-foreground/3 p-8 sm:p-10">
                     <div className="flex items-start gap-5">
-                        <div className="shrink-0 h-11 w-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <EyeOff className="h-5 w-5 text-emerald-400" />
+                        <div className="shrink-0 h-11 w-11 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center">
+                            <EyeOff className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold text-white mb-3">
+                            <h2 className="text-xl font-semibold text-foreground mb-3">
                                 Core Principle: Minimize Access, Maximize Control
                             </h2>
-                            <p className="text-sm text-white/45 leading-relaxed max-w-2xl mb-6">
+                            <p className="text-sm text-foreground/65 leading-relaxed max-w-2xl mb-6">
                                 GhostSweep focuses on account signals (sender, subject,
                                 timestamps) to build your service list. When you take
                                 action, it only happens with your explicit confirmation.
                             </p>
-                            <div className="grid gap-3 sm:grid-cols-3 text-xs text-white/50">
+                            <div className="grid gap-3 sm:grid-cols-3 text-xs text-foreground/50">
                                 {[
                                     "No storing full email bodies.",
                                     "Deletion emails sent only after you preview and approve.",
@@ -166,7 +166,7 @@ export default function SecurityPage() {
                                         key={text}
                                         className="flex items-start gap-2"
                                     >
-                                        <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                        <CheckCircle className="h-3.5 w-3.5 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                         <span>{text}</span>
                                     </div>
                                 ))}
@@ -178,10 +178,10 @@ export default function SecurityPage() {
                 {/* Permissions */}
                 <section className="space-y-10">
                     <div className="text-center space-y-3 max-w-2xl mx-auto">
-                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                        <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                             What GhostSweep can access
                         </h2>
-                        <p className="text-sm text-white/40">
+                        <p className="text-sm text-foreground/65">
                             Permissions are granted via Google OAuth. We request only
                             what's needed.
                         </p>
@@ -189,36 +189,36 @@ export default function SecurityPage() {
 
                     <div className="grid gap-5 md:grid-cols-2">
                         {/* Can access */}
-                        <div className="rounded-2xl border border-white/5 bg-white/2 p-7 space-y-6">
+                        <div className="rounded-2xl border border-foreground/5 bg-foreground/2 p-7 space-y-6">
                             <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center">
-                                    <Eye className="h-5 w-5 text-white/60" />
+                                <div className="h-10 w-10 rounded-xl bg-foreground/5 flex items-center justify-center">
+                                    <Eye className="h-5 w-5 text-foreground/60" />
                                 </div>
-                                <h3 className="text-sm font-medium text-white">
+                                <h3 className="text-sm font-medium text-foreground">
                                     What we access
                                 </h3>
                             </div>
-                            <p className="text-xs text-white/40">
+                            <p className="text-xs text-foreground/65">
                                 Scoped and permissioned. GhostSweep never sees your
                                 Google password.
                             </p>
 
                             <div className="space-y-5">
                                 <div>
-                                    <h4 className="text-[10px] uppercase tracking-widest text-white/25 mb-2">
+                                    <h4 className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
                                         For value scanning
                                     </h4>
-                                    <ul className="space-y-2 text-xs text-white/50">
+                                    <ul className="space-y-2 text-xs text-foreground/50">
                                         <li className="flex items-start gap-2">
-                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                             Sender addresses
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                             Subject lines
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                            <CheckCircle className="h-3.5 w-3.5 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                             Body content (transiently scanned, never
                                             stored)
                                         </li>
@@ -226,17 +226,17 @@ export default function SecurityPage() {
                                 </div>
 
                                 <div>
-                                    <h4 className="text-[10px] uppercase tracking-widest text-white/25 mb-2">
+                                    <h4 className="text-[10px] uppercase tracking-widest text-foreground/50 mb-2">
                                         For deletion requests (optional)
                                     </h4>
-                                    <ul className="space-y-2 text-xs text-white/50">
+                                    <ul className="space-y-2 text-xs text-foreground/50">
                                         <li className="flex items-start gap-2">
-                                            <Send className="h-3.5 w-3.5 text-white/30 mt-0.5 shrink-0" />
+                                            <Send className="h-3.5 w-3.5 text-foreground/55 mt-0.5 shrink-0" />
                                             Send deletion emails when you click Start
                                             Deletion
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <Mail className="h-3.5 w-3.5 text-white/30 mt-0.5 shrink-0" />
+                                            <Mail className="h-3.5 w-3.5 text-foreground/55 mt-0.5 shrink-0" />
                                             Track deletion request status
                                         </li>
                                     </ul>
@@ -248,9 +248,9 @@ export default function SecurityPage() {
                         <div className="rounded-2xl border border-red-500/15 bg-red-500/5 p-7 space-y-6">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                                    <EyeOff className="h-5 w-5 text-red-400" />
+                                    <EyeOff className="h-5 w-5 text-red-600 dark:text-red-400" />
                                 </div>
-                                <h3 className="text-sm font-medium text-white">
+                                <h3 className="text-sm font-medium text-foreground">
                                     What we never do
                                 </h3>
                             </div>
@@ -276,15 +276,15 @@ export default function SecurityPage() {
                                 ].map((item) => (
                                     <li
                                         key={item.title}
-                                        className="rounded-xl bg-black/30 p-3"
+                                        className="rounded-xl bg-background/30 p-3"
                                     >
-                                        <p className="text-xs font-medium text-white mb-0.5">
-                                            <span className="text-red-400 mr-1.5">
+                                        <p className="text-xs font-medium text-foreground mb-0.5">
+                                            <span className="text-red-600 dark:text-red-400 mr-1.5">
                                                 ✕
                                             </span>
                                             {item.title}
                                         </p>
-                                        <p className="text-xs text-white/35 pl-5">
+                                        <p className="text-xs text-foreground/55 pl-5">
                                             {item.text}
                                         </p>
                                     </li>
@@ -297,24 +297,24 @@ export default function SecurityPage() {
                 {/* What we store */}
                 <section className="space-y-10">
                     <div className="text-center space-y-3 max-w-2xl mx-auto">
-                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                        <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                             What we store
                         </h2>
-                        <p className="text-sm text-white/40">
+                        <p className="text-sm text-foreground/65">
                             Only what's needed to power your dashboard and deletion
                             tracking.
                         </p>
                     </div>
 
                     <div className="grid gap-5 md:grid-cols-2">
-                        <div className="rounded-2xl border border-white/5 bg-white/2 p-7 space-y-5">
+                        <div className="rounded-2xl border border-foreground/5 bg-foreground/2 p-7 space-y-5">
                             <div className="flex items-center gap-3">
-                                <Database className="h-5 w-5 text-white/60" />
-                                <h3 className="text-sm font-medium text-white">
+                                <Database className="h-5 w-5 text-foreground/60" />
+                                <h3 className="text-sm font-medium text-foreground">
                                     Stored in GhostSweep
                                 </h3>
                             </div>
-                            <ul className="space-y-4 text-xs text-white/45">
+                            <ul className="space-y-4 text-xs text-foreground/65">
                                 {[
                                     {
                                         label: "Account profile",
@@ -337,12 +337,12 @@ export default function SecurityPage() {
                                         key={item.label}
                                         className="flex items-start gap-3"
                                     >
-                                        <CheckCircle className="h-3.5 w-3.5 text-emerald-400/60 mt-0.5 shrink-0" />
+                                        <CheckCircle className="h-3.5 w-3.5 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="font-medium text-white">
+                                            <p className="font-medium text-foreground">
                                                 {item.label}
                                             </p>
-                                            <p className="text-white/35 mt-0.5">
+                                            <p className="text-foreground/55 mt-0.5">
                                                 {item.detail}
                                             </p>
                                         </div>
@@ -353,12 +353,12 @@ export default function SecurityPage() {
 
                         <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-7 space-y-5">
                             <div className="flex items-center gap-3">
-                                <Shield className="h-5 w-5 text-emerald-400" />
-                                <h3 className="text-sm font-medium text-white">
+                                <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                                <h3 className="text-sm font-medium text-foreground">
                                     Never stored
                                 </h3>
                             </div>
-                            <ul className="space-y-4 text-xs text-white/45">
+                            <ul className="space-y-4 text-xs text-foreground/65">
                                 {[
                                     {
                                         label: "Email bodies",
@@ -377,22 +377,22 @@ export default function SecurityPage() {
                                         key={item.label}
                                         className="flex items-start gap-3"
                                     >
-                                        <span className="text-emerald-400 shrink-0 mt-0.5">
+                                        <span className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
                                             ✓
                                         </span>
                                         <div>
-                                            <p className="font-medium text-white">
+                                            <p className="font-medium text-foreground">
                                                 {item.label}
                                             </p>
-                                            <p className="text-white/35 mt-0.5">
+                                            <p className="text-foreground/55 mt-0.5">
                                                 {item.detail}
                                             </p>
                                         </div>
                                     </li>
                                 ))}
                             </ul>
-                            <div className="pt-4 border-t border-white/10">
-                                <p className="text-[11px] text-white/30">
+                            <div className="pt-4 border-t border-foreground/10">
+                                <p className="text-[11px] text-foreground/55">
                                     Disconnect your email and delete your scan data
                                     anytime. We remove all associated records.
                                 </p>
@@ -404,7 +404,7 @@ export default function SecurityPage() {
                 {/* Security measures */}
                 <section className="space-y-10">
                     <div className="text-center space-y-3 max-w-2xl mx-auto">
-                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                        <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                             How we secure GhostSweep
                         </h2>
                     </div>
@@ -441,13 +441,13 @@ export default function SecurityPage() {
                         ].map((card) => (
                             <div
                                 key={card.title}
-                                className="rounded-2xl border border-white/5 bg-white/2 p-6 space-y-4"
+                                className="rounded-2xl border border-foreground/5 bg-foreground/2 p-6 space-y-4"
                             >
-                                <card.icon className="h-5 w-5 text-white/60" />
-                                <h3 className="text-sm font-medium text-white">
+                                <card.icon className="h-5 w-5 text-foreground/60" />
+                                <h3 className="text-sm font-medium text-foreground">
                                     {card.title}
                                 </h3>
-                                <ul className="space-y-2 text-xs text-white/40">
+                                <ul className="space-y-2 text-xs text-foreground/65">
                                     {card.items.map((item) => (
                                         <li key={item}>{item}</li>
                                     ))}
@@ -460,7 +460,7 @@ export default function SecurityPage() {
                 {/* Third parties */}
                 <section className="space-y-10">
                     <div className="text-center space-y-3 max-w-2xl mx-auto">
-                        <h2 className="text-3xl font-semibold tracking-tight text-white">
+                        <h2 className="text-3xl font-semibold tracking-tight text-foreground">
                             Trusted third parties
                         </h2>
                     </div>
@@ -485,32 +485,32 @@ export default function SecurityPage() {
                         ].map((vendor) => (
                             <div
                                 key={vendor.name}
-                                className="rounded-2xl border border-white/5 bg-white/2 p-6"
+                                className="rounded-2xl border border-foreground/5 bg-foreground/2 p-6"
                             >
-                                <vendor.icon className="h-5 w-5 text-white/40 mb-3" />
-                                <p className="text-sm font-medium text-white mb-1.5">
+                                <vendor.icon className="h-5 w-5 text-foreground/65 mb-3" />
+                                <p className="text-sm font-medium text-foreground mb-1.5">
                                     {vendor.name}
                                 </p>
-                                <p className="text-xs text-white/40 leading-relaxed">
+                                <p className="text-xs text-foreground/65 leading-relaxed">
                                     {vendor.text}
                                 </p>
                             </div>
                         ))}
                     </div>
 
-                    <p className="text-center text-xs text-white/25">
+                    <p className="text-center text-xs text-foreground/50">
                         Providers are used only to operate GhostSweep and are not
                         permitted to use your data for advertising or resale.
                     </p>
                 </section>
 
                 {/* Your control */}
-                <section className="rounded-2xl border border-white/10 bg-white/3 p-8 sm:p-10 space-y-8">
+                <section className="rounded-2xl border border-foreground/10 bg-foreground/3 p-8 sm:p-10 space-y-8">
                     <div className="text-center space-y-3">
-                        <h2 className="text-2xl font-semibold tracking-tight text-white">
+                        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                             Your control
                         </h2>
-                        <p className="text-sm text-white/40 max-w-xl mx-auto">
+                        <p className="text-sm text-foreground/65 max-w-xl mx-auto">
                             Disconnect, delete, and stay in control at all times.
                         </p>
                     </div>
@@ -538,12 +538,12 @@ export default function SecurityPage() {
                                 key={item.title}
                                 className="flex items-start gap-3"
                             >
-                                <CheckCircle className="h-4 w-4 text-emerald-400/60 mt-0.5 shrink-0" />
+                                <CheckCircle className="h-4 w-4 text-emerald-600/60 dark:text-emerald-400/60 mt-0.5 shrink-0" />
                                 <div>
-                                    <h4 className="text-sm font-medium text-white mb-0.5">
+                                    <h4 className="text-sm font-medium text-foreground mb-0.5">
                                         {item.title}
                                     </h4>
-                                    <p className="text-xs text-white/40">
+                                    <p className="text-xs text-foreground/65">
                                         {item.body}
                                     </p>
                                 </div>
@@ -554,11 +554,11 @@ export default function SecurityPage() {
 
                 {/* Verify + Report */}
                 <section className="grid gap-5 md:grid-cols-2">
-                    <div className="rounded-2xl border border-white/5 bg-white/2 p-7 space-y-5">
-                        <h3 className="text-lg font-semibold text-white">
+                    <div className="rounded-2xl border border-foreground/5 bg-foreground/2 p-7 space-y-5">
+                        <h3 className="text-lg font-semibold text-foreground">
                             Verify permissions yourself
                         </h3>
-                        <p className="text-sm text-white/40">
+                        <p className="text-sm text-foreground/65">
                             See exactly what access GhostSweep has from your Google
                             account.
                         </p>
@@ -577,18 +577,18 @@ export default function SecurityPage() {
 
                     <div className="rounded-2xl border border-red-500/15 bg-red-500/5 p-7 space-y-4">
                         <div className="flex items-start gap-3">
-                            <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
                             <div>
-                                <h3 className="text-sm font-medium text-white mb-2">
+                                <h3 className="text-sm font-medium text-foreground mb-2">
                                     Report a security issue
                                 </h3>
-                                <p className="text-xs text-white/40 mb-3">
+                                <p className="text-xs text-foreground/65 mb-3">
                                     Found a vulnerability or privacy issue? Contact us
                                     directly.
                                 </p>
                                 <a
                                     href="mailto:support@ghostsweep.com"
-                                    className="text-xs text-red-400 hover:text-red-300 underline transition"
+                                    className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 underline transition"
                                 >
                                     support@ghostsweep.com
                                 </a>
@@ -598,13 +598,13 @@ export default function SecurityPage() {
                 </section>
 
                 {/* Final note */}
-                <section className="border-t border-white/5 pt-10 text-center">
-                    <p className="text-sm text-white/30 max-w-2xl mx-auto leading-relaxed">
+                <section className="border-t border-foreground/5 pt-10 text-center">
+                    <p className="text-sm text-foreground/55 max-w-2xl mx-auto leading-relaxed">
                         GhostSweep exists to give you visibility and control — not to
                         become another data risk. Questions?{" "}
                         <a
                             href="mailto:support@ghostsweep.com"
-                            className="text-white underline hover:text-white/80"
+                            className="text-foreground underline hover:text-foreground/80"
                         >
                             support@ghostsweep.com
                         </a>

@@ -156,7 +156,7 @@ export default function Profile({
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChangeAction}>
-                <DialogContent className="sm:max-w-md bg-[#0f0f0f] border border-white/10">
+                <DialogContent className="sm:max-w-md bg-card border border-foreground/10">
                     <DialogHeader>
                         <DialogTitle className="text-lg">Profile</DialogTitle>
                         <DialogDescription className="text-xs text-muted-foreground">
@@ -180,7 +180,7 @@ export default function Profile({
                                 This is the email linked to your GhostSweep account.
                             </p>
                             {userError && (
-                                <p className="text-[11px] text-red-400 mt-1">{userError}</p>
+                                <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">{userError}</p>
                             )}
                         </div>
 
@@ -206,10 +206,10 @@ export default function Profile({
                                 />
                             </div>
                             {passwordError && (
-                                <p className="text-[11px] text-red-400 mt-1">{passwordError}</p>
+                                <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">{passwordError}</p>
                             )}
                             {passwordSuccess && (
-                                <p className="text-[11px] text-emerald-400 mt-1">
+                                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1">
                                     {passwordSuccess}
                                 </p>
                             )}
@@ -224,8 +224,8 @@ export default function Profile({
                         </div>
 
                         {/* Delete account */}
-                        <div className="border-t border-white/10 pt-4">
-                            <p className="text-xs font-medium text-red-400 mb-1">
+                        <div className="border-t border-foreground/10 pt-4">
+                            <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">
                                 Danger zone
                             </p>
                             <p className="text-[11px] text-muted-foreground mb-2">
@@ -235,13 +235,13 @@ export default function Profile({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                className="border-red-500/50 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-300"
                                 onClick={() => setDeleteOpen(true)}
                             >
                                 Delete account
                             </Button>
                             {deleteError && (
-                                <p className="text-[11px] text-red-400 mt-2">{deleteError}</p>
+                                <p className="text-[11px] text-red-600 dark:text-red-400 mt-2">{deleteError}</p>
                             )}
                         </div>
 
@@ -261,7 +261,7 @@ export default function Profile({
 
             {/* Delete confirmation modal */}
             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                <AlertDialogContent className="bg-[#0f0f0f] border border-white/10">
+                <AlertDialogContent className="bg-card border border-foreground/10">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete account?</AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">

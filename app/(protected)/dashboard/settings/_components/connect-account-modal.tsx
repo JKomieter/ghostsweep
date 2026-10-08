@@ -56,10 +56,10 @@ export default function ConnectAccountModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChangeAction}>
-            <DialogContent className="sm:max-w-lg bg-[#0a0a0a] border border-white/10">
+            <DialogContent className="sm:max-w-lg bg-card border border-foreground/10">
                 <DialogHeader>
                     <DialogTitle className="text-xl flex items-center gap-2">
-                        <Mail className="h-5 w-5 text-cyan-400" />
+                        <Mail className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
                         Connect Email Account
                     </DialogTitle>
                     <DialogDescription className="text-sm text-muted-foreground">
@@ -72,11 +72,11 @@ export default function ConnectAccountModal({
                 <div className="mt-6 space-y-4">
                     {/* Security badges */}
                     <div className="flex flex-wrap gap-2">
-                        <Badge className="bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                        <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                             <Eye className="h-3 w-3 mr-1" />
                             Read-only access
                         </Badge>
-                        <Badge className="bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                        <Badge className="bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
                             <ShieldCheck className="h-3 w-3 mr-1" />
                             CASA Tier 2 Certified
                         </Badge>
@@ -88,14 +88,14 @@ export default function ConnectAccountModal({
                         <button
                             onClick={handleConnectGoogle}
                             disabled={connecting !== null}
-                            className="w-full flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between p-4 rounded-xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-white/10">
+                                <div className="p-3 rounded-xl bg-foreground/10">
                                     <GoogleIcon className="h-6 w-6" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-sm font-semibold text-white">
+                                    <p className="text-sm font-semibold text-foreground">
                                         Connect with Google
                                     </p>
                                     <p className="text-xs text-muted-foreground">
@@ -106,7 +106,7 @@ export default function ConnectAccountModal({
                             {connecting === "google" ? (
                                 <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
                             ) : (
-                                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-white group-hover:translate-x-1 transition-all" />
+                                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
                             )}
                         </button>
 
@@ -114,14 +114,14 @@ export default function ConnectAccountModal({
                         <button
                             onClick={handleConnectMicrosoft}
                             disabled={connecting !== null}
-                            className="w-full flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between p-4 rounded-xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-white/10">
+                                <div className="p-3 rounded-xl bg-foreground/10">
                                     <MicrosoftIcon className="h-6 w-6" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-sm font-semibold text-white">
+                                    <p className="text-sm font-semibold text-foreground">
                                         Connect with Microsoft
                                     </p>
                                     <p className="text-xs text-muted-foreground">
@@ -132,15 +132,15 @@ export default function ConnectAccountModal({
                             {connecting === "microsoft" ? (
                                 <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
                             ) : (
-                                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-white group-hover:translate-x-1 transition-all" />
+                                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
                             )}
                         </button>
                     </div>
 
                     {/* Privacy note */}
-                    <div className="p-4 rounded-lg bg-black/40 border border-white/5">
+                    <div className="p-4 rounded-lg bg-background/40 border border-foreground/5">
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                            <span className="text-white font-medium">Your privacy is protected.</span>{" "}
+                            <span className="text-foreground font-medium">Your privacy is protected.</span>{" "}
                             GhostSweep uses OAuth 2.0 with read-only permissions. We never store 
                             email content — only metadata about detected services. You can disconnect 
                             at any time.

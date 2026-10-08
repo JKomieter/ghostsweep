@@ -146,14 +146,14 @@ export default function RiskRadar({
         className="opacity-90"
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
           Shadow Footprint
         </span>
-        <span className="text-5xl font-light tracking-tight text-white mt-1">
+        <span className="text-5xl font-light tracking-tight text-foreground mt-1">
           {totalCount}
         </span>
         {criticalCount > 0 && (
-          <span className="mt-1 flex items-center gap-1.5 text-sm font-medium text-red-400 animate-pulse">
+          <span className="mt-1 flex items-center gap-1.5 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse">
             <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
             {criticalCount} critical
           </span>

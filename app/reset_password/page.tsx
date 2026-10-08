@@ -100,9 +100,9 @@ export default function ResetPasswordPage() {
 
     if (isCheckingSession) {
         return (
-            <main className="min-h-screen flex items-center justify-center bg-[#050505] text-white">
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                    <Spinner className="text-white" />
+            <main className="min-h-screen flex items-center justify-center bg-background text-foreground">
+                <div className="flex items-center gap-2 text-sm text-foreground/60">
+                    <Spinner className="text-foreground" />
                     Checking reset link…
                 </div>
             </main>
@@ -110,23 +110,23 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-[#050505] text-white px-4">
-            <div className="w-full max-w-md rounded-lg border border-white/5 bg-white/2 p-6 shadow-lg backdrop-blur-xl">
+        <main className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
+            <div className="w-full max-w-md rounded-lg border border-foreground/5 bg-foreground/2 p-6 shadow-lg backdrop-blur-xl">
                 <div className="mb-4 space-y-1">
-                    <p className="text-[11px] font-light uppercase tracking-widest text-white/40">
+                    <p className="text-[11px] font-light uppercase tracking-widest text-foreground/40">
                         Reset password
                     </p>
-                    <h1 className="text-xl font-light tracking-tight text-white">
+                    <h1 className="text-xl font-light tracking-tight text-foreground">
                         Set a new password
                     </h1>
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs text-foreground/60">
                         Choose a strong password that you don&apos;t use anywhere else.
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-light text-white/70">
+                        <label className="text-xs font-light text-foreground/70">
                             New password
                         </label>
                         <Input
@@ -140,7 +140,7 @@ export default function ResetPasswordPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-xs font-light text-white/70">
+                        <label className="text-xs font-light text-foreground/70">
                             Confirm new password
                         </label>
                         <Input
@@ -153,32 +153,32 @@ export default function ResetPasswordPage() {
                         />
                     </div>
 
-                    <p className="text-[11px] text-white/60">
+                    <p className="text-[11px] text-foreground/60">
                         Must be at least 8 characters and include one uppercase letter, one
                         lowercase letter, one number, and one special character.
                     </p>
 
                     {passwordError && (
-                        <p className="text-[11px] text-red-300">{passwordError}</p>
+                        <p className="text-[11px] text-red-700 dark:text-red-300">{passwordError}</p>
                     )}
                     {generalError && (
-                        <p className="text-[11px] text-red-300">{generalError}</p>
+                        <p className="text-[11px] text-red-700 dark:text-red-300">{generalError}</p>
                     )}
                     {successMessage && (
-                        <p className="text-[11px] text-emerald-300">{successMessage}</p>
+                        <p className="text-[11px] text-emerald-700 dark:text-emerald-300">{successMessage}</p>
                     )}
 
                     <Button
                         type="submit"
-                        className="mt-2 w-full bg-white text-black hover:bg-white/90 font-light"
+                        className="mt-2 w-full bg-foreground text-background hover:bg-foreground/90 font-light"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? "Updating…" : "Reset password"}
                     </Button>
 
-                    <p className="mt-3 text-center text-[11px] text-white/60">
+                    <p className="mt-3 text-center text-[11px] text-foreground/60">
                         If this link doesn&apos;t work, request a new reset email from the{" "}
-                        <a href="/forgot_password" className="text-white hover:underline font-light">
+                        <a href="/forgot_password" className="text-foreground hover:underline font-light">
                             Forgot password
                         </a>{" "}
                         page.

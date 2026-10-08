@@ -8,7 +8,7 @@ export default function Loading() {
             <div className="flex flex-col items-center gap-4">
 
                 {/* Spinner */}
-                <div className="p-4 rounded-full bg-[#0f0f0f] border border-white/10">
+                <div className="p-4 rounded-full bg-card border border-foreground/10">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
 

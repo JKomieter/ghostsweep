@@ -31,7 +31,7 @@ export default function News() {
             : data?.description
 
     return (
-        <div className="col-span-1 relative flex min-h-[280px] rounded-xl border border-white/10 bg-[#050505] overflow-hidden">
+        <div className="col-span-1 relative flex min-h-[280px] rounded-xl border border-foreground/10 bg-background overflow-hidden">
             {/* Background image + overlay when we have news */}
             {status === "success" && data?.image_url && (
                 <>
@@ -42,7 +42,7 @@ export default function News() {
                         className="object-cover opacity-40"
                         priority={false}
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/60 via-black/75 to-black" />
+                    <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/60 via-background/75 to-background" />
                 </>
             )}
 
@@ -69,7 +69,7 @@ export default function News() {
                 )}
 
                 {status === "error" && (
-                    <div className="flex flex-1 flex-col items-center justify-center text-xs text-red-400">
+                    <div className="flex flex-1 flex-col items-center justify-center text-xs text-red-600 dark:text-red-400">
                         Failed to load news.
                     </div>
                 )}
@@ -96,7 +96,7 @@ export default function News() {
                                 href={data.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-white/10 transition"
+                                className="inline-flex items-center gap-1 rounded-full bg-foreground/5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-foreground/10 transition"
                             >
                                 Read more
                                 <ExternalLink className="h-3 w-3" />

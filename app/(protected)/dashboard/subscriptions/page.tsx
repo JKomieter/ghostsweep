@@ -227,45 +227,45 @@ export default function SubscriptionsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#050505] p-4 md:p-10">
+    <main className="min-h-screen bg-background p-4 md:p-10">
       <div className="container mx-auto max-w-6xl">
         
         {/* Stats Header */}
-        <div className="relative mx-auto max-w-5xl rounded-xl border border-white/10 bg-black/40 p-1 backdrop-blur-xl shadow-2xl mb-10 overflow-hidden">
+        <div className="relative mx-auto max-w-5xl rounded-xl border border-foreground/10 bg-background/40 p-1 backdrop-blur-xl shadow-2xl mb-10 overflow-hidden">
           <div className="absolute -inset-1 rounded-xl bg-linear-to-r from-red-500/20 via-orange-500/20 to-yellow-500/20 blur opacity-50" />
-          <div className="relative rounded-lg bg-[#0A0A0A] p-6 sm:p-8">
+          <div className="relative rounded-lg bg-card p-6 sm:p-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="md:col-span-2">
-                <div className="text-[10px] uppercase tracking-widest text-white/50 mb-4 font-semibold">Monthly Spending</div>
-                <div className="text-4xl font-light text-red-400 mb-2">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Monthly Spending</div>
+                <div className="text-4xl font-light text-red-600 dark:text-red-400 mb-2">
                   {loading ? <Skeleton className="h-10 w-32" /> : (
                     previewOnly ? (
                       <span className="blur-sm select-none">$•••.••</span>
                     ) : formatCurrency(monthlyTotal)
                   )}
                 </div>
-                <div className="text-lg text-white/60">
+                <div className="text-lg text-foreground/60">
                   {previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(annualTotal)}/year
                 </div>
-                <div className="text-sm text-white/40 mt-2">
+                <div className="text-sm text-foreground/40 mt-2">
                   {loading ? <Skeleton className="h-4 w-20" /> : `${totalCount} active subscriptions`}
                 </div>
               </div>
               
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-white/50 mb-4 font-semibold">Potential Savings</div>
-                <div className="text-2xl font-light text-emerald-400">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Potential Savings</div>
+                <div className="text-2xl font-light text-emerald-600 dark:text-emerald-400">
                   {previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(annualTotal)}
                 </div>
-                <div className="text-xs text-white/40 mt-1">if cancel all</div>
+                <div className="text-xs text-foreground/40 mt-1">if cancel all</div>
               </div>
               
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-white/50 mb-4 font-semibold">Lifetime Saved</div>
-                <div className="text-2xl font-light text-emerald-400">
+                <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Lifetime Saved</div>
+                <div className="text-2xl font-light text-emerald-600 dark:text-emerald-400">
                   {previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(lifetimeSavings)}
                 </div>
-                <div className="text-xs text-white/40 mt-1">from cancellations</div>
+                <div className="text-xs text-foreground/40 mt-1">from cancellations</div>
               </div>
             </div>
           </div>
@@ -275,9 +275,9 @@ export default function SubscriptionsPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
           <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
             <Tabs value={tab} onValueChange={setTab} className="w-full">
-              <TabsList className="bg-black/40 border border-white/5 w-full justify-start md:justify-center lg:justify-start min-w-max">
+              <TabsList className="bg-background/40 border border-foreground/5 w-full justify-start md:justify-center lg:justify-start min-w-max">
                 {TABS.map(t => (
-                  <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-300 min-w-[100px]">
+                  <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-700 dark:data-[state=active]:text-red-300 min-w-[100px]">
                     {t.label} ({getTabCount(t.key)})
                   </TabsTrigger>
                 ))}
@@ -288,13 +288,13 @@ export default function SubscriptionsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10">
+                <Button variant="ghost" size="sm" className="h-8 text-foreground/70 hover:text-foreground hover:bg-foreground/10">
                   <Filter className="mr-2 h-3.5 w-3.5" />{SORTS.find(s => s.key === sort)?.label}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
+              <DropdownMenuContent className="bg-card border-foreground/10 text-foreground">
                 {SORTS.map(s => (
-                  <DropdownMenuItem key={s.key} onClick={() => setSort(s.key)} className="focus:bg-white/10 cursor-pointer">
+                  <DropdownMenuItem key={s.key} onClick={() => setSort(s.key)} className="focus:bg-foreground/10 cursor-pointer">
                     {s.label}
                   </DropdownMenuItem>
                 ))}
@@ -303,13 +303,13 @@ export default function SubscriptionsPage() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10">
+                <Button variant="ghost" size="sm" className="h-8 text-foreground/70 hover:text-foreground hover:bg-foreground/10">
                   <Calendar className="mr-2 h-3.5 w-3.5" />{FILTERS.find(f => f.key === filter)?.label}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-[#1a1d21] border-white/10 text-white">
+              <DropdownMenuContent className="bg-card border-foreground/10 text-foreground">
                 {FILTERS.map(f => (
-                  <DropdownMenuItem key={f.key} onClick={() => setFilter(f.key)} className="focus:bg-white/10 cursor-pointer">
+                  <DropdownMenuItem key={f.key} onClick={() => setFilter(f.key)} className="focus:bg-foreground/10 cursor-pointer">
                     {f.label}
                   </DropdownMenuItem>
                 ))}
@@ -320,22 +320,22 @@ export default function SubscriptionsPage() {
 
         {/* Bulk Actions */}
         {tab === "active" && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 py-4 rounded-xl bg-white/2 border border-white/5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 py-4 rounded-xl bg-foreground/2 border border-foreground/5">
             <div className="flex flex-col md:flex-row md:items-center gap-4">
-              <Button variant="ghost" size="sm" className="h-8 text-white/70 hover:text-white hover:bg-white/10 w-fit" onClick={allSelected ? clearSelected : selectAll}>
-                <Checkbox checked={allSelected} className="mr-2 border-white/30 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500" /> 
+              <Button variant="ghost" size="sm" className="h-8 text-foreground/70 hover:text-foreground hover:bg-foreground/10 w-fit" onClick={allSelected ? clearSelected : selectAll}>
+                <Checkbox checked={allSelected} className="mr-2 border-foreground/30 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500" /> 
                 {allSelected ? "Clear" : "Select All"}
               </Button>
               
               {selected.length > 0 && (
-                <div className="text-sm text-white/60">
-                  Canceling {selected.length} subscription(s) will save <span className="text-emerald-400 font-medium">{formatCurrency(selectedSavings)}/year</span>
+                <div className="text-sm text-foreground/60">
+                  Canceling {selected.length} subscription(s) will save <span className="text-emerald-600 dark:text-emerald-400 font-medium">{formatCurrency(selectedSavings)}/year</span>
                 </div>
               )}
             </div>
             
             {selected.length > 0 && (
-              <Button variant="outline" size="sm" className="h-8 border-red-500/30 text-red-300 hover:bg-red-500/10 hover:text-red-200 whitespace-nowrap w-fit" onClick={bulkCancel}>
+              <Button variant="outline" size="sm" className="h-8 border-red-500/30 text-red-700 dark:text-red-300 hover:bg-red-500/10 hover:text-red-800 dark:hover:text-red-200 whitespace-nowrap w-fit" onClick={bulkCancel}>
                 Open {selected.length} Cancel Page{selected.length > 1 ? 's' : ''}
               </Button>
             )}
@@ -344,7 +344,7 @@ export default function SubscriptionsPage() {
 
         {/* Error */}
         {error && (
-          <Alert variant="destructive" className="mb-4 bg-red-900/20 border-red-900/50 text-red-200">
+          <Alert variant="destructive" className="mb-4 bg-red-900/20 border-red-900/50 text-red-800 dark:text-red-200">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{typeof error === 'string' ? error : error?.message}</AlertDescription>
           </Alert>
@@ -353,7 +353,7 @@ export default function SubscriptionsPage() {
         {/* Subscription Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {loading ? (
-            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 w-full rounded-2xl bg-white/5" />)
+            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 w-full rounded-2xl bg-foreground/5" />)
           ) : data?.subscriptions && data.subscriptions.length > 0 ? (
             data.subscriptions.map((sub: Subscription) => {
               const monthlyAmount = getMonthlyAmount(sub.amount, sub.billing_frequency);
@@ -363,70 +363,70 @@ export default function SubscriptionsPage() {
               const isHighValue = annualAmount > 500;
               
               return (
-                <div key={sub.id} className="group relative rounded-2xl border border-white/5 bg-white/2 p-4 sm:p-6 transition duration-300 hover:bg-white/5 hover:border-white/10">
+                <div key={sub.id} className="group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-4 sm:p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10">
                   <div className="flex items-start gap-4">
                     {tab === "active" && (
                       <div className="pt-1.5 shrink-0">
                         <Checkbox 
                           checked={selected.includes(sub.id)} 
                           onCheckedChange={() => toggleSelect(sub.id)} 
-                          className="h-5 w-5 border-white/20 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 rounded-md" 
+                          className="h-5 w-5 border-foreground/20 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 rounded-md" 
                         />
                       </div>
                     )}
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row gap-5">
-                        <div className="h-12 w-12 shrink-0 rounded-xl bg-white/5 p-2 border border-white/10 flex items-center justify-center">
+                        <div className="h-12 w-12 shrink-0 rounded-xl bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
                           {sub.logo_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={sub.logo_url} alt={sub.service_name} className="h-full w-full object-contain" />
                           ) : (
-                            <div className="text-white/40 text-xs font-mono">{sub.service_name.slice(0, 2).toUpperCase()}</div>
+                            <div className="text-foreground/40 text-xs font-mono">{sub.service_name.slice(0, 2).toUpperCase()}</div>
                           )}
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
                             <div className="min-w-0">
-                              <h3 className="font-semibold text-white text-lg truncate">
+                              <h3 className="font-semibold text-foreground text-lg truncate">
                                 {/* {blurred && !isPro ? "██████" : sub.service_name} */}
                                 {sub.service_name}
                               </h3>
                               {sub.plan_details && (
-                                <p className="text-sm text-white/50 mt-0.5 truncate">
+                                <p className="text-sm text-foreground/50 mt-0.5 truncate">
                                   {/* {blurred && !isPro ? "████" : sub.plan_details} */}
                                   {sub.plan_details}
                                 </p>
                               )}
                               <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <Badge variant="outline" className={`text-[10px] uppercase tracking-wider border-white/10 text-white/50 ${
-                                  sub.status === 'canceled' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                                  sub.status === 'kept' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                                  'bg-red-500/10 border-red-500/20 text-red-400'
+                                <Badge variant="outline" className={`text-[10px] uppercase tracking-wider border-foreground/10 text-foreground/50 ${
+                                  sub.status === 'canceled' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
+                                  sub.status === 'kept' ? 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400' :
+                                  'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
                                 }`}>
                                   {sub.status === 'canceled' ? 'Canceled' : sub.status === 'kept' ? 'Kept' : 'Active'}
                                 </Badge>
                                 
                                 {sub.billing_frequency && (
-                                  <span className="text-xs text-white/40 capitalize">{sub.billing_frequency}</span>
+                                  <span className="text-xs text-foreground/40 capitalize">{sub.billing_frequency}</span>
                                 )}
                               </div>
                             </div>
                             
                             <div className="sm:text-right shrink-0">
-                              <div className="text-2xl font-light text-red-400">
+                              <div className="text-2xl font-light text-red-600 dark:text-red-400">
                                 {/* {blurred && !isPro ? "$██" : formatCurrency(monthlyAmount)} */}
                                 {formatCurrency(monthlyAmount)}
                               </div>
-                              <div className="text-xs text-white/40">per month</div>
+                              <div className="text-xs text-foreground/40">per month</div>
                             </div>
                           </div>
                           
-                          <div className="text-sm text-white/60 mb-4 space-y-0.5">
+                          <div className="text-sm text-foreground/60 mb-4 space-y-0.5">
                             <div className="flex justify-between sm:block">
                               <span className="sm:inline">Annual cost: </span>
-                              <span className="text-red-300 font-medium">
+                              <span className="text-red-700 dark:text-red-300 font-medium">
                                 {/* {blurred && !isPro ? "$███" : formatCurrency(annualAmount)} */}
                                 {formatCurrency(annualAmount)}
                                 </span>
@@ -448,13 +448,13 @@ export default function SubscriptionsPage() {
                           {/* Warning badges */}
                           <div className="flex flex-wrap gap-2 mb-4">
                             {isHighValue && (
-                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20">
+                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-orange-700 dark:text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20">
                                 <AlertTriangle className="h-3 w-3" />
                                 <span className="truncate">High value: {formatCurrency(annualAmount)}/y</span>
                               </div>
                             )}
                             {isUnused && (
-                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full border border-yellow-500/20">
+                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-yellow-700 dark:text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full border border-yellow-500/20">
                                 <AlertTriangle className="h-3 w-3" />
                                 Unused: {daysSinceLastBill}d
                               </div>
@@ -478,7 +478,7 @@ export default function SubscriptionsPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="border-white/20 text-white/70 hover:bg-white/10 text-[10px] sm:text-xs h-8"
+                                className="border-foreground/20 text-foreground/70 hover:bg-foreground/10 text-[10px] sm:text-xs h-8"
                                 onClick={() => setModalSub(sub)}
                                 // disabled={blurred && !isPro}
                               >
@@ -488,7 +488,7 @@ export default function SubscriptionsPage() {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="text-emerald-400 hover:bg-emerald-500/10 text-[10px] sm:text-xs h-8"
+                                className="text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 text-[10px] sm:text-xs h-8"
                                 onClick={() => markAsCanceled(sub.id)}
                                 // disabled={updateStatusMutation.isPending || (blurred && !isPro)}
                                 disabled={updateStatusMutation.isPending}
@@ -500,7 +500,7 @@ export default function SubscriptionsPage() {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="text-blue-400 hover:bg-blue-500/10 text-[10px] sm:text-xs h-8"
+                                className="text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 text-[10px] sm:text-xs h-8"
                                 onClick={() => markAsKept(sub.id)}
                                 // disabled={updateStatusMutation.isPending || (blurred && !isPro)}
                                 disabled={updateStatusMutation.isPending}
@@ -511,7 +511,7 @@ export default function SubscriptionsPage() {
                               {confirmDeleteId === sub.id ? (
                                 <Button
                                   size="sm"
-                                  className="h-8 border border-red-500/50 text-red-400 bg-red-500/10 hover:bg-red-500/20 text-[10px] sm:text-xs gap-1"
+                                  className="h-8 border border-red-500/50 text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 text-[10px] sm:text-xs gap-1"
                                   onClick={() => hardDeleteMutation.mutate(sub.id)}
                                   disabled={hardDeleteMutation.isPending}
                                 >
@@ -522,7 +522,7 @@ export default function SubscriptionsPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 text-white/20 hover:text-red-400 hover:bg-red-500/5 text-[10px] sm:text-xs"
+                                  className="h-8 text-foreground/20 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/5 text-[10px] sm:text-xs"
                                   onClick={() => setConfirmDeleteId(sub.id)}
                                   title="Permanently remove this subscription"
                                 >
@@ -539,7 +539,7 @@ export default function SubscriptionsPage() {
               );
             })
           ) : (
-            <div className="col-span-full text-center text-white/60 py-12">
+            <div className="col-span-full text-center text-foreground/60 py-12">
               {tab === "active" ? (
                 <>🎉 No active subscriptions found!</>
               ) : tab === "canceled" ? (
@@ -555,12 +555,12 @@ export default function SubscriptionsPage() {
         {previewOnly && data?.subscriptions && data.subscriptions.length > 0 && (
           <div className="mt-8 rounded-2xl border border-red-500/30 bg-gradient-to-b from-red-500/10 to-transparent p-8 text-center">
             <div className="text-5xl mb-4">💸</div>
-            <h3 className="text-xl text-white font-semibold mb-3">You&apos;re Leaking Money</h3>
-            <p className="text-white/60 mb-2 max-w-md mx-auto">
-              You have <span className="text-red-400 font-bold">{totalCount} subscriptions</span> silently draining your bank account.
+            <h3 className="text-xl text-foreground font-semibold mb-3">You&apos;re Leaking Money</h3>
+            <p className="text-foreground/60 mb-2 max-w-md mx-auto">
+              You have <span className="text-red-600 dark:text-red-400 font-bold">{totalCount} subscriptions</span> silently draining your bank account.
               We&apos;re only showing {previewCount} of them.
             </p>
-            <p className="text-white/40 text-sm mb-6">
+            <p className="text-foreground/40 text-sm mb-6">
               Upgrade to see the full list, view costs, and cancel them with one click.
             </p>
             <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-400 px-6 py-3 text-sm font-semibold text-white transition">
@@ -571,37 +571,37 @@ export default function SubscriptionsPage() {
 
         {/* Instructions Modal */}
         <Dialog open={!!modalSub} onOpenChange={open => !open && setModalSub(null)}>
-          <DialogContent className="max-w-lg p-0 bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+          <DialogContent className="max-w-lg p-0 bg-card border border-foreground/10 rounded-2xl shadow-2xl overflow-hidden">
             {modalSub && (
               <>
                 <div className="p-6">
                   <DialogHeader>
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-2">
+                      <div className="h-12 w-12 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
                         {modalSub.logo_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={modalSub.logo_url} alt={modalSub.service_name} className="h-full w-full object-contain" />
                         ) : (
-                          <div className="text-white/40 text-xs font-mono">{modalSub.service_name.slice(0, 2).toUpperCase()}</div>
+                          <div className="text-foreground/40 text-xs font-mono">{modalSub.service_name.slice(0, 2).toUpperCase()}</div>
                         )}
                       </div>
                       <div>
-                        <DialogTitle className="text-xl font-semibold text-white">{modalSub.service_name}</DialogTitle>
+                        <DialogTitle className="text-xl font-semibold text-foreground">{modalSub.service_name}</DialogTitle>
                         {modalSub.plan_details && (
-                          <p className="text-sm text-white/50">{modalSub.plan_details}</p>
+                          <p className="text-sm text-foreground/50">{modalSub.plan_details}</p>
                         )}
-                        <div className="text-emerald-400 font-medium">
+                        <div className="text-emerald-600 dark:text-emerald-400 font-medium">
                           Save {formatCurrency(getAnnualAmount(modalSub.amount, modalSub.billing_frequency))}/year
                         </div>
                       </div>
                     </div>
                   </DialogHeader>
                   
-                  <div className="space-y-4 text-white/80">
+                  <div className="space-y-4 text-foreground/80">
                     {modalSub.cancel_instructions && modalSub.cancel_instructions.length > 0 ? (
                       <div>
                         <h4 className="font-semibold mb-2">Cancellation Steps:</h4>
-                        <ol className="list-decimal list-inside space-y-1 text-sm text-white/60">
+                        <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/60">
                           {modalSub.cancel_instructions.map((instruction, index) => (
                             <li key={index}>{instruction}</li>
                           ))}
@@ -610,7 +610,7 @@ export default function SubscriptionsPage() {
                     ) : (
                       <div>
                         <h4 className="font-semibold mb-2">Cancellation Steps:</h4>
-                        <ol className="list-decimal list-inside space-y-1 text-sm text-white/60">
+                        <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/60">
                           <li>Visit the cancellation page</li>
                           <li>Sign in to your account</li>
                           <li>Find "Cancel Subscription" or "Account Settings"</li>
@@ -621,9 +621,9 @@ export default function SubscriptionsPage() {
                   </div>
                 </div>
                 
-                <div className="p-6 bg-white/2 border-t border-white/5 flex justify-between gap-3">
+                <div className="p-6 bg-foreground/2 border-t border-foreground/5 flex justify-between gap-3">
                   <DialogClose asChild>
-                    <Button variant="ghost" className="text-white/60 hover:text-white hover:bg-white/10">
+                    <Button variant="ghost" className="text-foreground/60 hover:text-foreground hover:bg-foreground/10">
                       Close
                     </Button>
                   </DialogClose>

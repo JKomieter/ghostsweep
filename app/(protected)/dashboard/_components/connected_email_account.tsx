@@ -112,7 +112,7 @@ export default function ConnectEmailModal({
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChangeAction}>
-                <DialogContent className="sm:max-w-md bg-[#0f0f0f] border border-white/10">
+                <DialogContent className="sm:max-w-md bg-card border border-foreground/10">
                     <DialogHeader>
                         <DialogTitle className="text-lg">Connected email</DialogTitle>
                         <DialogDescription className="text-xs text-muted-foreground">
@@ -129,11 +129,11 @@ export default function ConnectEmailModal({
                                 Status
                             </span>
                             {isConnected ? (
-                                <Badge className="bg-emerald-500/10 text-emerald-300">
+                                <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
                                     {totalAccounts} {totalAccounts === 1 ? "account" : "accounts"} connected
                                 </Badge>
                             ) : (
-                                <Badge className="bg-zinc-500/10 text-zinc-300">
+                                <Badge className="bg-foreground/10 text-foreground/75">
                                     Not connected
                                 </Badge>
                             )}
@@ -147,15 +147,15 @@ export default function ConnectEmailModal({
                                 </label>
                                 <div className="space-y-2">
                                     {gmailAccounts.map((account) => (
-                                        <div key={account.id} className="flex items-center justify-between rounded-md border border-white/10 bg-black/40 px-3 py-2">
+                                        <div key={account.id} className="flex items-center justify-between rounded-md border border-foreground/10 bg-background/40 px-3 py-2">
                                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                                <Mail className="h-4 w-4 text-red-400 shrink-0" />
-                                                <span className="text-sm text-white truncate">{account.gmail_address}</span>
+                                                <Mail className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
+                                                <span className="text-sm text-foreground truncate">{account.gmail_address}</span>
                                             </div>
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
+                                                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
                                                 onClick={() => {
                                                     setAccountToRemove({ 
                                                         id: account.id, 
@@ -175,15 +175,15 @@ export default function ConnectEmailModal({
                                         </div>
                                     ))}
                                     {microsoftAccounts.map((account) => (
-                                        <div key={account.id} className="flex items-center justify-between rounded-md border border-white/10 bg-black/40 px-3 py-2">
+                                        <div key={account.id} className="flex items-center justify-between rounded-md border border-foreground/10 bg-background/40 px-3 py-2">
                                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                                <Mail className="h-4 w-4 text-blue-400 shrink-0" />
-                                                <span className="text-sm text-white truncate">{account.outlook_address}</span>
+                                                <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                                                <span className="text-sm text-foreground truncate">{account.outlook_address}</span>
                                             </div>
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
+                                                className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
                                                 onClick={() => {
                                                     setAccountToRemove({ 
                                                         id: account.id, 
@@ -210,7 +210,7 @@ export default function ConnectEmailModal({
                         )}
 
                         {status === "error" && (
-                            <p className="text-[11px] text-red-400">
+                            <p className="text-[11px] text-red-600 dark:text-red-400">
                                 Problem fetching connected email accounts.
                             </p>
                         )}
@@ -262,7 +262,7 @@ export default function ConnectEmailModal({
 
             {/* Remove connection confirmation */}
             <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>
-                <AlertDialogContent className="bg-[#0f0f0f] border border-white/10">
+                <AlertDialogContent className="bg-card border border-foreground/10">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Disconnect {accountToRemove?.email}?</AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-muted-foreground">
@@ -288,7 +288,7 @@ export default function ConnectEmailModal({
                         </AlertDialogAction>
                     </AlertDialogFooter>
                     {removeError && (
-                        <p className="mt-2 text-[11px] text-red-400">{removeError}</p>
+                        <p className="mt-2 text-[11px] text-red-600 dark:text-red-400">{removeError}</p>
                     )}
                 </AlertDialogContent>
             </AlertDialog>

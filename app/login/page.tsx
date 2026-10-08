@@ -25,6 +25,7 @@ import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 // ✅ add your supabase client import (adjust path to your project)
 import { createClient } from "@/utils/supabase/client";
+import { consumePendingPlanPath, rememberPendingPlan } from "@/lib/pending-plan";
 
 type Mode = "signin" | "signup" | "confirm";
 
@@ -43,9 +44,9 @@ function GoogleIcon() {
 function OAuthDivider() {
     return (
         <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-white/5" />
-            <span className="text-[11px] text-white/40">or</span>
-            <div className="h-px flex-1 bg-white/5" />
+            <div className="h-px flex-1 bg-foreground/5" />
+            <span className="text-[11px] text-foreground/40">or</span>
+            <div className="h-px flex-1 bg-foreground/5" />
         </div>
     );
 }
@@ -87,7 +88,7 @@ function ContinueWithGoogleButton({ label }: { label: string }) {
         <Button
             type="button"
             variant="outline"
-            className="h-11 w-full rounded-lg border-white/5 bg-white/2 text-white hover:bg-white/3 hover:border-white/10"
+            className="h-11 w-full rounded-lg border-foreground/5 bg-foreground/2 text-foreground hover:bg-foreground/3 hover:border-foreground/10"
             onClick={handleGoogle}
             disabled={loading}
         >
@@ -153,7 +154,7 @@ function SignInForm({
 
                 // Redirect after a brief delay to allow toast to show
                 setTimeout(() => {
-                    router.push("/dashboard");
+                    router.push(consumePendingPlanPath() ?? "/dashboard");
                 }, 500);
             }
         } catch (error: unknown) {
@@ -181,14 +182,14 @@ function SignInForm({
             {/* ✅ Error Message Display */}
             {errorMessage && (
                 <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-                    <p className="text-sm text-red-400">{errorMessage}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p>
                 </div>
             )}
 
             {/* ✅ Existing email+password form */}
             <form className="space-y-5" onSubmit={handleLogin}>
                 <div className="space-y-2">
-                    <label className="text-sm font-light text-white/70" htmlFor="email">
+                    <label className="text-sm font-light text-foreground/70" htmlFor="email">
                         Email
                     </label>
                     <Input
@@ -198,13 +199,13 @@ function SignInForm({
                         value={email}
                         onChange={setEmail}
                         required
-                        className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <label className="text-sm font-light text-white/70" htmlFor="password">
+                        <label className="text-sm font-light text-foreground/70" htmlFor="password">
                             Password
                         </label>
                         <Link
@@ -224,7 +225,7 @@ function SignInForm({
                             onChange={setPassword}
                             required
                             disableCopyPaste
-                            className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                            className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20 pr-10"
                         />
                         <button
                             className="absolute inset-y-0 right-0 flex items-center pr-3"
@@ -232,9 +233,9 @@ function SignInForm({
                             onClick={() => setShowPassword((prev) => !prev)}
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                                <EyeOff className="h-4 w-4 text-foreground/40 hover:text-foreground/60 transition" />
                             ) : (
-                                <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                                <Eye className="h-4 w-4 text-foreground/40 hover:text-foreground/60 transition" />
                             )}
                         </button>
                     </div>
@@ -253,24 +254,24 @@ function SignInForm({
                 )}
                 <Button
                     type="submit"
-                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    className="h-11 w-full rounded-lg bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
                     disabled={isLoading || (shouldShowCaptcha && !captchaToken)}
                 >
                     {isLoading ? <Spinner /> : "Sign In"}
                 </Button>
 
-                <p className="text-center text-[11px] text-white/40 leading-relaxed">
+                <p className="text-center text-[11px] text-foreground/40 leading-relaxed">
                     By continuing, you agree to our{" "}
                     <Link
                         href="/home/terms"
-                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                        className="text-foreground/60 hover:text-foreground transition underline-offset-2 hover:underline"
                     >
                         Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                         href="/home/privacy"
-                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                        className="text-foreground/60 hover:text-foreground transition underline-offset-2 hover:underline"
                     >
                         Privacy Policy
                     </Link>
@@ -371,14 +372,14 @@ function SignUpForm({
             {/* ✅ Error Message Display */}
             {errorMessage && (
                 <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
-                    <p className="text-sm text-red-300">{errorMessage}</p>
+                    <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
                 </div>
             )}
 
             {/* ✅ Existing signup form */}
             <form className="space-y-5" onSubmit={handleSignup}>
                 <div className="space-y-2">
-                    <label className="text-sm font-light text-white/70" htmlFor="email">
+                    <label className="text-sm font-light text-foreground/70" htmlFor="email">
                         Email
                     </label>
                     <Input
@@ -388,12 +389,12 @@ function SignUpForm({
                         value={email}
                         onChange={setEmail}
                         required
-                        className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-light text-white/70" htmlFor="password">
+                    <label className="text-sm font-light text-foreground/70" htmlFor="password">
                         Password
                     </label>
                     <div className="relative">
@@ -405,7 +406,7 @@ function SignUpForm({
                             onChange={setPassword}
                             required
                             disableCopyPaste
-                            className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 pr-10"
+                            className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20 pr-10"
                         />
                         <button
                             className="absolute inset-y-0 right-0 flex items-center pr-3"
@@ -413,16 +414,16 @@ function SignUpForm({
                             onClick={() => setShowPassword((prev) => !prev)}
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                                <EyeOff className="h-4 w-4 text-foreground/40 hover:text-foreground/60 transition" />
                             ) : (
-                                <Eye className="h-4 w-4 text-white/40 hover:text-white/60 transition" />
+                                <Eye className="h-4 w-4 text-foreground/40 hover:text-foreground/60 transition" />
                             )}
                         </button>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-light text-white/70" htmlFor="confirmPassword">
+                    <label className="text-sm font-light text-foreground/70" htmlFor="confirmPassword">
                         Confirm password
                     </label>
                     <Input
@@ -432,7 +433,7 @@ function SignUpForm({
                         value={confirmPassword}
                         onChange={setConfirmPassword}
                         required
-                        className="h-11 rounded-lg border-white/5 bg-white/2 backdrop-blur-sm text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
@@ -447,24 +448,24 @@ function SignUpForm({
                 
                 <Button
                     type="submit"
-                    className="h-11 w-full rounded-lg bg-white text-black text-sm font-light hover:bg-white/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    className="h-11 w-full rounded-lg bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
                     disabled={isLoading}
                 >
                     {isLoading ? <Spinner /> : "See My Forgotten Accounts"}
                 </Button>
 
-                <p className="text-center text-[11px] text-white/40 leading-relaxed">
+                <p className="text-center text-[11px] text-foreground/40 leading-relaxed">
                     By continuing, you agree to our{" "}
                     <Link
                         href="/home/terms"
-                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                        className="text-foreground/60 hover:text-foreground transition underline-offset-2 hover:underline"
                     >
                         Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                         href="/home/privacy"
-                        className="text-white/60 hover:text-white transition underline-offset-2 hover:underline"
+                        className="text-foreground/60 hover:text-foreground transition underline-offset-2 hover:underline"
                     >
                         Privacy Policy
                     </Link>
@@ -480,7 +481,7 @@ function PasswordWarning({ feedback }: { feedback: string[] }) {
         <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
             <ul className="space-y-1">
                 {feedback.map((msg, index) => (
-                    <li key={index} className="flex items-start gap-2 text-xs text-red-300">
+                    <li key={index} className="flex items-start gap-2 text-xs text-red-700 dark:text-red-300">
                         <span className="mt-0.5">•</span>
                         <span>{msg}</span>
                     </li>
@@ -497,15 +498,15 @@ function ConfirmEmail({ email = "email address" }: { email?: string }) {
                 <MailIcon className="h-10 w-10 text-primary" />
             </div>
             <div className="space-y-3">
-                <h2 className="text-2xl font-light text-white">Check your email</h2>
-                <p className="text-sm text-white/60 max-w-md leading-relaxed">
+                <h2 className="text-2xl font-light text-foreground">Check your email</h2>
+                <p className="text-sm text-foreground/60 max-w-md leading-relaxed">
                     We've sent a confirmation link to{" "}
-                    <span className="font-light text-white">{email}</span>. Click the link
+                    <span className="font-light text-foreground">{email}</span>. Click the link
                     to verify your account and get started.
                 </p>
             </div>
-            <div className="rounded-lg border border-white/5 bg-white/2 backdrop-blur-sm p-4 max-w-md text-left">
-                <p className="text-xs text-white/50">
+            <div className="rounded-lg border border-foreground/5 bg-foreground/2 backdrop-blur-sm p-4 max-w-md text-left">
+                <p className="text-xs text-foreground/50">
                     Didn&apos;t receive the email? Check your spam folder or{" "}
                     <button className="text-primary hover:text-primary/80 transition underline underline-offset-2">
                         resend confirmation
@@ -523,10 +524,13 @@ function LoginContent() {
     const emailParam = searchParams.get("email");
     const hasReferral = Boolean(referralCode);
     const hasEmailParam = Boolean(emailParam);
+    const wantsSignup = searchParams.get("mode") === "signup";
     const [mode, setMode] = useState<Mode>(() =>
-        hasReferral || hasEmailParam ? "signup" : "signin"
+        hasReferral || hasEmailParam || wantsSignup ? "signup" : "signin"
     );
     const [email, setEmail] = useState(emailParam ?? "");
+
+    const planParam = searchParams.get("plan");
 
     useEffect(() => {
         if (referralCode) {
@@ -534,8 +538,13 @@ function LoginContent() {
         }
     }, [referralCode]);
 
+    // Carry a plan picked on the pricing section through sign-up/sign-in to checkout
+    useEffect(() => {
+        rememberPendingPlan(planParam);
+    }, [planParam]);
+
     return (
-        <div className="relative flex min-h-screen w-full overflow-hidden bg-[#050505]">
+        <div className="relative flex min-h-screen w-full overflow-hidden bg-background">
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -left-40 top-[-10%] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
                 <div className="absolute right-[-10%] bottom-[-10%] h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -544,7 +553,7 @@ function LoginContent() {
             <div className="relative z-10 grid flex-1 grid-cols-1 lg:grid-cols-2">
                 {/* Left side */}
                 {/* Left Side - Branding */}
-                <div className="hidden lg:flex relative overflow-hidden border-r border-white/5">
+                <div className="hidden lg:flex relative overflow-hidden border-r border-foreground/5">
                     {/* Background */}
                     <div
                         className="absolute inset-0 opacity-80"
@@ -565,8 +574,8 @@ function LoginContent() {
                             <div className="flex items-center gap-3">
                                 <Logo className="h-11 w-11" />
                                 <div>
-                                    <h2 className="text-2xl font-light text-white">GhostSweep</h2>
-                                    <p className="text-xs text-white/60">
+                                    <h2 className="text-2xl font-light text-foreground">GhostSweep</h2>
+                                    <p className="text-xs text-foreground/60">
                                         Privacy, visibility, and control.
                                     </p>
                                 </div>
@@ -574,10 +583,10 @@ function LoginContent() {
 
                             {/* Hero copy */}
                             <div className="space-y-5 max-w-lg">
-                                <h1 className="text-4xl xl:text-5xl font-light leading-tight bg-linear-to-b from-white to-white/70 bg-clip-text text-transparent">
+                                <h1 className="text-4xl xl:text-5xl font-light leading-tight bg-linear-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
                                     Sweep your digital footprint clean.
                                 </h1>
-                                <p className="text-sm md:text-base text-white/60 leading-relaxed">
+                                <p className="text-sm md:text-base text-foreground/60 leading-relaxed">
                                     Connect your inbox, see every company that has your data, and
                                     send deletion requests in minutes—without hunting through old
                                     emails.
@@ -587,30 +596,30 @@ function LoginContent() {
 
                         {/* Trust / security badges */}
                         <div className="space-y-4 max-w-sm">
-                            <div className="flex items-center gap-3 text-white/80">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black/40 border border-white/5 backdrop-blur-sm">
-                                    <Shield className="h-5 w-5 text-emerald-400" />
+                            <div className="flex items-center gap-3 text-foreground/80">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background/40 border border-foreground/5 backdrop-blur-sm">
+                                    <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-sm font-light text-white">
+                                    <p className="text-sm font-light text-foreground">
                                         Read-only inbox access
                                     </p>
-                                    <p className="text-[11px] text-white/55">
+                                    <p className="text-[11px] text-foreground/55">
                                         GhostSweep never sends emails or deletes messages on your
                                         behalf.
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 text-white/80">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black/40 border border-white/5 backdrop-blur-sm">
-                                    <Lock className="h-5 w-5 text-emerald-400" />
+                            <div className="flex items-center gap-3 text-foreground/80">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background/40 border border-foreground/5 backdrop-blur-sm">
+                                    <Lock className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-sm font-light text-white">
+                                    <p className="text-sm font-light text-foreground">
                                         Your data, your control
                                     </p>
-                                    <p className="text-[11px] text-white/55">
+                                    <p className="text-[11px] text-foreground/55">
                                         Disconnect with a click. GhostSweep forgets your tokens and
                                         stops scanning.
                                     </p>
@@ -625,37 +634,37 @@ function LoginContent() {
                     <div className="absolute left-5 top-5 lg:hidden">
                         <div className="flex items-center gap-2">
                             <Logo className="h-7 w-7" />
-                            <h4 className="text-lg font-light text-white">GhostSweep</h4>
+                            <h4 className="text-lg font-light text-foreground">GhostSweep</h4>
                         </div>
                     </div>
 
                     <div className="w-full max-w-md">
                         {hasReferral && (
-                            <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-100 shadow-lg shadow-emerald-500/10">
+                            <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-800 dark:text-emerald-100 shadow-lg shadow-emerald-500/10">
                                 <div className="flex items-center gap-3">
                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
-                                        <Gift className="h-5 w-5 text-emerald-400" />
+                                        <Gift className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-sm font-semibold">Referral link active!</p>
-                                        <p className="text-[12px] text-emerald-100/70">
-                                            Create an account now to lock in your <span className="text-emerald-400 font-semibold">50% discount</span> on GhostSweep Pro.
+                                        <p className="text-[12px] text-emerald-800/70 dark:text-emerald-100/70">
+                                            Create an account now to lock in your <span className="text-emerald-600 dark:text-emerald-400 font-semibold">50% discount</span> on GhostSweep Pro.
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         )}
-                        <div className="mt-16 sm:mt-10 rounded-lg border border-white/5 bg-white/2 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
+                        <div className="mt-16 sm:mt-10 rounded-lg border border-foreground/5 bg-foreground/2 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
                             {mode === "confirm" ? (
                                 <ConfirmEmail email={email} />
                             ) : (
                                 <>
-                                    <div className="flex rounded-full border border-white/5 bg-white/2 backdrop-blur-sm p-1">
+                                    <div className="flex rounded-full border border-foreground/5 bg-foreground/2 backdrop-blur-sm p-1">
                                         <button
                                             type="button"
                                             className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signin"
-                                                    ? "bg-white text-black shadow shadow-emerald-400/30"
-                                                    : "text-white/60 hover:text-white"
+                                                    ? "bg-foreground text-background shadow shadow-emerald-400/30"
+                                                    : "text-foreground/60 hover:text-foreground"
                                                 }`}
                                             onClick={() => setMode("signin")}
                                         >
@@ -664,8 +673,8 @@ function LoginContent() {
                                         <button
                                             type="button"
                                             className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signup"
-                                                    ? "bg-white text-black shadow shadow-emerald-400/30"
-                                                    : "text-white/60 hover:text-white"
+                                                    ? "bg-foreground text-background shadow shadow-emerald-400/30"
+                                                    : "text-foreground/60 hover:text-foreground"
                                                 }`}
                                             onClick={() => setMode("signup")}
                                         >
@@ -674,10 +683,10 @@ function LoginContent() {
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
+                                        <h2 className="text-2xl sm:text-3xl font-light text-foreground tracking-tight">
                                             {mode === "signin" ? "Welcome back" : "Create your account"}
                                         </h2>
-                                        <p className="text-sm text-white/60">
+                                        <p className="text-sm text-foreground/60">
                                             {mode === "signin"
                                                 ? "Sign in to manage your digital footprint and privacy requests."
                                                 : "Get a clear map of who has your data—and start cleaning it up."}
@@ -693,7 +702,7 @@ function LoginContent() {
                             )}
                         </div>
 
-                        <p className="mt-4 text-[11px] text-center text-white/35">
+                        <p className="mt-4 text-[11px] text-center text-foreground/35">
                             Protected with OAuth. GhostSweep never sees your email password.
                         </p>
                     </div>
@@ -706,7 +715,7 @@ function LoginContent() {
 export default function LoginPage() {
     return (
         <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+            <div className="flex min-h-screen items-center justify-center bg-background">
                 <Spinner />
             </div>
         }>

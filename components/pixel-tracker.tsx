@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
-import Image from "next/image";
 
 interface FBProps {
     eventId?: string;
@@ -31,7 +30,8 @@ const FBPixel = ({ eventId }: FBProps) => {
             />
             {/* Noscript fallback for users with JS disabled */}
             <noscript>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element -- tracking pixel must hit facebook.com directly */}
+                <img
                     height="1"
                     width="1"
                     style={{ display: "none" }}

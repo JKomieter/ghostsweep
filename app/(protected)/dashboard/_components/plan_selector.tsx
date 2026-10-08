@@ -17,7 +17,7 @@ export function PlanCard({
             prefetch={false}
             className={`block rounded-xl border p-4 cursor-pointer transition-all ${isActive
                     ? "border-primary/80 bg-primary/5 shadow-[0_0_0_1px_rgba(0,242,222,0.4)]"
-                    : "border-white/10 bg-[#080808] hover:border-primary/40"
+                    : "border-foreground/10 bg-background hover:border-primary/40"
                 }`}
         >
             {children}

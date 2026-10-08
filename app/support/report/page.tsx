@@ -94,7 +94,7 @@ export default function ReportIssuePage() {
                 </button>
 
                 {/* Header */}
-                <header className="space-y-3 border-b border-white/5 pb-6">
+                <header className="space-y-3 border-b border-foreground/5 pb-6">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary/10 rounded-lg">
                             <Bug className="h-5 w-5 text-primary" />
@@ -114,7 +114,7 @@ export default function ReportIssuePage() {
                 {/* Form card */}
                 <form
                     onSubmit={handleSubmit}
-                    className="space-y-6 rounded-xl border border-white/10 bg-[#050505] p-6 md:p-8"
+                    className="space-y-6 rounded-xl border border-foreground/10 bg-background p-6 md:p-8"
                 >
                     {/* Issue type */}
                     <div className="space-y-2">
@@ -146,7 +146,7 @@ export default function ReportIssuePage() {
                     {/* Summary */}
                     <div className="space-y-2">
                         <label htmlFor="summary" className="text-sm font-semibold text-foreground block">
-                            Brief summary <span className="text-red-400">*</span>
+                            Brief summary <span className="text-red-600 dark:text-red-400">*</span>
                         </label>
                         <Input
                             id="summary"
@@ -163,7 +163,7 @@ export default function ReportIssuePage() {
                     {/* Details */}
                     <div className="space-y-2">
                         <label htmlFor="details" className="text-sm font-semibold text-foreground block">
-                            What happened? <span className="text-red-400">*</span>
+                            What happened? <span className="text-red-600 dark:text-red-400">*</span>
                         </label>
                         <Textarea
                             id="details"
@@ -203,7 +203,7 @@ export default function ReportIssuePage() {
 
                     {/* Security notice */}
                     <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-                        <p className="text-xs text-amber-200">
+                        <p className="text-xs text-amber-800 dark:text-amber-200">
                             <strong>⚠️ Keep it secure:</strong> Don&apos;t include passwords, full card numbers, or sensitive personal data.
                         </p>
                     </div>
@@ -211,14 +211,14 @@ export default function ReportIssuePage() {
                     {/* Status Messages */}
                     {error && (
                         <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-                            <p className="text-sm text-red-400">
+                            <p className="text-sm text-red-600 dark:text-red-400">
                                 {error}
                             </p>
                         </div>
                     )}
                     {success && (
                         <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                            <p className="text-sm text-emerald-400">
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400">
                                 ✓ {success}
                             </p>
                         </div>
@@ -245,7 +245,7 @@ export default function ReportIssuePage() {
                             For account access or billing emergencies, email us directly at{" "}
                             <a
                                 href="mailto:support@ghostsweep.com?subject=GhostSweep%20Urgent%20Issue"
-                                className="text-blue-400 hover:text-blue-300 font-semibold underline"
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline"
                             >
                                 support@ghostsweep.com
                             </a>

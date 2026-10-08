@@ -80,82 +80,82 @@ export function ComparisonMatrix() {
   return (
     <section className="space-y-8">
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
           How GhostSweep compares
         </h2>
-        <p className="mx-auto max-w-2xl text-sm text-zinc-400">
+        <p className="mx-auto max-w-2xl text-sm text-muted-foreground">
           A side-by-side view of manual work, traditional services, and GhostSweep.
         </p>
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block rounded-2xl border border-white/10 bg-[#050509] overflow-hidden">
+      <div className="hidden md:block rounded-2xl border border-foreground/10 bg-background overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10 bg-white/5">
-              <th className="text-left p-4 font-semibold text-white min-w-[220px]">
+            <tr className="border-b border-foreground/10 bg-foreground/5">
+              <th className="text-left p-4 font-semibold text-foreground min-w-[220px]">
                 Feature
               </th>
-              <th className="text-center p-4 font-semibold text-white">
+              <th className="text-center p-4 font-semibold text-foreground">
                 Manual Deletion
               </th>
-              <th className="text-center p-4 font-semibold text-white">
+              <th className="text-center p-4 font-semibold text-foreground">
                 DeleteMe / Onerep
               </th>
-              <th className="text-center p-4 font-semibold text-white">
+              <th className="text-center p-4 font-semibold text-foreground">
                 GhostSweep
               </th>
             </tr>
           </thead>
           <tbody>
             {features.map((feature, i) => (
-              <tr key={i} className="border-b border-white/10 hover:bg-white/2 transition">
+              <tr key={i} className="border-b border-foreground/10 hover:bg-foreground/2 transition">
                 <td className="p-4">
-                  <p className="font-medium text-white">{feature.name}</p>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className="font-medium text-foreground">{feature.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
                     {feature.description}
                   </p>
                 </td>
                 <td className="p-4 text-center">
                   {feature.manual ? (
                     <div className="space-y-1">
-                      <CheckCircle className="h-5 w-5 text-yellow-400 mx-auto" />
+                      <CheckCircle className="h-5 w-5 text-yellow-700 dark:text-yellow-400 mx-auto" />
                       {feature.manual_detail && (
-                        <p className="text-xs text-zinc-400">
+                        <p className="text-xs text-muted-foreground">
                           {feature.manual_detail}
                         </p>
                       )}
                     </div>
                   ) : (
-                    <X className="h-5 w-5 text-zinc-600 mx-auto" />
+                    <X className="h-5 w-5 text-muted-foreground mx-auto" />
                   )}
                 </td>
                 <td className="p-4 text-center">
                   {feature.deleteMe ? (
                     <div className="space-y-1">
-                      <CheckCircle className="h-5 w-5 text-blue-400 mx-auto" />
+                      <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mx-auto" />
                       {feature.deleteMe_detail && (
-                        <p className="text-xs text-zinc-400">
+                        <p className="text-xs text-muted-foreground">
                           {feature.deleteMe_detail}
                         </p>
                       )}
                     </div>
                   ) : (
-                    <X className="h-5 w-5 text-zinc-600 mx-auto" />
+                    <X className="h-5 w-5 text-muted-foreground mx-auto" />
                   )}
                 </td>
                 <td className="p-4 text-center">
                   {feature.ghostsweep ? (
                     <div className="space-y-1">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mx-auto" />
+                      <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
                       {feature.ghostsweepDetail && (
-                        <p className="text-xs text-emerald-300">
+                        <p className="text-xs text-emerald-700 dark:text-emerald-300">
                           {feature.ghostsweepDetail}
                         </p>
                       )}
                     </div>
                   ) : (
-                    <X className="h-5 w-5 text-zinc-600 mx-auto" />
+                    <X className="h-5 w-5 text-muted-foreground mx-auto" />
                   )}
                 </td>
               </tr>
@@ -169,63 +169,63 @@ export function ComparisonMatrix() {
         {features.map((feature, i) => (
           <div
             key={i}
-            className="rounded-xl border border-white/10 bg-[#050509] p-4 space-y-3"
+            className="rounded-xl border border-foreground/10 bg-background p-4 space-y-3"
           >
             <div>
-              <p className="font-semibold text-white text-sm">{feature.name}</p>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="font-semibold text-foreground text-sm">{feature.name}</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 {feature.description}
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded bg-white/5 p-2">
-                <p className="text-xs text-zinc-400 mb-1">Manual</p>
+              <div className="rounded bg-foreground/5 p-2">
+                <p className="text-xs text-muted-foreground mb-1">Manual</p>
                 {feature.manual ? (
                   <div className="space-y-1">
-                    <CheckCircle className="h-4 w-4 text-yellow-400 mx-auto" />
+                    <CheckCircle className="h-4 w-4 text-yellow-700 dark:text-yellow-400 mx-auto" />
                     {feature.manual_detail && (
-                      <p className="text-[10px] text-zinc-500">
+                      <p className="text-[10px] text-muted-foreground">
                         {feature.manual_detail}
                       </p>
                     )}
                   </div>
                 ) : (
-                  <X className="h-4 w-4 text-zinc-600 mx-auto" />
+                  <X className="h-4 w-4 text-muted-foreground mx-auto" />
                 )}
               </div>
 
-              <div className="rounded bg-white/5 p-2">
-                <p className="text-xs text-zinc-400 mb-1">DeleteMe</p>
+              <div className="rounded bg-foreground/5 p-2">
+                <p className="text-xs text-muted-foreground mb-1">DeleteMe</p>
                 {feature.deleteMe ? (
                   <div className="space-y-1">
-                    <CheckCircle className="h-4 w-4 text-blue-400 mx-auto" />
+                    <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mx-auto" />
                     {feature.deleteMe_detail && (
-                      <p className="text-[10px] text-zinc-500">
+                      <p className="text-[10px] text-muted-foreground">
                         {feature.deleteMe_detail}
                       </p>
                     )}
                   </div>
                 ) : (
-                  <X className="h-4 w-4 text-zinc-600 mx-auto" />
+                  <X className="h-4 w-4 text-muted-foreground mx-auto" />
                 )}
               </div>
 
-              <div className="rounded border border-white/10 bg-white/5 p-2">
-                <p className="text-xs text-zinc-200 mb-1 font-medium">
+              <div className="rounded border border-foreground/10 bg-foreground/5 p-2">
+                <p className="text-xs text-foreground/85 mb-1 font-medium">
                   GhostSweep
                 </p>
                 {feature.ghostsweep ? (
                   <div className="space-y-1">
-                    <CheckCircle className="h-4 w-4 text-emerald-400 mx-auto" />
+                    <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mx-auto" />
                     {feature.ghostsweepDetail && (
-                      <p className="text-[10px] text-zinc-400">
+                      <p className="text-[10px] text-muted-foreground">
                         {feature.ghostsweepDetail}
                       </p>
                     )}
                   </div>
                 ) : (
-                  <X className="h-4 w-4 text-zinc-600 mx-auto" />
+                  <X className="h-4 w-4 text-muted-foreground mx-auto" />
                 )}
               </div>
             </div>
@@ -234,11 +234,11 @@ export function ComparisonMatrix() {
       </div>
 
       {/* Bottom Note */}
-      <div className="rounded-xl border border-white/10 bg-white/2 p-6 text-center space-y-3">
-        <p className="text-sm text-zinc-400">
+      <div className="rounded-xl border border-foreground/10 bg-foreground/2 p-6 text-center space-y-3">
+        <p className="text-sm text-muted-foreground">
           This is a simplified view. Your inbox and risk profile are unique.
         </p>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-muted-foreground">
           You can try Pro features free for 1 day to see how it feels in practice.
         </p>
       </div>

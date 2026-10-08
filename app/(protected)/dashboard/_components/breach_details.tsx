@@ -27,20 +27,20 @@ function severityBadge(breach: Breach) {
     if (sensitive || pwn > 10_000_000) {
         return {
             label: "High",
-            className: "bg-red-500/20 text-red-200 border-red-500/40",
+            className: "bg-red-500/20 text-red-800 dark:text-red-200 border-red-500/40",
         };
     }
 
     if (pwn > 100_000) {
         return {
             label: "Medium",
-            className: "bg-amber-500/20 text-amber-200 border-amber-500/40",
+            className: "bg-amber-500/20 text-amber-800 dark:text-amber-200 border-amber-500/40",
         };
     }
 
     return {
         label: "Low",
-        className: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30",
+        className: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 border-emerald-500/30",
     };
 }
 
@@ -68,37 +68,37 @@ export function BreachDetailsSheet({
 
     return (
         <Sheet open={open} onOpenChange={onOpenChangeAction}>
-            <SheetContent className="w-full sm:max-w-xl bg-[#050505] border-l border-white/5 text-sm px-6">
+            <SheetContent className="w-full sm:max-w-xl bg-background border-l border-foreground/5 text-sm px-6">
                 <SheetHeader className="space-y-3">
                     <SheetTitle className="flex flex-col gap-2">
-                        <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">
+                        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
                             Breach details
                         </span>
-                        <span className="text-xl font-light text-white">
+                        <span className="text-xl font-light text-foreground">
                             {service?.name || breach?.raw?.title || "Service breach"}
                         </span>
                     </SheetTitle>
-                    <SheetDescription className="text-xs text-white/60">
+                    <SheetDescription className="text-xs text-foreground/60">
                         What was exposed and when, based on the public breach record.
                     </SheetDescription>
                 </SheetHeader>
 
                 {/* Loading / error states */}
                 {isLoading && (
-                    <div className="mt-6 text-xs text-white/40">
+                    <div className="mt-6 text-xs text-foreground/40">
                         Loading breach details…
                     </div>
                 )}
 
                 {error && !isLoading && (
-                    <div className="mt-6 text-xs text-red-400">
+                    <div className="mt-6 text-xs text-red-600 dark:text-red-400">
                         Could not load breach details. Please try again.
                     </div>
                 )}
 
                 {/* Empty state */}
                 {!isLoading && !error && (!breach || !service) && (
-                    <div className="mt-6 text-xs text-white/40">
+                    <div className="mt-6 text-xs text-foreground/40">
                         No breach details found for this record.
                     </div>
                 )}
@@ -109,11 +109,11 @@ export function BreachDetailsSheet({
                         {/* Top summary */}
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <span className="text-base font-light text-white">
+                                <span className="text-base font-light text-foreground">
                                     {service.name || breach?.name || "Unknown service"}
                                 </span>
                                 {service.domain && (
-                                    <span className="text-xs text-white/40">
+                                    <span className="text-xs text-foreground/40">
                                         {service.domain}
                                     </span>
                                 )}
@@ -127,18 +127,18 @@ export function BreachDetailsSheet({
                                             severity.label === 'Medium' ? 'bg-amber-500' :
                                             'bg-emerald-500'
                                         }`} />
-                                        <span className="text-[11px] text-white/60">Severity: {severity.label}</span>
+                                        <span className="text-[11px] text-foreground/60">Severity: {severity.label}</span>
                                     </div>
                                 )}
 
                                 {breach.breach_date && (
-                                    <span className="text-[11px] text-white/60">
+                                    <span className="text-[11px] text-foreground/60">
                                         Breach date: {formatDate(breach.breach_date)}
                                     </span>
                                 )}
 
                                 {breach.pwn_count && breach.pwn_count > 0 && (
-                                    <span className="text-[11px] text-white/40">
+                                    <span className="text-[11px] text-foreground/40">
                                         ~{breach.pwn_count.toLocaleString()} accounts affected
                                     </span>
                                 )}
@@ -147,20 +147,20 @@ export function BreachDetailsSheet({
 
                         {/* Data exposed */}
                         <div className="space-y-3">
-                            <h3 className="text-[11px] font-medium uppercase tracking-widest text-white/40">Data exposed</h3>
+                            <h3 className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">Data exposed</h3>
                             {breach.data_classes && breach.data_classes.length > 0 ? (
                                 <div className="flex flex-wrap gap-2">
                                     {breach.data_classes.map((dc) => (
                                         <span
                                             key={dc}
-                                            className="text-[11px] text-white/60"
+                                            className="text-[11px] text-foreground/60"
                                         >
                                             {dc}
                                         </span>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-xs text-white/40">
+                                <p className="text-xs text-foreground/40">
                                     The breach record did not specify exact data types.
                                 </p>
                             )}
@@ -168,9 +168,9 @@ export function BreachDetailsSheet({
 
                         {/* Description */}
                         <div className="space-y-3">
-                            <h3 className="text-[11px] font-medium uppercase tracking-widest text-white/40">What happened</h3>
-                            <div className="rounded-lg border border-white/5 bg-white/2 p-4 max-h-48 overflow-auto">
-                                <p className="text-xs leading-relaxed text-white/60 whitespace-pre-wrap">
+                            <h3 className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">What happened</h3>
+                            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 max-h-48 overflow-auto">
+                                <p className="text-xs leading-relaxed text-foreground/60 whitespace-pre-wrap">
                                     {breach.description
                                         ? String(breach.description)
                                         : "No public incident description was provided for this breach."}

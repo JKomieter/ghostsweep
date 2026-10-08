@@ -133,10 +133,10 @@ export default async function SuccessPage({
         process.env.NODE_ENV !== "production" && Boolean(paymentIntentId);
 
     return (
-        <main className="min-h-screen bg-[#050505] px-4 py-10 text-foreground">
+        <main className="min-h-screen bg-background px-4 py-10 text-foreground">
             <div className="mx-auto w-full max-w-xl space-y-6">
                 {/* Header card */}
-                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
+                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6">
                     <div className="flex items-start gap-3">
                         <div
                             className="flex h-11 w-11 items-center justify-center rounded-full"
@@ -146,14 +146,14 @@ export default async function SuccessPage({
                         </div>
 
                         <div className="flex-1">
-                            <h1 className="text-xl font-light text-white">{ui.title}</h1>
-                            <p className="mt-1 text-sm text-white/60">{ui.subtitle}</p>
+                            <h1 className="text-xl font-light text-foreground">{ui.title}</h1>
+                            <p className="mt-1 text-sm text-foreground/60">{ui.subtitle}</p>
 
-                            <p className="mt-3 text-sm text-white/60">
+                            <p className="mt-3 text-sm text-foreground/60">
                                 {customerEmail ? (
                                     <>
                                         Receipt will be sent to{" "}
-                                        <span className="font-light text-white">{customerEmail}</span>.
+                                        <span className="font-light text-foreground">{customerEmail}</span>.
                                     </>
                                 ) : (
                                     <>Receipt will be sent to the email used at checkout.</>
@@ -164,9 +164,9 @@ export default async function SuccessPage({
 
                     {/* What to do next */}
                     {(isSuccess || isProcessing) && (
-                        <div className="mt-5 rounded-lg border border-white/5 bg-white/2 p-4">
-                            <p className="text-[11px] font-medium uppercase tracking-widest text-white/40">What to do next</p>
-                            <ul className="mt-3 space-y-2 text-xs text-white/60">
+                        <div className="mt-5 rounded-lg border border-foreground/5 bg-foreground/2 p-4">
+                            <p className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">What to do next</p>
+                            <ul className="mt-3 space-y-2 text-xs text-foreground/60">
                                 <li className="flex items-start gap-2">
                                     <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
                                     Go to your accounts list and start cleaning up the highest-risk services.
@@ -195,7 +195,7 @@ export default async function SuccessPage({
                             ].map((t) => (
                                 <div
                                     key={t}
-                                    className="rounded-lg border border-white/5 bg-white/2 px-3 py-2 text-xs text-white/70"
+                                    className="rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2 text-xs text-foreground/70"
                                 >
                                     {t}
                                 </div>
@@ -207,14 +207,14 @@ export default async function SuccessPage({
                     <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                         <Link
                             href="/dashboard"
-                            className="inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-light text-black hover:bg-white/90"
+                            className="inline-flex w-full items-center justify-center rounded-md bg-foreground px-3 py-2 text-sm font-light text-background hover:bg-foreground/90"
                         >
                             Go to dashboard
                         </Link>
 
                         <Link
                             href="/dashboard/accounts"
-                            className="inline-flex w-full items-center justify-center rounded-md border border-white/5 bg-white/2 px-3 py-2 text-sm text-white hover:border-white/10 hover:bg-white/3"
+                            className="inline-flex w-full items-center justify-center rounded-md border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-foreground hover:border-foreground/10 hover:bg-foreground/3"
                         >
                             View accounts
                         </Link>
@@ -223,14 +223,14 @@ export default async function SuccessPage({
                     <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                         <Link
                             href="/dashboard/billing"
-                            className="inline-flex w-full items-center justify-center rounded-md border border-white/5 bg-white/2 px-3 py-2 text-sm text-white hover:border-white/10 hover:bg-white/3"
+                            className="inline-flex w-full items-center justify-center rounded-md border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-foreground hover:border-foreground/10 hover:bg-foreground/3"
                         >
                             Manage billing
                         </Link>
 
                         <a
                             href="mailto:support@ghostsweep.com"
-                            className="inline-flex w-full items-center justify-center rounded-md border border-white/5 bg-white/2 px-3 py-2 text-sm text-emerald-400 hover:border-white/10 hover:bg-white/3"
+                            className="inline-flex w-full items-center justify-center rounded-md border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-emerald-600 dark:text-emerald-400 hover:border-foreground/10 hover:bg-foreground/3"
                         >
                             Contact support
                         </a>
@@ -238,8 +238,8 @@ export default async function SuccessPage({
 
                     {isFailure && (
                         <div className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                            <p className="text-sm font-light text-red-300">Need help?</p>
-                            <p className="mt-1 text-xs text-red-300/70">
+                            <p className="text-sm font-light text-red-700 dark:text-red-300">Need help?</p>
+                            <p className="mt-1 text-xs text-red-700/70 dark:text-red-300/70">
                                 If your card was charged but your plan didn’t activate, email support with the session ID below.
                             </p>
                         </div>
@@ -247,24 +247,24 @@ export default async function SuccessPage({
                 </div>
 
                 {/* Details card */}
-                <div className="rounded-lg border border-white/5 bg-white/2 p-5">
+                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-5">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] uppercase tracking-widest text-white/40">Status</span>
-                        <span className="rounded-full border border-white/5 bg-white/2 px-2 py-0.5 text-[12px] text-white/70">
+                        <span className="text-[11px] uppercase tracking-widest text-foreground/40">Status</span>
+                        <span className="rounded-full border border-foreground/5 bg-foreground/2 px-2 py-0.5 text-[12px] text-foreground/70">
                             {piStatus}
                         </span>
                     </div>
 
                     <div className="mt-3 grid gap-2 text-xs">
-                        <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/2 px-3 py-2">
-                            <span className="text-white/60">Checkout session</span>
-                            <span className="font-mono text-white/80">{shortId(session.id)}</span>
+                        <div className="flex items-center justify-between rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2">
+                            <span className="text-foreground/60">Checkout session</span>
+                            <span className="font-mono text-foreground/80">{shortId(session.id)}</span>
                         </div>
 
                         {paymentIntentId ? (
-                            <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/2 px-3 py-2">
-                                <span className="text-white/60">Payment Intent</span>
-                                <span className="font-mono text-white/80">{shortId(paymentIntentId)}</span>
+                            <div className="flex items-center justify-between rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2">
+                                <span className="text-foreground/60">Payment Intent</span>
+                                <span className="font-mono text-foreground/80">{shortId(paymentIntentId)}</span>
                             </div>
                         ) : null}
                     </div>
@@ -274,9 +274,9 @@ export default async function SuccessPage({
                             href={`https://dashboard.stripe.com/payments/${paymentIntentId}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/5 bg-white/2 px-3 py-2 text-sm text-blue-400 hover:border-white/10 hover:bg-white/3"
+                            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:border-foreground/10 hover:bg-foreground/3"
                         >
-                            View in Stripe Dashboard <span className="text-blue-200/70">↗</span>
+                            View in Stripe Dashboard <span className="text-blue-800/70 dark:text-blue-200/70">↗</span>
                         </a>
                     ) : null}
                 </div>

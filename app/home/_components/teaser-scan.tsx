@@ -24,7 +24,7 @@ const VISIBLE_COUNT = 15;
 // ─── ProgressBar ───────────────────────────────────────────────
 function ProgressBar({ progress }: { progress: number }) {
   return (
-    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+    <div className="w-full h-1.5 bg-foreground/5 rounded-full overflow-hidden">
       <div
         className="h-full bg-linear-to-r from-purple-500 to-emerald-500 rounded-full transition-all duration-700 ease-out"
         style={{ width: `${progress}%` }}
@@ -39,7 +39,7 @@ function SiteLogo({ domain, fallback }: { domain: string; fallback: string }) {
 
   if (failed) {
     return (
-      <span className="text-xs font-bold text-white/60 uppercase font-mono">
+      <span className="text-xs font-bold text-foreground/60 uppercase font-mono">
         {fallback.slice(0, 2)}
       </span>
     );
@@ -77,25 +77,25 @@ function ResultRow({
 
   return (
     <div
-      className="flex items-center gap-4 px-5 py-4 border-b border-white/5 last:border-b-0 animate-in fade-in slide-in-from-bottom-2 duration-500"
+      className="flex items-center gap-4 px-5 py-4 border-b border-foreground/5 last:border-b-0 animate-in fade-in slide-in-from-bottom-2 duration-500"
       style={{ animationDelay: `${index * 120}ms`, animationFillMode: "both" }}
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 overflow-hidden">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-foreground/5 overflow-hidden">
         <SiteLogo domain={domain} fallback={profile.site_name} />
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white truncate">
+        <p className="text-sm font-medium text-foreground truncate">
           {profile.site_name}
         </p>
-        <p className="text-xs text-white/30 font-mono truncate">{domain}</p>
+        <p className="text-xs text-foreground/55 font-mono truncate">{domain}</p>
       </div>
 
       <a
         href={profile.profile_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-[10px] font-mono text-purple-400/70 hover:text-purple-300 transition hidden sm:block"
+        className="text-[10px] font-mono text-purple-600/70 dark:text-purple-400/70 hover:text-purple-700 dark:hover:text-purple-300 transition hidden sm:block"
       >
         view →
       </a>
@@ -107,18 +107,18 @@ function ResultRow({
 function BlurredRow({ index }: { index: number }) {
   return (
     <div
-      className="flex items-center gap-4 px-5 py-4 border-b border-white/5 last:border-b-0 select-none animate-in fade-in duration-500"
+      className="flex items-center gap-4 px-5 py-4 border-b border-foreground/5 last:border-b-0 select-none animate-in fade-in duration-500"
       style={{
         animationDelay: `${(VISIBLE_COUNT + index) * 120}ms`,
         animationFillMode: "both",
       }}
     >
-      <div className="h-9 w-9 shrink-0 rounded-lg bg-white/5 blur-sm" />
+      <div className="h-9 w-9 shrink-0 rounded-lg bg-foreground/5 blur-sm" />
       <div className="flex-1 space-y-1.5">
-        <div className="h-3.5 w-24 rounded bg-white/8 blur-sm" />
-        <div className="h-2.5 w-36 rounded bg-white/5 blur-sm" />
+        <div className="h-3.5 w-24 rounded bg-foreground/8 blur-sm" />
+        <div className="h-2.5 w-36 rounded bg-foreground/5 blur-sm" />
       </div>
-      <div className="h-5 w-14 rounded-full bg-white/5 blur-sm" />
+      <div className="h-5 w-14 rounded-full bg-foreground/5 blur-sm" />
     </div>
   );
 }
@@ -347,22 +347,22 @@ export default function TeaserScan({
   const hiddenCount = Math.max(0, results.length - VISIBLE_COUNT);
   const loginHref = email.trim()
     ? `/login?email=${encodeURIComponent(email.trim())}`
-    : "/login";
+    : "/login?mode=signup";
 
   return (
     <div className="w-full" ref={sectionRef}>
       {/* Input form */}
       {status === "idle" && (
-        <div className="rounded-2xl border border-white/10 bg-white/2 p-8 backdrop-blur-sm">
+        <div className="rounded-2xl border border-foreground/10 bg-foreground/2 p-8 backdrop-blur-sm">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-              <Fingerprint className="h-5 w-5 text-purple-400" />
+              <Fingerprint className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h3 className="text-base font-medium text-white">
+              <h3 className="text-base font-medium text-foreground">
                 Try a free shadow scan
               </h3>
-              <p className="text-xs text-white/40">
+              <p className="text-xs text-foreground/65">
                 See what&apos;s hiding under your digital identity
               </p>
             </div>
@@ -370,23 +370,23 @@ export default function TeaserScan({
 
           <div className="space-y-3">
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/25" />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
               <input
                 type="text"
                 placeholder="Username (e.g. johndoe_42)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-black/40 py-3.5 pl-10 pr-4 text-sm text-white placeholder-white/25 focus:border-purple-500/40 focus:outline-none focus:ring-1 focus:ring-purple-500/20 transition"
+                className="w-full rounded-xl border border-foreground/10 bg-background/40 py-3.5 pl-10 pr-4 text-sm text-foreground placeholder-foreground/45 focus:border-purple-500/40 focus:outline-none focus:ring-1 focus:ring-purple-500/20 transition"
               />
             </div>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/25" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
               <input
                 type="email"
                 placeholder="Email (optional)"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-black/40 py-3.5 pl-10 pr-4 text-sm text-white placeholder-white/25 focus:border-purple-500/40 focus:outline-none focus:ring-1 focus:ring-purple-500/20 transition"
+                className="w-full rounded-xl border border-foreground/10 bg-background/40 py-3.5 pl-10 pr-4 text-sm text-foreground placeholder-foreground/45 focus:border-purple-500/40 focus:outline-none focus:ring-1 focus:ring-purple-500/20 transition"
               />
             </div>
             <button
@@ -399,7 +399,7 @@ export default function TeaserScan({
             </button>
           </div>
 
-          <p className="mt-4 text-[10px] text-white/20 text-center">
+          <p className="mt-4 text-[10px] text-foreground/50 text-center">
             {scansRemaining !== null
               ? `${scansRemaining} free scan${scansRemaining !== 1 ? "s" : ""} remaining today`
               : "3 free scans per day · No account required"}
@@ -409,17 +409,17 @@ export default function TeaserScan({
 
       {/* Scanning / Done / Error state */}
       {(status === "scanning" || status === "done" || status === "error") && (
-        <div className="rounded-2xl border border-white/10 bg-black/80 overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-900/10">
+        <div className="rounded-2xl border border-foreground/10 bg-background/80 overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-900/10">
           {/* Terminal header */}
-          <div className="flex items-center gap-2 border-b border-white/5 px-5 py-3.5 bg-white/3">
+          <div className="flex items-center gap-2 border-b border-foreground/5 px-5 py-3.5 bg-foreground/3">
             <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
             <div className="h-2.5 w-2.5 rounded-full bg-amber-500/60" />
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/60" />
-            <span className="ml-2 text-[10px] text-white/20 font-mono">
+            <span className="ml-2 text-[10px] text-foreground/50 font-mono">
               shadow_scan — {username || email}
             </span>
             {status === "scanning" && (
-              <div className="ml-auto flex items-center gap-1.5 text-[10px] text-purple-400 font-mono">
+              <div className="ml-auto flex items-center gap-1.5 text-[10px] text-purple-600 dark:text-purple-400 font-mono">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 Scanning
               </div>
@@ -427,10 +427,10 @@ export default function TeaserScan({
           </div>
 
           {/* Progress area */}
-          <div className="px-5 py-4 border-b border-white/5 space-y-3">
+          <div className="px-5 py-4 border-b border-foreground/5 space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-white/50 font-mono">{currentMessage}</span>
-              <span className="text-white/30 font-mono tabular-nums">
+              <span className="text-foreground/50 font-mono">{currentMessage}</span>
+              <span className="text-foreground/55 font-mono tabular-nums">
                 {progress}%
               </span>
             </div>
@@ -438,7 +438,7 @@ export default function TeaserScan({
 
             {status === "done" && (
               <div className="flex items-center gap-4 pt-1 text-xs font-mono">
-                <span className="text-emerald-400">
+                <span className="text-emerald-600 dark:text-emerald-400">
                   ✓ {foundCount} profiles found
                 </span>
               </div>
@@ -449,7 +449,7 @@ export default function TeaserScan({
           {results.length > 0 && (
             <div>
               {/* Visible results */}
-              <div className="max-h-60 scroll-y-auto">
+              <div className="max-h-60 overflow-y-auto">
               {results.slice(0, VISIBLE_COUNT).map((profile, i) => (
                 <ResultRow key={profile.profile_url} profile={profile} index={i} />
               ))}
@@ -463,9 +463,9 @@ export default function TeaserScan({
                   ))}
 
                   {/* Upgrade overlay */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center justify-end pb-6">
+                  <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/70 to-transparent flex flex-col items-center justify-end pb-6">
                     <div className="text-center space-y-3">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs text-amber-400">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-400">
                         <Lock className="h-3 w-3" />
                         <span>
                           +{hiddenCount} more profile{hiddenCount !== 1 ? "s" : ""} found — sign up to unlock
@@ -490,10 +490,10 @@ export default function TeaserScan({
           {/* Error state */}
           {status === "error" && (
             <div className="px-5 py-6 text-center space-y-4">
-              <p className="text-sm text-red-400">{errorMsg}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
               {isRateLimited ? (
                 <div className="space-y-3">
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-foreground/65">
                     Create a free account for more scans and full deletion tools.
                   </p>
                   <Link
@@ -507,7 +507,7 @@ export default function TeaserScan({
               ) : (
                 <button
                   onClick={reset}
-                  className="rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-medium text-white/60 hover:bg-white/10 transition"
+                  className="rounded-lg border border-foreground/10 bg-foreground/5 px-5 py-2.5 text-xs font-medium text-foreground/60 hover:bg-foreground/10 transition"
                 >
                   Try again
                 </button>
@@ -517,11 +517,11 @@ export default function TeaserScan({
 
           {/* Bottom bar — done state CTA */}
           {status === "done" && (
-            <div className="border-t border-white/5 px-5 py-5">
+            <div className="border-t border-foreground/5 px-5 py-5">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3 text-sm">
-                  <ShieldAlert className="h-5 w-5 text-amber-400" />
-                  <span className="text-white/60">
+                  <ShieldAlert className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+                  <span className="text-foreground/60">
                     {foundCount} profile{foundCount !== 1 ? "s" : ""} found —
                     sign up for full scan &amp; deletion
                   </span>
@@ -529,7 +529,7 @@ export default function TeaserScan({
                 <div className="flex gap-2">
                   <button
                     onClick={reset}
-                    className="rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-medium text-white/60 hover:bg-white/10 transition"
+                    className="rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-2.5 text-xs font-medium text-foreground/60 hover:bg-foreground/10 transition"
                   >
                     Scan again
                   </button>

@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/utils/supabase/server"
 import Stripe from "stripe"
+import * as Sentry from "@sentry/nextjs"
 import stripe from "@/lib/stripe"
 
 const MONTHLY_PRICE_ID = process.env.STRIPE_PRICE_PRO!
@@ -28,6 +29,31 @@ function getRenewalDate(priceId: string): string {
   return priceId === MONTHLY_PRICE_ID ? getNextMonthDate() : getNextYearDate()
 }
 
+// Errors here are caught and logged, so they never reach Sentry on their own — report them explicitly
+function reportWebhookError(
+  message: string,
+  err: unknown,
+  event?: Stripe.Event,
+  extra?: Record<string, unknown>
+) {
+  console.error(`❌ ${message}:`, err)
+  Sentry.withScope((scope) => {
+    scope.setTag("webhook", "stripe")
+    if (event) {
+      scope.setTag("stripe_event_type", event.type)
+      scope.setContext("stripe_event", { id: event.id, type: event.type, livemode: event.livemode })
+    }
+    if (extra) scope.setExtras(extra)
+    scope.setExtra("message", message)
+    if (err instanceof Error) {
+      Sentry.captureException(err)
+    } else {
+      scope.setExtra("error", err)
+      Sentry.captureMessage(message, "error")
+    }
+  })
+}
+
 export async function POST(req: Request) {
   let event: Stripe.Event;
 
@@ -47,6 +73,10 @@ export async function POST(req: Request) {
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.log(`❌ Error message: ${errorMessage}`);
+    Sentry.captureException(err, {
+      level: "warning",
+      tags: { webhook: "stripe", stage: "signature_verification" },
+    });
     return NextResponse.json(
       { message: `Webhook Error: ${errorMessage}` },
       { status: 400 }
@@ -65,7 +95,7 @@ export async function POST(req: Request) {
         const supabaseUserId = session.metadata?.supabase_user_id
         
         if (!supabaseUserId) {
-          console.warn("⚠️ checkout.session.completed missing supabase_user_id")
+          reportWebhookError("checkout.session.completed missing supabase_user_id", null, event, { sessionId: session.id })
           break
         }
 
@@ -114,10 +144,12 @@ export async function POST(req: Request) {
               }
             });
 
-            if (edgeError) console.error("❌ Edge Function Error:", edgeError);
+            if (edgeError) {
+              reportWebhookError("update-referral-credits failed", edgeError, event, { referrerSupabaseId, supabaseUserId });
+            }
 
           } catch (stripeErr) {
-            console.error("❌ Stripe Balance Error:", stripeErr);
+            reportWebhookError("Stripe referral balance credit failed", stripeErr, event, { referrerStripeCustomerId, supabaseUserId });
           }
         }
 
@@ -137,7 +169,7 @@ export async function POST(req: Request) {
         )
 
         if (updateError) {
-          console.error("❌ Error updating subscription:", updateError)
+          reportWebhookError("update-subscription failed after checkout", updateError, event, { supabaseUserId, stripeCustomerId })
         } else {
           console.log(`✨ User ${supabaseUserId} subscribed`)
         }
@@ -161,7 +193,7 @@ export async function POST(req: Request) {
         })
 
         if (error || !data?.userId) {
-          console.error(`❌ Subscription updated but no user found for customer ${customerId}:`, error)
+          reportWebhookError("Subscription updated but no user found", error, event, { customerId })
           break
         }
 
@@ -187,7 +219,7 @@ export async function POST(req: Request) {
           )
 
           if (updateError) {
-            console.error("❌ Error updating subscription:", updateError)
+            reportWebhookError("update-subscription failed", updateError, event, { userId: data.userId, customerId })
           }
 
           console.log(`✅ Subscription updated for user ${data.userId} (status: ${subscription.status})`)
@@ -213,7 +245,7 @@ export async function POST(req: Request) {
         })
 
         if (error || !data?.userId) {
-          console.error(`❌ Subscription deleted but no user found for customer ${customerId}:`, error)
+          reportWebhookError("Subscription deleted but no user found", error, event, { customerId })
           break
         }
 
@@ -230,7 +262,7 @@ export async function POST(req: Request) {
         )
 
         if (updateError) {
-          console.error("❌ Error downgrading user:", updateError)
+          reportWebhookError("downgrade-user-subscription failed", updateError, event, { userId: data.userId, customerId })
         }
 
         console.log(`✅ User ${data.userId} downgraded to Free`)
@@ -306,7 +338,7 @@ export async function POST(req: Request) {
         })
 
         if (error || !data?.userId) {
-          console.error(`❌ Payment failed but no user found for customer ${customerId}:`, error)
+          reportWebhookError("Payment failed but no user found", error, event, { customerId })
           break
         }
 
@@ -323,7 +355,7 @@ export async function POST(req: Request) {
         )
 
         if (notifError) {
-          console.warn("⚠️ Failed to create notification:", notifError)
+          reportWebhookError("payment-failed-notification failed", notifError, event, { userId: data.userId, customerId })
         }
 
         console.log(`⚠️ Payment failed for user ${data.userId}`)
@@ -338,7 +370,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true }, { status: 200 })
 
   } catch (err) {
-    console.error("❌ Stripe Webhook Handler Error:", err)
+    reportWebhookError("Stripe webhook handler error", err, event)
     return NextResponse.json(
       { error: "Webhook handler failed" },
       { status: 500 }

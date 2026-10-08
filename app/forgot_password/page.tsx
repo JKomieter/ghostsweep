@@ -30,20 +30,20 @@ export default function ForgotPassword() {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-[#050505] text-white px-4">
-            <div className="w-full max-w-md rounded-lg border border-white/5 bg-white/2 p-6 shadow-lg backdrop-blur-xl">
+        <main className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
+            <div className="w-full max-w-md rounded-lg border border-foreground/5 bg-foreground/2 p-6 shadow-lg backdrop-blur-xl">
                 {
                     mode === "forgot" &&
                     <>
-                        <h1 className="text-xl font-light tracking-tight text-white">
+                        <h1 className="text-xl font-light tracking-tight text-foreground">
                             Forgot your password?
                         </h1>
-                        <p className="text-xs text-white/60 mt-1">
+                        <p className="text-xs text-foreground/60 mt-1">
                             Enter your email address below and we&apos;ll send you a link to reset your password.
                         </p>
                         <form className="w-full mt-6" onSubmit={handleForgotPassword}>
                             <div className="space-y-2">
-                                <label className="text-sm font-light text-white/70" htmlFor="email">
+                                <label className="text-sm font-light text-foreground/70" htmlFor="email">
                                     Email
                                 </label>
                                 <Input
@@ -55,13 +55,13 @@ export default function ForgotPassword() {
                                     required
                                 />
                             </div>
-                            <Button type="submit" className="w-full mt-6 text-sm font-light bg-white text-black hover:bg-white/90">
+                            <Button type="submit" className="w-full mt-6 text-sm font-light bg-foreground text-background hover:bg-foreground/90">
                                 Reset password
                             </Button>
 
 
                             <Link href="/login">
-                                <Button variant="link" className="w-full mt-4 text-sm font-light text-white/60 hover:text-white">
+                                <Button variant="link" className="w-full mt-4 text-sm font-light text-foreground/60 hover:text-foreground">
                                     <MoveLeft /> Back to login
                                 </Button>
                             </Link>
@@ -71,14 +71,14 @@ export default function ForgotPassword() {
                 {
                     mode === "confirm" &&
                     <>
-                        <h1 className="text-2xl font-light mt-4 text-white">
+                        <h1 className="text-2xl font-light mt-4 text-foreground">
                             Check your email
                         </h1>
-                        <p className="text-sm text-white/60 mt-2 text-center">
-                            We&apos;ve sent a password reset link to <strong className="font-light text-white">{email}</strong>. Please check your inbox and follow the instructions to reset your password.
+                        <p className="text-sm text-foreground/60 mt-2 text-center">
+                            We&apos;ve sent a password reset link to <strong className="font-light text-foreground">{email}</strong>. Please check your inbox and follow the instructions to reset your password.
                         </p>
                         <Link href="/login">
-                            <Button variant="link" className="w-full mt-4 text-sm font-light text-white/60 hover:text-white">
+                            <Button variant="link" className="w-full mt-4 text-sm font-light text-foreground/60 hover:text-foreground">
                                 <MoveLeft /> Back to login
                             </Button>
                         </Link>

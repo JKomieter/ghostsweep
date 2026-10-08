@@ -64,7 +64,7 @@ function Section({
 }) {
     return (
         <section className="space-y-4">
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
                 {title}
             </h2>
             {children}
@@ -74,7 +74,7 @@ function Section({
 
 export default function PrivacyPolicyPage() {
     return (
-        <main className="min-h-screen bg-[#050505]">
+        <main className="min-h-screen bg-background">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -85,18 +85,18 @@ export default function PrivacyPolicyPage() {
             <div className="mx-auto max-w-3xl px-6 pt-24 pb-20 sm:pt-32">
                 {/* Header */}
                 <header className="mb-16">
-                    <p className="text-sm uppercase tracking-[0.2em] text-white/25 mb-4">
+                    <p className="text-sm uppercase tracking-[0.2em] text-foreground/50 mb-4">
                         Privacy Policy
                     </p>
-                    <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white mb-6">
+                    <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-foreground mb-6">
                         Your data. Your control.
                     </h1>
-                    <p className="text-base text-white/45 leading-relaxed max-w-xl">
+                    <p className="text-base text-foreground/65 leading-relaxed max-w-xl">
                         GhostSweep is built with privacy-first principles. This policy
                         explains what we collect, how we protect it, and how you stay in
                         control.
                     </p>
-                    <p className="text-xs text-white/25 mt-4">
+                    <p className="text-xs text-foreground/50 mt-4">
                         Last updated: Dec 13, 2025
                     </p>
                 </header>
@@ -104,31 +104,31 @@ export default function PrivacyPolicyPage() {
                 {/* Summary cards */}
                 <div className="grid gap-4 sm:grid-cols-3 mb-16">
                     <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
-                        <ShieldCheck className="h-5 w-5 text-emerald-400 mb-3" />
-                        <p className="text-sm font-medium text-white mb-1">
+                        <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mb-3" />
+                        <p className="text-sm font-medium text-foreground mb-1">
                             Zero-storage scanning
                         </p>
-                        <p className="text-xs text-white/40 leading-relaxed">
+                        <p className="text-xs text-foreground/65 leading-relaxed">
                             Email bodies are scanned transiently to find value. Never
                             stored.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/3 p-6">
-                        <Lock className="h-5 w-5 text-white/60 mb-3" />
-                        <p className="text-sm font-medium text-white mb-1">
+                    <div className="rounded-2xl border border-foreground/10 bg-foreground/3 p-6">
+                        <Lock className="h-5 w-5 text-foreground/60 mb-3" />
+                        <p className="text-sm font-medium text-foreground mb-1">
                             You control actions
                         </p>
-                        <p className="text-xs text-white/40 leading-relaxed">
+                        <p className="text-xs text-foreground/65 leading-relaxed">
                             Nothing happens without your explicit approval. Deletion
                             emails only send when you trigger them.
                         </p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/3 p-6">
-                        <Globe2 className="h-5 w-5 text-white/60 mb-3" />
-                        <p className="text-sm font-medium text-white mb-1">
+                    <div className="rounded-2xl border border-foreground/10 bg-foreground/3 p-6">
+                        <Globe2 className="h-5 w-5 text-foreground/60 mb-3" />
+                        <p className="text-sm font-medium text-foreground mb-1">
                             No data selling
                         </p>
-                        <p className="text-xs text-white/40 leading-relaxed">
+                        <p className="text-xs text-foreground/65 leading-relaxed">
                             We never sell your data. Third parties used only for hosting,
                             billing, and error monitoring.
                         </p>
@@ -136,7 +136,7 @@ export default function PrivacyPolicyPage() {
                 </div>
 
                 {/* Policy sections */}
-                <div className="space-y-12 text-sm text-white/50 leading-relaxed">
+                <div className="space-y-12 text-sm text-foreground/50 leading-relaxed">
                     <Section title="1. Who we are">
                         <p>GhostSweep is a web application that helps you:</p>
                         <ul className="list-disc pl-5 space-y-1.5">
@@ -157,7 +157,7 @@ export default function PrivacyPolicyPage() {
                             Questions? Contact{" "}
                             <a
                                 href="mailto:support@ghostsweep.com"
-                                className="text-white underline hover:text-white/80"
+                                className="text-foreground underline hover:text-foreground/80"
                             >
                                 support@ghostsweep.com
                             </a>
@@ -167,7 +167,7 @@ export default function PrivacyPolicyPage() {
                     <Section title="2. Information we collect">
                         <div className="space-y-6">
                             <div>
-                                <h3 className="text-xs font-medium uppercase tracking-widest text-white/30 mb-2">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-foreground/55 mb-2">
                                     2.1 Account information
                                 </h3>
                                 <p>
@@ -178,7 +178,7 @@ export default function PrivacyPolicyPage() {
                             </div>
 
                             <div>
-                                <h3 className="text-xs font-medium uppercase tracking-widest text-white/30 mb-2">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-foreground/55 mb-2">
                                     2.2 Email connection (Google & Microsoft OAuth)
                                 </h3>
                                 <p className="mb-4">
@@ -187,23 +187,23 @@ export default function PrivacyPolicyPage() {
                                     features.
                                 </p>
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                    <div className="rounded-xl border border-white/5 bg-white/2 p-4">
-                                        <Mail className="h-4 w-4 text-white/40 mb-2" />
-                                        <p className="text-xs font-medium text-white mb-1">
+                                    <div className="rounded-xl border border-foreground/5 bg-foreground/2 p-4">
+                                        <Mail className="h-4 w-4 text-foreground/65 mb-2" />
+                                        <p className="text-xs font-medium text-foreground mb-1">
                                             Inbox scanning
                                         </p>
-                                        <p className="text-xs text-white/40">
+                                        <p className="text-xs text-foreground/65">
                                             Scans transiently to identify gift cards,
                                             subscriptions, and receipts. Full email bodies
                                             are never stored.
                                         </p>
                                     </div>
-                                    <div className="rounded-xl border border-white/5 bg-white/2 p-4">
-                                        <Send className="h-4 w-4 text-white/40 mb-2" />
-                                        <p className="text-xs font-medium text-white mb-1">
+                                    <div className="rounded-xl border border-foreground/5 bg-foreground/2 p-4">
+                                        <Send className="h-4 w-4 text-foreground/65 mb-2" />
+                                        <p className="text-xs font-medium text-foreground mb-1">
                                             Sending deletions
                                         </p>
-                                        <p className="text-xs text-white/40">
+                                        <p className="text-xs text-foreground/65">
                                             Deletion emails are sent only when you
                                             explicitly trigger them. We only send when you
                                             approve.
@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
                             </div>
 
                             <div>
-                                <h3 className="text-xs font-medium uppercase tracking-widest text-white/30 mb-2">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-foreground/55 mb-2">
                                     2.3 Sweep summaries and service data
                                 </h3>
                                 <p className="mb-2">We store:</p>
@@ -238,7 +238,7 @@ export default function PrivacyPolicyPage() {
                             </div>
 
                             <div>
-                                <h3 className="text-xs font-medium uppercase tracking-widest text-white/30 mb-2">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-foreground/55 mb-2">
                                     2.4 Deletion requests and tracking
                                 </h3>
                                 <p className="mb-2">
@@ -260,7 +260,7 @@ export default function PrivacyPolicyPage() {
                             </div>
 
                             <div>
-                                <h3 className="text-xs font-medium uppercase tracking-widest text-white/30 mb-2">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-foreground/55 mb-2">
                                     2.5 Payment information
                                 </h3>
                                 <p>
@@ -271,7 +271,7 @@ export default function PrivacyPolicyPage() {
                             </div>
 
                             <div>
-                                <h3 className="text-xs font-medium uppercase tracking-widest text-white/30 mb-2">
+                                <h3 className="text-xs font-medium uppercase tracking-widest text-foreground/55 mb-2">
                                     2.6 Usage and diagnostic data
                                 </h3>
                                 <p>
@@ -308,7 +308,7 @@ export default function PrivacyPolicyPage() {
                                 href="https://developers.google.com/terms/api-services-user-data-policy"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-white underline hover:text-white/80"
+                                className="text-foreground underline hover:text-foreground/80"
                             >
                                 Google API Services User Data Policy
                             </a>{" "}
@@ -317,7 +317,7 @@ export default function PrivacyPolicyPage() {
                                 href="https://learn.microsoft.com/en-us/legal/content-sharing-privacy"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-white underline hover:text-white/80"
+                                className="text-foreground underline hover:text-foreground/80"
                             >
                                 Microsoft Privacy Policy
                             </a>
@@ -340,14 +340,14 @@ export default function PrivacyPolicyPage() {
                             </li>
                         </ul>
 
-                        <div className="rounded-xl border border-white/5 bg-white/2 p-4 mt-4">
+                        <div className="rounded-xl border border-foreground/5 bg-foreground/2 p-4 mt-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <Trash2 className="h-4 w-4 text-white/40" />
-                                <p className="text-sm font-medium text-white">
+                                <Trash2 className="h-4 w-4 text-foreground/65" />
+                                <p className="text-sm font-medium text-foreground">
                                     You can revoke access anytime
                                 </p>
                             </div>
-                            <p className="text-xs text-white/40">
+                            <p className="text-xs text-foreground/65">
                                 Disconnect your email to revoke tokens. You can also
                                 delete sweep and deletion-tracking data anytime.
                             </p>
@@ -401,29 +401,29 @@ export default function PrivacyPolicyPage() {
                             To exercise these rights, contact{" "}
                             <a
                                 href="mailto:support@ghostsweep.com"
-                                className="text-white underline hover:text-white/80"
+                                className="text-foreground underline hover:text-foreground/80"
                             >
                                 support@ghostsweep.com
                             </a>
                         </p>
 
                         <div className="grid gap-3 sm:grid-cols-2 mt-4">
-                            <div className="rounded-xl border border-white/5 bg-white/2 p-4">
-                                <RefreshCw className="h-4 w-4 text-white/40 mb-2" />
-                                <p className="text-xs font-medium text-white mb-1">
+                            <div className="rounded-xl border border-foreground/5 bg-foreground/2 p-4">
+                                <RefreshCw className="h-4 w-4 text-foreground/65 mb-2" />
+                                <p className="text-xs font-medium text-foreground mb-1">
                                     Manage automations
                                 </p>
-                                <p className="text-xs text-white/40">
+                                <p className="text-xs text-foreground/65">
                                     Disable follow-up reminders for deletion requests
                                     anytime.
                                 </p>
                             </div>
-                            <div className="rounded-xl border border-white/5 bg-white/2 p-4">
-                                <Lock className="h-4 w-4 text-white/40 mb-2" />
-                                <p className="text-xs font-medium text-white mb-1">
+                            <div className="rounded-xl border border-foreground/5 bg-foreground/2 p-4">
+                                <Lock className="h-4 w-4 text-foreground/65 mb-2" />
+                                <p className="text-xs font-medium text-foreground mb-1">
                                     Security choices
                                 </p>
-                                <p className="text-xs text-white/40">
+                                <p className="text-xs text-foreground/65">
                                     Revoke Gmail access, change password, and delete
                                     stored data.
                                 </p>
@@ -459,23 +459,23 @@ export default function PrivacyPolicyPage() {
                     </Section>
 
                     <Section title="Questions?">
-                        <div className="rounded-xl border border-white/5 bg-white/2 p-5">
+                        <div className="rounded-xl border border-foreground/5 bg-foreground/2 p-5">
                             <div className="flex items-center gap-2 mb-3">
-                                <AlertCircle className="h-4 w-4 text-white/40" />
-                                <p className="text-sm font-medium text-white">
+                                <AlertCircle className="h-4 w-4 text-foreground/65" />
+                                <p className="text-sm font-medium text-foreground">
                                     Contact us
                                 </p>
                             </div>
                             <p>
-                                <Mail className="mr-1.5 inline h-3 w-3 text-white/40" />
+                                <Mail className="mr-1.5 inline h-3 w-3 text-foreground/65" />
                                 <a
                                     href="mailto:support@ghostsweep.com"
-                                    className="text-white underline hover:text-white/80"
+                                    className="text-foreground underline hover:text-foreground/80"
                                 >
                                     support@ghostsweep.com
                                 </a>
                             </p>
-                            <p className="text-xs text-white/25 mt-2">
+                            <p className="text-xs text-foreground/50 mt-2">
                                 Please avoid sending sensitive information (passwords,
                                 card numbers) by email.
                             </p>
@@ -484,10 +484,10 @@ export default function PrivacyPolicyPage() {
                 </div>
 
                 {/* Back */}
-                <div className="mt-16 pt-8 border-t border-white/5">
+                <div className="mt-16 pt-8 border-t border-foreground/5">
                     <Link
                         href="/home"
-                        className="inline-flex items-center gap-2 text-sm text-white/30 hover:text-white transition"
+                        className="inline-flex items-center gap-2 text-sm text-foreground/55 hover:text-foreground transition"
                     >
                         <ArrowRight className="h-3.5 w-3.5 rotate-180" />
                         Back to GhostSweep

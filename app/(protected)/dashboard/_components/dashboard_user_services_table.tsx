@@ -146,12 +146,12 @@ export default function DashboardUrgencyPanel() {
     const BannerIcon = banner?.icon ?? Sparkles;
 
     return (
-        <div className="rounded-lg border border-white/5 bg-white/2 p-6 space-y-6">
+        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-6">
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
-                    <div className="text-sm font-medium text-white">Risk Snapshot</div>
-                    <div className="text-xs text-white/40">
+                    <div className="text-sm font-medium text-foreground">Risk Snapshot</div>
+                    <div className="text-xs text-foreground/40">
                         {isLoading ? "—" : "Critical accounts requiring attention"}
                     </div>
                 </div>
@@ -159,14 +159,14 @@ export default function DashboardUrgencyPanel() {
                 {!isLoading && !isError ? (
                     gated ? (
                         <Link href="/dashboard/billing?plan=monthly">
-                            <Button size="sm" className="h-8 rounded-md border-0 bg-white text-black hover:bg-white/90 transition-colors">
+                            <Button size="sm" className="h-8 rounded-md border-0 bg-foreground text-background hover:bg-foreground/90 transition-colors">
                                 <Lock className="h-3.5 w-3.5 mr-1.5" />
                                 Upgrade to Pro →
                             </Button>
                         </Link>
                     ) : (
                         <Link href="/dashboard/accounts">
-                            <Button size="sm" variant="ghost" className="h-8 text-white/60 hover:text-white hover:bg-white/5">
+                            <Button size="sm" variant="ghost" className="h-8 text-foreground/60 hover:text-foreground hover:bg-foreground/5">
                                 View all →
                             </Button>
                         </Link>
@@ -176,23 +176,23 @@ export default function DashboardUrgencyPanel() {
 
             {/* Loading / Error */}
             {isLoading ? (
-                <div className="rounded-lg border border-white/5 bg-white/2 p-12 flex items-center justify-center">
-                    <Spinner className="text-white/40" />
+                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-12 flex items-center justify-center">
+                    <Spinner className="text-foreground/40" />
                 </div>
             ) : isError ? (
-                <div className="rounded-lg border border-white/5 bg-white/2 p-6">
-                    <div className="text-sm text-white/80">Failed to load</div>
-                    <div className="mt-1 text-xs text-white/40">
+                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6">
+                    <div className="text-sm text-foreground/80">Failed to load</div>
+                    <div className="mt-1 text-xs text-foreground/40">
                         {(error as any)?.message ?? "Unknown error"}
                     </div>
                     <div className="mt-4">
-                        <Button size="sm" variant="ghost" className="text-white/60 hover:text-white" onClick={() => refetch()}>
+                        <Button size="sm" variant="ghost" className="text-foreground/60 hover:text-foreground" onClick={() => refetch()}>
                             Retry
                         </Button>
                     </div>
                 </div>
             ) : !totals ? (
-                <div className="rounded-lg border border-white/5 bg-white/2 p-6 text-sm text-white/40">
+                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 text-sm text-foreground/40">
                     No data. Connect email to begin.
                 </div>
             ) : (
@@ -210,21 +210,21 @@ export default function DashboardUrgencyPanel() {
                     >
                         <div className="flex items-start justify-between gap-4">
                             <div className="space-y-2">
-                                <div className="text-sm font-medium text-white">{banner?.title}</div>
-                                <div className="text-xs text-white/50 leading-relaxed">{banner?.desc}</div>
+                                <div className="text-sm font-medium text-foreground">{banner?.title}</div>
+                                <div className="text-xs text-foreground/50 leading-relaxed">{banner?.desc}</div>
 
                                 {/* Free urgency hook */}
                                 {gated && countdown ? (
-                                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/5 bg-white/5 px-3 py-1.5 text-[11px] text-white/60">
+                                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-foreground/5 bg-foreground/5 px-3 py-1.5 text-[11px] text-foreground/60">
                                         <Clock className="h-3 w-3" />
-                                        Ends in <span className="font-medium text-white/80">{countdown}</span>
+                                        Ends in <span className="font-medium text-foreground/80">{countdown}</span>
                                     </div>
                                 ) : null}
                             </div>
 
                             {gated ? (
                                 <Link href="/dashboard/billing?plan=monthly" className="shrink-0">
-                                    <Button size="sm" className="h-8 rounded-md border-0 bg-white text-black hover:bg-white/90">
+                                    <Button size="sm" className="h-8 rounded-md border-0 bg-foreground text-background hover:bg-foreground/90">
                                         Unlock
                                     </Button>
                                 </Link>
@@ -254,17 +254,17 @@ export default function DashboardUrgencyPanel() {
                     {/* Teasers */}
                     <div className="space-y-3">
                         <div className="flex items-center justify-between gap-3">
-                            <div className="text-xs text-white/40">
+                            <div className="text-xs text-foreground/40">
                                 High-risk accounts
                             </div>
 
                             {gated ? (
-                                <Badge variant="outline" className="border-white/10 bg-white/5 text-white/50 text-[10px] font-normal">
+                                <Badge variant="outline" className="border-foreground/10 bg-foreground/5 text-foreground/50 text-[10px] font-normal">
                                     {hiddenCount.toLocaleString()} hidden
                                 </Badge>
                             ) : (
                                 totals.oldestYear ? (
-                                    <Badge variant="outline" className="border-white/10 bg-white/5 text-white/50 text-[10px] font-normal">
+                                    <Badge variant="outline" className="border-foreground/10 bg-foreground/5 text-foreground/50 text-[10px] font-normal">
                                         oldest: {totals.oldestYear}
                                     </Badge>
                                 ) : null
@@ -273,35 +273,35 @@ export default function DashboardUrgencyPanel() {
 
                         <div className="space-y-2">
                             {(data?.topRiskTeasers ?? []).length === 0 ? (
-                                <div className="rounded-lg border border-white/5 bg-white/2 p-4 text-xs text-white/40">No accounts yet</div>
+                                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 text-xs text-foreground/40">No accounts yet</div>
                             ) : (
                                 (data?.topRiskTeasers ?? []).map((t) => (
                                     <div
                                         key={t.id}
-                                        className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/2 px-4 py-3 transition-all hover:border-white/10 hover:bg-white/3"
+                                        className="flex items-center justify-between gap-3 rounded-lg border border-foreground/5 bg-foreground/2 px-4 py-3 transition-all hover:border-foreground/10 hover:bg-foreground/3"
                                     >
                                         <div className="min-w-0 flex-1">
-                                            <div className="text-sm font-medium text-white truncate">{t.name}</div>
-                                            <div className="text-[11px] text-white/40 truncate mt-0.5">
+                                            <div className="text-sm font-medium text-foreground truncate">{t.name}</div>
+                                            <div className="text-[11px] text-foreground/40 truncate mt-0.5">
                                                 {t.domain ?? "—"} · {formatShortDate(t.lastSeenAt)} · {t.emailCount} emails
                                             </div>
                                         </div>
 
-                                        <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${t.breached ? 'bg-red-500' : 'bg-white/20'}`} />
+                                        <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${t.breached ? 'bg-red-500' : 'bg-foreground/20'}`} />
                                     </div>
                                 ))
                             )}
 
                             {/* Locked hint rows */}
                             {gated ? (
-                                <div className="mt-3 rounded-lg border border-white/5 bg-white/2 px-4 py-3">
+                                <div className="mt-3 rounded-lg border border-foreground/5 bg-foreground/2 px-4 py-3">
                                     <div className="flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-2 text-xs text-white/40">
+                                        <div className="flex items-center gap-2 text-xs text-foreground/40">
                                             <Lock className="h-3 w-3" />
                                             {hiddenCount.toLocaleString()} more hidden
                                         </div>
                                         <Link href="/dashboard/billing?plan=monthly">
-                                            <Button size="sm" className="h-7 text-xs rounded-md border-0 bg-white text-black hover:bg-white/90">
+                                            <Button size="sm" className="h-7 text-xs rounded-md border-0 bg-foreground text-background hover:bg-foreground/90">
                                         Upgrade
                                             </Button>
                                         </Link>
@@ -313,7 +313,7 @@ export default function DashboardUrgencyPanel() {
 
                     {/* Bottom action */}
                     <div className="flex items-center justify-between gap-3">
-                        <div className="text-xs text-white/40">
+                        <div className="text-xs text-foreground/40">
                             {gated ? (
                                 <>
                                     You’re only seeing a preview. Unlock the full list to start deletions and tracking.
@@ -327,13 +327,13 @@ export default function DashboardUrgencyPanel() {
 
                         {gated ? (
                             <Link href="/dashboard/billing?plan=monthly">
-                                <Button className="bg-white text-black hover:bg-white/90">
+                                <Button className="bg-foreground text-background hover:bg-foreground/90">
                                     Upgrade Now
                                 </Button>
                             </Link>
                         ) : (
                             <Link href="/dashboard/accounts">
-                                <Button variant="ghost" className="border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3">
+                                <Button variant="ghost" className="border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3">
                                     Go to accounts
                                 </Button>
                             </Link>
@@ -359,15 +359,15 @@ function StatCard({
             ? "bg-red-500"
             : tone === "warn"
                 ? "bg-amber-500"
-                : "bg-white/20";
+                : "bg-foreground/20";
 
     return (
-        <div className="rounded-lg border border-white/5 bg-white/2 p-4">
+        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
             <div className="flex items-start justify-between">
-                <div className="text-[11px] font-medium uppercase tracking-widest text-white/40">{label}</div>
+                <div className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">{label}</div>
                 <div className={`h-1 w-1 rounded-full ${indicatorClass}`} />
             </div>
-            <div className="mt-2 text-2xl font-light text-white">{value}</div>
+            <div className="mt-2 text-2xl font-light text-foreground">{value}</div>
         </div>
     );
 }

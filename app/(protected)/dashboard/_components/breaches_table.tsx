@@ -16,15 +16,15 @@ function severityLabel(breach: Breach) {
     const sensitive = breach.is_sensitive === true;
 
     if (sensitive && pwn >= 10_000_000) {
-        return { label: "Critical", className: "bg-red-500/15 text-red-300 border-red-500/40" };
+        return { label: "Critical", className: "bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/40" };
     }
     if (sensitive || pwn >= 1_000_000) {
-        return { label: "High", className: "bg-orange-500/15 text-orange-300 border-orange-500/40" };
+        return { label: "High", className: "bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/40" };
     }
     if (pwn > 0) {
-        return { label: "Medium", className: "bg-yellow-500/15 text-yellow-200 border-yellow-500/40" };
+        return { label: "Medium", className: "bg-yellow-500/15 text-yellow-800 dark:text-yellow-200 border-yellow-500/40" };
     }
-    return { label: "Low", className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" };
+    return { label: "Low", className: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40" };
 }
 
 export default function Breaches() {
@@ -63,16 +63,16 @@ export default function Breaches() {
     const trialLabel = "Upgrade to Professional";
 
     return (
-        <div className="rounded-lg border border-white/5 bg-white/2 p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
+        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
             <div className="mb-4">
-                <h2 className="text-sm font-light tracking-wide text-white">Recent Breaches</h2>
+                <h2 className="text-sm font-light tracking-wide text-foreground">Recent Breaches</h2>
 
                 {showUpgradeBanner && (
-                    <div className="mt-3 rounded-lg border border-white/5 bg-white/2 p-3">
-                        <p className="text-xs text-white/60">
-                            We found <strong className="text-white">{totalCount}</strong> breaches linked to your data.
+                    <div className="mt-3 rounded-lg border border-foreground/5 bg-foreground/2 p-3">
+                        <p className="text-xs text-foreground/60">
+                            We found <strong className="text-foreground">{totalCount}</strong> breaches linked to your data.
                             <Link href="/dashboard/billing?plan=monthly">
-                                <button className="text-white/90 underline underline-offset-2 ml-1 hover:text-white">
+                                <button className="text-foreground/90 underline underline-offset-2 ml-1 hover:text-foreground">
                                     {trialLabel}
                                 </button>
                             </Link>{" "}
@@ -86,25 +86,25 @@ export default function Breaches() {
                 <Table className="h-full flex-1">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[30%] text-[11px] font-medium uppercase tracking-widest text-white/40">Service</TableHead>
-                            <TableHead className="w-[15%] text-[11px] font-medium uppercase tracking-widest text-white/40">Breach Date</TableHead>
-                            <TableHead className="w-[30%] text-[11px] font-medium uppercase tracking-widest text-white/40">Data Exposed</TableHead>
-                            <TableHead className="w-[15%] text-[11px] font-medium uppercase tracking-widest text-white/40">Severity</TableHead>
-                            <TableHead className="w-[10%] text-[11px] font-medium uppercase tracking-widest text-white/40 text-right">Actions</TableHead>
+                            <TableHead className="w-[30%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Service</TableHead>
+                            <TableHead className="w-[15%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Breach Date</TableHead>
+                            <TableHead className="w-[30%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Data Exposed</TableHead>
+                            <TableHead className="w-[15%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Severity</TableHead>
+                            <TableHead className="w-[10%] text-[11px] font-medium uppercase tracking-widest text-foreground/40 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-xs text-white/40 relative">
-                                    <Spinner className="text-white absolute top-1/2 left-1/2" />
+                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/40 relative">
+                                    <Spinner className="text-foreground absolute top-1/2 left-1/2" />
                                 </TableCell>
                             </TableRow>
                         ) : gated ? (
                             // ✅ Free tier: do NOT show list at all
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-xs text-white/40">
+                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/40">
                                     {totalCount > 0
                                         ? `Breach list is Pro-only. You have ${totalCount} breach${totalCount === 1 ? "" : "es"} detected.`
                                         : "No breaches found."}
@@ -131,32 +131,32 @@ export default function Breaches() {
                                     <TableRow key={ub.id}>
                                         <TableCell className="align-top">
                                             <div className="flex flex-col gap-0.5">
-                                                <span className="text-sm font-light text-white">{name}</span>
+                                                <span className="text-sm font-light text-foreground">{name}</span>
                                                 {breach.domain && (
-                                                    <span className="text-xs text-white/40">{breach.domain}</span>
+                                                    <span className="text-xs text-foreground/40">{breach.domain}</span>
                                                 )}
                                             </div>
                                         </TableCell>
 
-                                        <TableCell className="align-top text-sm text-white/60">
+                                        <TableCell className="align-top text-sm text-foreground/60">
                                             {breach.breach_date ? formatDate(breach.breach_date) : "Unknown"}
                                         </TableCell>
 
                                         <TableCell className="align-top">
                                             {exposed.length === 0 ? (
-                                                <span className="text-xs text-white/40">Not specified</span>
+                                                <span className="text-xs text-foreground/40">Not specified</span>
                                             ) : (
                                                 <div className="flex flex-wrap gap-1.5">
                                                     {firstFew.map((dc) => (
                                                         <span
                                                             key={dc}
-                                                            className="text-[11px] text-white/60"
+                                                            className="text-[11px] text-foreground/60"
                                                         >
                                                             {dc}
                                                         </span>
                                                     ))}
                                                     {extraCount > 0 && (
-                                                        <span className="text-[11px] text-white/40">+{extraCount} more</span>
+                                                        <span className="text-[11px] text-foreground/40">+{extraCount} more</span>
                                                     )}
                                                 </div>
                                             )}
@@ -170,7 +170,7 @@ export default function Breaches() {
                                                     severity.label === 'Medium' ? 'bg-yellow-500' :
                                                     'bg-emerald-500'
                                                 }`} />
-                                                <span className="text-xs text-white/60">{severity.label}</span>
+                                                <span className="text-xs text-foreground/60">{severity.label}</span>
                                             </div>
                                         </TableCell>
 
@@ -178,7 +178,7 @@ export default function Breaches() {
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-7 px-3 text-[11px] border border-white/5 bg-white/2 hover:border-white/10 hover:bg-white/3"
+                                                className="h-7 px-3 text-[11px] border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3"
                                                 onClick={() => {
                                                     setUserBreachId(ub.id);
                                                     setOpen(true);
@@ -192,7 +192,7 @@ export default function Breaches() {
                             })
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-xs text-white/40">
+                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/40">
                                     No breaches found
                                 </TableCell>
                             </TableRow>

@@ -61,7 +61,7 @@ function Section({
 }) {
     return (
         <section className="space-y-4">
-            <h2 className="text-lg font-semibold tracking-tight text-white flex items-center gap-2">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground flex items-center gap-2">
                 {icon}
                 {title}
             </h2>
@@ -72,7 +72,7 @@ function Section({
 
 export default function TermsPage() {
     return (
-        <main className="min-h-screen bg-[#050505]">
+        <main className="min-h-screen bg-background">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -83,18 +83,18 @@ export default function TermsPage() {
             <div className="mx-auto max-w-3xl px-6 pt-24 pb-20 sm:pt-32">
                 {/* Header */}
                 <header className="mb-16">
-                    <p className="text-sm uppercase tracking-[0.2em] text-white/25 mb-4">
+                    <p className="text-sm uppercase tracking-[0.2em] text-foreground/50 mb-4">
                         Terms of Service
                     </p>
-                    <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white mb-6">
+                    <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-foreground mb-6">
                         Terms of Service
                     </h1>
-                    <p className="text-base text-white/45 leading-relaxed max-w-xl">
+                    <p className="text-base text-foreground/65 leading-relaxed max-w-xl">
                         These Terms govern your access to and use of GhostSweep. By
                         creating an account or using the service, you agree to be bound
                         by these Terms.
                     </p>
-                    <p className="text-xs text-white/25 mt-4">
+                    <p className="text-xs text-foreground/50 mt-4">
                         Last updated: Dec 01, 2025
                     </p>
                 </header>
@@ -120,13 +120,13 @@ export default function TermsPage() {
                     ].map((card) => (
                         <div
                             key={card.title}
-                            className="rounded-2xl border border-white/5 bg-white/2 p-6"
+                            className="rounded-2xl border border-foreground/5 bg-foreground/2 p-6"
                         >
-                            <card.icon className="h-5 w-5 text-white/40 mb-3" />
-                            <p className="text-sm font-medium text-white mb-1">
+                            <card.icon className="h-5 w-5 text-foreground/65 mb-3" />
+                            <p className="text-sm font-medium text-foreground mb-1">
                                 {card.title}
                             </p>
-                            <p className="text-xs text-white/40 leading-relaxed">
+                            <p className="text-xs text-foreground/65 leading-relaxed">
                                 {card.text}
                             </p>
                         </div>
@@ -134,14 +134,14 @@ export default function TermsPage() {
                 </div>
 
                 {/* Sections */}
-                <div className="space-y-12 text-sm text-white/50 leading-relaxed">
+                <div className="space-y-12 text-sm text-foreground/50 leading-relaxed">
                     <Section title="1. Agreement to Terms">
                         <p>
                             By accessing or using GhostSweep, you agree to be bound by
                             these Terms and our{" "}
                             <Link
                                 href="/home/privacy"
-                                className="text-white underline hover:text-white/80"
+                                className="text-foreground underline hover:text-foreground/80"
                             >
                                 Privacy Policy
                             </Link>
@@ -280,7 +280,7 @@ export default function TermsPage() {
                     <Section
                         title="8. Limitation of Liability"
                         icon={
-                            <AlertTriangle className="h-4 w-4 text-white/40" />
+                            <AlertTriangle className="h-4 w-4 text-foreground/65" />
                         }
                     >
                         <p>
@@ -305,7 +305,7 @@ export default function TermsPage() {
 
                     <Section
                         title="9. Suspension & Termination"
-                        icon={<UserX2 className="h-4 w-4 text-white/40" />}
+                        icon={<UserX2 className="h-4 w-4 text-foreground/65" />}
                     >
                         <p>
                             We may suspend or terminate your access if we believe you
@@ -320,7 +320,7 @@ export default function TermsPage() {
 
                     <Section
                         title="10. Governing Law"
-                        icon={<Gavel className="h-4 w-4 text-white/40" />}
+                        icon={<Gavel className="h-4 w-4 text-foreground/65" />}
                     >
                         <p>
                             These Terms will be governed by and construed in accordance
@@ -340,19 +340,19 @@ export default function TermsPage() {
                     <Section
                         title="12. Contact"
                         icon={
-                            <ShieldCheck className="h-4 w-4 text-white/40" />
+                            <ShieldCheck className="h-4 w-4 text-foreground/65" />
                         }
                     >
                         <p>
                             Questions? Contact us at{" "}
                             <a
                                 href="mailto:support@ghostsweep.com"
-                                className="text-white underline hover:text-white/80"
+                                className="text-foreground underline hover:text-foreground/80"
                             >
                                 support@ghostsweep.com
                             </a>
                         </p>
-                        <p className="text-xs text-white/25 mt-2">
+                        <p className="text-xs text-foreground/50 mt-2">
                             Please do not send sensitive information (passwords, card
                             numbers) via email.
                         </p>
@@ -360,10 +360,10 @@ export default function TermsPage() {
                 </div>
 
                 {/* Back */}
-                <div className="mt-16 pt-8 border-t border-white/5">
+                <div className="mt-16 pt-8 border-t border-foreground/5">
                     <Link
                         href="/home"
-                        className="inline-flex items-center gap-2 text-sm text-white/30 hover:text-white transition"
+                        className="inline-flex items-center gap-2 text-sm text-foreground/55 hover:text-foreground transition"
                     >
                         <ArrowRight className="h-3.5 w-3.5 rotate-180" />
                         Back to GhostSweep

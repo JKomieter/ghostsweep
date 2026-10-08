@@ -51,15 +51,15 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
   if (done) {
     return (
       <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4 backdrop-blur-sm">
-        <h2 className="text-sm font-light text-emerald-300">
+        <h2 className="text-sm font-light text-emerald-700 dark:text-emerald-300">
           You&apos;re unsubscribed
         </h2>
-        <p className="mt-1 text-xs text-emerald-300/80">
+        <p className="mt-1 text-xs text-emerald-700/80 dark:text-emerald-300/80">
           {email
             ? `We’ve unsubscribed ${email} from GhostSweep updates for this email type.`
             : "You’re unsubscribed from GhostSweep updates for this email type."}
         </p>
-        <p className="mt-2 text-[11px] text-emerald-300/70">
+        <p className="mt-2 text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
           You may still receive important account or security messages if you
           have a GhostSweep account.
         </p>
@@ -72,7 +72,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
       <div className="space-y-1.5">
         <label
           htmlFor="email"
-          className="block text-xs font-light text-white/60"
+          className="block text-xs font-light text-foreground/60"
         >
           Email address
         </label>
@@ -82,7 +82,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
           value={email}
           placeholder="you@example.com"
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-white/5 bg-white/2 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus-visible:ring-2 focus-visible:ring-white/20 backdrop-blur-sm"
+          className="w-full rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-foreground placeholder:text-foreground/65 outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 backdrop-blur-sm"
         />
       </div>
 
@@ -90,7 +90,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
       <input type="hidden" value={list} readOnly />
 
       {error && (
-        <p className="text-xs text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 backdrop-blur-sm">
+        <p className="text-xs text-red-700 dark:text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 backdrop-blur-sm">
           {error}
         </p>
       )}

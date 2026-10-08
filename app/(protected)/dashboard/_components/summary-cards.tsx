@@ -4,16 +4,16 @@ import Link from "next/link";
 
 function StatCard({ label, value, accent = "default", href }: { label: string; value: string | number; accent?: "default" | "danger" | "warning" | "success"; href?: string }) {
     const accentConfig = {
-        default: { text: "text-white", indicator: "bg-zinc-500" },
-        danger: { text: "text-white", indicator: "bg-red-500" },
-        warning: { text: "text-white", indicator: "bg-amber-500" },
-        success: { text: "text-white", indicator: "bg-emerald-500" },
+        default: { text: "text-foreground", indicator: "bg-foreground/40" },
+        danger: { text: "text-foreground", indicator: "bg-red-500" },
+        warning: { text: "text-foreground", indicator: "bg-amber-500" },
+        success: { text: "text-foreground", indicator: "bg-emerald-500" },
     }[accent];
     const content = (
         <div className="group relative h-full">
-            <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-white/5 bg-white/2 p-6 transition-all hover:border-white/10 hover:bg-white/3">
+            <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
                 <div className="flex items-start justify-between">
-                    <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">{label}</span>
+                    <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">{label}</span>
                 </div>
                 <div className="flex items-end justify-between">
                     <span className={`text-4xl font-light tracking-tight ${accentConfig.text}`}>{value}</span>
@@ -51,19 +51,19 @@ export default function SummaryCards() {
             <StatCard label="Newsletters" value={isLoading ? "—" : newsletters} href="/dashboard/newsletters" />
             <StatCard label="Old Accounts" value={isLoading ? "—" : oldAccounts} href="/dashboard/accounts" />
             <div className="group relative h-full">
-                <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-white/5 bg-white/2 p-6 transition-all hover:border-white/10 hover:bg-white/3">
+                <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
                     <div className="flex items-start justify-between">
-                        <span className="text-[11px] font-medium uppercase tracking-widest text-white/40">Recent Finds</span>
+                        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">Recent Finds</span>
                     </div>
                     <div className="flex flex-col gap-1">
                         {isLoading ? (
-                            <span className="text-white/40 text-sm">Loading…</span>
+                            <span className="text-foreground/40 text-sm">Loading…</span>
                         ) : recent.length === 0 ? (
-                            <span className="text-white/40 text-sm">No recent finds</span>
+                            <span className="text-foreground/40 text-sm">No recent finds</span>
                         ) : (
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             recent.map((item: any) => (
-                                <div key={item.id} className="text-xs text-white/80 truncate">
+                                <div key={item.id} className="text-xs text-foreground/80 truncate">
                                     {item.type}: ${ (item.amount / 100).toFixed(2) } – {item.detected_at?.slice(0, 10)}
                                 </div>
                             ))
