@@ -2,6 +2,7 @@
 
 import { Shield, Eye, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePaywall } from "../../_components/upgrade_paywall";
 
 type BreachEntry = {
   shadow_profile_id: string;
@@ -17,12 +18,13 @@ export default function RemediationQueue({
   profiles: BreachEntry[];
   isPremium: boolean;
 }) {
+  const { openPaywall } = usePaywall();
   const breachedProfiles = profiles.filter((p) => p.has_breach);
 
   const handleReveal = () => {
     if (!isPremium) {
       // Navigate to billing / checkout
-      window.location.href = "/dashboard/billing?plan=monthly";
+      openPaywall("generic");
     }
   };
 

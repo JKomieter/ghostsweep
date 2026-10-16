@@ -1,6 +1,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { getUserPlan } from "@/lib/entitlements";
+import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -70,16 +71,31 @@ export async function GET(req: NextRequest) {
   const activeCount = allRelevantServices.filter(us => us.status === null || us.status === "active").length;
   const unsubscribedCount = allRelevantServices.filter(us => us.status === "unsubscribed").length;
 
+  // Free tier: a fixed preview of the noisiest senders, chosen across ALL statuses (including
+  // unsubscribed/deleted) so unsubscribing or deleting can't pull hidden newsletters into view.
+  const isFree = plan === "free";
+  const PREVIEW_LIMIT = 10;
+  const previewIds = isFree
+    ? pickPreviewIds(allRelevantServices, PREVIEW_LIMIT, {
+        id: (us) => us.id,
+        compare: (a, b) => (b.email_count || 0) - (a.email_count || 0),
+      })
+    : null;
+  const visibleServices = previewIds
+    ? allRelevantServices.filter(us => previewIds.has(us.id))
+    : allRelevantServices;
+
   // Now apply the status filter for the response list
-  let filteredServices = allRelevantServices;
+  let filteredServices = visibleServices;
   if (status === "unsubscribed") {
-    filteredServices = allRelevantServices.filter(us => us.status === "unsubscribed");
+    filteredServices = visibleServices.filter(us => us.status === "unsubscribed");
   } else {
     // Active: null or 'active', exclude unsubscribed/deleted
-    filteredServices = allRelevantServices.filter(us => us.status === null || us.status === "active");
+    filteredServices = visibleServices.filter(us => us.status === null || us.status === "active");
   }
 
-  const totalCount = filteredServices.length;
+  // Full count for the current tab (not just the free preview) so free users see what they're missing
+  const totalCount = status === "unsubscribed" ? unsubscribedCount : activeCount;
 
   // Process newsletter data
   const newsletters = filteredServices.map(us => {
@@ -134,12 +150,8 @@ export async function GET(req: NextRequest) {
     }
   });
 
-  // Free tier: blur newsletter names and limit data
-  const isFree = plan === "free";
-  const PREVIEW_LIMIT = 10;
-  
-  // For free users, only return a preview slice
-  const newslettersToReturn = isFree ? newsletters.slice(0, PREVIEW_LIMIT) : newsletters;
+  // Free users only ever get rows from their fixed preview set (filtered above)
+  const newslettersToReturn = newsletters;
   
   // For free users, blur the newsletter names in the preview
   const processedNewsletters = newslettersToReturn.map(nl => {
@@ -224,6 +236,10 @@ export async function DELETE(req: NextRequest) {
   if (!id) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
+
+  // Permanently removing rows would shrink the free preview set and reveal hidden newsletters
+  const { hasPaidAccess } = await getUserPlan(supabase, user.id);
+  if (!hasPaidAccess) return upgradeRequired("Upgrade to permanently remove newsletters from your list.");
 
   try {
     const { error } = await supabase

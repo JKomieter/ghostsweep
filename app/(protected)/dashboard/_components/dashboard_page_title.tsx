@@ -10,6 +10,7 @@ import SweepDialog from "./sweep_dialog";
 import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
 import { OutLookLogo, GmailLogo } from "@/svgs";
+import { usePaywall } from "./upgrade_paywall";
 
 const EmailIcon = ({ type }: { type: "gmail" | "outlook" | null }) => {
     if (type === "gmail") return <GmailLogo className="h-3.5 w-3.5" />;
@@ -67,6 +68,7 @@ const getPhaseLabel = (phase?: string | null, fallbackLabel?: string | null): st
 };
 
 export default function DashboardTitle() {
+    const { openPaywall } = usePaywall();
     const [isConnecting, setIsConnecting] = useState(false);
     const [sweepDialogOpen, setSweepDialogOpen] = useState(false);
     const [lastNotifiedStatus, setLastNotifiedStatus] = useState<string | null>(null);
@@ -200,7 +202,7 @@ export default function DashboardTitle() {
                 action: (plan?.current_plan === "free" || (plan?.current_plan === "buster" && (plan?.scan_credits_remaining ?? 0) === 0)) ? {
                     label: "Upgrade",
                     onClick: () => {
-                        window.location.href = "/dashboard/billing?plan=monthly";
+                        openPaywall("generic");
                     },
                 } : undefined,
             });
@@ -274,7 +276,8 @@ export default function DashboardTitle() {
         queryClient,
         latestSweep?.errorMessage,
         plan?.current_plan,
-        plan?.scan_credits_remaining
+        plan?.scan_credits_remaining,
+        openPaywall,
     ]);
 
     const getElapsedMinutes = useCallback(() => {
@@ -341,7 +344,7 @@ export default function DashboardTitle() {
                         action: {
                             label: "Upgrade",
                             onClick: () => {
-                                window.location.href = "/dashboard/billing?plan=monthly";
+                                openPaywall("generic");
                             },
                         },
                     });

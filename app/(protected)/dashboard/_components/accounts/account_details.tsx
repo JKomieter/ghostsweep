@@ -41,6 +41,7 @@ import {
 
 import { formatDate } from "@/utils/format_date";
 import DeletionEmailModal from "./deletion_email_modal";
+import { usePaywall, UpgradeRequiredError, throwIfUpgradeRequired } from "../upgrade_paywall";
 
 type DeletionPlaybook = {
     id: string;
@@ -97,6 +98,7 @@ type Props = {
 };
 
 export default function AccountDetailsPage({ accountId }: Props) {
+    const { openPaywall } = usePaywall();
     const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState("overview");
     const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -175,6 +177,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
             const res = await fetch(`/api/dashboard/accounts?id=${accountId}`, {
                 method: "DELETE",
             });
+            throwIfUpgradeRequired(res);
             if (!res.ok) throw new Error("Failed to permanently delete account");
             return res.json();
         },
@@ -183,7 +186,10 @@ export default function AccountDetailsPage({ accountId }: Props) {
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
             window.location.href = "/dashboard/accounts";
         },
-        onError: () => toast.error("Failed to delete account"),
+        onError: (err: Error) => {
+            if (err instanceof UpgradeRequiredError) return openPaywall("accounts");
+            toast.error("Failed to delete account");
+        },
     });
 
     const copyDomain = async () => {

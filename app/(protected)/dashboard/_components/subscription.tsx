@@ -15,6 +15,7 @@ import { AlertCircle, Crown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isPaidPlan } from "@/lib/plans";
+import { usePaywall } from "./upgrade_paywall";
 
 
 export default function SubscriptionModal({
@@ -24,6 +25,7 @@ export default function SubscriptionModal({
     open: boolean;
     onOpenChangeAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+    const { openPaywall } = usePaywall();
     const [billingLoading ] = useState(false);
     const [billingError] = useState<string | null>(null);
 
@@ -47,7 +49,7 @@ export default function SubscriptionModal({
     })
 
     const handleUpgrade = () => {
-        window.location.href = `/dashboard/billing?plan=monthly`;
+        openPaywall("generic");
     };
 
     const handleManageBilling = async () => {

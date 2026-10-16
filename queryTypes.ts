@@ -30,6 +30,9 @@ export type FoundValue = {
     risk_level: RiskLevel | null;
     is_verified: boolean | null;
     warning_message: string | null;
+    // Free tier: code/pin/link withheld until upgrade (has_secret says whether there's anything to unlock)
+    locked?: boolean;
+    has_secret?: boolean;
 };
 
 export interface ValueRecoveryQueryResult {

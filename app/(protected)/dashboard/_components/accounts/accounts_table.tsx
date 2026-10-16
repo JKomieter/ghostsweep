@@ -1,7 +1,6 @@
 import Input from "@/components/ui/input";
 import { Search, Trash2, AlertTriangle } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import {
@@ -23,6 +22,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { RowSelectionState, VisibilityState, ColumnDef, useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { toast } from "sonner";
+import { UpgradeTrigger, usePaywall, UpgradeRequiredError, throwIfUpgradeRequired } from "../upgrade_paywall";
 
 type StatusFilter = "all" | "breached" | "unused" | "deleted";
 type SortOption = "risk" | "alphabetical" | "oldest";
@@ -96,6 +96,7 @@ export default function AccountsTable({
     // Suppress unused var warnings (can be used for sorting UI later)
     void _sort;
     void _setSort;
+    const { openPaywall } = usePaywall();
     const router = useRouter();
     const queryClient = useQueryClient();
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -164,6 +165,7 @@ export default function AccountsTable({
     const hardDeleteMutation = useMutation({
         mutationFn: async (id: string) => {
             const res = await fetch(`/api/dashboard/accounts?id=${id}`, { method: "DELETE" });
+            throwIfUpgradeRequired(res);
             if (!res.ok) {
                 const data = await res.json();
                 throw new Error(data.error || "Failed to delete account");
@@ -176,8 +178,9 @@ export default function AccountsTable({
             queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
         onError: (error: Error) => {
-            toast.error(error.message);
             setConfirmDeleteId(null);
+            if (error instanceof UpgradeRequiredError) return openPaywall("accounts");
+            toast.error(error.message);
         },
     });
 
@@ -532,9 +535,9 @@ export default function AccountsTable({
                     <p className="text-foreground/40 text-sm mb-6">
                         Upgrade to see all accounts, delete them, and protect your privacy.
                     </p>
-                    <Link href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-purple-500 hover:bg-purple-400 px-6 py-3 text-sm font-semibold text-white transition">
+                    <UpgradeTrigger reason="accounts" className="inline-flex items-center justify-center rounded-lg bg-purple-500 hover:bg-purple-400 px-6 py-3 text-sm font-semibold text-white transition">
                         {upgradeLabel}
-                    </Link>
+                    </UpgradeTrigger>
                 </div>
             )}
         </div>

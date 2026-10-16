@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import AccountSelect from "./account_select";
 import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
-import Link from "next/link";
 import { BUSTER_SCAN_CREDITS } from "@/lib/plans";
+import { UpgradeTrigger } from "./upgrade_paywall";
 
 type LatestSweep = {
   status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;
@@ -155,18 +155,18 @@ export default function SweepDialog({
                     </p>
                     <div className="flex items-center gap-2 pt-1 border-t border-foreground/10">
                       <Sparkles className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
-                      <Link
-                        href="/dashboard/billing?plan=monthly"
+                      <UpgradeTrigger
+ reason="generic"
                         className="text-xs text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 underline underline-offset-2 transition-colors"
                       >
                         Upgrade to Pro for{" "}
-                        <span className="font-semibold">5 years</span> of value recovery →
-                      </Link>
+                        <span className="font-semibold">10+ years</span> of value recovery →
+                      </UpgradeTrigger>
                     </div>
                   </div>
                 ) : (
                   <p className="text-sm text-foreground/80">
-                    <span className="font-medium text-emerald-700 dark:text-emerald-300">Deep Audit:</span> 5 years of subscriptions, trials & hidden charges
+                    <span className="font-medium text-emerald-700 dark:text-emerald-300">Deep Audit:</span> 10+ years of subscriptions, trials & hidden charges
                   </p>
                 )}
               </div>

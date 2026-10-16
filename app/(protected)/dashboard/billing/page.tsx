@@ -9,6 +9,7 @@ import CheckoutForm from "../_components/checkout";
 import { BUSTER_SCAN_CREDITS, PAID_PLANS } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { billingPathForPlan } from "@/lib/pending-plan";
+import TrackFunnelEvent from "@/components/track-funnel-event";
 import { ShieldCheck, CalendarClock, Zap, Check } from "lucide-react";
 
 type PlanTab = "buster" | "pro" | "sentinel";
@@ -85,6 +86,9 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 </header>
 
                 {/* Canceled notice */}
+                {wasCanceled && !isPaid && (
+                    <TrackFunnelEvent event={{ name: "checkout_canceled", props: { plan: selectedTab } }} />
+                )}
                 {wasCanceled && !isPaid && (
                     <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
                         <p className="text-sm text-amber-700 dark:text-amber-300">

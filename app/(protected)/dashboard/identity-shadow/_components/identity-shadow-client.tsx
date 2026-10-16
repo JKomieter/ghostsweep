@@ -13,6 +13,7 @@ import RemediationQueue from "./remediation-queue";
 import ScanButton, { type ScanStatus } from "./scan-button";
 import ShadowOnboardingModal from "./shadow-onboarding-modal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UpgradeTrigger, usePaywall, UpgradeRequiredError, throwIfUpgradeRequired } from "../../_components/upgrade_paywall";
 
 type ShadowData = {
   profiles: ShadowProfile[];
@@ -46,6 +47,7 @@ type ShadowScan = {
 const ACTIVE_STATUSES: ScanStatus[] = ["starting", "scanning", "processing"];
 
 export default function IdentityShadowClient() {
+  const { openPaywall } = usePaywall();
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -176,6 +178,7 @@ export default function IdentityShadowClient() {
       const res = await fetch(`/api/shadow-profiles?id=${id}`, {
         method: "DELETE",
       });
+      throwIfUpgradeRequired(res);
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Failed to delete");
@@ -189,6 +192,7 @@ export default function IdentityShadowClient() {
       queryClient.invalidateQueries({ queryKey: ["shadow-data"] });
     },
     onError: (err: Error) => {
+      if (err instanceof UpgradeRequiredError) return openPaywall("generic");
       toast.error("Delete failed", { description: err.message });
     },
   });
@@ -420,12 +424,12 @@ export default function IdentityShadowClient() {
                         Upgrade to see all discovered accounts and take action
                       </p>
                     </div>
-                    <Link
-                      href="/dashboard/billing?plan=monthly"
+                    <UpgradeTrigger
+ reason="generic"
                       className="shrink-0 rounded-md bg-emerald-500/15 border border-emerald-500/30 px-4 py-2 text-xs font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 transition-colors"
                     >
                       Upgrade
-                    </Link>
+                    </UpgradeTrigger>
                   </div>
                 )}
               </div>

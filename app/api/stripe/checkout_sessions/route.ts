@@ -81,11 +81,12 @@ export async function POST(req: NextRequest) {
             referral_code = (formData.get("referral_code") as string | null) ?? undefined;
         }
 
-        const planConfig = plan
-            ? PLAN_PRICES[plan]
-            : Object.values(PLAN_PRICES).find((p) => p.price && p.price === requested_price_id);
+        const planKey = plan && PLAN_PRICES[plan]
+            ? plan
+            : Object.keys(PLAN_PRICES).find((k) => PLAN_PRICES[k].price && PLAN_PRICES[k].price === requested_price_id);
+        const planConfig = planKey ? PLAN_PRICES[planKey] : undefined;
 
-        if (!planConfig?.price) {
+        if (!planKey || !planConfig?.price) {
             return NextResponse.json(
                 { error: "Invalid pricing plan." },
                 { status: 400 }
@@ -186,7 +187,7 @@ export async function POST(req: NextRequest) {
             line_items: [{ price: price_id, quantity: 1 }],
             mode: price_mode,
             success_url: `${origin}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${origin}/dashboard/billing?canceled=true`,
+            cancel_url: `${origin}/dashboard/billing?canceled=true&plan=${planKey}`,
             automatic_tax: { enabled: true },
             // Always allow Stripe to save the billing address the customer enters,
             // which is required for automatic tax when no address is on the customer yet
@@ -199,6 +200,7 @@ export async function POST(req: NextRequest) {
             metadata: {
                 supabase_user_id: user.id,
                 price_id,
+                plan: planKey,
                 ...(referral_code ? { referral_code } : {}),
                 ...(referrerStripeCustomerId ? { referrer_stripe_customer_id: referrerStripeCustomerId } : {}),
                 ...(referrerSupabaseId ? { referrer_supabase_id: referrerSupabaseId } : {}),

@@ -1,6 +1,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { getUserPlan } from "@/lib/entitlements";
+import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -118,8 +119,22 @@ export async function GET(req: NextRequest) {
   const privacyScore = scoreRow?.score ?? 0;
 
 
+  // Free tier: a fixed preview of the riskiest accounts, chosen across ALL accounts (any status,
+  // whitelisted or not) so deleting/whitelisting can't pull hidden accounts into view.
+  const isFree = plan === "free";
+  const PREVIEW_LIMIT = 10;
+  const lastSeen = (us: { last_seen_at: string | null }) => (us.last_seen_at ? new Date(us.last_seen_at).getTime() : 0);
+  const previewIds = isFree
+    ? pickPreviewIds(allAccounts, PREVIEW_LIMIT, {
+        id: (us) => us.id,
+        compare: (a, b) =>
+          Number(breachedServiceIds.has(b.service_id)) - Number(breachedServiceIds.has(a.service_id)) ||
+          lastSeen(a) - lastSeen(b),
+      })
+    : null;
+
   // 4. Apply View Filters (Status & Category)
-  let filteredAccounts = allAccounts;
+  let filteredAccounts = previewIds ? allAccounts.filter(us => previewIds.has(us.id)) : allAccounts;
 
   // Status Filter
   if (status === "breached") {
@@ -244,13 +259,8 @@ export async function GET(req: NextRequest) {
       .filter((e): e is string => typeof e === 'string' && e.length > 0)
   ));
 
-  // Free tier: Only send a preview (first 5 accounts) with blurred names
-  // This prevents free users from seeing all their data in devtools
-  const isFree = plan === "free";
-  const PREVIEW_LIMIT = 10;
-  
-  // For free users, only return a preview slice
-  const accountsToReturn = isFree ? accounts.slice(0, PREVIEW_LIMIT) : accounts;
+  // Free users only ever get rows from their fixed preview set (filtered above)
+  const accountsToReturn = accounts;
   
   // For free users, blur the account names in the preview
   const processedAccounts = accountsToReturn.map(acc => {
@@ -369,6 +379,10 @@ export async function DELETE(req: NextRequest) {
   if (!id) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
+
+  // Permanently removing rows would shrink the free preview set and reveal hidden accounts
+  const { hasPaidAccess } = await getUserPlan(supabase, user.id);
+  if (!hasPaidAccess) return upgradeRequired("Upgrade to permanently remove accounts from your list.");
 
   try {
     // Delete associated deletion requests first

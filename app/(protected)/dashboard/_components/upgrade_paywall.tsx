@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCheckout } from "@/hooks/use-checkout";
-import { PAID_PLANS, type PaidPlanId } from "@/lib/plans";
+import { PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
+import { trackFunnel } from "@/lib/analytics";
 
 export type PaywallReason = "report" | "accounts" | "generic";
 
@@ -41,7 +42,10 @@ export function usePaywall() {
 
 export function PaywallProvider({ children }: { children: ReactNode }) {
     const [reason, setReason] = useState<PaywallReason | null>(null);
-    const openPaywall = useCallback((r: PaywallReason = "generic") => setReason(r), []);
+    const openPaywall = useCallback((r: PaywallReason = "generic") => {
+        setReason(r);
+        trackFunnel({ name: "paywall_opened", props: { reason: r } });
+    }, []);
     const value = useMemo(() => ({ openPaywall }), [openPaywall]);
 
     return (
@@ -55,7 +59,7 @@ export function PaywallProvider({ children }: { children: ReactNode }) {
 function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onClose: () => void }) {
     const open = reason !== null;
     const copy = COPY[reason ?? "generic"];
-    const { startCheckout, pendingPlan } = useCheckout();
+    const { startCheckout, pendingPlan } = useCheckout(`paywall:${reason ?? "generic"}`);
 
     // Personalise the pitch with what this user's own scan found
     const { data: overview } = useQuery<OverviewData>({
@@ -89,6 +93,18 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
     ].filter((s) => s.value);
 
     const busy = pendingPlan !== null;
+
+    // Buster owners (e.g. out of credits) can't buy Buster again — offer Pro Monthly vs Annual instead
+    const { data: planData } = useQuery<PlanResponse>({
+        queryKey: ["plan"],
+        queryFn: async () => {
+            const res = await fetch("/api/plan");
+            if (!res.ok) throw new Error("Failed to fetch plan");
+            return res.json();
+        },
+        enabled: open,
+    });
+    const ownsBuster = planData?.current_plan === "buster";
 
     return (
         <Dialog open={open} onOpenChange={(o) => !o && !busy && onClose()}>
@@ -125,12 +141,21 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
                 )}
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <PlanCard
-                        planId="buster"
-                        cta={`Get Buster — ${PAID_PLANS.buster.price}`}
-                        onSelect={startCheckout}
-                        pendingPlan={pendingPlan}
-                    />
+                    {ownsBuster ? (
+                        <PlanCard
+                            planId="sentinel"
+                            cta={`Get Annual — ${PAID_PLANS.sentinel.price}${PAID_PLANS.sentinel.period}`}
+                            onSelect={startCheckout}
+                            pendingPlan={pendingPlan}
+                        />
+                    ) : (
+                        <PlanCard
+                            planId="buster"
+                            cta={`Get Buster — ${PAID_PLANS.buster.price}`}
+                            onSelect={startCheckout}
+                            pendingPlan={pendingPlan}
+                        />
+                    )}
                     <PlanCard
                         planId="pro"
                         featured
@@ -140,6 +165,7 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
                     />
                 </div>
 
+                {!ownsBuster && (
                 <button
                     type="button"
                     onClick={() => startCheckout("sentinel")}
@@ -149,6 +175,7 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
                     {pendingPlan === "sentinel" && <Loader2 className="h-4 w-4 animate-spin" />}
                     Prefer annual? {PAID_PLANS.sentinel.name} — {PAID_PLANS.sentinel.price}{PAID_PLANS.sentinel.period} ({PAID_PLANS.sentinel.note.split(" · ")[0].toLowerCase()})
                 </button>
+                )}
 
                 <p className="text-center text-xs text-foreground/50">
                     Secure checkout by Stripe · 30-day money-back guarantee · Subscriptions cancel anytime
@@ -216,4 +243,52 @@ function PlanCard({
             </Button>
         </div>
     );
+}
+
+/**
+ * Drop-in replacement for an upgrade <Link>: opens the paywall (one click to Stripe) instead of
+ * navigating to the billing page. Renders a span so it can wrap a <Button> without nesting buttons.
+ */
+export function UpgradeTrigger({
+    reason = "generic",
+    className,
+    children,
+}: {
+    reason?: PaywallReason;
+    className?: string;
+    children: ReactNode;
+}) {
+    const { openPaywall } = usePaywall();
+    return (
+        <span
+            role="button"
+            tabIndex={0}
+            className={cn("cursor-pointer", className)}
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openPaywall(reason);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openPaywall(reason);
+                }
+            }}
+        >
+            {children}
+        </span>
+    );
+}
+
+/** Thrown by client fetches when the API answers 402 UPGRADE_REQUIRED — catch it and open the paywall. */
+export class UpgradeRequiredError extends Error {
+    constructor() {
+        super("Upgrade required");
+        this.name = "UpgradeRequiredError";
+    }
+}
+
+export function throwIfUpgradeRequired(res: Response) {
+    if (res.status === 402) throw new UpgradeRequiredError();
 }

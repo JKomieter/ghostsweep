@@ -17,7 +17,7 @@ function readHasReferral() {
 }
 
 export default function CheckoutForm({ plan }: { plan: PaidPlanId }) {
-    const { startCheckout, pendingPlan, error } = useCheckout();
+    const { startCheckout, pendingPlan, error } = useCheckout("billing_page");
     const hasReferral = useSyncExternalStore(subscribeNoop, readHasReferral, () => false);
     const isLoading = pendingPlan !== null;
 
