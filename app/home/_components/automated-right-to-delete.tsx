@@ -1,5 +1,6 @@
 "use client";
 
+import { PAID_PLANS } from "@/lib/plans";
 import { useState, useEffect } from "react";
 import { Mail, Zap, CheckCircle, Clock } from "lucide-react";
 
@@ -243,7 +244,7 @@ export function AutomatedRightToDelete() {
             <p>Typical setup in a few minutes</p>
             <p>Templates designed to be legally consistent</p>
             <p>Central place to track responses</p>
-            <p>Current price: $9.99/month</p>
+            <p>From {PAID_PLANS.buster.price} one-time, or {PAID_PLANS.pro.price}/month</p>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { PAID_PLANS } from "@/lib/plans";
 import { CheckCircle, X } from "lucide-react";
 
 export function ComparisonMatrix() {
@@ -73,7 +74,7 @@ export function ComparisonMatrix() {
       deleteMe: true,
       deleteMe_detail: "$129-149/year",
       ghostsweep: true,
-      ghostsweepDetail: "$79/year (or $9.99/mo)",
+      ghostsweepDetail: `${PAID_PLANS.sentinel.price}/year (or ${PAID_PLANS.pro.price}/mo)`,
     },
   ];
 

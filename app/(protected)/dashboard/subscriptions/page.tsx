@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, CheckCircle2, Filter, Calendar, AlertTriangle, X, Check, Trash2 } from "lucide-react";
+import { isPaidPlan } from "@/lib/plans";
 
 type Subscription = {
   id: string;
@@ -201,7 +202,7 @@ export default function SubscriptionsPage() {
   };
 
   // UI helpers
-  const isPro = planData?.current_plan === "pro" || planData?.current_plan === "buster";
+  const isPro = isPaidPlan(planData?.current_plan);
   const blurred = data?.blurred;
   const previewOnly = data?.previewOnly;
   const monthlyTotal = data?.monthlyTotal || 0;

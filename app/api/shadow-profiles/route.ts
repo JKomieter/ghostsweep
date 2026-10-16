@@ -1,4 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
+import { isPaidPlan } from "@/lib/plans";
+import { resolvePlan } from "@/lib/entitlements";
 import { NextRequest, NextResponse } from "next/server";
 
 const VALID_STATUSES = ["active", "ignored", "deleted"] as const;
@@ -139,7 +141,7 @@ export async function GET() {
     // Fetch plan
     const { data: plan } = await supabase
       .from("user_subscriptions")
-      .select("current_plan")
+      .select("current_plan, renews_at")
       .eq("user_id", user.id)
       .single();
 
@@ -158,7 +160,7 @@ export async function GET() {
     ).length;
 
     const isPremium =
-      plan?.current_plan === "pro" || plan?.current_plan === "buster";
+      isPaidPlan(resolvePlan(plan));
     const FREE_TIER_LIMIT = 5;
     const visibleProfiles = isPremium
       ? enrichedProfiles

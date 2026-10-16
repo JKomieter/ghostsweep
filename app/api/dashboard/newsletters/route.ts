@@ -1,5 +1,6 @@
 
 import { createClient } from "@/utils/supabase/server";
+import { getUserPlan } from "@/lib/entitlements";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -7,22 +8,9 @@ export async function GET(req: NextRequest) {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Get plan
-  let plan = "free";
-  const { data: planRow } = await supabase
-    .from("user_subscriptions")
-    .select("current_plan, renews_at, scan_credits_remaining")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (planRow) {
-    if (planRow.current_plan === "pro") {
-      const now = new Date();
-      const renewsAt = planRow.renews_at ? new Date(planRow.renews_at) : null;
-      if (renewsAt && renewsAt > now) plan = "pro";
-    } else if (planRow.current_plan === "buster") {
-      plan = "pro"; // buster always has full access
-    }
-  }
+  // Buster, Pro and Annual all get full access
+  const { hasPaidAccess } = await getUserPlan(supabase, user.id);
+  const plan = hasPaidAccess ? "pro" : "free";
 
   // Filters
   const { searchParams } = new URL(req.url);

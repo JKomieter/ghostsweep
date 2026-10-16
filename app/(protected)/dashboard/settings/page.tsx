@@ -41,6 +41,8 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import ConnectAccountModal from "./_components/connect-account-modal";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
+import { BUSTER_SCAN_CREDITS, PAID_PLANS, isPaidPlan, planDisplayName, type PlanResponse } from "@/lib/plans";
+import { usePaywall } from "../_components/upgrade_paywall";
 
 
 // Type definitions
@@ -52,12 +54,7 @@ type EmailAccount = {
     status?: string;
 };
 
-type PlanData = { 
-    current_plan: "free" | "buster" | "pro";
-    scan_credits_remaining?: number;
-    renews_at?: string | null;
-    has_used_trial: boolean;
-};
+type PlanData = PlanResponse;
 
 type OverviewData = {
     totalValue: number;
@@ -312,8 +309,14 @@ export default function SettingsPage() {
     const gmailAccounts = emailAccounts?.gmailAccounts || [];
     const microsoftAccounts = emailAccounts?.microsoftAccounts || [];
     const totalAccounts = gmailAccounts.length + microsoftAccounts.length;
-    const isPro = planData?.current_plan === "pro" || planData?.current_plan === "buster";
-    const { requestReport, downloadLatestReport, isGenerating: isReportGenerating, isLoadingLatest: isReportLatestLoading, latestReport } = usePrivacyReport();
+    const currentPlan = planData?.current_plan ?? "free";
+    const isPaid = isPaidPlan(currentPlan);
+    const isSubscriber = currentPlan === "pro" || currentPlan === "sentinel";
+    const { openPaywall } = usePaywall();
+    const { requestReport, downloadLatestReport, isGenerating: isReportGenerating, isLoadingLatest: isReportLatestLoading, latestReport } = usePrivacyReport({
+        enabled: isPaid,
+        onUpgradeRequired: () => openPaywall("report"),
+    });
 
     return (
         <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
@@ -584,8 +587,21 @@ export default function SettingsPage() {
                             </ul>
                         </div>
 
-                        {/* Privacy Report */}
-                        {latestReport && (
+                        {/* Privacy Report — paid plans only */}
+                        {!planLoading && !isPaid && (
+                            <Button
+                                variant="outline"
+                                onClick={() => openPaywall("report")}
+                                className="w-full border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10"
+                            >
+                                <Lock className="h-4 w-4 mr-2" />
+                                Download Privacy Report
+                                <span className="ml-auto rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                    Buster &amp; Pro
+                                </span>
+                            </Button>
+                        )}
+                        {isPaid && latestReport && (
                             <Button
                                 variant="outline"
                                 onClick={downloadLatestReport}
@@ -600,19 +616,21 @@ export default function SettingsPage() {
                                 )}
                             </Button>
                         )}
-                        <Button
-                            variant="outline"
-                            onClick={requestReport}
-                            disabled={isReportGenerating || isReportLatestLoading}
-                            className="w-full border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10"
-                        >
-                            {isReportGenerating ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            ) : (
-                                <Download className="h-4 w-4 mr-2" />
-                            )}
-                            {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
-                        </Button>
+                        {isPaid && (
+                            <Button
+                                variant="outline"
+                                onClick={requestReport}
+                                disabled={isReportGenerating || isReportLatestLoading}
+                                className="w-full border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10"
+                            >
+                                {isReportGenerating ? (
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                    <Download className="h-4 w-4 mr-2" />
+                                )}
+                                {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
+                            </Button>
+                        )}
 
                         {/* Action button */}
                         <Button
@@ -662,21 +680,21 @@ export default function SettingsPage() {
                                 ) : (
                                     <div className="flex items-center gap-2">
                                         <Badge className={
-                                            isPro 
+                                            isPaid
                                                 ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40"
                                                 : "bg-foreground/10 text-foreground border border-foreground/40"
                                         }>
-                                            {isPro ? "Professional" : "Free"}
+                                            {planDisplayName(currentPlan, planData?.scan_credits_remaining)}
                                         </Badge>
-                                        {isPro && (
+                                        {currentPlan !== "free" && (
                                             <span className="text-xs text-muted-foreground">
-                                                $7.99/month
+                                                {PAID_PLANS[currentPlan].price} {PAID_PLANS[currentPlan].period}
                                             </span>
                                         )}
                                     </div>
                                 )}
                             </div>
-                            {isPro && planData?.renews_at && (
+                            {isSubscriber && planData?.renews_at && (
                                 <div className="text-right">
                                     <p className="text-xs text-muted-foreground">Next renewal</p>
                                     <p className="text-sm font-medium text-foreground">
@@ -687,7 +705,7 @@ export default function SettingsPage() {
                         </div>
 
                         {/* Action buttons */}
-                        {isPro ? (
+                        {isSubscriber ? (
                             <div className="flex flex-wrap gap-3">
                                 <Button
                                     variant="outline"
@@ -706,12 +724,27 @@ export default function SettingsPage() {
                                 </Button>
                             </div>
                         ) : (
-                            <Link href="/dashboard/billing?plan=monthly" className="block">
-                                <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                            currentPlan === "buster" ? (
+                                <div className="space-y-2">
+                                    <p className="text-xs text-muted-foreground">
+                                        Your Buster Pass includes {BUSTER_SCAN_CREDITS} scan credits and never expires. Go Pro for unlimited scans and always-on monitoring.
+                                    </p>
+                                    <Link href="/dashboard/billing?plan=pro" className="block">
+                                        <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                                            <Crown className="h-4 w-4 mr-2" />
+                                            Upgrade to Pro
+                                        </Button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <Button
+                                    onClick={() => openPaywall("generic")}
+                                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+                                >
                                     <Crown className="h-4 w-4 mr-2" />
-                                    {planData?.has_used_trial ? "Upgrade to Pro" : "Start Free Trial"}
+                                    Upgrade to Buster or Pro
                                 </Button>
-                            </Link>
+                            )
                         )}
                     </div>
                 </SettingsSection>

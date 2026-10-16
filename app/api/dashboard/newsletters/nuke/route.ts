@@ -1,5 +1,7 @@
 // app/api/dashboard/newsletters/nuke/route.ts
 import { createClient } from "@/utils/supabase/server";
+import { isPaidPlan } from "@/lib/plans";
+import { resolvePlan } from "@/lib/entitlements";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -15,12 +17,11 @@ export async function POST(request: Request) {
     // Check if user is Pro or active Buster
     const { data: subscription } = await supabase
       .from("user_subscriptions")
-      .select("current_plan, scan_credits_remaining")
+      .select("current_plan, renews_at, scan_credits_remaining")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    const isPaid = subscription?.current_plan === "pro" ||
-      subscription?.current_plan === "buster";
+    const isPaid = isPaidPlan(resolvePlan(subscription));
 
     if (!isPaid) {
       return NextResponse.json(

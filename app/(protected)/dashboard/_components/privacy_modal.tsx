@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { isPaidPlan } from "@/lib/plans";
 
 export default function PrivacyToolsModal({
     open,
@@ -64,7 +65,7 @@ export default function PrivacyToolsModal({
     })
 
     const loadingPlan = status === "pending"
-    const isPro = plan?.current_plan === "pro" || plan?.current_plan === "buster";
+    const isPro = isPaidPlan(plan?.current_plan);
 
     const handleUpgrade = () => {
         // Replace with your real upgrade flow / checkout

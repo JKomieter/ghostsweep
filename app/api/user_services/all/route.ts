@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { isPaidPlan } from "@/lib/plans";
+import { resolvePlan } from "@/lib/entitlements";
 import { createClient } from "@/utils/supabase/server";
 
 const FREE_LIMIT = 10;
@@ -20,7 +22,7 @@ export async function GET() {
     // Assumes: user_subscriptions.user_id, current_plan = 'free' | 'pro'
     const { data: sub, error: subErr } = await supabase
         .from("user_subscriptions")
-        .select("current_plan, scan_credits_remaining")
+        .select("current_plan, renews_at, scan_credits_remaining")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -32,8 +34,7 @@ export async function GET() {
         );
     }
 
-    const isPro = (sub?.current_plan ?? "free") === "pro" ||
-        sub?.current_plan === "buster";
+    const isPro = isPaidPlan(resolvePlan(sub));
     const limit = isPro ? undefined : FREE_LIMIT;
 
     // 3) Fetch user services (limit for Free)

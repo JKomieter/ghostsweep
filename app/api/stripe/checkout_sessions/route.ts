@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { createClient } from '@/utils/supabase/server';
 import stripe from '@/lib/stripe';
+import { resolvePlan } from '@/lib/entitlements';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
@@ -54,53 +55,57 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Get price_id and mode from request (mode: "subscription" | "payment")
+        // Plans map to Stripe prices server-side; the checkout mode is derived from the plan
+        // rather than trusted from the client (a recurring price can't be bought in payment mode).
+        const PLAN_PRICES: Record<string, { price: string | undefined; mode: "subscription" | "payment" }> = {
+            buster: { price: process.env.STRIPE_PRICE_BUSTER, mode: "payment" },
+            pro: { price: process.env.STRIPE_PRICE_PRO, mode: "subscription" },
+            sentinel: { price: process.env.STRIPE_PRICE_SENTINEL, mode: "subscription" },
+        };
+
+        // Accept either { plan } or a legacy { price_id }
         const contentType = req.headers.get("content-type") || "";
-        let price_id: string | undefined;
+        let plan: string | undefined;
+        let requested_price_id: string | undefined;
         let referral_code: string | undefined;
-        let price_mode: "subscription" | "payment" = "subscription";
 
         if (contentType.includes("application/json")) {
             const body = await req.json();
-            price_id = body.price_id;
+            plan = body.plan;
+            requested_price_id = body.price_id;
             referral_code = body.referral_code;
-            if (body.mode === "payment") price_mode = "payment";
         } else {
             const formData = await req.formData();
-            price_id = formData.get("price_id") as string | undefined;
-            referral_code = formData.get("referral_code") as string | undefined;
-            if (formData.get("mode") === "payment") price_mode = "payment";
+            plan = (formData.get("plan") as string | null) ?? undefined;
+            requested_price_id = (formData.get("price_id") as string | null) ?? undefined;
+            referral_code = (formData.get("referral_code") as string | null) ?? undefined;
         }
 
-        if (!price_id) {
-            return NextResponse.json(
-                { error: "Missing price_id" },
-                { status: 400 }
-            );
-        }
+        const planConfig = plan
+            ? PLAN_PRICES[plan]
+            : Object.values(PLAN_PRICES).find((p) => p.price && p.price === requested_price_id);
 
-        // Whitelist allowed price IDs to prevent probing arbitrary Stripe prices
-        const ALLOWED_PRICE_IDS = [
-            process.env.STRIPE_PRICE_BUSTER,
-            process.env.STRIPE_PRICE_PRO,
-            process.env.STRIPE_PRICE_SENTINEL,
-        ].filter(Boolean);
-        if (!ALLOWED_PRICE_IDS.includes(price_id)) {
+        if (!planConfig?.price) {
             return NextResponse.json(
                 { error: "Invalid pricing plan." },
                 { status: 400 }
             );
         }
 
+        const price_id = planConfig.price;
+        const price_mode = planConfig.mode;
+
         // Check existing subscription
         const { data: subRow } = await supabase
             .from("user_subscriptions")
-            .select("stripe_customer_id, current_plan")
+            .select("stripe_customer_id, current_plan, renews_at")
             .eq("user_id", user.id)
             .maybeSingle();
 
-        // If already pro or sentinel, don't allow checkout
-        if (subRow?.current_plan === 'pro' || subRow?.current_plan === 'sentinel') {
+        const activePlan = resolvePlan(subRow);
+
+        // If already on an active subscription, don't allow checkout (a lapsed one can re-subscribe)
+        if (activePlan === 'pro' || activePlan === 'sentinel') {
             return NextResponse.json(
                 { error: "You already have an active subscription." },
                 { status: 400 }
@@ -108,7 +113,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Buster users can upgrade to pro/sentinel — only block re-buying buster
-        if (subRow?.current_plan === 'buster' && price_mode === 'payment') {
+        if (activePlan === 'buster' && price_mode === 'payment') {
             return NextResponse.json(
                 { error: "You already own The Buster. Upgrade to Pro for unlimited access." },
                 { status: 400 }
@@ -168,7 +173,13 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        const shouldApplyReferralDiscount = Boolean(referrerStripeCustomerId);
+        // Stripe needs the promotion code's ID (promo_…), not the customer-facing code string
+        let referralPromotionCodeId: string | null = null;
+        if (referrerStripeCustomerId) {
+            const promos = await stripe.promotionCodes.list({ code: 'SWEEP50', active: true, limit: 1 });
+            referralPromotionCodeId = promos.data[0]?.id ?? null;
+            if (!referralPromotionCodeId) console.warn("Referral promotion code SWEEP50 not found or inactive");
+        }
         // Create Checkout Session
         const session = await stripe.checkout.sessions.create({
             customer: stripeCustomerId,
@@ -181,11 +192,10 @@ export async function POST(req: NextRequest) {
             // which is required for automatic tax when no address is on the customer yet
             customer_update: { address: 'auto' },
             billing_address_collection: 'auto',
-            allow_promotion_codes: true,
-
-            ...(shouldApplyReferralDiscount
-                ? { discounts: [{ promotion_code: 'SWEEP50' }] }
-                : {}),
+            // Stripe rejects allow_promotion_codes and discounts together
+            ...(referralPromotionCodeId
+                ? { discounts: [{ promotion_code: referralPromotionCodeId }] }
+                : { allow_promotion_codes: true }),
             metadata: {
                 supabase_user_id: user.id,
                 price_id,

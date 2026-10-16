@@ -6,6 +6,9 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import CheckoutForm from "../_components/checkout";
+import { BUSTER_SCAN_CREDITS, PAID_PLANS } from "@/lib/plans";
+import { resolvePlan } from "@/lib/entitlements";
+import { billingPathForPlan } from "@/lib/pending-plan";
 import { ShieldCheck, CalendarClock, Zap, Check } from "lucide-react";
 
 type PlanTab = "buster" | "pro" | "sentinel";
@@ -14,58 +17,11 @@ type PageProps = {
     searchParams?: Promise<{ plan?: string; canceled?: string }>;
 };
 
-const PLANS = {
-    buster: {
-        label: "Buster Pass",
-        price: "$12.99",
-        period: "one-time",
-        tagline: "Pay once, stay clean. No recurring bill.",
-        priceId: process.env.STRIPE_PRICE_BUSTER!,
-        mode: "payment" as const,
-        badge: null as string | null,
-        badgeStyle: "",
-        features: [
-            "10 scan credits (Work, Personal, Old School)",
-            "Full Maigret OSINT deep-web search",
-            "Every ghost account & gift card unlocked",
-            "PDF Identity Audit + 1Password-ready CSV",
-            "One-click account deletion links",
-        ],
-    },
-    pro: {
-        label: "Monthly Sub",
-        price: "$7.99",
-        period: "/ mo",
-        tagline: "Unlimited connections and real-time monitoring.",
-        priceId: process.env.STRIPE_PRICE_PRO!,
-        mode: "subscription" as const,
-        badge: null as string | null,
-        badgeStyle: "",
-        features: [
-            "Everything in Buster",
-            "Unlimited inbox connections",
-            "Real-time breach alerts",
-            "Weekly shadow web re-scan",
-            'Newsletter "Ghost" unsubscribe',
-        ],
-    },
-    sentinel: {
-        label: "Annual Sentinel",
-        price: "$59.99",
-        period: "/ yr",
-        tagline: "The Golden Ticket — just $4.99/mo.",
-        priceId: process.env.STRIPE_PRICE_SENTINEL!,
-        mode: "subscription" as const,
-        badge: "Save 50%+",
-        badgeStyle: "bg-emerald-500 text-black",
-        features: [
-            "Everything in Pro",
-            'Priority "Shadow Watch" scan queue',
-            "Gift card expiry alerts",
-            "Monthly Identity Health Report (PDF)",
-            "Priority deletion support",
-        ],
-    },
+// Display styling per tab; names, prices and features come from lib/plans.ts
+const PLAN_BADGES: Record<PlanTab, { badge: string | null; badgeStyle: string }> = {
+    buster: { badge: null, badgeStyle: "" },
+    pro: { badge: "Most popular", badgeStyle: "bg-foreground text-background" },
+    sentinel: { badge: "Save 37%", badgeStyle: "bg-emerald-500 text-black" },
 };
 
 function formatDate(d: string) {
@@ -98,7 +54,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
     console.log("User visited billing page:", JSON.stringify(sub));
 
-    const currentPlan = sub?.current_plan ?? "free";
+    const currentPlan = resolvePlan(sub);
     const isPro = currentPlan === "pro";
     const isSentinel = currentPlan === "sentinel";
     const isBuster = currentPlan === "buster";
@@ -108,14 +64,12 @@ export default async function BillingPage({ searchParams }: PageProps) {
     const creditsRemaining = (sub as any)?.scan_credits_remaining ?? 0;
     const wasCanceled = params?.canceled === "true";
 
-    // Selected tab from URL (?plan=buster|pro|sentinel), default pro
-    const rawTab = params?.plan;
+    // Selected tab from URL (?plan=buster|pro|sentinel, or marketing names monthly|annual), default pro
+    const tabFromUrl = billingPathForPlan(params?.plan)?.split("plan=")[1];
     const selectedTab: PlanTab =
-        rawTab === "buster" ? "buster"
-        : rawTab === "sentinel" ? "sentinel"
-        : "pro";
+        tabFromUrl === "buster" || tabFromUrl === "sentinel" ? tabFromUrl : "pro";
 
-    const planConfig = PLANS[selectedTab];
+    const planConfig = { ...PAID_PLANS[selectedTab], ...PLAN_BADGES[selectedTab] };
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
@@ -151,15 +105,15 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     {isBuster
                                         ? 'You own The "Buster" — one-time purchase'
                                         : isSentinel
-                                        ? "You're on GhostSweep Sentinel"
-                                        : "You're on GhostSweep Pro"}
+                                        ? `You're on GhostSweep ${PAID_PLANS.sentinel.name}`
+                                        : `You're on GhostSweep ${PAID_PLANS.pro.name}`}
                                 </p>
 
                                 {isBuster ? (
                                     <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 w-fit">
                                         <Zap className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
                                         <span className="text-xs text-amber-700 dark:text-amber-300">
-                                            {creditsRemaining} of 3 scan credits remaining
+                                            {creditsRemaining} of {BUSTER_SCAN_CREDITS} scan credits remaining
                                         </span>
                                     </div>
                                 ) : renewsAt ? (
@@ -184,21 +138,21 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                             Want unlimited scans &amp; real-time monitoring?
                                         </p>
                                         <p className="text-xs text-foreground/50">
-                                            Upgrade to Monthly ($7.99/mo) or Annual Sentinel ($59.99/yr) to remove
-                                            the 3-credit limit and get continuous protection.
+                                            Upgrade to {PAID_PLANS.pro.name} ({PAID_PLANS.pro.price}{PAID_PLANS.pro.period}) or {PAID_PLANS.sentinel.name} ({PAID_PLANS.sentinel.price}{PAID_PLANS.sentinel.period}) to remove
+                                            the {BUSTER_SCAN_CREDITS}-credit limit and get continuous protection.
                                         </p>
                                         <div className="flex gap-2 pt-1 flex-wrap">
                                             <Link
                                                 href="/dashboard/billing?plan=pro"
                                                 className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs bg-emerald-500 text-black hover:bg-emerald-400 transition font-medium"
                                             >
-                                                Monthly — $7.99/mo
+                                                {PAID_PLANS.pro.name} — {PAID_PLANS.pro.price}{PAID_PLANS.pro.period}
                                             </Link>
                                             <Link
                                                 href="/dashboard/billing?plan=sentinel"
                                                 className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition"
                                             >
-                                                Annual Sentinel — $59.99/yr
+                                                {PAID_PLANS.sentinel.name} — {PAID_PLANS.sentinel.price}{PAID_PLANS.sentinel.period}
                                             </Link>
                                         </div>
                                     </div>
@@ -215,7 +169,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         Back to dashboard
                                     </Link>
                                     <Link
-                                        href="/dashboard/support"
+                                        href="/support/report"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
                                             "bg-foreground/2 hover:bg-foreground/3 border border-foreground/5 hover:border-foreground/10 text-emerald-600 dark:text-emerald-400"
@@ -233,10 +187,8 @@ export default async function BillingPage({ searchParams }: PageProps) {
                         <div className="flex rounded-lg border border-foreground/5 bg-foreground/2 p-1 text-xs gap-1">
                             {(["buster", "pro", "sentinel"] as PlanTab[]).map((tab) => {
                                 const isActive = selectedTab === tab;
-                                const label =
-                                    tab === "buster" ? "Buster · $12.99" :
-                                    tab === "pro" ? "Monthly · $7.99/mo" :
-                                    "Annual · $59.99/yr";
+                                const p = PAID_PLANS[tab];
+                                const label = `${p.shortName} · ${p.price}${p.period === "one-time" ? "" : p.period}`;
                                 return (
                                     <Link
                                         key={tab}
@@ -277,7 +229,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         : selectedTab === "sentinel" ? "text-emerald-600 dark:text-emerald-400"
                                         : "text-foreground"
                                     )}>
-                                        {planConfig.label}
+                                        {planConfig.name}
                                     </p>
                                     {selectedTab === "buster" && (
                                         <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-amber-500 text-black">
@@ -304,7 +256,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         {planConfig.period}
                                     </span>
                                 </p>
-                                <p className="mt-1 text-xs text-foreground/50">{planConfig.tagline}</p>
+                                <p className="mt-1 text-xs text-foreground/50">{planConfig.note} · {planConfig.description}</p>
                             </div>
 
                             <div className="h-px bg-foreground/5" />
@@ -332,17 +284,14 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             <p className="text-sm text-foreground/60">
                                 You&apos;re upgrading to{" "}
                                 <span className="font-medium text-foreground">
-                                    {planConfig.label}
+                                    {planConfig.name}
                                     {" — "}
                                     {planConfig.price}
                                     {planConfig.period !== "one-time" ? " " + planConfig.period : " (one-time)"}
                                 </span>
                                 .
                             </p>
-                            <CheckoutForm
-                                priceId={planConfig.priceId}
-                                mode={planConfig.mode}
-                            />
+                            <CheckoutForm plan={selectedTab} />
                         </section>
 
                         <footer className="text-[11px] text-foreground/35">

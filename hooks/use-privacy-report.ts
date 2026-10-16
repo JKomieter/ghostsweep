@@ -10,7 +10,15 @@ export interface LatestReport {
   generatedAt: string | null;
 }
 
-export function usePrivacyReport() {
+/** HTTP status /api/report returns when the user's plan doesn't include the report. */
+const UPGRADE_REQUIRED_STATUS = 402;
+
+/**
+ * @param options.enabled  false for free users — skips the "latest report" lookup
+ * @param options.onUpgradeRequired  called instead of an error toast when the plan doesn't include reports
+ */
+export function usePrivacyReport(options: { enabled?: boolean; onUpgradeRequired?: () => void } = {}) {
+  const { enabled = true, onUpgradeRequired } = options;
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoadingLatest, setIsLoadingLatest] = useState(true);
   const [latestReport, setLatestReport] = useState<LatestReport | null>(null);
@@ -21,6 +29,11 @@ export function usePrivacyReport() {
   // ------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
+    if (!enabled) {
+      setLatestReport(null);
+      setIsLoadingLatest(false);
+      return;
+    }
     (async () => {
       try {
         const res = await fetch("/api/report", { method: "GET" });
@@ -36,7 +49,7 @@ export function usePrivacyReport() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [enabled]);
 
   const cleanup = useCallback(() => {
     if (channelRef.current) {
@@ -53,6 +66,10 @@ export function usePrivacyReport() {
   const downloadLatestReport = useCallback(async () => {
     try {
       const res = await fetch("/api/report", { method: "GET" });
+      if (res.status === UPGRADE_REQUIRED_STATUS && onUpgradeRequired) {
+        onUpgradeRequired();
+        return;
+      }
       if (!res.ok) throw new Error("Could not retrieve report");
       const data = await res.json();
       if (!data.url) throw new Error("No report found");
@@ -61,7 +78,7 @@ export function usePrivacyReport() {
     } catch (err) {
       toast.error((err as Error).message || "Failed to download report");
     }
-  }, []);
+  }, [onUpgradeRequired]);
 
   // ------------------------------------------------------------------
   // Queue a new report generation
@@ -73,6 +90,12 @@ export function usePrivacyReport() {
       setIsGenerating(true);
 
       const res = await fetch("/api/report", { method: "POST" });
+
+      if (res.status === UPGRADE_REQUIRED_STATUS && onUpgradeRequired) {
+        setIsGenerating(false);
+        onUpgradeRequired();
+        return;
+      }
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -119,7 +142,7 @@ export function usePrivacyReport() {
       cleanup();
       toast.error((err as Error).message || "Failed to generate report");
     }
-  }, [isGenerating, cleanup]);
+  }, [isGenerating, cleanup, onUpgradeRequired]);
 
   return {
     requestReport,

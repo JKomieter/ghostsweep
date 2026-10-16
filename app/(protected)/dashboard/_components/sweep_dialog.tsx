@@ -6,6 +6,7 @@ import AccountSelect from "./account_select";
 import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import Link from "next/link";
+import { BUSTER_SCAN_CREDITS } from "@/lib/plans";
 
 type LatestSweep = {
   status: "pending" | "processing" | "completed" | "failed" | "cancelled" | null;
@@ -196,7 +197,7 @@ export default function SweepDialog({
                   <p className={`text-xs font-medium ${
                     scanCreditsRemaining <= 1 ? "text-orange-700 dark:text-orange-300" : "text-amber-700 dark:text-amber-300"
                   }`}>
-                    {scanCreditsRemaining} of 3 sweep credit{scanCreditsRemaining !== 1 ? "s" : ""} remaining
+                    {scanCreditsRemaining} of {BUSTER_SCAN_CREDITS} scan credit{scanCreditsRemaining !== 1 ? "s" : ""} remaining
                     {scanCreditsRemaining === 1 && " — last one!"}
                   </p>
                 </div>
