@@ -1,5 +1,6 @@
 // app/api/sweep/run/route.ts (in your Next.js app)
 import { createClient } from "@/utils/supabase/server";
+import { resolvePlan } from "@/lib/entitlements";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
     // ✅ CHECK FREE USER MONTHLY LIMIT
     const { data: subscriptionData, error: subError } = await supabase
       .from("user_subscriptions")
-      .select("current_plan, scan_credits_remaining")
+      .select("current_plan, renews_at, scan_credits_remaining")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -89,9 +90,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const rawPlan = subscriptionData?.current_plan ?? "free";
-    const isBusterActive = rawPlan === "buster" && (subscriptionData?.scan_credits_remaining ?? 0) > 0;
-    const currentPlan: "free" | "pro" = (rawPlan === "pro" || isBusterActive) ? "pro" : "free";
+    const resolvedPlan = resolvePlan(subscriptionData);
+    const isBusterActive = resolvedPlan === "buster" && (subscriptionData?.scan_credits_remaining ?? 0) > 0;
+    const currentPlan: "free" | "pro" =
+      (resolvedPlan === "pro" || resolvedPlan === "sentinel" || isBusterActive) ? "pro" : "free";
     
     // If free user, check if they've already completed a scan this month
     if (currentPlan === "free") {

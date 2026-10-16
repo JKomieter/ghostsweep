@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus, FileText } from "lucide-react";
+import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus, FileText, Lock } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import {
     DropdownMenu,
@@ -23,6 +23,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { usePathname } from "next/navigation";
 import useGetUser from "@/hooks/use-get-user";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
+import { isPaidPlan, planDisplayName, type PlanResponse } from "@/lib/plans";
+import { usePaywall } from "./upgrade_paywall";
 
 
 type LatestSweepResponse = {
@@ -41,13 +43,13 @@ export default function Header() {
     const [openSupport, setOpenSupport] = useState(false)
     const [currentTime, setCurrentTime] = useState(() => Date.now())
     const {data: user} = useGetUser()
-    const { requestReport, downloadLatestReport, isGenerating: isReportGenerating, latestReport } = usePrivacyReport()
+    const { openPaywall } = usePaywall()
 
     const pathname = usePathname();
 
     const { data, status } = useQuery({
         queryKey: ['plan'],
-        queryFn: async (): Promise<{ current_plan: "free" | "buster" | "pro"; scan_credits_remaining?: number }> => {
+        queryFn: async (): Promise<PlanResponse> => {
             const res = await fetch('/api/plan', {
                 method: 'GET',
                 headers: {
@@ -114,17 +116,17 @@ export default function Header() {
         }
     }
 
-    const isBusterActive = data?.current_plan === "buster" && (data?.scan_credits_remaining ?? 0) > 0;
-    const isBusterAudited = data?.current_plan === "buster" && (data?.scan_credits_remaining ?? 0) === 0;
-    const isPaidUser = data?.current_plan === "pro" || data?.current_plan === "buster";
-    const creditsRemaining = data?.scan_credits_remaining ?? 0;
-    const plan = data?.current_plan === "pro"
-        ? "Professional"
-        : isBusterActive
-        ? `Buster (${creditsRemaining}/10)`
-        : isBusterAudited
-        ? "Audited"
-        : "Free";
+    const isSubscriber = data?.current_plan === "pro" || data?.current_plan === "sentinel";
+    const isBuster = data?.current_plan === "buster";
+    const isBusterActive = isBuster && (data?.scan_credits_remaining ?? 0) > 0;
+    const isBusterAudited = isBuster && (data?.scan_credits_remaining ?? 0) === 0;
+    const isPaidUser = isPaidPlan(data?.current_plan);
+    const plan = planDisplayName(data?.current_plan, data?.scan_credits_remaining);
+
+    const { requestReport, downloadLatestReport, isGenerating: isReportGenerating, latestReport } = usePrivacyReport({
+        enabled: isPaidUser,
+        onUpgradeRequired: () => openPaywall("report"),
+    })
 
     return (
         <div className={`relative flex ${isInProgress ? 'h-[88px]' : 'h-14'}`}>
@@ -145,7 +147,7 @@ export default function Header() {
                             <div className="h-7 w-20 bg-neutral-200 rounded-full animate-pulse" />
                         ) : (
                             <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
-                                data?.current_plan === "pro"
+                                isSubscriber
                                     ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30"
                                     : isBusterActive
                                     ? "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
@@ -160,11 +162,17 @@ export default function Header() {
 
                     <div className="flex flex-row items-center space-x-4">
                         <div className="flex items-center gap-2">
-                            {!isPaidUser && (
-                                <Link href="/dashboard/billing?plan=monthly">
+                            {status === 'success' && !isPaidUser && (
+                                <Button onClick={() => openPaywall("generic")} variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
+                                    <Sparkles className="h-3.5 w-3.5" />
+                                    Upgrade
+                                </Button>
+                            )}
+                            {isBusterAudited && (
+                                <Link href="/dashboard/billing?plan=pro">
                                     <Button variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
                                         <Sparkles className="h-3.5 w-3.5" />
-                                        Upgrade
+                                        Go unlimited
                                     </Button>
                                 </Link>
                             )}
@@ -228,7 +236,16 @@ export default function Header() {
                                         <HelpCircle className="mr-2 h-4 w-4" />
                                         Help & Support
                                     </DropdownMenuItem>
-                                    {latestReport && (
+                                    {!isPaidUser && (
+                                        <DropdownMenuItem onClick={() => openPaywall("report")} className="cursor-pointer">
+                                            <Lock className="mr-2 h-4 w-4" />
+                                            Download Privacy Report
+                                            <span className="ml-auto rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                                PRO
+                                            </span>
+                                        </DropdownMenuItem>
+                                    )}
+                                    {isPaidUser && latestReport && (
                                         <DropdownMenuItem
                                             onClick={downloadLatestReport}
                                             className="cursor-pointer text-cyan-600 dark:text-cyan-400 focus:text-cyan-700 dark:focus:text-cyan-300"
@@ -242,14 +259,16 @@ export default function Header() {
                                             )}
                                         </DropdownMenuItem>
                                     )}
-                                    <DropdownMenuItem
-                                        onClick={requestReport}
-                                        disabled={isReportGenerating}
-                                        className="cursor-pointer"
-                                    >
-                                        <FileText className="mr-2 h-4 w-4" />
-                                        {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
-                                    </DropdownMenuItem>
+                                    {isPaidUser && (
+                                        <DropdownMenuItem
+                                            onClick={requestReport}
+                                            disabled={isReportGenerating}
+                                            className="cursor-pointer"
+                                        >
+                                            <FileText className="mr-2 h-4 w-4" />
+                                            {isReportGenerating ? "Generating report…" : latestReport ? "Regenerate Report" : "Generate Privacy Report"}
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={() => handleLogout()} className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400">
                                         <LogOut className="mr-2 h-4 w-4" />

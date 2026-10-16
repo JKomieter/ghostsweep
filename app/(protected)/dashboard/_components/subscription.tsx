@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, Crown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { isPaidPlan } from "@/lib/plans";
 
 
 export default function SubscriptionModal({
@@ -70,7 +71,7 @@ export default function SubscriptionModal({
         }
     };
     const loading = status === "pending"
-    const isPro = data?.current_plan === "pro" || data?.current_plan === "buster";
+    const isPro = isPaidPlan(data?.current_plan);
 
     const renewalLabel = isPro 
 

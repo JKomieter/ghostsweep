@@ -1,4 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
+import { isPaidPlan } from "@/lib/plans";
+import { resolvePlan } from "@/lib/entitlements";
 import { type NextRequest, NextResponse } from "next/server";
 import { isForgottenService } from "@/utils/is_forgotten_service";
 
@@ -47,7 +49,7 @@ export async function GET(request: NextRequest) {
         // Get plan
         const { data: subscriptionData, error: subscriptionError } = await supabase
             .from("user_subscriptions")
-            .select("current_plan, scan_credits_remaining")
+            .select("current_plan, renews_at, scan_credits_remaining")
             .eq("user_id", user.id)
             .maybeSingle();
 
@@ -59,8 +61,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "buster" | "pro";
-        const isPro = currentPlan === "pro" || currentPlan === "buster";
+        const isPro = isPaidPlan(resolvePlan(subscriptionData));
 
         // Query params
         const { searchParams } = new URL(request.url);

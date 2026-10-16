@@ -100,15 +100,21 @@ export async function POST(req: Request) {
         }
 
         const stripeCustomerId = session.customer as string
-        const subscriptionId = session.subscription as string
+        const subscriptionId = session.subscription as string | null
 
-        // Get the actual subscription to get the current_period_end
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-        const priceId = subscription.items.data[0].price.id
-        
-        const renewsAt = subscription.items.data[0].current_period_end
-          ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
-          : getRenewalDate(priceId)
+        // One-time purchases (Buster Pass, mode "payment") have no subscription to look up
+        let priceId = session.metadata?.price_id ?? null
+        let renewsAt: string | null = null
+
+        if (subscriptionId) {
+          // Get the actual subscription to get the current_period_end
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+          priceId = subscription.items.data[0].price.id
+
+          renewsAt = subscription.items.data[0].current_period_end
+            ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString()
+            : getRenewalDate(priceId)
+        }
 
         console.log(`✅ Checkout completed for user ${supabaseUserId}`)
 
@@ -160,6 +166,7 @@ export async function POST(req: Request) {
               userId: supabaseUserId,
               stripeCustomerId,
               renewsAt,
+              priceId,
               mode: session.mode, // "subscription" or "payment"
             },
             headers: {

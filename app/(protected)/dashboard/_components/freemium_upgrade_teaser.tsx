@@ -1,15 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { X, DollarSign, Mail, Ghost, Shield, Zap, ArrowRight } from "lucide-react";
+import { X, DollarSign, Mail, Ghost, Shield, Zap, ArrowRight, Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
-import Link from "next/link";
+import { useCheckout } from "@/hooks/use-checkout";
+import { PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
 
-type PlanData = {
-    current_plan: "free" | "buster" | "pro";
-    renews_at: string | null;
-    scan_credits_remaining?: number;
-};
+type PlanData = PlanResponse;
+
+const TEASER_PLANS: { id: PaidPlanId; blurb: string; featured?: boolean }[] = [
+    { id: "buster", blurb: "One payment, full cleanup." },
+    { id: "pro", blurb: "Unlimited scans & monitoring." },
+    { id: "sentinel", blurb: "Best value — under $5/mo.", featured: true },
+];
 
 type OverviewData = {
     totalValue: number;
@@ -28,6 +31,7 @@ type LatestSweepData = {
 
 export default function FreemiumUpgradeTeaser() {
     const [dismissed, setDismissed] = useState(false);
+    const { startCheckout, pendingPlan } = useCheckout();
 
     // Fetch plan
     const { data: planData } = useQuery<PlanData>({
@@ -49,11 +53,11 @@ export default function FreemiumUpgradeTeaser() {
         },
     });
 
-    // Fetch latest sweep
+    // Fetch latest sweep (includeRead so the teaser survives the sweep being marked as seen)
     const { data: sweepData } = useQuery<LatestSweepData>({
-        queryKey: ["latestSweep"],
+        queryKey: ["latestSweep", "includeRead"],
         queryFn: async () => {
-            const res = await fetch("/api/sweep/latest");
+            const res = await fetch("/api/sweep/status/latest?includeRead=true");
             if (!res.ok) throw new Error("Failed to fetch sweep");
             return res.json();
         },
@@ -244,49 +248,41 @@ export default function FreemiumUpgradeTeaser() {
                     </div>
                 </div>
 
-                {/* CTA */}
+                {/* CTA — straight to Stripe checkout */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {/* Buster Pass */}
-                    <Link
-                        href="/dashboard/billing?plan=buster"
-                        className="group flex flex-col gap-1 rounded-xl border border-foreground/10 bg-foreground/5 hover:border-emerald-500/40 hover:bg-emerald-500/5 p-4 transition"
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-foreground/50">Buster Pass</span>
-                            <ArrowRight className="h-3.5 w-3.5 text-foreground/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                        <div className="text-xl font-semibold text-foreground">$12.99</div>
-                        <div className="text-[11px] text-foreground/40">One-Time</div>
-                        <div className="mt-1 text-xs text-foreground/50 italic">Lowers the barrier for the skeptic.</div>
-                    </Link>
-
-                    {/* Monthly Sub */}
-                    <Link
-                        href="/dashboard/billing?plan=monthly"
-                        className="group flex flex-col gap-1 rounded-xl border border-foreground/10 bg-foreground/5 hover:border-emerald-500/40 hover:bg-emerald-500/5 p-4 transition"
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-foreground/50">Monthly</span>
-                            <ArrowRight className="h-3.5 w-3.5 text-foreground/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                        <div className="text-xl font-semibold text-foreground">$7.99</div>
-                        <div className="text-[11px] text-foreground/40">per month</div>
-                        <div className="mt-1 text-xs text-foreground/50 italic">Cheaper than a sandwich.</div>
-                    </Link>
-
-                    {/* Annual Sub */}
-                    <Link
-                        href="/dashboard/billing?plan=annual"
-                        className="group flex flex-col gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/60 hover:bg-emerald-500/10 p-4 transition"
-                    >
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Annual Sentinel</span>
-                            <ArrowRight className="h-3.5 w-3.5 text-emerald-600/50 dark:text-emerald-400/50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                        <div className="text-xl font-semibold text-foreground">$59.99</div>
-                        <div className="text-[11px] text-foreground/40">per year &mdash; just $4.99/mo</div>
-                        <div className="mt-1 text-xs text-emerald-600/70 dark:text-emerald-400/70 italic">The &ldquo;Golden Ticket.&rdquo; Under $5/mo.</div>
-                    </Link>
+                    {TEASER_PLANS.map(({ id, blurb, featured }) => {
+                        const plan = PAID_PLANS[id];
+                        return (
+                            <button
+                                key={id}
+                                type="button"
+                                onClick={() => startCheckout(id)}
+                                disabled={pendingPlan !== null}
+                                className={`group flex flex-col gap-1 rounded-xl border p-4 text-left transition disabled:opacity-60 ${
+                                    featured
+                                        ? "border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/60 hover:bg-emerald-500/10"
+                                        : "border-foreground/10 bg-foreground/5 hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                                }`}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span className={`text-xs font-semibold uppercase tracking-wider ${featured ? "text-emerald-600 dark:text-emerald-400" : "text-foreground/50"}`}>
+                                        {plan.name}
+                                    </span>
+                                    {pendingPlan === id ? (
+                                        <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                                    ) : (
+                                        <ArrowRight className="h-3.5 w-3.5 text-foreground/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                                    )}
+                                </div>
+                                <div className="text-xl font-semibold text-foreground">
+                                    {plan.price}
+                                    {plan.period !== "one-time" && <span className="text-sm font-normal text-foreground/50">{plan.period}</span>}
+                                </div>
+                                <div className="text-[11px] text-foreground/50">{plan.note}</div>
+                                <div className="mt-1 text-xs text-foreground/60">{blurb}</div>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
         </div>

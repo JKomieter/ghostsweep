@@ -1,4 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
+import { isPaidPlan } from "@/lib/plans";
+import { resolvePlan } from "@/lib/entitlements";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -17,7 +19,7 @@ export async function GET() {
     // 2) Plan
     const { data: subscriptionData, error: subscriptionError } = await supabase
         .from("user_subscriptions")
-        .select("current_plan")
+        .select("current_plan, renews_at")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -29,7 +31,7 @@ export async function GET() {
         );
     }
 
-    const currentPlan = (subscriptionData?.current_plan || "free") as "free" | "pro";
+    const currentPlan: "free" | "pro" = isPaidPlan(resolvePlan(subscriptionData)) ? "pro" : "free";
 
     // 3) Always compute total count (safe for both tiers)
     const { count: breachCount, error: countError } = await supabase

@@ -1,9 +1,22 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { getUserPlan } from "@/lib/entitlements";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const baseUrl = process.env.NODE_ENV === "production" ?
 "https://ghostsweep-orchestration.fly.dev" :
 "http://localhost:4000";
+
+// The privacy report is a paid feature (Buster, Pro, Annual). Free users get a 402 so the
+// client can show the upgrade paywall instead of the PDF.
+async function requirePaidAccess(supabase: SupabaseClient, userId: string) {
+  const { hasPaidAccess } = await getUserPlan(supabase, userId);
+  if (hasPaidAccess) return null;
+  return NextResponse.json(
+    { error: "The privacy report is available on Buster and Pro plans.", code: "UPGRADE_REQUIRED" },
+    { status: 402 }
+  );
+}
 
 /** GET /api/report — returns the user's most recent report URL (fresh signed URL) */
 export async function GET() {
@@ -16,6 +29,9 @@ export async function GET() {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const paywall = await requirePaidAccess(supabase, user.id);
+    if (paywall) return paywall;
 
     const token = await supabase.auth.getSession().then(
       (res) => res.data.session?.access_token
@@ -60,6 +76,9 @@ export async function POST() {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const paywall = await requirePaidAccess(supabase, user.id);
+    if (paywall) return paywall;
 
     const token = await supabase.auth.getSession().then(
       (res) => res.data.session?.access_token

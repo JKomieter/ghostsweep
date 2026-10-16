@@ -33,6 +33,7 @@ import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useTheme } from "next-themes";
 import { GmailLogo } from "@/svgs";
 import TeaserScan from "./_components/teaser-scan";
+import { FREE_PLAN, PAID_PLANS, type PaidPlanId } from "@/lib/plans";
 
 const SIGNUP_HREF = "/login?mode=signup";
 
@@ -68,7 +69,7 @@ const FAQS = [
     },
     {
         q: "Is it really free to start?",
-        a: "Yes. The breach check and shadow scan on this page need no account. The free plan includes one inbox scan, your breach summary, and a preview of your ghost profiles — no credit card required. You only pay if you want the full list and deletion tools.",
+        a: "Yes. The breach check and shadow scan on this page need no account. The free plan includes one inbox scan per month, your breach summary, and a preview of your ghost accounts — no credit card required. You only pay if you want the full list and deletion tools.",
     },
     {
         q: "What is a shadow profile?",
@@ -855,79 +856,33 @@ function PrivacySection() {
 
 // ─── Pricing ───────────────────────────────────────────────────
 function PricingSection() {
+    // Prices and features live in lib/plans.ts so the site, billing page and paywall always agree
+    const paid = (id: PaidPlanId, extra: { badge: string | null; cta: string; href: string; featured: boolean }) => ({
+        name: PAID_PLANS[id].name,
+        price: PAID_PLANS[id].price,
+        period: PAID_PLANS[id].period === "one-time" ? "" : PAID_PLANS[id].period,
+        note: PAID_PLANS[id].note,
+        description: PAID_PLANS[id].description,
+        features: PAID_PLANS[id].features.map((text) => ({ text, locked: false })),
+        ...extra,
+    });
+
     const plans = [
         {
-            name: "Free",
-            price: "$0",
+            name: FREE_PLAN.name,
+            price: FREE_PLAN.price,
             period: "",
-            note: "Free forever",
+            note: FREE_PLAN.note,
             badge: null as string | null,
-            description: "See what's hiding in your inbox and across the web.",
+            description: FREE_PLAN.description,
             cta: "Start free",
             href: SIGNUP_HREF,
             featured: false,
-            features: [
-                { text: "1 inbox scan", locked: false },
-                { text: "Breach summary for your email", locked: false },
-                { text: "Preview of 10 ghost profiles", locked: false },
-                { text: "Full ghost account list", locked: true },
-                { text: "Gift cards & deletion tools", locked: true },
-            ],
+            features: FREE_PLAN.features,
         },
-        {
-            name: "Annual Sentinel",
-            price: "$59.99",
-            period: "/yr",
-            note: "Just $4.99/mo, billed yearly",
-            badge: "Best value",
-            description: "Everything, always on. The best price per month.",
-            cta: "Get Annual Sentinel",
-            href: "/login?mode=signup&plan=annual",
-            featured: true,
-            features: [
-                { text: "Everything in Monthly", locked: false },
-                { text: 'Priority "Shadow Watch" scan queue', locked: false },
-                { text: "Gift card expiry alerts", locked: false },
-                { text: "Monthly Identity Health Report (PDF)", locked: false },
-                { text: "Priority deletion support", locked: false },
-            ],
-        },
-        {
-            name: "Monthly",
-            price: "$7.99",
-            period: "/mo",
-            note: "Cancel anytime",
-            badge: null,
-            description: "Full visibility, unlimited inboxes, real-time monitoring.",
-            cta: "Start monthly",
-            href: "/login?mode=signup&plan=monthly",
-            featured: false,
-            features: [
-                { text: "Everything in Buster Pass", locked: false },
-                { text: "Unlimited inbox connections", locked: false },
-                { text: "Real-time breach alerts", locked: false },
-                { text: "Weekly shadow web re-scan", locked: false },
-                { text: "One-click newsletter unsubscribe", locked: false },
-            ],
-        },
-        {
-            name: "Buster Pass",
-            price: "$12.99",
-            period: "",
-            note: "One-time payment",
-            badge: null,
-            description: "A deep one-off audit of up to 3 emails. No subscription.",
-            cta: "Buy once — $12.99",
-            href: "/login?mode=signup&plan=buster",
-            featured: false,
-            features: [
-                { text: "10 scan credits (work, personal, old)", locked: false },
-                { text: "Deep-web OSINT shadow search", locked: false },
-                { text: "Every ghost account & gift card unlocked", locked: false },
-                { text: "PDF audit + password-manager CSV", locked: false },
-                { text: "One-click account deletion links", locked: false },
-            ],
-        },
+        paid("buster", { badge: null, cta: `Buy once — ${PAID_PLANS.buster.price}`, href: "/login?mode=signup&plan=buster", featured: false }),
+        paid("pro", { badge: null, cta: "Start Pro Monthly", href: "/login?mode=signup&plan=monthly", featured: false }),
+        paid("sentinel", { badge: "Best value", cta: "Get Pro Annual", href: "/login?mode=signup&plan=annual", featured: true }),
     ];
 
     return (
