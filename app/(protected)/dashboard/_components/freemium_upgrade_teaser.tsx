@@ -31,7 +31,7 @@ type LatestSweepData = {
 
 export default function FreemiumUpgradeTeaser() {
     const [dismissed, setDismissed] = useState(false);
-    const { startCheckout, pendingPlan } = useCheckout();
+    const { startCheckout, pendingPlan } = useCheckout("dashboard_teaser");
 
     // Fetch plan
     const { data: planData } = useQuery<PlanData>({
@@ -125,7 +125,7 @@ export default function FreemiumUpgradeTeaser() {
                 </h2>
                 <p className="text-foreground/60 mb-6 max-w-xl">
                     Your free scan checked the last <span className="text-foreground font-medium">2 years</span> of email headers. 
-                    Upgrade to our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> for <span className="text-emerald-600 dark:text-emerald-400 font-medium">5 years</span> of full analysis.
+                    Upgrade to our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> for <span className="text-emerald-600 dark:text-emerald-400 font-medium">10+ years</span> of full analysis.
                 </p>
 
                 {/* Stats Grid */}
@@ -203,7 +203,7 @@ export default function FreemiumUpgradeTeaser() {
                             <div className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">Deep Audit (Pro)</div>
                             <ul className="space-y-2 text-sm text-foreground/80">
                                 <li className="flex items-center gap-2">
-                                    <span className="text-emerald-600 dark:text-emerald-400">✓</span> Full 5 years
+                                    <span className="text-emerald-600 dark:text-emerald-400">✓</span> Full 10+ years
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <span className="text-emerald-600 dark:text-emerald-400">✓</span> Content analysis

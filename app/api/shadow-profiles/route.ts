@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { isPaidPlan } from "@/lib/plans";
-import { resolvePlan } from "@/lib/entitlements";
+import { getUserPlan, resolvePlan } from "@/lib/entitlements";
+import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
 
 const VALID_STATUSES = ["active", "ignored", "deleted"] as const;
@@ -71,6 +72,10 @@ export async function DELETE(req: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: "id is required" }, { status: 400 });
     }
+
+    // Permanently removing rows would shrink the free preview set and reveal hidden profiles
+    const { hasPaidAccess } = await getUserPlan(supabase, user.id);
+    if (!hasPaidAccess) return upgradeRequired("Upgrade to permanently remove shadow profiles.");
 
     const { error } = await supabase
       .from("shadow_profiles")
@@ -162,9 +167,17 @@ export async function GET() {
     const isPremium =
       isPaidPlan(resolvePlan(plan));
     const FREE_TIER_LIMIT = 5;
-    const visibleProfiles = isPremium
-      ? enrichedProfiles
-      : enrichedProfiles.slice(0, FREE_TIER_LIMIT);
+    // Free tier: a fixed preview of the highest-risk profiles (any status), with a stable tie-break
+    // so the visible set never shifts between requests
+    const previewIds = isPremium
+      ? null
+      : pickPreviewIds(enrichedProfiles, FREE_TIER_LIMIT, {
+          id: (p) => String(p.id),
+          compare: (a, b) => (Number(b.risk_level) || 0) - (Number(a.risk_level) || 0),
+        });
+    const visibleProfiles = previewIds
+      ? enrichedProfiles.filter((p) => previewIds.has(String(p.id)))
+      : enrichedProfiles;
     const hiddenCount = isPremium
       ? 0
       : Math.max(0, enrichedProfiles.length - FREE_TIER_LIMIT);

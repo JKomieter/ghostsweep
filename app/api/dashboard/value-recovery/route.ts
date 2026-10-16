@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { getUserPlan } from "@/lib/entitlements";
+import { newestFirst, pickPreviewIds } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -51,41 +52,58 @@ export async function GET(req: NextRequest) {
     .in("type", ["gift_card", "coupon", "rewards", "refund"])
     .eq("status", "recovered");
 
-  // Convert from cents to dollars
-  const totalValue = (values || []).reduce((sum, v) => sum + (Number(v.amount) || 0), 0) / 100;
-  const recoveredValue = (values || []).filter(v => v.status === "recovered").reduce((sum, v) => sum + (Number(v.amount) || 0), 0) / 100;
+  // Convert from cents to dollars. "Recoverable" = still-active items only (matches the dashboard overview);
+  // already-recovered value is reported separately.
+  const centsOf = (v: { amount: unknown }) => Number(v.amount) || 0;
+  const totalValue = (values || []).filter(v => v.status === "active").reduce((sum, v) => sum + centsOf(v), 0) / 100;
+  const recoveredValue = (values || []).filter(v => v.status === "recovered").reduce((sum, v) => sum + centsOf(v), 0) / 100;
 
-  // Free tier: blur codes, block copy, block links, limit data returned
+  // Free tier: preview slice only, with codes/links locked
   const isFree = plan === "free";
   const PREVIEW_LIMIT = 10;
-  
-  // For free users, only return a preview slice
+
+  // Free tier: a fixed preview of the newest PREVIEW_LIMIT items, chosen across ALL types and statuses
+  // so recovering/ignoring items can't pull hidden ones (or their codes) into view.
+  let previewIds: Set<string> | null = null;
+  let freeRevealId: string | null = null;
+  if (isFree) {
+    const { data: universe } = await supabase
+      .from("found_values")
+      .select("id, detected_at, amount, code, pin, redemption_url, risk_level")
+      .eq("user_id", user.id)
+      .in("type", allowedTypes)
+      .in("status", allowedStatuses);
+    const rows = universe || [];
+    previewIds = pickPreviewIds(rows, PREVIEW_LIMIT, {
+      id: (v) => v.id,
+      compare: (a, b) => newestFirst(a.detected_at, b.detected_at),
+    });
+
+    // Free users get the code for their single most valuable safe preview item, so they can redeem
+    // something real and see the product works. Chosen regardless of status, so it never moves on.
+    freeRevealId = rows
+      .filter(v => previewIds!.has(v.id) && v.risk_level !== "high_risk" && (v.code || v.pin || v.redemption_url))
+      .sort((x, y) => centsOf(y) - centsOf(x) || x.id.localeCompare(y.id))[0]?.id ?? null;
+  }
+
   const allValues = values || [];
-  const valuesToReturn = isFree ? allValues.slice(0, PREVIEW_LIMIT) : allValues;
-  
-  // For free users, blur value details; for all users, convert amount from cents to dollars
+  const valuesToReturn = previewIds ? allValues.filter(v => previewIds.has(v.id)) : allValues;
+
+  // Amounts are stored in cents — convert for every plan so free and paid users see the same numbers
   const processedValues = valuesToReturn.map(val => {
-    if (isFree) {
-      return {
-        ...val,
-        // source: val.source ? val.source.substring(0, 2) + "••••••" : null,
-        // amount: "••.••",
-        // code: val.code ? "••••-••••-••••" : null, // Hide gift card codes
-        // redemption_url: null, // Can't redeem without paying
-        // original_email_id: null,
-        // // Always include risk protection fields - they're safety critical
-        // risk_level: val.risk_level || "unknown",
-        // is_verified: val.is_verified ?? false,
-        // warning_message: val.warning_message,
-      };
-    }
+    const locked = isFree && val.id !== freeRevealId;
     return {
       ...val,
-      amount: Number(val.amount) / 100, // Convert from cents to dollars
-      // Ensure risk fields are always present
+      amount: Number(val.amount) / 100,
+      // Risk fields are safety critical, so always present
       risk_level: val.risk_level || "unknown",
       is_verified: val.is_verified ?? false,
       warning_message: val.warning_message,
+      locked,
+      has_secret: Boolean(val.code || val.pin || val.redemption_url),
+      ...(locked
+        ? { code: null, pin: null, redemption_url: null, email_body_snippet: null } // snippet can contain the code
+        : {}),
     };
   });
 
@@ -94,8 +112,10 @@ export async function GET(req: NextRequest) {
     blurred: isFree,
     previewOnly: isFree,
     previewCount: isFree ? PREVIEW_LIMIT : null,
-    totalValue: isFree ? null : totalValue, // Hide actual value from free users
-    recoveredValue: isFree ? null : recoveredValue,
+    // Real totals for everyone (computed over all items, not just the preview) — seeing the full
+    // amount is what makes the upgrade worth it; paying unlocks the rest of the list and recovery
+    totalValue,
+    recoveredValue,
     totalCount: totalCount || 0, // Show count so they know what they're missing
     recoveredCount: recoveredCount || 0,
     values: processedValues,

@@ -3,8 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Sparkles, ArrowRight, Clock, Search, TrendingUp, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { UpgradeTrigger } from "../../_components/upgrade_paywall";
+import { PAID_PLANS } from "@/lib/plans";
 
 type PlanData = {
     current_plan: "free" | "buster" | "pro";
@@ -59,9 +60,7 @@ export default function DeepAuditBanner() {
         return null;
     }
 
-    // Estimate what they might find with deep audit (3x multiplier for 5 years vs 2 years)
-    const estimatedDeepItems = Math.max(itemCount * 3, 25);
-    const estimatedDeepValue = Math.max((valueData?.totalValue || 0) * 2.5, 500);
+    const foundValue = valueData?.totalValue || 0;
 
     return (
         <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-background/60 to-orange-500/10 p-6 md:p-8 mb-8">
@@ -92,7 +91,7 @@ export default function DeepAuditBanner() {
                     We found <span className="text-amber-700 dark:text-amber-400 font-medium">{itemCount} items</span> from the last 2 years
                 </h2>
                 <p className="text-lg text-foreground/70 mb-6">
-                    Want us to go deeper? Our <span className="text-amber-700 dark:text-amber-300 font-medium">Deep Audit</span> scans back 5 years.
+                    Want us to go deeper? Our <span className="text-amber-700 dark:text-amber-300 font-medium">Deep Audit</span> scans back 10+ years.
                 </p>
 
                 {/* Comparison grid */}
@@ -129,13 +128,13 @@ export default function DeepAuditBanner() {
                         <div className="flex items-center gap-2 mb-3">
                             <Sparkles className="h-4 w-4 text-amber-700 dark:text-amber-400" />
                             <span className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                                Deep Audit (Pro)
+                                Deep Audit (Buster &amp; Pro)
                             </span>
                         </div>
                         <div className="space-y-2 text-sm text-foreground/80">
                             <div className="flex items-center gap-2">
                                 <span className="text-amber-700 dark:text-amber-400">✓</span>
-                                Full <span className="text-amber-700 dark:text-amber-300 font-medium">5 years</span> of email history
+                                Full <span className="text-amber-700 dark:text-amber-300 font-medium">10+ years</span> of email history
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="text-amber-700 dark:text-amber-400">✓</span>
@@ -143,28 +142,32 @@ export default function DeepAuditBanner() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="text-amber-700 dark:text-amber-400">✓</span>
-                                Estimated: <span className="text-amber-700 dark:text-amber-300 font-medium blur-[3px] select-none">{estimatedDeepItems}+ items</span>
+                                Every code &amp; redemption link unlocked
                             </div>
-                            <div className="flex items-center gap-2">
-                                <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-emerald-600 dark:text-emerald-400 font-medium blur-[3px] select-none">${estimatedDeepValue.toLocaleString()}</span>
-                                <span className="text-foreground/50">potential value</span>
-                            </div>
+                            {foundValue > 0 && (
+                                <div className="flex items-center gap-2">
+                                    <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                        ${Math.round(foundValue).toLocaleString()}
+                                    </span>
+                                    <span className="text-foreground/50">already found, ready to claim</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 {/* CTA */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <Link href="/dashboard/billing?plan=monthly">
+                    <UpgradeTrigger reason="generic">
                         <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold px-6 py-5 text-base gap-2 shadow-lg shadow-amber-500/20">
                             <Sparkles className="h-4 w-4" />
-                            Upgrade to Pro
+                            Unlock everything
                             <ArrowRight className="h-4 w-4" />
                         </Button>
-                    </Link>
+                    </UpgradeTrigger>
                     <div className="text-sm text-foreground/40">
-                        $7.99/mo • 5 years of history
+                        From {PAID_PLANS.buster.price} one-time or {PAID_PLANS.pro.price}{PAID_PLANS.pro.period}
                     </div>
                 </div>
             </div>

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import type Stripe from "stripe";
 import stripe from "@/lib/stripe";
+import TrackFunnelEvent from "@/components/track-funnel-event";
+import { PAID_PLANS, type PaidPlanId } from "@/lib/plans";
 
 const SuccessIcon = (
     <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
@@ -112,8 +114,15 @@ export default async function SuccessPage({
     // If user hits success URL but never completed checkout
     if (session.status === "open") redirect("/dashboard/billing");
 
+    // Subscription checkouts have no payment_intent on the session, so judge success by the
+    // session itself; fall back to the payment intent only for one-time payments still in flight.
     const paymentIntent = session.payment_intent as Stripe.PaymentIntent | null;
-    const piStatus = paymentIntent?.status ?? "default";
+    const sessionPaid =
+        session.status === "complete" &&
+        (session.payment_status === "paid" || session.payment_status === "no_payment_required");
+    const piStatus = sessionPaid
+        ? "succeeded"
+        : paymentIntent?.status ?? (session.status === "complete" ? "processing" : "default");
     const ui = STATUS_CONTENT_MAP[piStatus] ?? STATUS_CONTENT_MAP.default;
 
     const customerEmail =
@@ -129,11 +138,29 @@ export default async function SuccessPage({
         piStatus === "canceled" ||
         piStatus === "default";
 
+    const purchasedPlan = session.metadata?.plan;
+    const trackedPlan: PaidPlanId | null =
+        purchasedPlan && purchasedPlan in PAID_PLANS ? (purchasedPlan as PaidPlanId) : null;
+
     const showStripeLink =
         process.env.NODE_ENV !== "production" && Boolean(paymentIntentId);
 
     return (
         <main className="min-h-screen bg-background px-4 py-10 text-foreground">
+            {isSuccess && trackedPlan && (
+                <TrackFunnelEvent
+                    onceKey={`purchase:${session.id}`}
+                    event={{
+                        name: "purchase_completed",
+                        props: {
+                            plan: trackedPlan,
+                            value: (session.amount_total ?? 0) / 100,
+                            currency: (session.currency ?? "usd").toUpperCase(),
+                            session_id: session.id,
+                        },
+                    }}
+                />
+            )}
             <div className="mx-auto w-full max-w-xl space-y-6">
                 {/* Header card */}
                 <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6">
@@ -186,13 +213,10 @@ export default async function SuccessPage({
                     {/* Unlocks */}
                     {isSuccess && (
                         <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                            {[
-                                "Full account list (not just 10)",
-                                "Deletion request tracking",
-                                "Auto follow-ups + status checking",
-                                "Breach monitoring",
-                                "Priority email support",
-                            ].map((t) => (
+                            {(trackedPlan
+                                ? PAID_PLANS[trackedPlan].features
+                                : ["Full account list", "Every gift card & code unlocked", "Deletion request tracking", "Downloadable PDF privacy report"]
+                            ).map((t) => (
                                 <div
                                     key={t}
                                     className="rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2 text-xs text-foreground/70"

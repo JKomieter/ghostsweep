@@ -7,9 +7,9 @@ import { formatDate } from "@/utils/format_date";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { BreachDetailsSheet } from "./breach_details";
-import Link from "next/link";
 import { UserBreachesQueryResult } from "@/queryTypes";
 import { Breach } from "@/types";
+import { UpgradeTrigger } from "./upgrade_paywall";
 
 function severityLabel(breach: Breach) {
     const pwn = breach.pwn_count ?? 0;
@@ -60,7 +60,6 @@ export default function Breaches() {
             return res.json();
         },
     });
-    const trialLabel = "Upgrade to Professional";
 
     return (
         <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
@@ -71,12 +70,12 @@ export default function Breaches() {
                     <div className="mt-3 rounded-lg border border-foreground/5 bg-foreground/2 p-3">
                         <p className="text-xs text-foreground/60">
                             We found <strong className="text-foreground">{totalCount}</strong> breaches linked to your data.
-                            <Link href="/dashboard/billing?plan=monthly">
+                            <UpgradeTrigger reason="generic">
                                 <button className="text-foreground/90 underline underline-offset-2 ml-1 hover:text-foreground">
-                                    {trialLabel}
+                                    Upgrade
                                 </button>
-                            </Link>{" "}
-                            to unlock the breach list and details.
+                            </UpgradeTrigger>{" "}
+                            to delete the breached accounts and get alerted when new breaches hit.
                         </p>
                     </div>
                 )}

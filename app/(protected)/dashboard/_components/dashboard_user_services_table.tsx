@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
+import { UpgradeTrigger } from "./upgrade_paywall";
 
 type UrgencyTeaser = {
     id: string;
@@ -158,12 +159,12 @@ export default function DashboardUrgencyPanel() {
 
                 {!isLoading && !isError ? (
                     gated ? (
-                        <Link href="/dashboard/billing?plan=monthly">
+                        <UpgradeTrigger reason="accounts">
                             <Button size="sm" className="h-8 rounded-md border-0 bg-foreground text-background hover:bg-foreground/90 transition-colors">
                                 <Lock className="h-3.5 w-3.5 mr-1.5" />
                                 Upgrade to Pro →
                             </Button>
-                        </Link>
+                        </UpgradeTrigger>
                     ) : (
                         <Link href="/dashboard/accounts">
                             <Button size="sm" variant="ghost" className="h-8 text-foreground/60 hover:text-foreground hover:bg-foreground/5">
@@ -223,11 +224,11 @@ export default function DashboardUrgencyPanel() {
                             </div>
 
                             {gated ? (
-                                <Link href="/dashboard/billing?plan=monthly" className="shrink-0">
+                                <UpgradeTrigger reason="accounts" className="shrink-0">
                                     <Button size="sm" className="h-8 rounded-md border-0 bg-foreground text-background hover:bg-foreground/90">
                                         Unlock
                                     </Button>
-                                </Link>
+                                </UpgradeTrigger>
                             ) : null}
                         </div>
                     </div>
@@ -300,11 +301,11 @@ export default function DashboardUrgencyPanel() {
                                             <Lock className="h-3 w-3" />
                                             {hiddenCount.toLocaleString()} more hidden
                                         </div>
-                                        <Link href="/dashboard/billing?plan=monthly">
+                                        <UpgradeTrigger reason="accounts">
                                             <Button size="sm" className="h-7 text-xs rounded-md border-0 bg-foreground text-background hover:bg-foreground/90">
                                         Upgrade
                                             </Button>
-                                        </Link>
+                                        </UpgradeTrigger>
                                     </div>
                                 </div>
                             ) : null}
@@ -326,11 +327,11 @@ export default function DashboardUrgencyPanel() {
                         </div>
 
                         {gated ? (
-                            <Link href="/dashboard/billing?plan=monthly">
+                            <UpgradeTrigger reason="accounts">
                                 <Button className="bg-foreground text-background hover:bg-foreground/90">
                                     Upgrade Now
                                 </Button>
-                            </Link>
+                            </UpgradeTrigger>
                         ) : (
                             <Link href="/dashboard/accounts">
                                 <Button variant="ghost" className="border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3">

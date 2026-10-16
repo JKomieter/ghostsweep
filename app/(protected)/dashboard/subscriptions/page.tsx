@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, CheckCircle2, Filter, Calendar, AlertTriangle, X, Check, Trash2 } from "lucide-react";
-import { isPaidPlan } from "@/lib/plans";
+import { usePaywall, UpgradeRequiredError, throwIfUpgradeRequired } from "../_components/upgrade_paywall";
 
 type Subscription = {
   id: string;
@@ -68,7 +68,7 @@ function formatCurrency(amount: number) {
 }
 
 function getMonthlyAmount(amount: string, frequency: string) {
-  // `amount` is provided in cents; convert to dollars first
+  // The API already converts `amount` from cents to dollars
   const dollars = (Number(amount) || 0);
   switch (frequency) {
     case "daily": return dollars * 30;
@@ -102,15 +102,7 @@ export default function SubscriptionsPage() {
   
   const queryClient = useQueryClient();
 
-  // Fetch plan for trial eligibility
-  const { data: planData } = useQuery<{ current_plan: string; scan_credits_remaining?: number }>({
-    queryKey: ["plan"],
-    queryFn: async () => {
-      const res = await fetch("/api/plan");
-      if (!res.ok) throw new Error("Failed to fetch plan");
-      return res.json();
-    },
-  });
+  const { openPaywall } = usePaywall();
   const {
     data,
     isLoading: loading,
@@ -172,6 +164,7 @@ export default function SubscriptionsPage() {
   const hardDeleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/dashboard/subscriptions?id=${id}`, { method: "DELETE" });
+      throwIfUpgradeRequired(res);
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Failed to delete");
@@ -183,8 +176,9 @@ export default function SubscriptionsPage() {
       setConfirmDeleteId(null);
     },
     onError: (err: Error) => {
-      alert(err.message);
       setConfirmDeleteId(null);
+      if (err instanceof UpgradeRequiredError) return openPaywall("generic");
+      alert(err.message);
     },
   });
 
@@ -202,8 +196,6 @@ export default function SubscriptionsPage() {
   };
 
   // UI helpers
-  const isPro = isPaidPlan(planData?.current_plan);
-  const blurred = data?.blurred;
   const previewOnly = data?.previewOnly;
   const monthlyTotal = data?.monthlyTotal || 0;
   const annualTotal = data?.annualTotal || 0;
@@ -239,14 +231,10 @@ export default function SubscriptionsPage() {
               <div className="md:col-span-2">
                 <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Monthly Spending</div>
                 <div className="text-4xl font-light text-red-600 dark:text-red-400 mb-2">
-                  {loading ? <Skeleton className="h-10 w-32" /> : (
-                    previewOnly ? (
-                      <span className="blur-sm select-none">$•••.••</span>
-                    ) : formatCurrency(monthlyTotal)
-                  )}
+                  {loading ? <Skeleton className="h-10 w-32" /> : formatCurrency(monthlyTotal)}
                 </div>
                 <div className="text-lg text-foreground/60">
-                  {previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(annualTotal)}/year
+                  {formatCurrency(annualTotal)}/year
                 </div>
                 <div className="text-sm text-foreground/40 mt-2">
                   {loading ? <Skeleton className="h-4 w-20" /> : `${totalCount} active subscriptions`}
@@ -256,7 +244,7 @@ export default function SubscriptionsPage() {
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Potential Savings</div>
                 <div className="text-2xl font-light text-emerald-600 dark:text-emerald-400">
-                  {previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(annualTotal)}
+                  {formatCurrency(annualTotal)}
                 </div>
                 <div className="text-xs text-foreground/40 mt-1">if cancel all</div>
               </div>
@@ -264,7 +252,7 @@ export default function SubscriptionsPage() {
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Lifetime Saved</div>
                 <div className="text-2xl font-light text-emerald-600 dark:text-emerald-400">
-                  {previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(lifetimeSavings)}
+                  {formatCurrency(lifetimeSavings)}
                 </div>
                 <div className="text-xs text-foreground/40 mt-1">from cancellations</div>
               </div>
@@ -558,15 +546,16 @@ export default function SubscriptionsPage() {
             <div className="text-5xl mb-4">💸</div>
             <h3 className="text-xl text-foreground font-semibold mb-3">You&apos;re Leaking Money</h3>
             <p className="text-foreground/60 mb-2 max-w-md mx-auto">
-              You have <span className="text-red-600 dark:text-red-400 font-bold">{totalCount} subscriptions</span> silently draining your bank account.
-              We&apos;re only showing {previewCount} of them.
+              You have <span className="text-red-600 dark:text-red-400 font-bold">{totalCount} subscriptions</span> costing you{" "}
+              <span className="text-red-600 dark:text-red-400 font-bold">{formatCurrency(annualTotal)} a year</span>.
+              {totalCount > previewCount && <> We&apos;re only showing {previewCount} of them.</>}
             </p>
             <p className="text-foreground/40 text-sm mb-6">
               Upgrade to see the full list, view costs, and cancel them with one click.
             </p>
-            <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-400 px-6 py-3 text-sm font-semibold text-white transition">
-              Upgrade to Pro →
-            </a>
+            <button type="button" onClick={() => openPaywall("generic")} className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-400 px-6 py-3 text-sm font-semibold text-white transition">
+              Upgrade to cancel them →
+            </button>
           </div>
         )}
 

@@ -1,6 +1,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { getUserPlan } from "@/lib/entitlements";
+import { newestFirst, pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("found_values")
-    .select("*", { count: "exact" })
+    .select("*")
     .eq("user_id", user.id)
     .eq("type", "subscription");
 
@@ -51,19 +52,28 @@ export async function GET(req: NextRequest) {
     query = query.order("detected_at", { ascending: false });
   }
 
-  const { data: subscriptions, count: totalCount } = await query;
+  const { data: subscriptions } = await query;
+
+  // The same service is often detected in several emails — count each service once, the same way
+  // the money totals below are deduplicated, so "N subscriptions" matches the dollar figures
+  const serviceKey = (row: { id: string; service_name?: string | null }) => {
+    const name = (row.service_name || "").toString().toLowerCase().trim();
+    return name || row.id;
+  };
+  const countUnique = (rows: Array<{ id: string; service_name?: string | null }> | null) =>
+    new Set((rows || []).map(serviceKey)).size;
 
   // Get counts for different statuses
-  const { count: canceledCount } = await supabase
+  const { data: canceledRows } = await supabase
     .from("found_values")
-    .select("id", { count: "exact", head: true })
+    .select("id, service_name")
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "canceled");
 
-  const { count: keptCount } = await supabase
+  const { data: keptRows } = await supabase
     .from("found_values")
-    .select("id", { count: "exact", head: true })
+    .select("id, service_name")
     .eq("user_id", user.id)
     .eq("type", "subscription")
     .eq("status", "kept");
@@ -125,42 +135,50 @@ export async function GET(req: NextRequest) {
 
   const lifetimeSavings = lifetimeCents / 100;
 
-  // Free tier: blur service names and amounts, limit data returned
+  // Free tier: limit data returned
   const isFree = plan === "free";
   const PREVIEW_LIMIT = 7;
   
-  // For free users, only return a preview slice
-  const allSubs = subscriptions || [];
-  const subsToReturn = isFree ? allSubs.slice(0, PREVIEW_LIMIT) : allSubs;
-  
-  // For free users, blur subscription details; for all users, convert amount from cents to dollars
-  // Deduplicate returned subscriptions by normalized `service_name`, preserving first occurrence
-  const seen = new Set<string>();
-  const processedSubs: Array<Record<string, unknown>> = [];
-  for (const sub of subsToReturn) {
-    const key = (sub.service_name || "").toString().toLowerCase().trim();
-    if (key && seen.has(key)) continue;
-    if (key) seen.add(key);
-
-    if (isFree) {
-      processedSubs.push({ ...sub });
-    } else {
-      processedSubs.push({ ...sub, amount: Number(sub.amount) / 100 });
-    }
+  // Free tier: a fixed preview of PREVIEW_LIMIT services, chosen across ALL statuses (active,
+  // canceled, kept) so canceling or deleting can't pull hidden subscriptions into view.
+  let previewIds: Set<string> | null = null;
+  if (isFree) {
+    const { data: universe } = await supabase
+      .from("found_values")
+      .select("id, service_name, detected_at")
+      .eq("user_id", user.id)
+      .eq("type", "subscription");
+    previewIds = pickPreviewIds(universe || [], PREVIEW_LIMIT, {
+      id: (row) => row.id,
+      group: serviceKey,
+      compare: (a, b) => newestFirst(a.detected_at, b.detected_at),
+    });
   }
+
+  // Deduplicate by service (first occurrence wins). Amounts are stored in cents — convert for every plan.
+  const seen = new Set<string>();
+  const uniqueSubs = (subscriptions || []).filter((sub) => {
+    const key = serviceKey(sub);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const processedSubs = (previewIds ? uniqueSubs.filter((sub) => previewIds.has(sub.id)) : uniqueSubs)
+    .map((sub) => ({ ...sub, amount: Number(sub.amount) / 100 }));
 
   return NextResponse.json({
     plan,
     blurred: isFree,
     previewOnly: isFree,
     previewCount: isFree ? PREVIEW_LIMIT : null,
-    monthlyTotal: isFree ? null : monthlyTotal, // Hide actual totals from free users
-    annualTotal: isFree ? null : annualTotal,
-    totalCount: totalCount || 0, // Show count so they know what they're missing
-    canceledCount: canceledCount || 0,
-    keptCount: keptCount || 0,
+    // Real totals for everyone (computed over all active subscriptions, not just the preview)
+    monthlyTotal,
+    annualTotal,
+    totalCount: uniqueSubs.length, // Show count so they know what they're missing
+    canceledCount: countUnique(canceledRows),
+    keptCount: countUnique(keptRows),
     subscriptions: processedSubs,
-    lifetimeSavings: isFree ? null : lifetimeSavings,
+    lifetimeSavings,
   });
 }
 
@@ -223,6 +241,10 @@ export async function DELETE(req: NextRequest) {
   if (!id) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
+
+  // Permanently removing rows would shrink the free preview set and reveal hidden subscriptions
+  const { hasPaidAccess } = await getUserPlan(supabase, user.id);
+  if (!hasPaidAccess) return upgradeRequired("Upgrade to permanently remove subscriptions from your list.");
 
   try {
     const { error } = await supabase

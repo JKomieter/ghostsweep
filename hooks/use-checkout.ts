@@ -3,15 +3,20 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { PaidPlanId } from "@/lib/plans";
+import { trackFunnel } from "@/lib/analytics";
 
-/** Starts a Stripe Checkout session for a plan and redirects to it. */
-export function useCheckout() {
+/**
+ * Starts a Stripe Checkout session for a plan and redirects to it.
+ * @param source where the upgrade was started (e.g. "paywall:report", "billing_page") — reported with checkout_started
+ */
+export function useCheckout(source: string) {
     const [pendingPlan, setPendingPlan] = useState<PaidPlanId | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const startCheckout = useCallback(async (plan: PaidPlanId) => {
         setPendingPlan(plan);
         setError(null);
+        trackFunnel({ name: "checkout_started", props: { plan, source } });
 
         let referralCode: string | null = null;
         try {
@@ -52,7 +57,7 @@ export function useCheckout() {
             toast.error(message);
             setPendingPlan(null);
         }
-    }, []);
+    }, [source]);
 
     return { startCheckout, pendingPlan, error };
 }

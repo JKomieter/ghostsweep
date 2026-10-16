@@ -12,9 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, ExternalLink, CheckCircle2, RefreshCw, Filter, Download, AlertTriangle, ShieldCheck, ShieldAlert, ShieldQuestion } from "lucide-react";
+import { Copy, ExternalLink, CheckCircle2, RefreshCw, Filter, Download, AlertTriangle, ShieldCheck, ShieldAlert, ShieldQuestion, Lock, Gift } from "lucide-react";
 import type { ValueRecoveryQueryResult, FoundValue, RiskLevel } from "@/queryTypes";
 import DeepAuditBanner from "./_components/deep-audit-banner";
+import { usePaywall } from "../_components/upgrade_paywall";
 
 // Risk level configuration
 const RISK_CONFIG: Record<RiskLevel, { color: string; bgColor: string; borderColor: string; icon: typeof ShieldCheck; label: string }> = {
@@ -147,14 +148,26 @@ export default function ValueRecoveryPage() {
     individualRecoveryMutation.mutate(id);
   };
 
-  // Export (mock)
-  const exportList = (type: "csv" | "pdf") => {
-    // TODO: Implement export
-    alert(`Exporting as ${type.toUpperCase()}`);
+  // Export the current list as CSV (paid plans — free users hit the paywall instead)
+  const exportCsv = () => {
+    const rows = data?.values ?? [];
+    if (!rows.length) return;
+    const header = ["Service", "Type", "Amount (USD)", "Status", "Code", "PIN", "Redemption link", "Expires", "Found"];
+    const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const lines = rows.map((v) => [
+      v.service_name, v.type, v.amount, v.status, v.code, v.pin, v.redemption_url, v.expiry_date, v.detected_at,
+    ].map(escape).join(","));
+    const blob = new Blob([[header.map(escape).join(","), ...lines].join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ghostsweep-value-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   // UI helpers
-  const isPro = data?.plan === "pro";
+  const { openPaywall } = usePaywall();
   const previewOnly = data?.previewOnly;
   const previewCount = data?.previewCount || 0;
   const total = data?.totalValue || 0;
@@ -263,8 +276,8 @@ export default function ValueRecoveryPage() {
               variant="outline" 
               size="sm" 
               className="h-8 border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-800 dark:hover:text-emerald-200" 
-              disabled={!selected.length || bulkRecoveryMutation.isPending || previewOnly} 
-              onClick={markAllRecovered}
+              disabled={!previewOnly && (!selected.length || bulkRecoveryMutation.isPending)}
+              onClick={previewOnly ? () => openPaywall("generic") : markAllRecovered}
             >
               <span className="hidden sm:inline">
                 {previewOnly ? "Upgrade to Recover" : bulkRecoveryMutation.isPending ? "Processing..." : "Recover Selected"}
@@ -276,13 +289,14 @@ export default function ValueRecoveryPage() {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground/50 hover:text-foreground hover:bg-foreground/10" disabled={previewOnly}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground/50 hover:text-foreground hover:bg-foreground/10">
                   <Download className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-card border-foreground/10 text-foreground">
-                <DropdownMenuItem onClick={() => exportList("csv")} className="focus:bg-foreground/10 cursor-pointer">Export CSV</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportList("pdf")} className="focus:bg-foreground/10 cursor-pointer">Export PDF</DropdownMenuItem>
+                <DropdownMenuItem onClick={previewOnly ? () => openPaywall("generic") : exportCsv} className="focus:bg-foreground/10 cursor-pointer">
+                  {previewOnly && <Lock className="mr-2 h-3.5 w-3.5" />}Export CSV
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -358,6 +372,17 @@ export default function ValueRecoveryPage() {
                     <span className="text-3xl font-light text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">{formatCurrency(Number(item.amount) || 0)}</span>
                   </div>
                    <div className="text-xs text-foreground/40 mt-2 font-mono">Found {item.detected_at && new Date(item.detected_at).toLocaleDateString()}</div>
+                   {previewOnly && item.has_secret && (
+                     item.locked ? (
+                       <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
+                         <Lock className="h-3 w-3" /> Code locked
+                       </div>
+                     ) : (
+                       <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                         <Gift className="h-3 w-3" /> Free unlock — code revealed
+                       </div>
+                     )
+                   )}
                 </div>
               </div>
             </div>
@@ -381,15 +406,15 @@ export default function ValueRecoveryPage() {
               </h3>
               <p className="text-foreground/60 mb-2 max-w-md mx-auto">
                 You&apos;re only seeing <span className="text-foreground font-medium">{previewCount}</span> of them. 
-                Our <span className="text-amber-700 dark:text-amber-300 font-medium">Deep Audit</span> goes back <span className="text-amber-700 dark:text-amber-300 font-medium">5 years</span> and typically finds 3× more value.
+                Our <span className="text-amber-700 dark:text-amber-300 font-medium">Deep Audit</span> goes back <span className="text-amber-700 dark:text-amber-300 font-medium">10+ years</span>.
               </p>
               <p className="text-foreground/40 text-sm mb-6">
                 Unlock gift cards, coupons, rewards points, and refunds hiding deeper in your inbox.
               </p>
-              <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 px-6 py-3 text-sm font-semibold text-black transition shadow-lg shadow-amber-500/20">
-                <span>Upgrade to Pro</span>
+              <button type="button" onClick={() => openPaywall("generic")} className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 px-6 py-3 text-sm font-semibold text-black transition shadow-lg shadow-amber-500/20">
+                <span>Unlock all {count} items</span>
                 <span>→</span>
-              </a>
+              </button>
             </div>
           </div>
         )}
@@ -518,6 +543,23 @@ export default function ValueRecoveryPage() {
                               For your safety, codes and links from high-risk sources are hidden. 
                               If you believe this is a mistake, please verify with the original sender.
                             </p>
+                          </div>
+                        ) : modalValue.locked && modalValue.has_secret ? (
+                          <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-3">
+                            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+                              <Lock className="h-4 w-4" />
+                              <span className="text-sm font-medium">Code &amp; redemption link locked</span>
+                            </div>
+                            <p className="text-xs text-foreground/60">
+                              We found the code for this {formatCurrency(Number(modalValue.amount) || 0)} {modalValue.type.replace("_", " ")}. Unlock it — and every other item we found — to redeem it.
+                            </p>
+                            <Button
+                              size="sm"
+                              onClick={() => { setModalValue(null); openPaywall("generic"); }}
+                              className="bg-emerald-500 text-black hover:bg-emerald-400"
+                            >
+                              Unlock code
+                            </Button>
                           </div>
                         ) : (
                         <div className="space-y-4">

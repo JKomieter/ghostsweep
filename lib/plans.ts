@@ -6,7 +6,7 @@ export type PlanId = "free" | "buster" | "pro" | "sentinel";
 export type PaidPlanId = Exclude<PlanId, "free">;
 
 /** Scan credits granted by a one-time Buster Pass purchase. */
-export const BUSTER_SCAN_CREDITS = 10;
+export const BUSTER_SCAN_CREDITS = 3;
 
 /** Number of discovered accounts a free user can see before hitting the paywall. */
 export const FREE_ACCOUNT_PREVIEW = 10;

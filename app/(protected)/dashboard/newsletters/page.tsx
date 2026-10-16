@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, CheckCircle2, Filter, Calendar, Mail, Clock, Info, AlertTriangle, Zap, Loader2, Trash2 } from "lucide-react";
+import { UpgradeTrigger, usePaywall, UpgradeRequiredError, throwIfUpgradeRequired } from "../_components/upgrade_paywall";
 
 type Newsletter = {
   id: string;
@@ -94,6 +95,7 @@ function getTimeSince(dateString: string) {
 }
 
 export default function NewslettersPage() {
+  const { openPaywall } = usePaywall();
   const [tab, setTab] = useState("active");
   const [frequencyFilter, setFrequencyFilter] = useState("all");
   const [sort, setSort] = useState("frequency");
@@ -174,6 +176,7 @@ export default function NewslettersPage() {
   const hardDeleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/dashboard/newsletters?id=${id}`, { method: "DELETE" });
+      throwIfUpgradeRequired(res);
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Failed to delete");
@@ -185,8 +188,9 @@ export default function NewslettersPage() {
       setConfirmDeleteId(null);
     },
     onError: (err: Error) => {
-      alert(err.message);
       setConfirmDeleteId(null);
+      if (err instanceof UpgradeRequiredError) return openPaywall("generic");
+      alert(err.message);
     },
   });
 
@@ -452,7 +456,7 @@ export default function NewslettersPage() {
                 <Button 
                   size="sm" 
                   className="h-8 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-semibold shadow-lg shadow-red-500/20 gap-1.5"
-                  onClick={() => isPro ? setShowNukeModal(true) : (window.location.href = "/dashboard/billing?plan=monthly")}
+                  onClick={() => isPro ? setShowNukeModal(true) : openPaywall("generic")}
                   disabled={batchUnsubscribing || nukeInProgress}
                 >
                   <Zap className="h-3.5 w-3.5" />
@@ -628,9 +632,9 @@ export default function NewslettersPage() {
             <p className="text-foreground/40 text-sm mb-6">
               Upgrade to unsubscribe in bulk and reclaim your inbox.
             </p>
-            <a href="/dashboard/billing?plan=monthly" className="inline-flex items-center justify-center rounded-lg bg-blue-500 hover:bg-blue-400 px-6 py-3 text-sm font-semibold text-white transition">
+            <UpgradeTrigger reason="generic" className="inline-flex items-center justify-center rounded-lg bg-blue-500 hover:bg-blue-400 px-6 py-3 text-sm font-semibold text-white transition">
               Upgrade to Pro →
-            </a>
+            </UpgradeTrigger>
           </div>
         )}
 
