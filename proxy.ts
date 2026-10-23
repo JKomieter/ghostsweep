@@ -15,6 +15,22 @@ const ratelimit = new Ratelimit({
     analytics: false,  // Disabled to reduce Redis calls
 });
 
+// Separate, higher budget for known crawlers. User agents can be spoofed, so
+// this stays capped rather than fully exempt.
+const crawlerRatelimit = new Ratelimit({
+    redis: redis,
+    limiter: Ratelimit.slidingWindow(3000, '1 m'),
+    prefix: 'ratelimit:crawler',
+    analytics: false,
+});
+
+const CRAWLER_UA_PATTERN = /googlebot|google-inspectiontool|storebot-google|adsbot-google|bingbot|bingpreview|duckduckbot|slurp|yandexbot|baiduspider|applebot|facebookexternalhit|twitterbot|linkedinbot|ahrefsbot|semrushbot|screaming frog|rogerbot|dotbot|mj12bot|gptbot|oai-searchbot|chatgpt-user|claudebot|claude-user|perplexitybot|searchfitbot/i;
+
+function isKnownCrawler(request: NextRequest): boolean {
+    const ua = request.headers.get('user-agent');
+    return !!ua && CRAWLER_UA_PATTERN.test(ua);
+}
+
 const ALLOWED_ORIGINS = [
     'https://ghostsweep.com',
     'https://www.ghostsweep.com',
@@ -210,7 +226,8 @@ export async function proxy(request: NextRequest) {
     // against bots and scrapers).
     const isApiRoute = pathname.startsWith('/api/');
     if (!isApiRoute && !WHITELISTED_IPS.includes(ip)) {
-        const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+        const limiter = isKnownCrawler(request) ? crawlerRatelimit : ratelimit;
+        const { success, limit, remaining, reset } = await limiter.limit(ip);
         if (!success) {
             const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
             
