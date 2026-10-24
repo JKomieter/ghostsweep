@@ -2,6 +2,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { getUserPlan } from "@/lib/entitlements";
 import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
+import { compareRisk, isAccountRow, unusedCutoff } from "@/lib/account-risk";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -79,11 +80,7 @@ export async function GET(req: NextRequest) {
   }
 
   // 1. Define "Accounts" universe: Not Spam AND Not Newsletter
-  const allAccounts = (allServices || []).filter(us => {
-    const service = Array.isArray(us.services) ? us.services[0] : us.services;
-    const isNewsletter = us.is_spam === true || service?.category === "Newsletter";
-    return !isNewsletter;
-  });
+  const allAccounts = (allServices || []).filter(us => isAccountRow(us, us.services));
 
   // 2. Calculate global stats for the "Accounts" universe
   
@@ -97,9 +94,7 @@ export async function GET(req: NextRequest) {
   }).length;
 
   // Unused (> 365 days)
-  const oneYearAgo = new Date();
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  const oneYearAgoIso = oneYearAgo.toISOString();
+  const oneYearAgoIso = unusedCutoff();
   
   const unusedCount = activeAccountsList.filter(us => {
     return us.last_seen_at && us.last_seen_at < oneYearAgoIso;
@@ -123,14 +118,9 @@ export async function GET(req: NextRequest) {
   // whitelisted or not) so deleting/whitelisting can't pull hidden accounts into view.
   const isFree = plan === "free";
   const PREVIEW_LIMIT = 10;
-  const lastSeen = (us: { last_seen_at: string | null }) => (us.last_seen_at ? new Date(us.last_seen_at).getTime() : 0);
+  const byRisk = compareRisk<(typeof allAccounts)[number]>(breachedServiceIds);
   const previewIds = isFree
-    ? pickPreviewIds(allAccounts, PREVIEW_LIMIT, {
-        id: (us) => us.id,
-        compare: (a, b) =>
-          Number(breachedServiceIds.has(b.service_id)) - Number(breachedServiceIds.has(a.service_id)) ||
-          lastSeen(a) - lastSeen(b),
-      })
+    ? pickPreviewIds(allAccounts, PREVIEW_LIMIT, { id: (us) => us.id, compare: byRisk })
     : null;
 
   // 4. Apply View Filters (Status & Category)
@@ -199,16 +189,7 @@ export async function GET(req: NextRequest) {
       return dateA - dateB;
     } else {
       // "risk": Breached first, then unused (oldest last seen), then others
-      const isBreachedA = breachedServiceIds.has(a.service_id);
-      const isBreachedB = breachedServiceIds.has(b.service_id);
-      
-      if (isBreachedA !== isBreachedB) {
-        return isBreachedA ? -1 : 1;
-      }
-      // If same breach status, sort by last_seen ascending (older = more risky/unused)
-      const dateA = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
-      const dateB = b.last_seen_at ? new Date(b.last_seen_at).getTime() : 0;
-      return dateA - dateB;
+      return byRisk(a, b);
     }
   });
 

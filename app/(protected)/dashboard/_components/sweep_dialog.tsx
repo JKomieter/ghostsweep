@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import AccountSelect from "./account_select";
 import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
-import { BUSTER_SCAN_CREDITS } from "@/lib/plans";
+import { FREE_ACCOUNT_PREVIEW, scanCreditsLabel } from "@/lib/plans";
 import { UpgradeTrigger } from "./upgrade_paywall";
 
 type LatestSweep = {
@@ -172,7 +172,7 @@ export default function SweepDialog({
               </div>
               
               {planIsFree && (
-                <p className="text-xs text-yellow-800/80 dark:text-yellow-200/80 border-l-2 border-yellow-500/30 pl-3">Free plan: Up to 10 accounts shown.</p>
+                <p className="text-xs text-yellow-800/80 dark:text-yellow-200/80 border-l-2 border-yellow-500/30 pl-3">Free plan: up to {FREE_ACCOUNT_PREVIEW} accounts shown.</p>
               )}
 
               {/* Buster credits remaining */}
@@ -197,7 +197,7 @@ export default function SweepDialog({
                   <p className={`text-xs font-medium ${
                     scanCreditsRemaining <= 1 ? "text-orange-700 dark:text-orange-300" : "text-amber-700 dark:text-amber-300"
                   }`}>
-                    {scanCreditsRemaining} of {BUSTER_SCAN_CREDITS} scan credit{scanCreditsRemaining !== 1 ? "s" : ""} remaining
+                    {scanCreditsLabel(scanCreditsRemaining)} remaining
                     {scanCreditsRemaining === 1 && " — last one!"}
                   </p>
                 </div>

@@ -16,6 +16,10 @@ const publicRoutes = [
     "/api/breach_check",
     "/api/teaser-scan",
     "/api/scan/teaser",
+    "/api/marketing/stats",
+    "/api/cron", // authenticated by CRON_SECRET, not a user session
+    "/share", // public results card that friends open
+    "/api/og",
     "/sitemap.xml",
 ]
 

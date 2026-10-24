@@ -14,6 +14,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Input from "@/components/ui/input";
 import { toast } from "sonner";
+import { BreachSignupCta } from "../_components/breach-signup-cta";
 
 function sanitizeHtml(dirty: string): string {
     if (typeof window === "undefined") return dirty;
@@ -42,6 +43,8 @@ export default function BreachCheckPage() {
     const [status, setStatus] = useState<Status>("idle");
     const [breaches, setBreaches] = useState<Breach[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [submittedQuery, setSubmittedQuery] = useState("");
+    const [totalBreaches, setTotalBreaches] = useState(0);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -50,6 +53,7 @@ export default function BreachCheckPage() {
         setStatus("loading");
         setError(null);
         setBreaches([]);
+    setTotalBreaches(0);
 
         try {
             const res = await fetch("/api/breach_check", {
@@ -71,6 +75,8 @@ export default function BreachCheckPage() {
 
             const data = await res.json();
             setBreaches((data?.breaches ?? []) as Breach[]);
+            setSubmittedQuery(query);
+            setTotalBreaches(data?.total ?? data?.breaches?.length ?? 0);
             setStatus("success");
 
             toast.success(
@@ -89,6 +95,7 @@ export default function BreachCheckPage() {
     };
 
     const hasResults = breaches.length > 0;
+    const hiddenCount = Math.max(0, totalBreaches - breaches.length);
 
     return (
         <main className="min-h-screen bg-background">
@@ -189,6 +196,11 @@ export default function BreachCheckPage() {
                 {/* Results */}
                 {hasResults && (
                     <section className="space-y-4">
+                        <BreachSignupCta
+                            query={submittedQuery}
+                            breachCount={totalBreaches}
+                        />
+
                         <div className="flex items-center justify-between">
                             <h2 className="text-sm font-medium text-foreground">
                                 Breaches found ({breaches.length})
@@ -276,6 +288,12 @@ export default function BreachCheckPage() {
                                 );
                             })}
                         </div>
+
+                        <BreachSignupCta
+                            query={submittedQuery}
+                            breachCount={totalBreaches}
+                            hiddenCount={hiddenCount}
+                        />
                     </section>
                 )}
             </div>

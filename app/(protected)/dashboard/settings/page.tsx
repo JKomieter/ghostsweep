@@ -41,8 +41,9 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import ConnectAccountModal from "./_components/connect-account-modal";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
-import { BUSTER_SCAN_CREDITS, PAID_PLANS, isPaidPlan, planDisplayName, type PlanResponse } from "@/lib/plans";
+import { BUSTER_SCAN_CREDITS, PAID_PLANS, isPaidPlan, planDisplayName, scanCreditsLabel, type PlanResponse } from "@/lib/plans";
 import { usePaywall } from "../_components/upgrade_paywall";
+import CancelFlowDialog from "../_components/cancel_flow_dialog";
 
 
 // Type definitions
@@ -282,6 +283,9 @@ export default function SettingsPage() {
             toast.error(error.message || "Failed to delete account");
         },
     });
+
+    // Cancel goes through the save-offer dialog first
+    const [cancelFlowOpen, setCancelFlowOpen] = useState(false);
 
     // Handle billing portal
     const handleManageBilling = async () => {
@@ -717,17 +721,18 @@ export default function SettingsPage() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={handleManageBilling}
+                                    onClick={() => setCancelFlowOpen(true)}
                                     className="flex-1 border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10"
                                 >
                                     Cancel Subscription
                                 </Button>
+                                <CancelFlowDialog open={cancelFlowOpen} onOpenChange={setCancelFlowOpen} />
                             </div>
                         ) : (
                             currentPlan === "buster" ? (
                                 <div className="space-y-2">
                                     <p className="text-xs text-muted-foreground">
-                                        Your Buster Pass includes {BUSTER_SCAN_CREDITS} scan credits and never expires. Go Pro for unlimited scans and always-on monitoring.
+                                        Your Buster Pass includes {scanCreditsLabel(BUSTER_SCAN_CREDITS)} and never expires. Go Pro for unlimited scans and always-on monitoring.
                                     </p>
                                     <Link href="/dashboard/billing?plan=pro" className="block">
                                         <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">

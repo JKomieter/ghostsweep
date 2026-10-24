@@ -42,6 +42,16 @@ function formatCurrency(amount: number) {
   return amount.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
+// Stand-in for details withheld on the free plan. The real value never reaches the browser;
+// this only blurs placeholder text so the card keeps its shape.
+function Hidden({ placeholder, className = "" }: { placeholder: string; className?: string }) {
+  return (
+    <span className={`select-none blur-sm ${className}`} aria-label="Hidden until you upgrade">
+      {placeholder}
+    </span>
+  );
+}
+
 export default function ValueRecoveryPage() {
   const [tab, setTab] = useState("all");
   const [sort, setSort] = useState("value");
@@ -201,6 +211,16 @@ export default function ValueRecoveryPage() {
               </span>
               <span className="text-lg font-light text-foreground/40">recoverable</span>
             </div>
+            {previewOnly && total > 0 && (
+              <button
+                type="button"
+                onClick={() => openPaywall("value")}
+                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400"
+              >
+                <Lock className="h-4 w-4" />
+                {formatCurrency(total)} found — unlock to claim
+              </button>
+            )}
           </div>
           <div className="flex flex-col gap-3 min-w-[240px]">
              <div className="flex items-center justify-between text-xs text-foreground/50 uppercase tracking-wider font-semibold">
@@ -277,7 +297,7 @@ export default function ValueRecoveryPage() {
               size="sm" 
               className="h-8 border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-800 dark:hover:text-emerald-200" 
               disabled={!previewOnly && (!selected.length || bulkRecoveryMutation.isPending)}
-              onClick={previewOnly ? () => openPaywall("generic") : markAllRecovered}
+              onClick={previewOnly ? () => openPaywall("value") : markAllRecovered}
             >
               <span className="hidden sm:inline">
                 {previewOnly ? "Upgrade to Recover" : bulkRecoveryMutation.isPending ? "Processing..." : "Recover Selected"}
@@ -323,7 +343,9 @@ export default function ValueRecoveryPage() {
                 </div>
                 
                 <div className="h-12 w-12 rounded-xl bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
-                    {item.logo_url ? (
+                    {item.locked ? (
+                        <Lock className="h-5 w-5 text-foreground/40" />
+                    ) : item.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                             src={item.logo_url}
@@ -342,7 +364,9 @@ export default function ValueRecoveryPage() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-semibold text-foreground text-lg truncate pr-8">{item.service_name || "Unknown"}</h3>
+                    <h3 className="font-semibold text-foreground text-lg truncate pr-8">
+                      {item.locked ? <Hidden placeholder="Hidden merchant" /> : item.service_name || "Unknown"}
+                    </h3>
                   </div>
                   
                   <div className="flex items-center gap-2 mb-4 flex-wrap">
@@ -402,7 +426,11 @@ export default function ValueRecoveryPage() {
                 </span>
               </div>
               <h3 className="text-xl text-foreground font-semibold mb-3">
-                Your Quick Scan found <span className="text-amber-700 dark:text-amber-400">{count} items</span> from the last 2 years
+                {total > 0 ? (
+                  <>Your Quick Scan found <span className="text-amber-700 dark:text-amber-400">{formatCurrency(total)}</span> across {count} items</>
+                ) : (
+                  <>Your Quick Scan found <span className="text-amber-700 dark:text-amber-400">{count} items</span> from the last 2 years</>
+                )}
               </h3>
               <p className="text-foreground/60 mb-2 max-w-md mx-auto">
                 You&apos;re only seeing <span className="text-foreground font-medium">{previewCount}</span> of them. 
@@ -411,8 +439,8 @@ export default function ValueRecoveryPage() {
               <p className="text-foreground/40 text-sm mb-6">
                 Unlock gift cards, coupons, rewards points, and refunds hiding deeper in your inbox.
               </p>
-              <button type="button" onClick={() => openPaywall("generic")} className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 px-6 py-3 text-sm font-semibold text-black transition shadow-lg shadow-amber-500/20">
-                <span>Unlock all {count} items</span>
+              <button type="button" onClick={() => openPaywall("value")} className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 px-6 py-3 text-sm font-semibold text-black transition shadow-lg shadow-amber-500/20">
+                <span>{total > 0 ? `Unlock to claim ${formatCurrency(total)}` : `Unlock all ${count} items`}</span>
                 <span>→</span>
               </button>
             </div>
@@ -429,7 +457,9 @@ export default function ValueRecoveryPage() {
                     <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-start gap-4">
                             <div className="h-14 w-14 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
-                              {modalValue.logo_url ? (
+                              {modalValue.locked ? (
+                                <Lock className="h-6 w-6 text-foreground/40" />
+                              ) : modalValue.logo_url ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={modalValue.logo_url} alt="logo" className="h-full w-full object-contain" />
                               ) : (
@@ -439,7 +469,9 @@ export default function ValueRecoveryPage() {
                               )}
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-semibold text-foreground tracking-tight mb-1">{modalValue.service_name}</DialogTitle>
+                                <DialogTitle className="text-xl font-semibold text-foreground tracking-tight mb-1">
+                                  {modalValue.locked ? <Hidden placeholder="Hidden merchant" /> : modalValue.service_name}
+                                </DialogTitle>
                                 <div className="flex items-center gap-2 flex-wrap">
                                      <Badge variant="outline" className="text-[10px] uppercase tracking-wider bg-foreground/5 border-foreground/10 text-foreground/50">{modalValue.type.replace("_", " ")}</Badge>
                                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
@@ -517,10 +549,14 @@ export default function ValueRecoveryPage() {
                  <div>
                      <div className="grid grid-cols-[80px_1fr] gap-x-4 gap-y-2 items-center text-sm">
                         <span className="text-foreground/40 font-medium text-xs uppercase tracking-wide">Subject</span>
-                        <div className="text-foreground/90 truncate min-w-0">{modalValue.email_subject || "No subject"}</div>
+                        <div className="text-foreground/90 truncate min-w-0">
+                          {modalValue.locked ? <Hidden placeholder="Your order confirmation" /> : modalValue.email_subject || "No subject"}
+                        </div>
                         
                         <span className="text-foreground/40 font-medium text-xs uppercase tracking-wide">Sender</span>
-                        <div className="text-foreground/90 truncate min-w-0">{modalValue.email_from || "Unknown"}</div>
+                        <div className="text-foreground/90 truncate min-w-0">
+                          {modalValue.locked ? <Hidden placeholder="rewards@merchant.com" /> : modalValue.email_from || "Unknown"}
+                        </div>
 
                          <span className="text-foreground/40 font-medium text-xs uppercase tracking-wide">Date</span>
                          <span className="text-foreground/90">{modalValue.email_date || "-"}</span>
@@ -555,7 +591,7 @@ export default function ValueRecoveryPage() {
                             </p>
                             <Button
                               size="sm"
-                              onClick={() => { setModalValue(null); openPaywall("generic"); }}
+                              onClick={() => { setModalValue(null); openPaywall("value"); }}
                               className="bg-emerald-500 text-black hover:bg-emerald-400"
                             >
                               Unlock code

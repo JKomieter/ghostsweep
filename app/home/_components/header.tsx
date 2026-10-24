@@ -80,7 +80,7 @@ export default function Header() {
                         href="/login?mode=signup"
                         className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-[13px] font-medium text-black shadow-sm transition hover:bg-emerald-400"
                     >
-                        Start free scan
+                        Connect inbox
                         <ArrowRight className="h-3 w-3" />
                     </Link>
                 </div>
@@ -122,7 +122,7 @@ export default function Header() {
                                 onClick={closeMobile}
                                 className="flex items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-black shadow-sm transition hover:bg-emerald-400"
                             >
-                                Start free scan
+                                Connect inbox (free)
                                 <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
                         </div>

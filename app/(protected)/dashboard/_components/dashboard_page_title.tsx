@@ -340,7 +340,7 @@ export default function DashboardTitle() {
                     return;
                 } else if (json.code === "MONTHLY_LIMIT_REACHED") {
                     toast.error("Monthly sweep limit reached", {
-                        description: "Go Professional for unlimited sweeps.",
+                        description: "Upgrade to Pro for unlimited scans.",
                         action: {
                             label: "Upgrade",
                             onClick: () => {

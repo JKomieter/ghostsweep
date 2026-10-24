@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { FREE_BREACH_PREVIEW_COUNT } from "@/lib/breach-preview";
 
 // HIBP API base + key
 const HIBP_API_BASE = "https://haveibeenpwned.com/api/v3";
@@ -58,6 +59,17 @@ function normalizeDomain(input: string): string | null {
 
 function isEmail(input: string): boolean {
     return /\S+@\S+\.\S+/.test(input);
+}
+
+// Anonymous callers only get a preview; the full list requires an account
+function previewFor(breaches: unknown, isAuthed: boolean) {
+    const all = Array.isArray(breaches) ? breaches : [];
+    const visible = isAuthed ? all : all.slice(0, FREE_BREACH_PREVIEW_COUNT);
+    return {
+        breaches: visible,
+        total: all.length,
+        truncated: visible.length < all.length,
+    };
 }
 
 // --------- main handler ----------
@@ -142,6 +154,8 @@ export async function POST(req: NextRequest) {
                         query: account,
                         found: false,
                         breaches: [],
+                        total: 0,
+                        truncated: false,
                     },
                     { status: 200 }
                 );
@@ -163,7 +177,7 @@ export async function POST(req: NextRequest) {
                     type: "account",
                     query: account,
                     found: Array.isArray(breaches) && breaches.length > 0,
-                    breaches,
+                    ...previewFor(breaches, Boolean(user)),
                 },
                 { status: 200 }
             );
@@ -199,6 +213,8 @@ export async function POST(req: NextRequest) {
                         normalized: domain,
                         found: false,
                         breaches: [],
+                        total: 0,
+                        truncated: false,
                     },
                     { status: 200 }
                 );
@@ -221,7 +237,7 @@ export async function POST(req: NextRequest) {
                     query,
                     normalized: domain,
                     found: Array.isArray(breaches) && breaches.length > 0,
-                    breaches,
+                    ...previewFor(breaches, Boolean(user)),
                 },
                 { status: 200 }
             );

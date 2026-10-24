@@ -91,8 +91,12 @@ function addSecurityHeaders(response: NextResponse, pathname: string): NextRespo
     const isDashboard = pathname.startsWith('/dashboard');
     const isAPI = pathname.startsWith('/api');
     const isBreachCheck = pathname === '/home/breach_check';
+    // Site-wide aggregates only, safe for shared caches (keeps the homepage off the DB)
+    const isPublicStats = pathname === '/api/marketing/stats';
 
-    if (isAuthPage || isDashboard || isAPI || isBreachCheck) {
+    if (isPublicStats) {
+        response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    } else if (isAuthPage || isDashboard || isAPI || isBreachCheck) {
         response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
         response.headers.set('Pragma', 'no-cache');
         response.headers.set('Expires', '0');

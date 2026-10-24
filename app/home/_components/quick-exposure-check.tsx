@@ -3,8 +3,8 @@
 
 import { useState, FormEvent } from "react";
 import { Mail, AlertTriangle, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
-import Link from "next/link";
 import DOMPurify from "dompurify";
+import { BreachSignupCta } from "./breach-signup-cta";
 
 type Breach = {
   Id?: string | null;
@@ -26,6 +26,8 @@ export function QuickExposureCheck() {
   const [status, setStatus] = useState<Status>("idle");
   const [breaches, setBreaches] = useState<Breach[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [submittedQuery, setSubmittedQuery] = useState("");
+  const [totalBreaches, setTotalBreaches] = useState(0);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -34,6 +36,7 @@ export function QuickExposureCheck() {
     setStatus("loading");
     setError(null);
     setBreaches([]);
+  setTotalBreaches(0);
 
     try {
       const res = await fetch("/api/breach_check", {
@@ -57,6 +60,8 @@ export function QuickExposureCheck() {
 
       const data = await res.json();
       setBreaches((data?.breaches ?? []) as Breach[]);
+      setSubmittedQuery(query);
+      setTotalBreaches(data?.total ?? data?.breaches?.length ?? 0);
       setStatus("success");
     } catch (err) {
       console.error("Breach check error:", err);
@@ -66,6 +71,7 @@ export function QuickExposureCheck() {
   };
 
   const hasResults = breaches.length > 0;
+  const hiddenCount = Math.max(0, totalBreaches - breaches.length);
 
   return (
     <section className="space-y-8">
@@ -138,6 +144,8 @@ export function QuickExposureCheck() {
         {/* Results */}
         {hasResults && (
           <div className="space-y-4">
+            <BreachSignupCta query={submittedQuery} breachCount={totalBreaches} />
+
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-foreground">
                 Breaches found ({breaches.length})
@@ -147,7 +155,7 @@ export function QuickExposureCheck() {
               </p>
             </div>
 
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="space-y-3">
               {breaches.map((breach) => {
                 const dateLabel = breach.BreachDate
                   ? new Date(breach.BreachDate).toLocaleDateString()
@@ -213,13 +221,11 @@ export function QuickExposureCheck() {
               })}
             </div>
 
-            <Link
-              href="/login?mode=signup"
-              className="inline-flex w-full items-center justify-center rounded-full border border-foreground/15 bg-foreground/5 px-5 py-2.5 text-xs font-medium text-foreground hover:bg-foreground/10 transition gap-2"
-            >
-              Open full GhostSweep dashboard
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            <BreachSignupCta
+              query={submittedQuery}
+              breachCount={totalBreaches}
+              hiddenCount={hiddenCount}
+            />
           </div>
         )}
       </div>

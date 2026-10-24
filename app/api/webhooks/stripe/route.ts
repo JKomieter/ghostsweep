@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server"
 import Stripe from "stripe"
 import * as Sentry from "@sentry/nextjs"
 import stripe from "@/lib/stripe"
+import { PAID_PLANS, planPriceCents } from "@/lib/plans"
 
 const MONTHLY_PRICE_ID = process.env.STRIPE_PRICE_PRO!
 
@@ -123,7 +124,8 @@ export async function POST(req: Request) {
         const referrerSupabaseId = session.metadata?.referrer_supabase_id
 
         if (referrerStripeCustomerId && referrerSupabaseId) {
-          const REFERRAL_REWARD_CENTS = 799; // $7.99
+          // "A free month" = one month of Pro Monthly
+          const REFERRAL_REWARD_CENTS = planPriceCents("pro");
 
           try {
             // 1. Apply credit to Stripe
@@ -136,7 +138,7 @@ export async function POST(req: Request) {
               }
             );
 
-            console.log(`💰 $7.99 credit added to Stripe for ${referrerStripeCustomerId}`);
+            console.log(`💰 ${PAID_PLANS.pro.price} credit added to Stripe for ${referrerStripeCustomerId}`);
 
             // 2. Update Supabase
             const { error: edgeError } = await supabase.functions.invoke('update-referral-credits', {
