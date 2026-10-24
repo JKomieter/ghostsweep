@@ -1,8 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import type { PlanResponse } from "@/lib/plans";
 
 
-function StatCard({ label, value, accent = "default", href }: { label: string; value: string | number; accent?: "default" | "danger" | "warning" | "success"; href?: string }) {
+// Always two decimals: subscription totals are averaged to monthly and can have more
+const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+type RecentFind = { id: string; type: string; amount: number; service_name: string | null; detected_at: string | null };
+
+function StatCard({ label, value, accent = "default", href, hint }: { label: string; value: string | number; accent?: "default" | "danger" | "warning" | "success"; href?: string; hint?: string }) {
     const accentConfig = {
         default: { text: "text-foreground", indicator: "bg-foreground/40" },
         danger: { text: "text-foreground", indicator: "bg-red-500" },
@@ -14,6 +20,7 @@ function StatCard({ label, value, accent = "default", href }: { label: string; v
             <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
                 <div className="flex items-start justify-between">
                     <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">{label}</span>
+                    {hint && <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">{hint}</span>}
                 </div>
                 <div className="flex items-end justify-between">
                     <span className={`text-4xl font-light tracking-tight ${accentConfig.text}`}>{value}</span>
@@ -37,8 +44,17 @@ export default function SummaryCards() {
         staleTime: 5 * 60 * 1000,
     });
 
+    const { data: planData } = useQuery<PlanResponse>({
+        queryKey: ["plan"],
+        queryFn: async () => {
+            const res = await fetch("/api/plan");
+            if (!res.ok) throw new Error("Failed to fetch plan");
+            return res.json();
+        },
+    });
+
     const isLoading = status === "pending";
-    const totalValue = data?.totalValue ?? 0;
+    const totalValue = Math.round(data?.totalValue ?? 0);
     const totalSubs = data?.totalSubs ?? 0;
     const newsletters = data?.newsletters ?? 0;
     const oldAccounts = data?.oldAccounts ?? 0;
@@ -46,10 +62,21 @@ export default function SummaryCards() {
 
     return (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            <StatCard label="Total Value Found" value={isLoading ? "—" : `$${totalValue.toLocaleString()}`} accent="success" href="/dashboard/value-recovery" />
-            <StatCard label="Active Subscriptions" value={isLoading ? "—" : `$${totalSubs.toLocaleString()}/mo`} accent="warning" href="/dashboard/subscriptions" />
+            <StatCard
+                label="Total Value Found"
+                value={isLoading ? "—" : `$${totalValue.toLocaleString()}`}
+                accent="success"
+                href="/dashboard/value-recovery"
+                hint={planData?.current_plan === "free" && totalValue > 0 ? "Unlock to claim →" : undefined}
+            />
+            <StatCard
+                label="Active Subscriptions"
+                value={isLoading ? "—" : `${usd.format(totalSubs)}/mo`}
+                accent="warning"
+                href="/dashboard/subscriptions"
+            />
             <StatCard label="Newsletters" value={isLoading ? "—" : newsletters} href="/dashboard/newsletters" />
-            <StatCard label="Old Accounts" value={isLoading ? "—" : oldAccounts} href="/dashboard/accounts" />
+            <StatCard label="Accounts" value={isLoading ? "—" : oldAccounts} href="/dashboard/accounts" />
             <div className="group relative h-full">
                 <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
                     <div className="flex items-start justify-between">
@@ -61,10 +88,16 @@ export default function SummaryCards() {
                         ) : recent.length === 0 ? (
                             <span className="text-foreground/40 text-sm">No recent finds</span>
                         ) : (
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            recent.map((item: any) => (
+                            recent.map((item: RecentFind) => (
                                 <div key={item.id} className="text-xs text-foreground/80 truncate">
-                                    {item.type}: ${ (item.amount / 100).toFixed(2) } – {item.detected_at?.slice(0, 10)}
+                                    {usd.format(item.amount / 100)} {item.service_name ? `${item.service_name} ` : ""}
+                                    {item.type.replace("_", " ")}
+                                    {item.detected_at && (
+                                        <span className="text-foreground/45">
+                                            {" · "}
+                                            {new Date(item.detected_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                                        </span>
+                                    )}
                                 </div>
                             ))
                         )}

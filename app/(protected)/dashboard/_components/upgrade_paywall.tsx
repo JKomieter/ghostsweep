@@ -7,10 +7,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCheckout } from "@/hooks/use-checkout";
-import { PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
+import { CHECKOUT_REASSURANCE, PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
 import { trackFunnel } from "@/lib/analytics";
 
-export type PaywallReason = "report" | "accounts" | "generic";
+export type PaywallReason = "report" | "accounts" | "value" | "generic";
 
 const COPY: Record<PaywallReason, { title: string; subtitle: string }> = {
     report: {
@@ -20,6 +20,11 @@ const COPY: Record<PaywallReason, { title: string; subtitle: string }> = {
     accounts: {
         title: "See every account holding your data",
         subtitle: "Your free scan only shows a preview. Unlock the full list and delete the accounts you don't use.",
+    },
+    // Used when the scan found no claimable money; with money found, the title names the amount (see below)
+    value: {
+        title: "Claim the gift cards and rewards in your inbox",
+        subtitle: "Unlock every code, PIN and redemption link your scan found.",
     },
     generic: {
         title: "Finish cleaning up your digital footprint",
@@ -58,7 +63,6 @@ export function PaywallProvider({ children }: { children: ReactNode }) {
 
 function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onClose: () => void }) {
     const open = reason !== null;
-    const copy = COPY[reason ?? "generic"];
     const { startCheckout, pendingPlan } = useCheckout(`paywall:${reason ?? "generic"}`);
 
     // Personalise the pitch with what this user's own scan found
@@ -80,6 +84,16 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
         },
         enabled: open,
     });
+
+    // Money is the strongest reason to upgrade: lead with the user's own total whenever there is one
+    const claimable = Math.round(overview?.totalValue ?? 0);
+    const copy =
+        reason === "value" && claimable > 0
+            ? {
+                  title: `$${claimable.toLocaleString()} found — unlock to claim it`,
+                  subtitle: "Get every code, PIN and redemption link, plus the rest of what your scan found.",
+              }
+            : COPY[reason ?? "generic"];
 
     const stats = [
         { icon: Ghost, value: overview?.oldAccounts ?? 0, label: "accounts found", tone: "text-purple-600 dark:text-purple-400" },
@@ -144,14 +158,14 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
                     {ownsBuster ? (
                         <PlanCard
                             planId="sentinel"
-                            cta={`Get Annual — ${PAID_PLANS.sentinel.price}${PAID_PLANS.sentinel.period}`}
+                            cta={`${PAID_PLANS.sentinel.cta} — ${PAID_PLANS.sentinel.price}${PAID_PLANS.sentinel.period}`}
                             onSelect={startCheckout}
                             pendingPlan={pendingPlan}
                         />
                     ) : (
                         <PlanCard
                             planId="buster"
-                            cta={`Get Buster — ${PAID_PLANS.buster.price}`}
+                            cta={`${PAID_PLANS.buster.cta} — ${PAID_PLANS.buster.price}`}
                             onSelect={startCheckout}
                             pendingPlan={pendingPlan}
                         />
@@ -159,7 +173,7 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
                     <PlanCard
                         planId="pro"
                         featured
-                        cta={`Start Pro — ${PAID_PLANS.pro.price}${PAID_PLANS.pro.period}`}
+                        cta={`${PAID_PLANS.pro.cta} — ${PAID_PLANS.pro.price}${PAID_PLANS.pro.period}`}
                         onSelect={startCheckout}
                         pendingPlan={pendingPlan}
                     />
@@ -178,7 +192,7 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
                 )}
 
                 <p className="text-center text-xs text-foreground/50">
-                    Secure checkout by Stripe · 30-day money-back guarantee · Subscriptions cancel anytime
+                    {CHECKOUT_REASSURANCE}
                 </p>
             </DialogContent>
         </Dialog>

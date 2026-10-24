@@ -40,8 +40,8 @@ export default function ReferralShareCta() {
         ? `https://ghostsweep.com/login?ref=${referralCode}`
         : "https://ghostsweep.com/login";
     const shareMessage = isReady
-        ? `Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. It found $140 in gift cards I missed. Use my link to get 50% off your first month: https://ghostsweep.com/login?ref=${referralCode}`
-        : "Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use this link to get 50% off your first month: https://ghostsweep.com/login";
+        ? `Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use my link to get 50% off your first payment: https://ghostsweep.com/login?ref=${referralCode}`
+        : "Yo! I've been using GhostSweep to find my forgotten accounts and hidden subscriptions. Use this link to get 50% off your first payment: https://ghostsweep.com/login";
 
     const handleCopy = async () => {
         if (!isReady) {
@@ -101,7 +101,7 @@ export default function ReferralShareCta() {
                     <DialogHeader>
                         <DialogTitle>Invite Friends & Earn Free Months</DialogTitle>
                         <DialogDescription>
-                            Each friend who upgrades using your link earns you a free month. They&apos;ll also get 50% off their first month.
+                            Each friend who upgrades using your link earns you a free month. They&apos;ll also get 50% off their first payment.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">

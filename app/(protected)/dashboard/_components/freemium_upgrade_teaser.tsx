@@ -4,14 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { X, DollarSign, Mail, Ghost, Shield, Zap, ArrowRight, Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useCheckout } from "@/hooks/use-checkout";
-import { PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
+import { ANNUAL_MONTHLY_EQUIVALENT, PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
 
 type PlanData = PlanResponse;
 
 const TEASER_PLANS: { id: PaidPlanId; blurb: string; featured?: boolean }[] = [
     { id: "buster", blurb: "One payment, full cleanup." },
     { id: "pro", blurb: "Unlimited scans & monitoring." },
-    { id: "sentinel", blurb: "Best value — under $5/mo.", featured: true },
+    { id: "sentinel", blurb: `Best value: just ${ANNUAL_MONTHLY_EQUIVALENT}.`, featured: true },
 ];
 
 type OverviewData = {
@@ -89,7 +89,7 @@ export default function FreemiumUpgradeTeaser() {
         return null;
     }
 
-    const totalValue = overviewData?.totalValue || 0;
+    const totalValue = Math.round(overviewData?.totalValue || 0);
     const newsletters = overviewData?.newsletters || 0;
     const accounts = overviewData?.oldAccounts || 0;
     const breaches = sweepData?.breachesFound || 0;
@@ -120,13 +120,28 @@ export default function FreemiumUpgradeTeaser() {
                     </span>
                 </div>
 
-                <h2 className="text-2xl md:text-3xl font-light text-foreground mb-3">
-                    Quick Scan Complete — Go Deeper?
-                </h2>
-                <p className="text-foreground/60 mb-6 max-w-xl">
-                    Your free scan checked the last <span className="text-foreground font-medium">2 years</span> of email headers. 
-                    Upgrade to our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> for <span className="text-emerald-600 dark:text-emerald-400 font-medium">10+ years</span> of full analysis.
-                </p>
+                {/* Money first: recovering cash converts better than privacy */}
+                {totalValue > 0 ? (
+                    <>
+                        <h2 className="text-2xl md:text-3xl font-light text-foreground mb-3">
+                            <span className="font-medium text-emerald-600 dark:text-emerald-400">${totalValue.toLocaleString()}</span> found in your inbox — unlock to claim it
+                        </h2>
+                        <p className="text-foreground/60 mb-6 max-w-xl">
+                            Your free scan found gift cards, coupons and rewards you haven&apos;t used. Upgrade to see
+                            where they are and get every code — and our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> goes back <span className="text-emerald-600 dark:text-emerald-400 font-medium">10+ years</span> for more.
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <h2 className="text-2xl md:text-3xl font-light text-foreground mb-3">
+                            Quick Scan Complete — Go Deeper?
+                        </h2>
+                        <p className="text-foreground/60 mb-6 max-w-xl">
+                            Your free scan checked the last <span className="text-foreground font-medium">2 years</span> of email headers. 
+                            Upgrade to our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> for <span className="text-emerald-600 dark:text-emerald-400 font-medium">10+ years</span> of full analysis.
+                        </p>
+                    </>
+                )}
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -136,10 +151,8 @@ export default function FreemiumUpgradeTeaser() {
                                 <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                 <span className="text-[10px] uppercase tracking-wider text-emerald-600/70 dark:text-emerald-400/70 font-semibold">Hidden Value</span>
                             </div>
-                            <div className="text-2xl font-light text-foreground">
-                                <span className="blur-sm select-none">${totalValue.toLocaleString()}</span>
-                            </div>
-                            <div className="text-xs text-foreground/40 mt-1">in coupons & rewards</div>
+                            <div className="text-2xl font-light text-foreground">${totalValue.toLocaleString()}</div>
+                            <div className="text-xs text-foreground/40 mt-1">unlock to claim</div>
                         </div>
                     )}
 
@@ -215,7 +228,7 @@ export default function FreemiumUpgradeTeaser() {
                         </div>
                     </div>
                     <div className="text-xs uppercase tracking-widest text-foreground/40 mb-4 font-semibold">
-                        With GhostSweep Pro, you can:
+                        When you upgrade, you can:
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="flex items-start gap-3">

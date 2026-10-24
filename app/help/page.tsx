@@ -1,6 +1,7 @@
 // app/help/page.tsx
 import Link from "next/link"
 import { ShieldCheck, Mail, HelpCircle, AlertTriangle, Lock } from "lucide-react"
+import { BUSTER_SCAN_CREDITS, FREE_ACCOUNT_PREVIEW, PAID_PLANS, scanCreditsLabel } from "@/lib/plans"
 
 export default function HelpPage() {
     return (
@@ -167,13 +168,15 @@ export default function HelpPage() {
                     <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm backdrop-blur-sm">
                         <div>
                             <p className="text-xs font-light text-foreground">
-                                What&apos;s the difference between Free and Pro?
+                                What plans are there?
                             </p>
                             <p className="mt-1 text-sm text-foreground/60">
-                                The Free plan gives you a limited view of detected services and
-                                basic breach awareness. Professional unlocks full service discovery, complete
-                                breach history, more generous sweep limits, and access to data
-                                removal email templates.
+                                Free shows your breach summary and a preview of {FREE_ACCOUNT_PREVIEW} ghost
+                                accounts. The {PAID_PLANS.buster.name} ({PAID_PLANS.buster.price}, one-time)
+                                unlocks everything for a one-off cleanup and includes{" "}
+                                {scanCreditsLabel(BUSTER_SCAN_CREDITS)}. {PAID_PLANS.pro.name} ({PAID_PLANS.pro.price}
+                                {PAID_PLANS.pro.period}) and {PAID_PLANS.sentinel.name} ({PAID_PLANS.sentinel.price}
+                                {PAID_PLANS.sentinel.period}) add unlimited scans and ongoing monitoring.
                             </p>
                         </div>
                         <div>
@@ -181,8 +184,8 @@ export default function HelpPage() {
                                 How do I upgrade or cancel?
                             </p>
                             <p className="mt-1 text-sm text-foreground/60">
-                                You can upgrade to Professional or manage your existing subscription from the
-                                Subscription &amp; Billing section inside the app. Billing is handled
+                                You can upgrade or manage your existing subscription from the
+                                Billing page inside the app. Billing is handled
                                 securely via Stripe, and you can cancel anytime from the customer
                                 portal.
                             </p>
@@ -192,7 +195,7 @@ export default function HelpPage() {
                                 What happens to my data if I cancel?
                             </p>
                             <p className="mt-1 text-sm text-foreground/60">
-                                Cancelling Professional stops future billing but doesn&apos;t automatically
+                                Cancelling {PAID_PLANS.pro.name} or {PAID_PLANS.sentinel.name} stops future billing but doesn&apos;t automatically
                                 delete your sweep history. You can manually delete sweep data and, if
                                 you wish, delete your entire account from the Privacy Tools section.
                             </p>

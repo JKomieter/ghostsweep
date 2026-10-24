@@ -1,5 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { getUserPlan } from "@/lib/entitlements";
+import { FREE_ACCOUNT_PREVIEW } from "@/lib/plans";
+import { compareRisk, isAccountRow, isBreached, isUnused, unusedCutoff } from "@/lib/account-risk";
 
 export const dynamic = "force-dynamic";
 
@@ -21,21 +24,12 @@ type UrgencyResponse = {
     breached: number;
     stillEmailing: number;
     inactive1y: number;
-    inactive4y: number;
     unknownOrLowSignal: number;
     oldestYear: number | null;
   };
   topRiskTeasers: UrgencyTeaser[];
   monitoringEndsAt: string | null;
 };
-
-const FREE_LIMIT_DEFAULT = 10;
-
-function yearsAgoDate(years: number) {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - years);
-  return d;
-}
 
 function safeYear(iso: string | null) {
   if (!iso) return null;
@@ -59,70 +53,64 @@ export async function GET() {
 
   const userId = user.id;
 
-  // 2) Subscription / gating
-  const { data: sub } = await supabase
-    .from("user_subscriptions")
-    .select("current_plan,is_trial,trial_ends_at")
-    .eq("user_id", userId)
-    .maybeSingle();
+  // 2) Subscription / gating (expired subscriptions count as free)
+  const [{ plan, hasPaidAccess }, { data: trial }] = await Promise.all([
+    getUserPlan(supabase, userId),
+    supabase.from("user_subscriptions").select("is_trial,trial_ends_at").eq("user_id", userId).maybeSingle(),
+  ]);
 
-  const currentPlan = sub?.current_plan ?? "free";
-  const isPro = currentPlan !== "free";
-  const freeLimit = FREE_LIMIT_DEFAULT;
-  const gated = !isPro;
+  const currentPlan = plan;
+  const freeLimit = FREE_ACCOUNT_PREVIEW;
+  const gated = !hasPaidAccess;
 
   const monitoringEndsAt =
-    sub?.is_trial && sub?.trial_ends_at ? sub.trial_ends_at : null;
+    trial?.is_trial && trial?.trial_ends_at ? trial.trial_ends_at : null;
 
-  // 3) Get all user_services
-  const { data: userServices, error: usErr } = await supabase
-    .from("user_services")
-    .select(
-      "id, email_count, last_seen_at, first_seen_at, is_spam, service:services(id,name,domain,category)"
-    )
-    .eq("user_id", userId);
+  // 3) Accounts, breaches and deletions (same universe as the Accounts page)
+  const [servicesRes, breachesRes, deletionsRes] = await Promise.all([
+    supabase
+      .from("user_services")
+      .select("id, service_id, email_count, last_seen_at, first_seen_at, is_spam, service:services!inner(id,name,domain,category)")
+      .eq("user_id", userId),
+    supabase.from("user_breaches").select("service_id").eq("user_id", userId),
+    supabase.from("deletion_requests").select("user_service_id").eq("user_id", userId),
+  ]);
 
-  if (usErr) {
+  if (servicesRes.error) {
     return NextResponse.json(
       { error: "Failed to load user services" },
       { status: 500 }
     );
   }
+  if (breachesRes.error) {
+    console.error("Error loading user breaches:", breachesRes.error);
+    return NextResponse.json(
+      { error: "Failed to load breaches" },
+      { status: 500 }
+    );
+  }
 
-  const allRows = userServices ?? [];
+  const allRows = servicesRes.data ?? [];
+  const deleted = new Set((deletionsRes.data ?? []).map((d) => d.user_service_id));
+  const breachedServiceIds = new Set(
+    (breachesRes.data ?? []).map((b) => b.service_id).filter((id): id is string => Boolean(id))
+  );
 
-  // Exclude services that are spam or newsletters
-  const rows = allRows.filter((r) => {
-    const service = Array.isArray(r.service) ? r.service[0] : r.service;
-    const isSpam = r.is_spam === true;
-    const isNewsletter = service?.category === "Newsletter";
-    return !(isSpam || isNewsletter);
-  });
-
+  const rows = allRows.filter((r) => isAccountRow(r, r.service) && !deleted.has(r.id));
   const totalServices = rows.length;
+  const cutoff = unusedCutoff();
 
-  const oneYearAgo = yearsAgoDate(1).getTime();
-  const fourYearsAgo = yearsAgoDate(4).getTime();
-
+  let breached = 0;
   let stillEmailing = 0;
   let inactive1y = 0;
-  let inactive4y = 0;
   let unknownOrLowSignal = 0;
   let oldestYear: number | null = null;
 
   for (const r of rows) {
-    const lastSeen = r.last_seen_at ? new Date(r.last_seen_at).getTime() : null;
-
-    const emails = typeof r.email_count === "number" ? r.email_count : 0;
-    if (emails > 0) stillEmailing += 1;
-
-    if (!lastSeen) {
-      unknownOrLowSignal += 1;
-    } else {
-      if (lastSeen < oneYearAgo) inactive1y += 1;
-      if (lastSeen < fourYearsAgo) inactive4y += 1;
-    }
-
+    if (isBreached(r, breachedServiceIds)) breached += 1;
+    if (!r.last_seen_at) unknownOrLowSignal += 1;
+    else if (isUnused(r, cutoff)) inactive1y += 1;
+    else stillEmailing += 1;
   }
 
   // Compute oldestYear across all user services (including spam/newsletters)
@@ -134,85 +122,23 @@ export async function GET() {
     }
   }
 
-  // 4) Get breached services by matching breach domains to user service domains
-  const { data: userBreaches, error: ubErr } = await supabase
-    .from("user_breaches")
-    .select("breach_id")
-    .eq("user_id", userId);
-
-  if (ubErr) {
-    console.error("Error loading user breaches:", ubErr);
-    return NextResponse.json(
-      { error: "Failed to load breaches" },
-      { status: 500 }
-    );
-  }
-
-  const breachIds = (userBreaches ?? []).map(ub => ub.breach_id).filter(Boolean);
-
-  const breachedServiceIds = new Set<string>();
-  const breachedDomains = new Set<string>();
-
-  if (breachIds.length > 0) {
-    const { data: breaches, error: breachErr } = await supabase
-      .from("breaches")
-      .select("domain")
-      .in("id", breachIds);
-
-    if (breachErr) {
-      console.error("Error loading breaches details:", breachErr);
-    } else {
-      for (const breach of breaches ?? []) {
-        if (breach.domain) {
-          breachedDomains.add(breach.domain);
-        }
-      }
-    }
-  }
-
-  // Match breached domains to user services
-  for (const r of rows) {
-    const service = Array.isArray(r.service) ? r.service[0] : r.service;
-    if (service?.domain && breachedDomains.has(service.domain)) {
-      // Use the canonical service id when available, otherwise fall back to the user_service id
-      const key = service?.id ?? r.id;
-      breachedServiceIds.add(String(key));
-    }
-  }
-
-  const breached = breachedServiceIds.size;
-
-  // 5) Build "top risk" teasers
-  const scored = rows
+  // 4) High-risk accounts: only breached or unused ones, breached first, then longest unused.
+  // How many emails a service sends says nothing about risk, so it plays no part.
+  const topRiskTeasersAll = rows
+    .filter((r) => isBreached(r, breachedServiceIds) || isUnused(r, cutoff))
+    .sort(compareRisk(breachedServiceIds))
+    .slice(0, 6)
     .map((r) => {
       const service = Array.isArray(r.service) ? r.service[0] : r.service;
-      const serviceKey = service?.id ?? r.id;
-      const isBreached = breachedServiceIds.has(String(serviceKey));
-
-      const lastSeenMs = r.last_seen_at ? new Date(r.last_seen_at).getTime() : null;
-      const emails = typeof r.email_count === "number" ? r.email_count : 0;
-
-      // simple scoring: breached >> very old >> emails
-      const score =
-        (isBreached ? 10_000 : 0) +
-        (lastSeenMs ? (lastSeenMs < fourYearsAgo ? 3_000 : lastSeenMs < oneYearAgo ? 1_000 : 0) : 250) +
-        Math.min(999, emails);
-
       return {
-        score,
-        teaser: {
-          id: r.id as string,
-          name: service?.name ?? "Unknown",
-          domain: service?.domain ?? null,
-          breached: isBreached,
-          emailCount: emails,
-          lastSeenAt: r.last_seen_at ?? null,
-        } satisfies UrgencyTeaser,
-      };
-    })
-    .sort((a, b) => b.score - a.score);
-
-  const topRiskTeasersAll = scored.slice(0, 6).map((x) => x.teaser);
+        id: r.id as string,
+        name: service?.name ?? "Unknown",
+        domain: service?.domain ?? null,
+        breached: isBreached(r, breachedServiceIds),
+        emailCount: typeof r.email_count === "number" ? r.email_count : 0,
+        lastSeenAt: r.last_seen_at ?? null,
+      } satisfies UrgencyTeaser;
+    });
   const topRiskTeasers = gated ? topRiskTeasersAll.slice(0, 4) : topRiskTeasersAll;
 
   const payload: UrgencyResponse = {
@@ -224,7 +150,6 @@ export async function GET() {
       breached,
       stillEmailing,
       inactive1y,
-      inactive4y,
       unknownOrLowSignal,
       oldestYear,
     },

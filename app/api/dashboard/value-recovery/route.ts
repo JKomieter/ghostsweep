@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { getUserPlan } from "@/lib/entitlements";
 import { newestFirst, pickPreviewIds } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
+import { RECOVERABLE_VALUE_TYPES, claimableCents } from "@/lib/found-values";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status"); // detected, recovered, expired, ignored
   const sort = searchParams.get("sort"); // value, expiry, recent
 
-  const allowedTypes = ["gift_card", "coupon", "rewards", "refund"];
+  const allowedTypes: string[] = [...RECOVERABLE_VALUE_TYPES];
   const allowedStatuses = ["active", "recovered", "expired", "ignored"];
 
   let query = supabase
@@ -49,13 +50,13 @@ export async function GET(req: NextRequest) {
     .from("found_values")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .in("type", ["gift_card", "coupon", "rewards", "refund"])
+    .in("type", allowedTypes)
     .eq("status", "recovered");
 
-  // Convert from cents to dollars. "Recoverable" = still-active items only (matches the dashboard overview);
+  // Convert from cents to dollars. "Recoverable" = claimable items (same rule as the dashboard overview);
   // already-recovered value is reported separately.
   const centsOf = (v: { amount: unknown }) => Number(v.amount) || 0;
-  const totalValue = (values || []).filter(v => v.status === "active").reduce((sum, v) => sum + centsOf(v), 0) / 100;
+  const totalValue = claimableCents(values || []) / 100;
   const recoveredValue = (values || []).filter(v => v.status === "recovered").reduce((sum, v) => sum + centsOf(v), 0) / 100;
 
   // Free tier: preview slice only, with codes/links locked
@@ -101,8 +102,15 @@ export async function GET(req: NextRequest) {
       warning_message: val.warning_message,
       locked,
       has_secret: Boolean(val.code || val.pin || val.redemption_url),
+      // Locked items keep the amount, type and dates (the hook) but not where the money is.
+      // Withheld server-side so the details can't be read from the network response.
       ...(locked
-        ? { code: null, pin: null, redemption_url: null, email_body_snippet: null } // snippet can contain the code
+        ? {
+            code: null, pin: null, redemption_url: null,
+            email_body_snippet: null, // can contain the code
+            service_id: null, service_name: null, logo_url: null,
+            email_id: null, email_subject: null, email_from: null, cancel_url: null,
+          }
         : {}),
     };
   });

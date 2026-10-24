@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import CheckoutForm from "../_components/checkout";
-import { BUSTER_SCAN_CREDITS, PAID_PLANS } from "@/lib/plans";
+import { ANNUAL_SAVINGS_PERCENT, PAID_PLANS, scanCreditsLabel } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { billingPathForPlan } from "@/lib/pending-plan";
 import TrackFunnelEvent from "@/components/track-funnel-event";
@@ -22,7 +22,7 @@ type PageProps = {
 const PLAN_BADGES: Record<PlanTab, { badge: string | null; badgeStyle: string }> = {
     buster: { badge: null, badgeStyle: "" },
     pro: { badge: "Most popular", badgeStyle: "bg-foreground text-background" },
-    sentinel: { badge: "Save 37%", badgeStyle: "bg-emerald-500 text-black" },
+    sentinel: { badge: `Save ${ANNUAL_SAVINGS_PERCENT}%`, badgeStyle: "bg-emerald-500 text-black" },
 };
 
 function formatDate(d: string) {
@@ -107,7 +107,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             <div className="flex-1">
                                 <p className="text-sm font-light text-foreground">
                                     {isBuster
-                                        ? 'You own The "Buster" — one-time purchase'
+                                        ? `You own the ${PAID_PLANS.buster.name} (one-time purchase)`
                                         : isSentinel
                                         ? `You're on GhostSweep ${PAID_PLANS.sentinel.name}`
                                         : `You're on GhostSweep ${PAID_PLANS.pro.name}`}
@@ -117,7 +117,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 w-fit">
                                         <Zap className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
                                         <span className="text-xs text-amber-700 dark:text-amber-300">
-                                            {creditsRemaining} of {BUSTER_SCAN_CREDITS} scan credits remaining
+                                            {scanCreditsLabel(creditsRemaining)} remaining
                                         </span>
                                     </div>
                                 ) : renewsAt ? (
@@ -142,8 +142,8 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                             Want unlimited scans &amp; real-time monitoring?
                                         </p>
                                         <p className="text-xs text-foreground/50">
-                                            Upgrade to {PAID_PLANS.pro.name} ({PAID_PLANS.pro.price}{PAID_PLANS.pro.period}) or {PAID_PLANS.sentinel.name} ({PAID_PLANS.sentinel.price}{PAID_PLANS.sentinel.period}) to remove
-                                            the {BUSTER_SCAN_CREDITS}-credit limit and get continuous protection.
+                                            Upgrade to {PAID_PLANS.pro.name} ({PAID_PLANS.pro.price}{PAID_PLANS.pro.period}) or {PAID_PLANS.sentinel.name} ({PAID_PLANS.sentinel.price}{PAID_PLANS.sentinel.period}) for
+                                            unlimited scans and continuous protection.
                                         </p>
                                         <div className="flex gap-2 pt-1 flex-wrap">
                                             <Link

@@ -5,11 +5,36 @@
 export type PlanId = "free" | "buster" | "pro" | "sentinel";
 export type PaidPlanId = Exclude<PlanId, "free">;
 
-/** Scan credits granted by a one-time Buster Pass purchase. */
-export const BUSTER_SCAN_CREDITS = 3;
+/**
+ * Scan credits granted by a one-time Buster Pass purchase. Kept at 1 so the pass is a
+ * one-off cleanup and ongoing scanning stays a Pro feature. Must match the credit grant in
+ * supabase/functions/update-subscription/index.ts.
+ */
+export const BUSTER_SCAN_CREDITS = 1;
+
+/** "1 scan credit" / "3 scan credits" */
+export function scanCreditsLabel(count: number): string {
+    return `${count} scan credit${count === 1 ? "" : "s"}`;
+}
 
 /** Number of discovered accounts a free user can see before hitting the paywall. */
 export const FREE_ACCOUNT_PREVIEW = 10;
+
+// Raw prices; the display strings below are built from these so nothing can drift
+const BUSTER_PRICE = 12.99;
+const PRO_MONTHLY_PRICE = 7.99;
+const PRO_ANNUAL_PRICE = 59.99;
+
+const usd = (n: number) => `$${n.toFixed(2)}`;
+
+/** Pro Annual vs 12 × Pro Monthly, e.g. 37 */
+export const ANNUAL_SAVINGS_PERCENT = Math.round((1 - PRO_ANNUAL_PRICE / (PRO_MONTHLY_PRICE * 12)) * 100);
+
+/** Pro Annual expressed per month, e.g. "$5/mo" */
+export const ANNUAL_MONTHLY_EQUIVALENT = `$${Math.round(PRO_ANNUAL_PRICE / 12)}/mo`;
+
+/** Shown under every checkout button (homepage pricing and the in-app paywall). */
+export const CHECKOUT_REASSURANCE = "Secure checkout by Stripe · 30-day money-back guarantee · Subscriptions cancel anytime";
 
 export type PaidPlan = {
     id: PaidPlanId;
@@ -20,6 +45,8 @@ export type PaidPlan = {
     note: string;
     description: string;
     mode: "payment" | "subscription";
+    /** Button label wherever this plan is bought */
+    cta: string;
     features: string[];
 };
 
@@ -28,13 +55,14 @@ export const PAID_PLANS: Record<PaidPlanId, PaidPlan> = {
         id: "buster",
         name: "Buster Pass",
         shortName: "Buster",
-        price: "$12.99",
+        price: usd(BUSTER_PRICE),
         period: "one-time",
         note: "Pay once. No subscription.",
         description: "A complete one-off privacy audit and cleanup.",
         mode: "payment",
+        cta: "Get Buster Pass",
         features: [
-            `${BUSTER_SCAN_CREDITS} scan credits`,
+            scanCreditsLabel(BUSTER_SCAN_CREDITS),
             "Every ghost account & gift card unlocked",
             "Deep-web shadow profile search",
             "Downloadable PDF privacy report",
@@ -45,11 +73,12 @@ export const PAID_PLANS: Record<PaidPlanId, PaidPlan> = {
         id: "pro",
         name: "Pro Monthly",
         shortName: "Pro",
-        price: "$7.99",
+        price: usd(PRO_MONTHLY_PRICE),
         period: "/mo",
         note: "Cancel anytime",
         description: "Unlimited scans and always-on monitoring.",
         mode: "subscription",
+        cta: "Start Pro Monthly",
         features: [
             "Everything in Buster, with unlimited scans",
             "Unlimited inbox connections",
@@ -62,12 +91,12 @@ export const PAID_PLANS: Record<PaidPlanId, PaidPlan> = {
         id: "sentinel",
         name: "Pro Annual",
         shortName: "Annual",
-        price: "$59.99",
+        price: usd(PRO_ANNUAL_PRICE),
         period: "/yr",
-        // $59.99 / 12 = $5.00; vs $7.99 × 12 = $95.88 → 37% saving
-        note: "Just $5/mo, billed yearly · save 37%",
+        note: `Just ${ANNUAL_MONTHLY_EQUIVALENT}, billed yearly · save ${ANNUAL_SAVINGS_PERCENT}%`,
         description: "Everything in Pro at the best price per month.",
         mode: "subscription",
+        cta: "Get Pro Annual",
         features: [
             "Everything in Pro Monthly",
             "Priority scan queue",
@@ -92,6 +121,11 @@ export const FREE_PLAN = {
     ],
 };
 
+/** Price in cents, e.g. 799 for Pro Monthly */
+export function planPriceCents(plan: PaidPlanId): number {
+    return Math.round(Number(PAID_PLANS[plan].price.replace(/[^0-9.]/g, "")) * 100);
+}
+
 export function isPaidPlan(plan: string | null | undefined): boolean {
     return plan === "buster" || plan === "pro" || plan === "sentinel";
 }
@@ -100,7 +134,7 @@ export function isPaidPlan(plan: string | null | undefined): boolean {
 export function planDisplayName(plan: string | null | undefined, creditsRemaining?: number): string {
     if (plan === "sentinel") return PAID_PLANS.sentinel.name;
     if (plan === "pro") return PAID_PLANS.pro.name;
-    if (plan === "buster") return `Buster (${creditsRemaining ?? 0}/${BUSTER_SCAN_CREDITS} credits)`;
+    if (plan === "buster") return `Buster (${scanCreditsLabel(creditsRemaining ?? 0)} left)`;
     return "Free";
 }
 

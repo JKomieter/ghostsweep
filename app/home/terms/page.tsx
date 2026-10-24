@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
 import { Metadata } from "next";
+import { PAID_PLANS } from "@/lib/plans";
 import {
     FileText,
     ShieldCheck,
@@ -95,7 +96,7 @@ export default function TermsPage() {
                         by these Terms.
                     </p>
                     <p className="text-xs text-foreground/50 mt-4">
-                        Last updated: Dec 01, 2025
+                        Last updated: Oct 24, 2026
                     </p>
                 </header>
 
@@ -115,7 +116,7 @@ export default function TermsPage() {
                         {
                             icon: CreditCard,
                             title: "Subscriptions",
-                            text: "Professional plans renew automatically unless cancelled. Billing handled securely via Stripe.",
+                            text: `${PAID_PLANS.pro.name} and ${PAID_PLANS.sentinel.name} renew automatically unless cancelled. The ${PAID_PLANS.buster.name} is a one-time payment. Billing handled securely via Stripe.`,
                         },
                     ].map((card) => (
                         <div
@@ -230,8 +231,20 @@ export default function TermsPage() {
                                 Billing is handled by Stripe. Their terms may also apply.
                             </li>
                             <li>
+                                The {PAID_PLANS.buster.name} is a one-time payment and does not
+                                renew.
+                            </li>
+                            <li>
                                 Cancel anytime. Cancellation applies to future billing
                                 periods.
+                            </li>
+                            <li>
+                                30-day money-back guarantee: if you're not satisfied, email{" "}
+                                <a href="mailto:support@ghostsweep.com" className="underline">
+                                    support@ghostsweep.com
+                                </a>{" "}
+                                within 30 days of your first payment for a plan and we'll refund
+                                that payment in full.
                             </li>
                             <li>
                                 We may change pricing with reasonable notice to existing

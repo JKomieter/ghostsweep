@@ -7,7 +7,7 @@ export type FoundValue = {
     user_id: string;
     type: "gift_card" | "coupon" | "rewards" | "refund" | "subscription";
     service_id: string | null;
-    service_name: string;
+    service_name: string | null; // null on locked free-tier items
     amount: string;
     email_id: string;
     email_subject: string | null;

@@ -36,7 +36,6 @@ type UrgencyResponse = {
         breached: number;
         stillEmailing: number;
         inactive1y: number;
-        inactive4y: number;
         unknownOrLowSignal: number;
         oldestYear: number | null;
     };
@@ -47,11 +46,18 @@ type UrgencyResponse = {
     monitoringEndsAt: string | null;
 };
 
-function formatShortDate(iso: string | null) {
-    if (!iso) return "—";
+function formatMonthYear(iso: string | null) {
+    if (!iso) return null;
     const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+}
+
+/** Why an account is in the high-risk list. */
+function riskReason(t: UrgencyTeaser) {
+    if (t.breached) return "Breached";
+    const since = formatMonthYear(t.lastSeenAt);
+    return since ? `No email since ${since}` : "No recent activity";
 }
 
 function formatCountdown(iso: string | null) {
@@ -76,9 +82,9 @@ function riskCopy(totals: UrgencyResponse["totals"]) {
             icon: ShieldAlert,
         };
     }
-    if (totals.inactive4y > 0) {
+    if (totals.inactive1y > 0) {
         return {
-            title: `${totals.inactive4y} account${totals.inactive4y === 1 ? "" : "s"} inactive for 4+ years`,
+            title: `${totals.inactive1y} account${totals.inactive1y === 1 ? "" : "s"} unused for over a year`,
             desc: "Old accounts are easy to forget and hard to recover if compromised.",
             tone: "warn" as const,
             icon: AlertTriangle,
@@ -242,9 +248,9 @@ export default function DashboardUrgencyPanel() {
                             tone={totals.breached > 0 ? "danger" : "muted"}
                         />
                         <StatCard
-                            label="Inactive 4+ yrs"
-                            value={totals.inactive4y.toLocaleString()}
-                            tone={totals.inactive4y > 0 ? "warn" : "muted"}
+                            label="Unused 1+ yr"
+                            value={totals.inactive1y.toLocaleString()}
+                            tone={totals.inactive1y > 0 ? "warn" : "muted"}
                         />
                         <StatCard
                             label="Still emailing"
@@ -274,7 +280,9 @@ export default function DashboardUrgencyPanel() {
 
                         <div className="space-y-2">
                             {(data?.topRiskTeasers ?? []).length === 0 ? (
-                                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 text-xs text-foreground/40">No accounts yet</div>
+                                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 text-xs text-foreground/40">
+                                    {totalServices > 0 ? "No breached or unused accounts. Nice." : "No accounts yet"}
+                                </div>
                             ) : (
                                 (data?.topRiskTeasers ?? []).map((t) => (
                                     <div
@@ -284,7 +292,7 @@ export default function DashboardUrgencyPanel() {
                                         <div className="min-w-0 flex-1">
                                             <div className="text-sm font-medium text-foreground truncate">{t.name}</div>
                                             <div className="text-[11px] text-foreground/40 truncate mt-0.5">
-                                                {t.domain ?? "—"} · {formatShortDate(t.lastSeenAt)} · {t.emailCount} emails
+                                                {t.domain ?? "—"} · <span className={t.breached ? "text-red-600 dark:text-red-400" : undefined}>{riskReason(t)}</span>
                                             </div>
                                         </div>
 

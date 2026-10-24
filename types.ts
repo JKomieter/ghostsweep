@@ -41,6 +41,7 @@ export type Category =
 export type NotificationType =
     | "deletion_status_update"
     | "new_account_detected"
+    | "weekly_digest"
     | "new_breach_detected"
     | "sweep_completed"
     | "sweep_limit_reached"

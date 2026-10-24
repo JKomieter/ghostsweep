@@ -3,7 +3,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import {
     ArrowRight,
     Check,
@@ -30,10 +29,9 @@ import {
     Loader2,
 } from "lucide-react";
 import { useState, useEffect, useRef, type FormEvent } from "react";
-import { useTheme } from "next-themes";
-import { GmailLogo } from "@/svgs";
+import { GmailLogo, OutLookLogo } from "@/svgs";
 import TeaserScan from "./_components/teaser-scan";
-import { FREE_PLAN, PAID_PLANS, type PaidPlanId } from "@/lib/plans";
+import { CHECKOUT_REASSURANCE, FREE_PLAN, PAID_PLANS, type PaidPlanId } from "@/lib/plans";
 
 const SIGNUP_HREF = "/login?mode=signup";
 
@@ -147,57 +145,76 @@ function CountUp({
     );
 }
 
-// ─── Trustpilot ────────────────────────────────────────────────
-declare global {
-    interface Window {
-        Trustpilot?: { loadFromElement: (el: HTMLElement, reinitialize?: boolean) => void };
-    }
-}
+// ─── Social proof ──────────────────────────────────────────────
+type PublicStats = { scansCompleted: number; giftCardValue: number };
 
-function TrustpilotWidget() {
-    const ref = useRef<HTMLDivElement>(null);
-    const { resolvedTheme } = useTheme();
-    const theme = resolvedTheme === "dark" ? "dark" : "light";
+// Live totals from /api/marketing/stats. Renders nothing until real numbers arrive,
+// so a slow or failed request never leaves an empty placeholder under the hero.
+function SocialProofStats() {
+    const [stats, setStats] = useState<PublicStats | null>(null);
 
     useEffect(() => {
-        // Script may already be loaded if user navigated back, or the theme changed
-        if (window.Trustpilot && ref.current) {
-            window.Trustpilot.loadFromElement(ref.current, true);
-        }
-    }, [theme]);
+        let cancelled = false;
+        fetch("/api/marketing/stats")
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data: PublicStats | null) => {
+                if (!cancelled && data && data.scansCompleted > 0) setStats(data);
+            })
+            .catch(() => {});
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (!stats) return null;
 
     return (
-        <>
-            <Script
-                src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-                strategy="lazyOnload"
-                onLoad={() => {
-                    if (window.Trustpilot && ref.current) {
-                        window.Trustpilot.loadFromElement(ref.current, true);
-                    }
-                }}
-            />
-            <div
-                key={theme}
-                ref={ref}
-                className="trustpilot-widget"
-                data-locale="en-US"
-                data-template-id="56278e9abfbbba0bdcd568bc"
-                data-businessunit-id="698a0804abb8a0a2645298d1"
-                data-style-height="52px"
-                data-style-width="100%"
-                data-theme={theme}
-                data-token="a4f1da35-84f9-4ce7-a194-d98c7539f15d"
-            >
-                <a
-                    href="https://www.trustpilot.com/review/ghostsweep.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Trustpilot
-                </a>
+        <p className="mt-6 text-sm text-foreground/65">
+            <span className="font-semibold text-foreground">
+                <CountUp value={stats.scansCompleted} />
+            </span>{" "}
+            scans run
+            {stats.giftCardValue > 0 && (
+                <>
+                    {" · "}
+                    <span className="font-semibold text-amber-700 dark:text-amber-400">
+                        <CountUp value={stats.giftCardValue} prefix="$" />
+                    </span>{" "}
+                    in gift cards found
+                </>
+            )}
+        </p>
+    );
+}
+
+// Only real customers, quoted with their permission. The section stays hidden while empty.
+const TESTIMONIALS: { quote: string; name: string; detail: string }[] = [];
+
+function TestimonialsSection() {
+    if (TESTIMONIALS.length === 0) return null;
+
+    return (
+        <section className="py-20 sm:py-28 border-t border-foreground/10" id="testimonials">
+            <div className="mx-auto max-w-5xl px-6">
+                <SectionHeading eyebrow="Testimonials" title="What users found" />
+                <div className="grid gap-6 md:grid-cols-3">
+                    {TESTIMONIALS.map((t) => (
+                        <figure
+                            key={t.name}
+                            className="flex flex-col rounded-2xl border border-foreground/10 bg-foreground/2 p-6"
+                        >
+                            <blockquote className="flex-1 text-sm text-foreground/80 leading-relaxed">
+                                &ldquo;{t.quote}&rdquo;
+                            </blockquote>
+                            <figcaption className="mt-5">
+                                <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                                <p className="text-xs text-foreground/60">{t.detail}</p>
+                            </figcaption>
+                        </figure>
+                    ))}
+                </div>
             </div>
-        </>
+        </section>
     );
 }
 
@@ -280,6 +297,8 @@ function Hero() {
     const [checkedEmail, setCheckedEmail] = useState("");
     const [breaches, setBreaches] = useState<Breach[]>([]);
     const [errorMsg, setErrorMsg] = useState("");
+    // The breach check is a secondary path; its form stays tucked away until asked for
+    const [showBreachCheck, setShowBreachCheck] = useState(false);
 
     const handleCheck = async (e: FormEvent) => {
         e.preventDefault();
@@ -349,48 +368,65 @@ function Hero() {
 
                 <div className="mt-10 w-full max-w-lg mx-auto">
                     {(status === "idle" || status === "loading") && (
-                        <form onSubmit={handleCheck}>
-                            <label htmlFor="hero-email" className="sr-only">
-                                Email address
-                            </label>
-                            <div className="flex flex-col sm:flex-row items-stretch gap-2 rounded-2xl sm:rounded-full border border-foreground/10 bg-card p-2 shadow-lg shadow-foreground/5 focus-within:border-emerald-500/50 transition">
-                                <div className="flex flex-1 items-center gap-2 px-3">
-                                    <Mail className="h-4 w-4 text-foreground/40 shrink-0" />
-                                    <input
-                                        id="hero-email"
-                                        type="email"
-                                        required
-                                        placeholder="you@email.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="h-11 flex-1 min-w-0 bg-transparent text-base text-foreground placeholder-foreground/40 focus:outline-none"
-                                        autoComplete="email"
-                                        spellCheck={false}
-                                        disabled={status === "loading"}
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={!email.trim() || status === "loading"}
-                                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-50 active:scale-[0.98] shrink-0"
-                                >
-                                    {status === "loading" ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            Checking…
-                                        </>
-                                    ) : (
-                                        <>
-                                            Check my email free
-                                            <ArrowRight className="h-4 w-4" />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                        <>
+                            <Link
+                                href={SIGNUP_HREF}
+                                className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-full bg-emerald-500 px-9 py-4 text-base font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-[0.98]"
+                            >
+                                <span className="flex items-center gap-1.5">
+                                    <GmailLogo className="h-5 w-5" />
+                                    <OutLookLogo className="h-5 w-5" />
+                                </span>
+                                Connect inbox (free)
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                            </Link>
                             <p className="mt-3 text-xs text-foreground/55">
-                                Instant breach check · No sign-up · We don't store what you type
+                                Gmail or Outlook · Read-only access · Revoke anytime
                             </p>
-                        </form>
+
+                            {showBreachCheck && (
+                                <form onSubmit={handleCheck} className="mt-8">
+                                    <label htmlFor="hero-email" className="sr-only">
+                                        Email address
+                                    </label>
+                                    <div className="flex items-stretch gap-2 rounded-full border border-foreground/10 bg-card p-1.5 focus-within:border-foreground/25 transition">
+                                        <div className="flex flex-1 items-center gap-2 px-3">
+                                            <Mail className="h-4 w-4 text-foreground/40 shrink-0" />
+                                            <input
+                                                id="hero-email"
+                                                type="email"
+                                                required
+                                                autoFocus
+                                                placeholder="you@email.com"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                className="h-9 flex-1 min-w-0 bg-transparent text-sm text-foreground placeholder-foreground/40 focus:outline-none"
+                                                autoComplete="email"
+                                                spellCheck={false}
+                                                disabled={status === "loading"}
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            disabled={!email.trim() || status === "loading"}
+                                            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-foreground/15 px-4 text-sm font-medium text-foreground transition hover:bg-foreground/5 disabled:opacity-50 shrink-0"
+                                        >
+                                            {status === "loading" ? (
+                                                <>
+                                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                    Checking…
+                                                </>
+                                            ) : (
+                                                "Check breaches"
+                                            )}
+                                        </button>
+                                    </div>
+                                    <p className="mt-2 text-xs text-foreground/50">
+                                        No sign-up · We don&apos;t store what you type
+                                    </p>
+                                </form>
+                            )}
+                        </>
                     )}
 
                     {status === "result" && (
@@ -465,7 +501,7 @@ function Hero() {
                                     href={signupWithEmail}
                                     className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 py-2.5 text-sm font-semibold text-black hover:bg-emerald-400 transition"
                                 >
-                                    Start free scan
+                                    Connect inbox (free)
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                                 <button
@@ -480,12 +516,22 @@ function Hero() {
                 </div>
 
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-foreground/60">
+                    {status === "idle" && !showBreachCheck && (
+                        <button
+                            type="button"
+                            onClick={() => setShowBreachCheck(true)}
+                            className="inline-flex items-center gap-1.5 hover:text-foreground transition"
+                        >
+                            <ShieldCheck className="h-4 w-4 text-foreground/45" />
+                            Just check an email for breaches
+                        </button>
+                    )}
                     <a
                         href="#shadow-scan"
                         className="inline-flex items-center gap-1.5 hover:text-foreground transition"
                     >
-                        <Fingerprint className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                        Or scan a username for shadow profiles
+                        <Fingerprint className="h-4 w-4 text-foreground/45" />
+                        Scan a username for shadow profiles
                     </a>
                 </div>
 
@@ -499,9 +545,7 @@ function Hero() {
                     ))}
                 </ul>
 
-                <div className="mt-6 max-w-xs mx-auto">
-                    <TrustpilotWidget />
-                </div>
+                <SocialProofStats />
             </div>
         </section>
     );
@@ -880,9 +924,9 @@ function PricingSection() {
             featured: false,
             features: FREE_PLAN.features,
         },
-        paid("buster", { badge: null, cta: `Buy once — ${PAID_PLANS.buster.price}`, href: "/login?mode=signup&plan=buster", featured: false }),
-        paid("pro", { badge: null, cta: "Start Pro Monthly", href: "/login?mode=signup&plan=monthly", featured: false }),
-        paid("sentinel", { badge: "Best value", cta: "Get Pro Annual", href: "/login?mode=signup&plan=annual", featured: true }),
+        paid("buster", { badge: null, cta: PAID_PLANS.buster.cta, href: "/login?mode=signup&plan=buster", featured: false }),
+        paid("pro", { badge: null, cta: PAID_PLANS.pro.cta, href: "/login?mode=signup&plan=monthly", featured: false }),
+        paid("sentinel", { badge: "Best value", cta: PAID_PLANS.sentinel.cta, href: "/login?mode=signup&plan=annual", featured: true }),
     ];
 
     return (
@@ -948,7 +992,7 @@ function PricingSection() {
                 </div>
 
                 <p className="text-center mt-8 text-sm text-foreground/60">
-                    Subscriptions cancel anytime · 30-day money-back guarantee · Secure checkout by Stripe
+                    {CHECKOUT_REASSURANCE}
                 </p>
             </div>
         </section>
@@ -1106,6 +1150,7 @@ export default function HomePage() {
             <PrivacySection />
             <PricingSection />
             <FAQSection />
+            <TestimonialsSection />
             <FounderSection />
             <FinalCTA />
 

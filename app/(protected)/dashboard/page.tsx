@@ -5,6 +5,8 @@ import DashboardUserServicesTable from "./_components/dashboard_user_services_ta
 import FreemiumUpgradeTeaser from "./_components/freemium_upgrade_teaser";
 import News from "./_components/news";
 import SummaryCards from "./_components/summary-cards";
+import CleanupProgress from "./_components/cleanup_progress";
+import ShareResultsCard from "./_components/share_results_card";
 import ReferralShareCta from "./_components/referral_share_cta";
 
 export default function DashboardPage() {
@@ -15,6 +17,8 @@ export default function DashboardPage() {
                 <ReferralShareCta />
                 <FreemiumUpgradeTeaser />
                 <SummaryCards />
+                <ShareResultsCard />
+                <CleanupProgress />
                 <DashboardUserServicesTable />
                 <div className="grid sm:grid-cols-3 gap-6 grid-cols-1">
                     <Breaches />
