@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SweepDialog from "./sweep_dialog";
+import ScanFeedbackPrompt from "./scan_feedback_prompt";
 import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
 import { OutLookLogo, GmailLogo } from "@/svgs";
@@ -73,6 +74,7 @@ export default function DashboardTitle() {
     const [sweepDialogOpen, setSweepDialogOpen] = useState(false);
     const [lastNotifiedStatus, setLastNotifiedStatus] = useState<string | null>(null);
     const [sweepLongNotified, setSweepLongNotified] = useState(false);
+    const [completedSweep, setCompletedSweep] = useState<{ id: string; servicesFound: number } | null>(null);
     const queryClient = useQueryClient();
     const [isCancelling, setIsCancelling] = useState(false);
     const [selectedEmail, setSelectedEmail] = useState<string>("");
@@ -184,6 +186,7 @@ export default function DashboardTitle() {
 
         if (latestSweep.status === "completed") {
             setLastNotifiedStatus(sweepKey);
+            setCompletedSweep({ id: latestSweep.sweepId, servicesFound: latestSweep.servicesFound || 0 });
 
             Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["user_services"] }),
@@ -614,6 +617,8 @@ export default function DashboardTitle() {
                 onCancelAction={() => onCancelSweep.mutate()}
                 isCancelling={isCancelling}
             />
+
+            <ScanFeedbackPrompt sweepId={completedSweep?.id ?? null} servicesFound={completedSweep?.servicesFound ?? 0} />
         </>
     );
 }
