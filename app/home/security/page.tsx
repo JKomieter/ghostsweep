@@ -34,11 +34,11 @@ export const metadata: Metadata = {
         title: "Security & Privacy | How GhostSweep Protects Your Data",
         description:
             "Discover how GhostSweep protects your privacy with transient, zero-storage scanning.",
-        url: "https://ghostsweep.com/home/security",
+        url: "https://www.ghostsweep.com/home/security",
         type: "website",
     },
     alternates: {
-        canonical: "https://ghostsweep.com/home/security",
+        canonical: "https://www.ghostsweep.com/home/security",
     },
 };
 
@@ -48,7 +48,7 @@ const securityPageSchema = {
     name: "Security & Privacy | How GhostSweep Protects Your Data",
     description:
         "Learn how GhostSweep securely scans your email using transient, zero-storage analysis.",
-    url: "https://ghostsweep.com/home/security",
+    url: "https://www.ghostsweep.com/home/security",
     publisher: {
         "@type": "Organization",
         name: "GhostSweep",

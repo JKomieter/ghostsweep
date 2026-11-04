@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Data Breach Checker | Check If Your Email Was Compromised",
     description: "Free tool to check if your email or domain has been exposed in known data breaches.",
-    url: "https://ghostsweep.com/home/breach_check",
+    url: "https://www.ghostsweep.com/home/breach_check",
     type: "website",
     images: [
       {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     images: ["https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"],
   },
   alternates: {
-    canonical: "https://ghostsweep.com/home/breach_check",
+    canonical: "https://www.ghostsweep.com/home/breach_check",
   },
 };
 
@@ -47,7 +47,7 @@ const breachCheckerSchema = {
   "@type": "WebApplication",
   "name": "Data Breach Checker",
   "description": "Check if your email or domain appears in known data breaches.",
-  "url": "https://ghostsweep.com/home/breach_check",
+  "url": "https://www.ghostsweep.com/home/breach_check",
   "applicationCategory": "SecurityApplication",
   "offers": {
     "@type": "Offer",

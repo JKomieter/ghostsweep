@@ -29,22 +29,22 @@ export const metadata: Metadata = {
         title: "Privacy Policy | GhostSweep",
         description:
             "Understand GhostSweep's privacy practices and how your data is protected.",
-        url: "https://ghostsweep.com/home/privacy",
+        url: "https://www.ghostsweep.com/home/privacy",
         type: "website",
     },
     alternates: {
-        canonical: "https://ghostsweep.com/home/privacy",
+        canonical: "https://www.ghostsweep.com/home/privacy",
     },
 };
 
 const privacyPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://ghostsweep.com/home/privacy",
+    "@id": "https://www.ghostsweep.com/home/privacy",
     name: "Privacy Policy | GhostSweep",
     description:
         "GhostSweep's privacy policy explaining data collection, protection, and user control.",
-    url: "https://ghostsweep.com/home/privacy",
+    url: "https://www.ghostsweep.com/home/privacy",
     publisher: {
         "@type": "Organization",
         name: "GhostSweep",

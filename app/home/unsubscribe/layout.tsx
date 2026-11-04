@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Manage Email Preferences | GhostSweep",
         description: "Control which emails you receive from GhostSweep.",
-        url: "https://ghostsweep.com/home/unsubscribe",
+        url: "https://www.ghostsweep.com/home/unsubscribe",
         type: "website",
     },
     alternates: {
-        canonical: "https://ghostsweep.com/home/unsubscribe",
+        canonical: "https://www.ghostsweep.com/home/unsubscribe",
     },
 };
 

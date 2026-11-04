@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     email: false,
     telephone: false,
   },
-  metadataBase: new URL("https://ghostsweep.com"),
+  metadataBase: new URL("https://www.ghostsweep.com"),
   robots: {
     index: true,
     follow: true,
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "GhostSweep | Reclaim Your Digital Shadow",
     description: "Discover forgotten accounts, recover lost money, and secure your personal data from breaches with GhostSweep.",
-    url: "https://ghostsweep.com/home",
+    url: "https://www.ghostsweep.com/home",
     type: "website",
     siteName: "GhostSweep",
     images: [
@@ -85,13 +85,13 @@ export const metadata: Metadata = {
     creator: "@ghostsweep",
   },
   alternates: {
-    canonical: "https://ghostsweep.com/home",
+    canonical: "https://www.ghostsweep.com/home",
   },
   appLinks: {
     ios: [
       {
         app_name: "GhostSweep",
-        url: "https://ghostsweep.com",
+        url: "https://www.ghostsweep.com",
       },
     ],
   },
@@ -125,7 +125,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "GhostSweep",
-  "url": "https://ghostsweep.com",
+  "url": "https://www.ghostsweep.com",
   "logo": "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
   "description": "Privacy-first account discovery and digital footprint management platform.",
   "sameAs": [
@@ -135,7 +135,7 @@ const organizationSchema = {
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "Customer Service",
-    "url": "https://ghostsweep.com/support",
+    "url": "https://www.ghostsweep.com/support",
   },
 };
 

@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Subscription Successful | GhostSweep",
     description: "Your subscription is now active.",
-    url: "https://ghostsweep.com/dashboard/billing/success",
+    url: "https://www.ghostsweep.com/dashboard/billing/success",
     type: "website",
   },
   alternates: {
-    canonical: "https://ghostsweep.com/dashboard/billing/success",
+    canonical: "https://www.ghostsweep.com/dashboard/billing/success",
   },
 };
 
