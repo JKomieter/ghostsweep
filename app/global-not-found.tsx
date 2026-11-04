@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: '404 - Page Not Found',
         description: 'The page you requested could not be found.',
-        url: 'https://ghostsweep.com/404',
+        url: 'https://www.ghostsweep.com/404',
         type: 'website',
     },
 }

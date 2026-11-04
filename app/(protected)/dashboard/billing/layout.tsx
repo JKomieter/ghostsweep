@@ -17,11 +17,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Billing & Subscription | GhostSweep",
     description: "Manage your subscription and billing.",
-    url: "https://ghostsweep.com/dashboard/billing",
+    url: "https://www.ghostsweep.com/dashboard/billing",
     type: "website",
   },
   alternates: {
-    canonical: "https://ghostsweep.com/dashboard/billing",
+    canonical: "https://www.ghostsweep.com/dashboard/billing",
   },
 };
 

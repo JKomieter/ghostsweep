@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Dashboard | GhostSweep",
         description: "Manage your account security and digital footprint.",
-        url: "https://ghostsweep.com/dashboard",
+        url: "https://www.ghostsweep.com/dashboard",
         type: "website",
     },
     alternates: {
-        canonical: "https://ghostsweep.com/dashboard",
+        canonical: "https://www.ghostsweep.com/dashboard",
     },
 }
 

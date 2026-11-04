@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Blog | Privacy Tips & Digital Security Insights | GhostSweep",
     description: "Expert articles on data privacy, security, and managing your digital footprint.",
-    url: "https://ghostsweep.com/home/blogs",
+    url: "https://www.ghostsweep.com/home/blogs",
     type: "website",
     images: [
       {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     images: ["https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"],
   },
   alternates: {
-    canonical: "https://ghostsweep.com/home/blogs",
+    canonical: "https://www.ghostsweep.com/home/blogs",
   },
 };
 
@@ -47,7 +47,7 @@ const blogSchema = {
   "@type": "Blog",
   "name": "GhostSweep Blog",
   "description": "Privacy, security, and digital footprint management insights.",
-  "url": "https://ghostsweep.com/home/blogs",
+  "url": "https://www.ghostsweep.com/home/blogs",
   "publisher": {
     "@type": "Organization",
     "name": "GhostSweep",

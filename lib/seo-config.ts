@@ -5,7 +5,7 @@
 
 export const SITE_CONFIG = {
   siteName: "GhostSweep",
-  siteUrl: "https://ghostsweep.com",
+  siteUrl: "https://www.ghostsweep.com",
   description: "Privacy-first account discovery and digital footprint management platform",
   image: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
   twitterHandle: "@ghostsweep",

@@ -25,22 +25,22 @@ export const metadata: Metadata = {
         title: "Terms of Service | GhostSweep",
         description:
             "GhostSweep Terms of Service — governing access and use of our service.",
-        url: "https://ghostsweep.com/home/terms",
+        url: "https://www.ghostsweep.com/home/terms",
         type: "website",
     },
     alternates: {
-        canonical: "https://ghostsweep.com/home/terms",
+        canonical: "https://www.ghostsweep.com/home/terms",
     },
 };
 
 const termsPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://ghostsweep.com/home/terms",
+    "@id": "https://www.ghostsweep.com/home/terms",
     name: "Terms of Service | GhostSweep",
     description:
         "GhostSweep Terms of Service governing access and use of the platform.",
-    url: "https://ghostsweep.com/home/terms",
+    url: "https://www.ghostsweep.com/home/terms",
     publisher: {
         "@type": "Organization",
         name: "GhostSweep",

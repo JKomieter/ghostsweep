@@ -55,7 +55,7 @@ export default function HowItWorksPage() {
         name: "How It Works | GhostSweep",
         description:
             "Learn how GhostSweep discovers every account, finds shadow profiles, and recovers hidden value from your inbox.",
-        url: "https://ghostsweep.com/home/how-it-works",
+        url: "https://www.ghostsweep.com/home/how-it-works",
         publisher: {
             "@type": "Organization",
             name: "GhostSweep",

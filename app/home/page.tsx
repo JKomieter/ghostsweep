@@ -42,7 +42,7 @@ const structuredData = {
     name: "GhostSweep | Know Your Digital Shadow",
     description:
         "GhostSweep discovers every account tied to your inbox, finds shadow profiles across the web, recovers hidden value from gift cards and coupons, monitors data breaches, and helps you delete the accounts you don't need — all from one dashboard.",
-    url: "https://ghostsweep.com/home",
+    url: "https://www.ghostsweep.com/home",
     image: "https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png",
     applicationCategory: "SecurityApplication",
     operatingSystem: "Web",

@@ -18,11 +18,11 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Report an Issue | GhostSweep Support",
         description: "Help us improve by reporting bugs or issues.",
-        url: "https://ghostsweep.com/support/report",
+        url: "https://www.ghostsweep.com/support/report",
         type: "website",
     },
     alternates: {
-        canonical: "https://ghostsweep.com/support/report",
+        canonical: "https://www.ghostsweep.com/support/report",
     },
 };
 

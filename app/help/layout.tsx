@@ -13,11 +13,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Help & Support | GhostSweep",
     description: "Find help and answers to questions about GhostSweep.",
-    url: "https://ghostsweep.com/help",
+    url: "https://www.ghostsweep.com/help",
     type: "website",
   },
   alternates: {
-    canonical: "https://ghostsweep.com/help",
+    canonical: "https://www.ghostsweep.com/help",
   },
 };
 

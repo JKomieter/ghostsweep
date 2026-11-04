@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "How It Works | GhostSweep Account Discovery Process",
         description: "Understand how GhostSweep safely discovers your forgotten accounts and helps secure your digital presence.",
-        url: "https://ghostsweep.com/home/how-it-works",
+        url: "https://www.ghostsweep.com/home/how-it-works",
         type: "website",
         images: [
             {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
         images: ["https://znlaksqttxokoeavwqjf.supabase.co/storage/v1/object/public/news/ghost-svgrepo-com.png"],
     },
     alternates: {
-        canonical: "https://ghostsweep.com/home/how-it-works",
+        canonical: "https://www.ghostsweep.com/home/how-it-works",
     },
 };
 

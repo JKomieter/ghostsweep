@@ -14,11 +14,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sign In | GhostSweep",
     description: "Access your GhostSweep account to discover and manage your digital presence.",
-    url: "https://ghostsweep.com/login",
+    url: "https://www.ghostsweep.com/login",
     type: "website",
   },
   alternates: {
-    canonical: "https://ghostsweep.com/login",
+    canonical: "https://www.ghostsweep.com/login",
   },
   robots: {
     index: false,

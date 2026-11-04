@@ -73,7 +73,7 @@ export async function generateMetadata(
             title: post.title,
             description:
                 post.excerpt || `Read this article on privacy and security.`,
-            url: `https://ghostsweep.com/home/blogs/${slug}`,
+            url: `https://www.ghostsweep.com/home/blogs/${slug}`,
             type: "article",
             authors: ["GhostSweep"],
             publishedTime: post.published_at
@@ -99,7 +99,7 @@ export async function generateMetadata(
             images: post.cover_image_url ? [post.cover_image_url] : [],
         },
         alternates: {
-            canonical: `https://ghostsweep.com/home/blogs/${slug}`,
+            canonical: `https://www.ghostsweep.com/home/blogs/${slug}`,
         },
     };
 }
