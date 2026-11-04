@@ -1217,6 +1217,16 @@ export default function HomePage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
+            <Script
+                id="qurius-widget"
+                src="https://qurius.app/widget-iframe-embed.js"
+                strategy="afterInteractive"
+                data-id="535e5bb2-be38-453d-acfd-1fc9e0f37888"
+                data-key="315c76c9fbd4cb83cdb225d1c9b0cf0138a42ec10f1650597edf8063aaa85fcd"
+                data-plan="pro"
+                data-theme="auto"
+                data-primary-color="#10B981"
+            />
 
             <Hero />
             <div>
