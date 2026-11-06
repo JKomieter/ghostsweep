@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import FBPixel from "@/components/pixel-tracker";
+import ChatWidgetGuard from "@/components/chat-widget-guard";
 
 
 const interSans = Inter({
@@ -174,6 +175,7 @@ export default function RootLayout({
           <main>{children}</main>
 
           <Toaster position="top-right" />
+          <ChatWidgetGuard />
         </ThemeProvider>
       </body>
     </html>
