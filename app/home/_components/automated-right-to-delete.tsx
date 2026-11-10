@@ -195,11 +195,11 @@ export function AutomatedRightToDelete() {
             3
           </div>
           <h3 className="font-semibold text-foreground text-sm">
-            Auto-Send & Track
+            Send It Yourself
           </h3>
           <p className="text-xs text-muted-foreground">
-            You preview and approve each email, we send from your account, and
-            track responses in your dashboard.
+            Open each drafted email in your inbox and send it yourself. We give
+            you the contact address and deletion link for every service.
           </p>
         </div>
       </div>

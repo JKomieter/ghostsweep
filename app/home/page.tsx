@@ -32,6 +32,7 @@ import {
 import { useState, useEffect, useRef, type FormEvent } from "react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import TeaserScan from "./_components/teaser-scan";
+import ProductDemo from "./_components/product-demo";
 import { CHECKOUT_REASSURANCE, FREE_PLAN, PAID_PLANS, type PaidPlanId } from "@/lib/plans";
 
 const SIGNUP_HREF = "/login?mode=signup";
@@ -528,6 +529,13 @@ function Hero() {
                         </button>
                     )}
                     <a
+                        href="#demo"
+                        className="inline-flex items-center gap-1.5 hover:text-foreground transition"
+                    >
+                        <Eye className="h-4 w-4 text-foreground/45" />
+                        See the live demo
+                    </a>
+                    <a
                         href="#shadow-scan"
                         className="inline-flex items-center gap-1.5 hover:text-foreground transition"
                     >
@@ -547,75 +555,6 @@ function Hero() {
                 </ul>
 
                 <SocialProofStats />
-            </div>
-        </section>
-    );
-}
-
-// ─── Dashboard Preview ─────────────────────────────────────────
-function DashboardPreview() {
-    const stats = [
-        { icon: Inbox, label: "Accounts found", value: 134, color: "text-emerald-600 dark:text-emerald-400" },
-        { icon: Ghost, label: "Shadow profiles", value: 37, color: "text-purple-600 dark:text-purple-400" },
-        { icon: AlertTriangle, label: "Breached", value: 12, color: "text-red-600 dark:text-red-400" },
-        { icon: DollarSign, label: "Hidden value", value: 285, prefix: "$", color: "text-amber-700 dark:text-amber-400" },
-    ];
-
-    return (
-        <section className="relative pb-20 sm:pb-28">
-            <div className="mx-auto max-w-5xl px-6">
-                <div className="rounded-2xl border border-foreground/10 bg-card shadow-2xl shadow-foreground/10 overflow-hidden">
-                    {/* Window chrome */}
-                    <div className="flex items-center gap-2 border-b border-foreground/10 px-5 py-3">
-                        <div className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-                        <div className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-                        <span className="ml-3 text-[11px] font-mono text-foreground/50 uppercase tracking-widest">
-                            Example results — a typical first scan
-                        </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-foreground/10">
-                        {stats.map((s) => (
-                            <div key={s.label} className="bg-card p-5 sm:p-7">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <s.icon className={`h-4 w-4 ${s.color}`} />
-                                    <span className="text-[11px] uppercase tracking-widest text-foreground/55 font-medium">
-                                        {s.label}
-                                    </span>
-                                </div>
-                                <div className={`text-3xl sm:text-4xl font-light tabular-nums ${s.color}`}>
-                                    <CountUp value={s.value} prefix={s.prefix} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="border-t border-foreground/10 bg-foreground/2 p-5 sm:p-6 font-mono text-xs space-y-2.5 text-foreground/60">
-                        <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                            <ScanSearch className="h-3.5 w-3.5" />
-                            <span>Scanning inbox: j***@gmail.com</span>
-                        </div>
-                        <div className="pl-5">
-                            → Accounts on <span className="text-foreground">linkedin.com</span>,{" "}
-                            <span className="text-foreground">spotify.com</span>,{" "}
-                            <span className="text-red-600 dark:text-red-400">adobe.com (breached)</span>
-                        </div>
-                        <div className="pl-5">
-                            → Shadow profiles on{" "}
-                            <span className="text-purple-600 dark:text-purple-400">canva.com</span>,{" "}
-                            <span className="text-purple-600 dark:text-purple-400">notion.so</span>
-                        </div>
-                        <div className="pl-5">
-                            → Recovered:{" "}
-                            <span className="text-amber-700 dark:text-amber-400">$25.00 Starbucks gift card</span>,{" "}
-                            <span className="text-amber-700 dark:text-amber-400">15% off coupon (expires in 3 days)</span>
-                        </div>
-                        <div className="pl-5">
-                            → <span className="text-foreground">18 newsletters</span> ready to unsubscribe
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
     );
@@ -1154,7 +1093,7 @@ export default function HomePage() {
             />
 
             <Hero />
-            <DashboardPreview />
+            <ProductDemo />
             <WhatWeDoSection />
             <IdentityShadowSection />
             <HowItWorksSection />

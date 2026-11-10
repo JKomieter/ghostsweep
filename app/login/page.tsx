@@ -588,7 +588,7 @@ function LoginContent() {
                                 </h1>
                                 <p className="text-sm md:text-base text-foreground/60 leading-relaxed">
                                     Connect your inbox, see every company that has your data, and
-                                    send deletion requests in minutes—without hunting through old
+                                    get the links and contacts to delete them—without hunting through old
                                     emails.
                                 </p>
                             </div>

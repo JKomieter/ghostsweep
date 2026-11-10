@@ -192,12 +192,12 @@ export default function DeletionEmailModal({
                         </div>
 
                         <p className="text-xs text-muted-foreground">
-                            GhostSweep will send this email from your connected Gmail account and create a deletion request so we can track replies.
+                            We&apos;ve drafted this deletion request for you. Review it, then open it in Gmail and send it yourself.
                         </p>
 
                         {isErrorTemplate && (
                             <p className="text-[11px] text-red-600 dark:text-red-400">
-                                Couldn&apos;t load template. Try again, or use &quot;Open in email client&quot;.
+                                Couldn&apos;t load template. Try again, or use &quot;Open in Gmail&quot;.
                             </p>
                         )}
                     </DialogDescription>
@@ -271,7 +271,7 @@ export default function DeletionEmailModal({
                 {/* Actions */}
                 <div className="mt-5 flex items-center justify-between gap-3">
                     <p className="text-[11px] text-muted-foreground max-w-xs">
-                        GhostSweep can send + track replies automatically. &quot;Open in email client&quot; is a fallback.
+                        Nothing is sent until you hit send in Gmail.
                     </p>
 
                     <div className="flex gap-2">
