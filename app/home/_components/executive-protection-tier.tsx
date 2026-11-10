@@ -54,7 +54,7 @@ export function ExecutiveProtectionTier() {
                   Executive Data Wiping
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Coordinated deletion requests to 100+ data brokers, keeping sensitive executive information private.
+                  Deletion links and privacy contacts for 100+ data brokers, so sensitive executive information can be removed.
                 </p>
               </div>
             </div>

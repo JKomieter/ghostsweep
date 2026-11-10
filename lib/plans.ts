@@ -66,7 +66,7 @@ export const PAID_PLANS: Record<PaidPlanId, PaidPlan> = {
             "Every ghost account & gift card unlocked",
             "Deep-web shadow profile search",
             "Downloadable PDF privacy report",
-            "One-click account deletion requests",
+            "Deletion links & contacts for every account",
         ],
     },
     pro: {
