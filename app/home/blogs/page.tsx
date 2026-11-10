@@ -1,49 +1,37 @@
 // app/home/blogs/page.tsx
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
-import { ArrowRight, Ghost } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { ArrowLeft, ArrowRight, Ghost } from "lucide-react";
+import { getBlogPage } from "@/lib/blog";
+import { BlogPostCard } from "@/components/blog-post-card";
 
-type BlogPost = {
-    id: string;
-    slug: string;
-    title: string;
-    excerpt: string | null;
-    category: string | null;
-    cover_image_url: string | null;
-    reading_time: number | null;
-    published_at: string | null;
-};
+type PageProps = { searchParams: Promise<{ page?: string }> };
 
-function formatDate(dateStr: string | null) {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-    });
+function parsePage(raw: string | undefined) {
+    const n = Number(raw);
+    return Number.isInteger(n) && n > 0 ? n : 1;
 }
 
-export default async function BlogIndexPage() {
-    const supabase = await createClient();
+function pageHref(page: number) {
+    return page <= 1 ? "/home/blogs" : `/home/blogs?page=${page}`;
+}
 
-    const { data, error } = await supabase
-        .from("blog_posts")
-        .select(
-            "id, slug, title, excerpt, category, cover_image_url, reading_time, published_at"
-        )
-        .eq("status", "published")
-        .order("published_at", { ascending: false });
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+    const page = parsePage((await searchParams).page);
+    if (page === 1) return {};
+    return {
+        title: `Blog – Page ${page} | GhostSweep`,
+        alternates: { canonical: `https://www.ghostsweep.com${pageHref(page)}` },
+    };
+}
 
-    if (error) {
-        console.error("Error fetching blog posts:", error);
-    }
+export default async function BlogIndexPage({ searchParams }: PageProps) {
+    const requestedPage = parsePage((await searchParams).page);
+    // Cached per page (see lib/blog.ts) — only one page of posts is fetched.
+    const { posts, page, totalPages } = await getBlogPage(requestedPage);
 
-    const posts: BlogPost[] = data ?? [];
+    if (posts.length === 0 && requestedPage > 1) notFound();
 
     return (
         <main className="min-h-screen bg-background">
@@ -78,69 +66,48 @@ export default async function BlogIndexPage() {
                 {/* Posts grid */}
                 {posts.length > 0 && (
                     <section className="grid gap-5 md:grid-cols-2">
-                        {posts.map((post) => {
-                            const dateLabel = formatDate(post.published_at);
-                            return (
-                                <Link
-                                    key={post.id}
-                                    href={`/home/blogs/${post.slug}`}
-                                    className="group flex h-full flex-col rounded-2xl border border-foreground/5 bg-foreground/2 overflow-hidden hover:border-foreground/10 transition-all duration-300"
-                                >
-                                    {/* Cover image */}
-                                    {post.cover_image_url && (
-                                        <div className="overflow-hidden border-b border-foreground/5">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                src={post.cover_image_url}
-                                                alt={post.title}
-                                                className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="flex-1 p-6 space-y-3">
-                                        {/* Meta */}
-                                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground/55">
-                                            {post.category && (
-                                                <span className="rounded-full border border-foreground/5 bg-foreground/3 px-2 py-0.5 text-[10px] uppercase tracking-wider text-foreground/65">
-                                                    {post.category}
-                                                </span>
-                                            )}
-                                            {dateLabel && <span>{dateLabel}</span>}
-                                            {post.reading_time && (
-                                                <span>
-                                                    · {post.reading_time} min read
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Title */}
-                                        <h2 className="text-base font-medium text-foreground leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                            {post.title}
-                                        </h2>
-
-                                        {/* Excerpt */}
-                                        {post.excerpt && (
-                                            <div className="text-xs text-foreground/65 line-clamp-3 prose prose-invert prose-[0.78rem] max-w-none">
-                                                <ReactMarkdown
-                                                    remarkPlugins={[remarkGfm]}
-                                                >
-                                                    {post.excerpt}
-                                                </ReactMarkdown>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="px-6 pb-5">
-                                        <span className="inline-flex items-center text-xs text-foreground/55 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                            Read article
-                                            <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                                        </span>
-                                    </div>
-                                </Link>
-                            );
-                        })}
+                        {posts.map((post, i) => (
+                            <BlogPostCard key={post.id} post={post} priority={i < 2} />
+                        ))}
                     </section>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <nav
+                        aria-label="Blog pagination"
+                        className="flex items-center justify-between gap-4 border-t border-foreground/5 pt-8 text-sm"
+                    >
+                        {page > 1 ? (
+                            <Link
+                                href={pageHref(page - 1)}
+                                rel="prev"
+                                className="inline-flex items-center gap-1.5 rounded-full border border-foreground/10 px-4 py-2 text-foreground/70 hover:text-foreground hover:border-foreground/20 transition"
+                            >
+                                <ArrowLeft className="h-3.5 w-3.5" />
+                                Newer
+                            </Link>
+                        ) : (
+                            <span />
+                        )}
+
+                        <span className="text-xs text-foreground/55">
+                            Page {page} of {totalPages}
+                        </span>
+
+                        {page < totalPages ? (
+                            <Link
+                                href={pageHref(page + 1)}
+                                rel="next"
+                                className="inline-flex items-center gap-1.5 rounded-full border border-foreground/10 px-4 py-2 text-foreground/70 hover:text-foreground hover:border-foreground/20 transition"
+                            >
+                                Older
+                                <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                        ) : (
+                            <span />
+                        )}
+                    </nav>
                 )}
             </div>
         </main>

@@ -1,7 +1,7 @@
 // app/home/blogs/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
+import { getPostBySlug, formatBlogDate } from "@/lib/blog";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -10,26 +10,10 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import type { Components } from "react-markdown";
 
-type BlogPost = {
-    id: string;
-    slug: string;
-    title: string;
-    excerpt: string | null;
-    content_md: string | null;
-    category: string | null;
-    cover_image_url: string | null;
-    reading_time: number | null;
-    published_at: string | null;
-};
-
-function formatDate(dateStr: string | null) {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-    });
+// Render each post on first request, then serve it statically (refreshed hourly).
+export const revalidate = 3600;
+export function generateStaticParams() {
+    return [];
 }
 
 type PageParams = { params: Promise<{ slug: string }> };
@@ -40,22 +24,11 @@ export async function generateMetadata(
     const resolvedParams = await rawParams.params;
     const { slug } = resolvedParams;
 
-    const supabase = await createClient();
+    const post = await getPostBySlug(slug);
 
-    const { data } = await supabase
-        .from("blog_posts")
-        .select(
-            "id, slug, title, excerpt, cover_image_url, published_at, category"
-        )
-        .eq("slug", slug)
-        .eq("status", "published")
-        .maybeSingle();
-
-    if (!data) {
+    if (!post) {
         return { title: "Post Not Found | GhostSweep Blog" };
     }
-
-    const post = data as BlogPost;
 
     return {
         title: `${post.title} | GhostSweep Blog`,
@@ -108,22 +81,10 @@ export default async function BlogPostPage(rawParams: PageParams) {
     const resolvedParams = await rawParams.params;
     const { slug } = resolvedParams;
 
-    const supabase = await createClient();
+    const post = await getPostBySlug(slug);
+    if (!post) notFound();
 
-    const { data, error } = await supabase
-        .from("blog_posts")
-        .select(
-            "id, slug, title, excerpt, content_md, category, cover_image_url, reading_time, published_at, status"
-        )
-        .eq("slug", slug)
-        .eq("status", "published")
-        .maybeSingle();
-
-    if (error) console.error("Error fetching blog post:", error);
-    if (!data) notFound();
-
-    const post = data as BlogPost;
-    const dateLabel = formatDate(post.published_at);
+    const dateLabel = formatBlogDate(post.published_at);
 
     const components: Components = {
         h1: (props) => (
@@ -197,13 +158,15 @@ export default async function BlogPostPage(rawParams: PageParams) {
             />
         ),
         img: ({ src = "", alt = "", ...rest }) => (
-            <span className="my-6 block overflow-hidden rounded-xl border border-foreground/5">
+            <span className="my-6 block overflow-hidden rounded-xl border border-foreground/5 bg-foreground/3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                    {...rest}
                     src={src}
                     alt={alt}
-                    className="w-full object-cover"
-                    {...rest}
+                    loading="lazy"
+                    decoding="async"
+                    className="block w-full h-auto max-h-[36rem] object-contain"
                 />
             </span>
         ),
@@ -246,12 +209,15 @@ export default async function BlogPostPage(rawParams: PageParams) {
                     )}
 
                     {post.cover_image_url && (
-                        <div className="mt-4 overflow-hidden rounded-2xl border border-foreground/5 h-80 sm:h-96 w-full">
+                        <div className="mt-4 overflow-hidden rounded-2xl border border-foreground/5 bg-foreground/3 w-full">
+                            {/* Natural aspect ratio — never crop; very tall images are capped and letterboxed. */}
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.cover_image_url}
                                 alt={post.title}
-                                className="w-full h-full object-cover"
+                                fetchPriority="high"
+                                decoding="async"
+                                className="block w-full h-auto max-h-[36rem] object-contain"
                             />
                         </div>
                     )}
