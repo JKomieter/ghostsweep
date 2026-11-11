@@ -332,7 +332,7 @@ export default function ValueRecoveryPage() {
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-2xl bg-foreground/5" />)
         ) : data?.values && data.values.length > 0 ? (
           data.values.map((item: FoundValue) => (
-            <div key={item.id} className="group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10 cursor-pointer" onClick={() => setModalValue(item)}>
+            <div key={item.id} className="animate-content-in group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10 cursor-pointer" onClick={() => setModalValue(item)}>
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-foreground/10 text-foreground hover:bg-foreground/20"><ExternalLink className="h-4 w-4" /></Button>
               </div>

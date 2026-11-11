@@ -482,7 +482,7 @@ export default function NewslettersPage() {
             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-24 w-full rounded-2xl bg-foreground/5" />)
           ) : data?.newsletters && data.newsletters.length > 0 ? (
             data.newsletters.map((newsletter: Newsletter) => (
-              <div key={newsletter.id} className="group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10">
+              <div key={newsletter.id} className="animate-content-in group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex items-start gap-4 flex-1 min-w-0">
                     {tab === "active" && (

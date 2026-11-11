@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from './utils/supabase/middleware';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
-import { geolocation } from '@vercel/functions';
 
 const redis = new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -38,7 +37,6 @@ const ALLOWED_ORIGINS = [
     'http://localhost:3001',
 ];
 
-const BLOCKED_COUNTRIES = ['CN', 'RU', 'KP'];
 const WHITELISTED_IPS = ['127.0.0.1', '192.168.1.1'];
 
 function isOriginAllowed(origin: string | null): boolean {
@@ -191,27 +189,6 @@ export async function proxy(request: NextRequest) {
             JSON.stringify({
                 error: 'Forbidden',
                 message: 'Access denied: Invalid origin',
-            }),
-            {
-                status: 403,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate, private',
-                    'X-Content-Type-Options': 'nosniff',
-                    'Server': '',
-                },
-            }
-        );
-    }
-
-    // Geo-blocking
-    const { country } = geolocation(request);
-    if (country && BLOCKED_COUNTRIES.includes(country)) {
-        console.warn(`❌ Blocked request from country: ${country}`);
-        return new NextResponse(
-            JSON.stringify({
-                error: 'Forbidden',
-                message: 'Access denied: Service not available in your region',
             }),
             {
                 status: 403,

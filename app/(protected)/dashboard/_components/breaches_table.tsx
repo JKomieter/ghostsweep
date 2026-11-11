@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { TableRowsSkeleton } from "@/components/ui/table-skeleton";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from "@/components/ui/table";
 import { formatDate } from "@/utils/format_date";
 import { useQuery } from "@tanstack/react-query";
@@ -95,11 +95,7 @@ export default function Breaches() {
 
                     <TableBody>
                         {isLoading ? (
-                            <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/40 relative">
-                                    <Spinner className="text-foreground absolute top-1/2 left-1/2" />
-                                </TableCell>
-                            </TableRow>
+                            <TableRowsSkeleton rows={4} columns={5} />
                         ) : gated ? (
                             // ✅ Free tier: do NOT show list at all
                             <TableRow>

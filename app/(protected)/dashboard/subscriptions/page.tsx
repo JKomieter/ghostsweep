@@ -352,7 +352,7 @@ export default function SubscriptionsPage() {
               const isHighValue = annualAmount > 500;
               
               return (
-                <div key={sub.id} className="group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-4 sm:p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10">
+                <div key={sub.id} className="animate-content-in group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-4 sm:p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10">
                   <div className="flex items-start gap-4">
                     {tab === "active" && (
                       <div className="pt-1.5 shrink-0">
