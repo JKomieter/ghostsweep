@@ -697,7 +697,7 @@ function HowItWorksSection() {
         {
             num: "2",
             title: "We scan everywhere",
-            description: "Your inbox, the open web, and breach databases — in about two minutes.",
+            description: "Your inbox, the open web, and breach databases — in the background, so you can close the tab.",
             icon: ScanSearch,
         },
         {
@@ -1014,7 +1014,7 @@ function FinalCTA() {
                     <span className="text-emerald-600 dark:text-emerald-400">Clean it up.</span>
                 </h2>
                 <p className="mx-auto mt-5 max-w-lg text-base text-foreground/65 leading-relaxed">
-                    In about two minutes you'll see every forgotten account, shadow profile, breach risk,
+                    One scan shows every forgotten account, shadow profile, breach risk,
                     and dollar hiding in your inbox.
                 </p>
                 <div className="mt-9">
@@ -1062,7 +1062,7 @@ function StickyMobileCTA() {
                     <ArrowRight className="h-4 w-4" />
                 </Link>
                 <p className="text-center text-[11px] text-foreground/55 mt-1.5">
-                    Free · No credit card · Results in ~2 min
+                    Free · No credit card · Read-only access
                 </p>
             </div>
         </div>

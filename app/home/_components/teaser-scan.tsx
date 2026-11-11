@@ -368,11 +368,22 @@ export default function TeaserScan({
             </div>
           </div>
 
-          <div className="space-y-3">
+          <form
+            className="space-y-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (canScan) startScan();
+            }}
+          >
             <div className="relative">
+              <label htmlFor="teaser-username" className="sr-only">Username</label>
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
               <input
+                id="teaser-username"
                 type="text"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 placeholder="Username (e.g. johndoe_42)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -380,9 +391,12 @@ export default function TeaserScan({
               />
             </div>
             <div className="relative">
+              <label htmlFor="teaser-email" className="sr-only">Email (optional)</label>
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
               <input
+                id="teaser-email"
                 type="email"
+                autoComplete="email"
                 placeholder="Email (optional)"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -390,14 +404,14 @@ export default function TeaserScan({
               />
             </div>
             <button
-              onClick={() => startScan()}
+              type="submit"
               disabled={!canScan}
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-purple-500 py-3.5 text-sm font-semibold text-white transition hover:bg-purple-400 disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               <Search className="h-4 w-4" />
               Scan My Shadow
             </button>
-          </div>
+          </form>
 
           <p className="mt-4 text-[10px] text-foreground/50 text-center">
             {scansRemaining !== null

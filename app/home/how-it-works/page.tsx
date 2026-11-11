@@ -294,7 +294,7 @@ export default function HowItWorksPage() {
                         full digital footprint?
                     </h2>
                     <p className="mx-auto mt-6 max-w-md text-base text-foreground/65 leading-relaxed">
-                        Free scan. Results in under two minutes. Upgrade only when you want full control.
+                        Free scan. Runs in the background. Upgrade only when you want full control.
                     </p>
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link

@@ -3,14 +3,15 @@ import { google } from "googleapis";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-export async function GET() {
+export async function GET(request: Request) {
     const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        // This route is reached by a plain link, so send people to sign in rather than showing raw JSON
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
     const clientId = process.env.GOOGLE_CLIENT_ID!;
@@ -59,7 +60,7 @@ export async function GET() {
     } catch (error) {
         console.error("Error generating OAuth URL:", error);
         // redirect to dashboard with error
-        const url = '/dashboard?google_oauth_error=1';
-        return NextResponse.redirect(url);
+        // NextResponse.redirect needs an absolute URL; a bare path throws and leaves the user on an error page
+        return NextResponse.redirect(new URL('/dashboard?google_oauth_error=1', request.url));
     }
 }
