@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton, SkeletonGroup } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { UpgradeTrigger } from "./upgrade_paywall";
 
@@ -183,9 +183,20 @@ export default function DashboardUrgencyPanel() {
 
             {/* Loading / Error */}
             {isLoading ? (
-                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-12 flex items-center justify-center">
-                    <Spinner className="text-foreground/40" />
-                </div>
+                <SkeletonGroup label="Loading risk snapshot" className="space-y-3">
+                    <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-5 space-y-2.5">
+                        <Skeleton className="h-4 w-56 max-w-full" />
+                        <Skeleton className="h-3 w-80 max-w-full" />
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 space-y-3">
+                                <Skeleton className="h-3 w-24" />
+                                <Skeleton className="h-7 w-14" />
+                            </div>
+                        ))}
+                    </div>
+                </SkeletonGroup>
             ) : isError ? (
                 <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6">
                     <div className="text-sm text-foreground/80">Failed to load</div>
@@ -207,7 +218,7 @@ export default function DashboardUrgencyPanel() {
                     {/* Main urgency banner */}
                     <div
                         className={[
-                            "rounded-lg border p-5",
+                            "rounded-lg border p-5 animate-content-in",
                             banner?.tone === "danger"
                                 ? "border-red-500/10 bg-red-500/5"
                                 : banner?.tone === "warn"

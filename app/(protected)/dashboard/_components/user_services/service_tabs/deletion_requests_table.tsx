@@ -11,7 +11,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
+import { TableRowsSkeleton } from "@/components/ui/table-skeleton";
 import { formatDate } from "@/utils/format_date";
 
 interface DeletionRequest {
@@ -82,16 +82,12 @@ export default function DeletionRequestsTable({
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
-                            <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center">
-                                    <Spinner className="h-6 w-6 text-foreground/40 mx-auto" />
-                                </TableCell>
-                            </TableRow>
+                            <TableRowsSkeleton rows={3} columns={4} />
                         ) : requests.length > 0 ? (
                             requests.map((request) => (
                                 <TableRow
                                     key={request.id}
-                                    className="border-foreground/10 hover:bg-foreground/2"
+                                    className="animate-content-in border-foreground/10 hover:bg-foreground/2"
                                 >
                                     <TableCell className="font-medium text-foreground">
                                         <div className="flex items-center gap-2">

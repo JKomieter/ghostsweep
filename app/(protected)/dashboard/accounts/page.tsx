@@ -2,6 +2,7 @@
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState, Suspense, useEffect } from "react";
+import Loading from "../loading";
 import { useSearchParams, useRouter } from "next/navigation";
 import AccountsTable from "../_components/accounts/accounts_table";
 import AccountsPageTitle from "../_components/accounts/accounts_page_title";
@@ -156,7 +157,7 @@ function AccountsPageContent() {
 // Main component with Suspense wrapper
 export default function AccountsPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen p-8 text-foreground/60">Loading...</div>}>
+        <Suspense fallback={<Loading />}>
             <AccountsPageContent />
         </Suspense>
     );

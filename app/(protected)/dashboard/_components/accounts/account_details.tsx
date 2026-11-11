@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Skeleton, SkeletonGroup } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -216,9 +217,29 @@ export default function AccountDetailsPage({ accountId }: Props) {
 
     if (status === "pending") {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Spinner className="h-8 w-8" />
-            </div>
+            <SkeletonGroup label="Loading account" className="space-y-6 min-h-[400px]">
+                <div className="flex items-center gap-4">
+                    <Skeleton className="h-14 w-14 rounded-xl" />
+                    <div className="space-y-2.5 flex-1">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-3.5 w-32" />
+                    </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="rounded-lg border border-foreground/5 bg-foreground/2 p-5 space-y-3">
+                            <Skeleton className="h-3 w-20" />
+                            <Skeleton className="h-6 w-28" />
+                        </div>
+                    ))}
+                </div>
+                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-3">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3.5 w-4/5" />
+                    <Skeleton className="h-3.5 w-2/3" />
+                </div>
+            </SkeletonGroup>
         );
     }
 

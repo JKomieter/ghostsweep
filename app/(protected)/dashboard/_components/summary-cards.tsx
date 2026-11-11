@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import type { PlanResponse } from "@/lib/plans";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 // Always two decimals: subscription totals are averaged to monthly and can have more
@@ -8,7 +9,7 @@ const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD",
 
 type RecentFind = { id: string; type: string; amount: number; service_name: string | null; detected_at: string | null };
 
-function StatCard({ label, value, accent = "default", href, hint }: { label: string; value: string | number; accent?: "default" | "danger" | "warning" | "success"; href?: string; hint?: string }) {
+function StatCard({ label, value, accent = "default", href, hint }: { label: string; value: React.ReactNode; accent?: "default" | "danger" | "warning" | "success"; href?: string; hint?: string }) {
     const accentConfig = {
         default: { text: "text-foreground", indicator: "bg-foreground/40" },
         danger: { text: "text-foreground", indicator: "bg-red-500" },
@@ -64,19 +65,19 @@ export default function SummaryCards() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <StatCard
                 label="Total Value Found"
-                value={isLoading ? "—" : `$${totalValue.toLocaleString()}`}
+                value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : `$${totalValue.toLocaleString()}`}
                 accent="success"
                 href="/dashboard/value-recovery"
                 hint={planData?.current_plan === "free" && totalValue > 0 ? "Unlock to claim →" : undefined}
             />
             <StatCard
                 label="Active Subscriptions"
-                value={isLoading ? "—" : `${usd.format(totalSubs)}/mo`}
+                value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : `${usd.format(totalSubs)}/mo`}
                 accent="warning"
                 href="/dashboard/subscriptions"
             />
-            <StatCard label="Newsletters" value={isLoading ? "—" : newsletters} href="/dashboard/newsletters" />
-            <StatCard label="Accounts" value={isLoading ? "—" : oldAccounts} href="/dashboard/accounts" />
+            <StatCard label="Newsletters" value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : newsletters} href="/dashboard/newsletters" />
+            <StatCard label="Accounts" value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : oldAccounts} href="/dashboard/accounts" />
             <div className="group relative h-full">
                 <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
                     <div className="flex items-start justify-between">
@@ -84,7 +85,11 @@ export default function SummaryCards() {
                     </div>
                     <div className="flex flex-col gap-1">
                         {isLoading ? (
-                            <span className="text-foreground/40 text-sm">Loading…</span>
+                            <div className="space-y-2">
+                                <Skeleton className="h-3 w-full" />
+                                <Skeleton className="h-3 w-4/5" />
+                                <Skeleton className="h-3 w-3/5" />
+                            </div>
                         ) : recent.length === 0 ? (
                             <span className="text-foreground/40 text-sm">No recent finds</span>
                         ) : (

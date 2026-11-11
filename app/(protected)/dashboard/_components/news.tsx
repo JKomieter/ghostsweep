@@ -1,4 +1,4 @@
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton, SkeletonGroup } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query"
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
@@ -62,10 +62,15 @@ export default function News() {
 
                 {/* States */}
                 {status === "pending" && (
-                    <div className="flex flex-1 flex-col items-center justify-center text-xs text-muted-foreground gap-2">
-                        <Spinner className="text-primary" />
-                        <span>Loading news…</span>
-                    </div>
+                    <SkeletonGroup label="Loading news" className="flex flex-1 flex-col gap-4">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="space-y-2">
+                                <Skeleton className="h-3.5 w-11/12" />
+                                <Skeleton className="h-3.5 w-3/5" />
+                                <Skeleton className="h-2.5 w-20" />
+                            </div>
+                        ))}
+                    </SkeletonGroup>
                 )}
 
                 {status === "error" && (

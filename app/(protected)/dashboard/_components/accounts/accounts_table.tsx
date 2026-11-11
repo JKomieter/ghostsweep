@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Category } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { TableRowsSkeleton } from "@/components/ui/table-skeleton";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { formatDate } from "@/utils/format_date";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -476,17 +477,13 @@ export default function AccountsTable({
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    <Spinner className="h-6 w-6 text-foreground/40 mx-auto" />
-                                </TableCell>
-                            </TableRow>
+                            <TableRowsSkeleton rows={8} columns={columns.length} />
                         ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="border-foreground/5 hover:bg-foreground/5 cursor-pointer transition-colors"
+                                    className="animate-content-in border-foreground/5 hover:bg-foreground/5 cursor-pointer transition-colors"
                                     onClick={(e) => {
                                         // Don't navigate if clicking on checkbox, buttons, or other interactive elements
                                         const target = e.target as HTMLElement;

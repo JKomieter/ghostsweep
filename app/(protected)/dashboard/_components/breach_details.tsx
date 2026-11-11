@@ -9,6 +9,7 @@ import {
     SheetDescription,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton, SkeletonGroup } from "@/components/ui/skeleton";
 import { formatDate } from "@/utils/format_date";
 import { cn } from "@/lib/utils";
 import type { Breach } from "@/types";
@@ -85,9 +86,28 @@ export function BreachDetailsSheet({
 
                 {/* Loading / error states */}
                 {isLoading && (
-                    <div className="mt-6 text-xs text-foreground/40">
-                        Loading breach details…
-                    </div>
+                    <SkeletonGroup label="Loading breach details" className="mt-6 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <Skeleton className="h-10 w-10 rounded-lg" />
+                            <div className="space-y-2 flex-1">
+                                <Skeleton className="h-4 w-40" />
+                                <Skeleton className="h-3 w-24" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-3 w-28" />
+                            <div className="flex flex-wrap gap-2">
+                                {["w-16", "w-24", "w-20", "w-14", "w-28"].map((w, i) => (
+                                    <Skeleton key={i} className={`h-6 ${w} rounded-full`} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-3.5 w-full" />
+                            <Skeleton className="h-3.5 w-11/12" />
+                            <Skeleton className="h-3.5 w-3/4" />
+                        </div>
+                    </SkeletonGroup>
                 )}
 
                 {error && !isLoading && (

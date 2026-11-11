@@ -12,6 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton, SkeletonGroup } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils"; // remove if you don't have this
 import { formatDate } from "@/utils/format_date"; // or your own formatter
 
@@ -106,9 +107,15 @@ export default function NotificationDropdown() {
                 )}
 
                 {!isError && isLoading && (
-                    <div className="px-3 py-6 text-center text-xs text-muted-foreground">
-                        Loading notifications…
-                    </div>
+                    <SkeletonGroup label="Loading notifications" className="px-3 py-3 space-y-4">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="space-y-1.5">
+                                <Skeleton className="h-3.5 w-3/4" />
+                                <Skeleton className="h-3 w-full" />
+                                <Skeleton className="h-2.5 w-16" />
+                            </div>
+                        ))}
+                    </SkeletonGroup>
                 )}
 
                 {!isError && !isLoading && notifications.length === 0 && (

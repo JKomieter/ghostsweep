@@ -8,7 +8,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import {
     Select,
     SelectTrigger,
@@ -17,6 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { TableRowsSkeleton } from "@/components/ui/table-skeleton";
 import { formatDate } from "@/utils/format_date";
 import { statusMap } from "@/constant/deletion-request-statuses";
 import type { DeletionRequestListRow } from "@/queryTypes";
@@ -116,14 +116,7 @@ export default function DeletionRequestsTable({
 
                         <TableBody>
                             {isLoading ? (
-                                <TableRow className="hover:bg-transparent border-foreground/5">
-                                    <TableCell
-                                        colSpan={6}
-                                        className="h-20 text-center text-sm text-foreground/60 relative"
-                                    >
-                                        <Spinner className="text-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                                    </TableCell>
-                                </TableRow>
+                                <TableRowsSkeleton rows={5} columns={6} />
                             ) : (requests?.length ?? 0) === 0 ? (
                                 <TableRow className="hover:bg-transparent border-foreground/5">
                                     <TableCell
