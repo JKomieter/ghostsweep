@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
+        url.search = ''
         url.searchParams.set('google_oauth_error', '1');
         return NextResponse.redirect(url)
     }
@@ -27,7 +28,17 @@ export async function GET(request: NextRequest) {
     if (!cookieState || !returnedState || cookieState !== returnedState) {
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
+        url.search = ''
         url.searchParams.set('google_oauth_error', '1');
+        return NextResponse.redirect(url)
+    }
+
+    // The user closed or declined Google's consent screen
+    if (searchParams.get("error") || !code) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        url.search = ''
+        url.searchParams.set('google_oauth_error', 'denied');
         return NextResponse.redirect(url)
     }
 
@@ -92,7 +103,8 @@ export async function GET(request: NextRequest) {
                 console.error("Gmail account already connected to another user");
                 const url = request.nextUrl.clone()
                 url.pathname = '/dashboard'
-                url.searchParams.set('google_oauth_error', '1');
+                url.search = ''
+                url.searchParams.set('google_oauth_error', 'already_linked');
                 return NextResponse.redirect(url)
             }
         } else {
@@ -116,12 +128,17 @@ export async function GET(request: NextRequest) {
             console.error("Supabase upsert error:", error);
             const url = request.nextUrl.clone()
             url.pathname = '/dashboard'
+            url.search = ''
             url.searchParams.set('google_oauth_error', '1');
             return NextResponse.redirect(url)
         }
 
         // 6. Optionally clear the state cookie now that we’re done
-        const res = NextResponse.redirect(new URL("/dashboard", request.url));
+        // Tell the dashboard which inbox just connected so it can offer to scan it straight away
+        const successUrl = new URL("/dashboard", request.url);
+        successUrl.searchParams.set("connected", "gmail");
+        successUrl.searchParams.set("account", userInfo.email!);
+        const res = NextResponse.redirect(successUrl);
         res.cookies.set("gmail_oauth_state", "", {
             maxAge: 0,
             path: "/",
@@ -148,6 +165,7 @@ export async function GET(request: NextRequest) {
         console.error("Error during OAuth callback:", error);
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
+        url.search = ''
         url.searchParams.set('google_oauth_error', '1');
         return NextResponse.redirect(url)
     }

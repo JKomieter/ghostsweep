@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     if (!user) {
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
+        url.search = '';
         url.searchParams.set('microsoft_oauth_error', '1');
         return NextResponse.redirect(url);
     }
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
     if (!cookieState || !returnedState || cookieState !== returnedState) {
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
+        url.search = '';
         url.searchParams.set('microsoft_oauth_error', '1');
         return NextResponse.redirect(url);
     }
@@ -37,13 +39,15 @@ export async function GET(req: NextRequest) {
         console.error('OAuth error:', error);
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
-        url.searchParams.set('microsoft_oauth_error', '1');
+        url.search = '';
+        url.searchParams.set('microsoft_oauth_error', 'denied');
         return NextResponse.redirect(url);
     }
 
     if (!code) {
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
+        url.search = '';
         url.searchParams.set('microsoft_oauth_error', '1');
         return NextResponse.redirect(url);
     }
@@ -72,6 +76,7 @@ export async function GET(req: NextRequest) {
             console.error('Error exchanging code for token:', error);
             const url = req.nextUrl.clone();
             url.pathname = '/dashboard';
+            url.search = '';
             url.searchParams.set('microsoft_oauth_error', '1');
             return NextResponse.redirect(url);
         }
@@ -86,6 +91,7 @@ export async function GET(req: NextRequest) {
         if (!userResponse.ok) {
             const url = req.nextUrl.clone();
             url.pathname = '/dashboard';
+            url.search = '';
             url.searchParams.set('microsoft_oauth_error', '1');
             return NextResponse.redirect(url);
         }
@@ -135,7 +141,8 @@ export async function GET(req: NextRequest) {
                 console.error('Microsoft account already connected to another user');
                 const url = req.nextUrl.clone();
                 url.pathname = '/dashboard';
-                url.searchParams.set('microsoft_oauth_error', '1');
+                url.search = '';
+                url.searchParams.set('microsoft_oauth_error', 'already_linked');
                 return NextResponse.redirect(url);
             }
         } else {
@@ -158,6 +165,7 @@ export async function GET(req: NextRequest) {
             console.error('Error saving Microsoft account:', error);
             const url = req.nextUrl.clone();
             url.pathname = '/dashboard';
+            url.search = '';
             url.searchParams.set('microsoft_oauth_error', '1');
             return NextResponse.redirect(url);
         }
@@ -179,14 +187,18 @@ export async function GET(req: NextRequest) {
             console.error("Error creating notification:", notifyError);
         }
 
-        // Redirect to dashboard or another page
+        // Tell the dashboard which inbox just connected so it can offer to scan it straight away
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
+        url.search = '';
+        url.searchParams.set('connected', 'outlook');
+        url.searchParams.set('account', email);
         return NextResponse.redirect(url);
     } catch (error) {
         console.error('Microsoft OAuth error:', error);
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
+        url.search = '';
         url.searchParams.set('microsoft_oauth_error', '1');
         return NextResponse.redirect(url);
     }

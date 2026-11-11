@@ -835,7 +835,7 @@ export default function ProductDemo() {
                         <DollarSign className="hidden sm:block h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                         <p className="text-sm text-foreground/80">
                             <span className="font-semibold text-foreground">Your inbox has its own numbers.</span>{" "}
-                            The scan is free and takes about two minutes.
+                            The scan is free and runs in the background while you get on with your day.
                         </p>
                     </div>
                     <Link

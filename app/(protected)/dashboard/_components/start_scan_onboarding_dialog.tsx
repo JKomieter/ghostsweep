@@ -3,12 +3,12 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { CheckCircle, Shield, Mail, ArrowRight } from "lucide-react";
+import { Shield } from "lucide-react";
+import { GmailLogo, OutLookLogo } from "@/svgs";
 
 type ShouldShowResponse = {
     shouldShowPopup: boolean;
@@ -28,6 +28,7 @@ export default function StartScanOnboardingDialog() {
     const [open, setOpen] = React.useState(false);
     const [dismissed, setDismissed] = React.useState(false);
     const [isConnecting, setIsConnecting] = React.useState(false);
+    const queryClient = useQueryClient();
 
     // 1) Fetch eligibility via React Query
     const { data, isPending, isError, error } = useQuery({
@@ -44,9 +45,17 @@ export default function StartScanOnboardingDialog() {
     // 2) Open 2s after we know we should show
     React.useEffect(() => {
         if (!shouldShow) return;
-        const t = setTimeout(() => setOpen(true), 2000);
+        const t = setTimeout(() => {
+            // Skip it when an inbox is already connected (e.g. they used the dashboard card first);
+            // the dashboard header has loaded the account lists by now
+            const hasInbox = Boolean(
+                queryClient.getQueryData<{ accounts?: unknown[] }>(["gmailAccount"])?.accounts?.length ||
+                queryClient.getQueryData<{ accounts?: unknown[] }>(["microsoftAccount"])?.accounts?.length
+            );
+            if (!hasInbox) setOpen(true);
+        }, 2000);
         return () => clearTimeout(t);
-    }, [shouldShow]);
+    }, [shouldShow, queryClient]);
 
 
     // 4) Close handler (don't show again in this session)
@@ -66,86 +75,54 @@ export default function StartScanOnboardingDialog() {
         <Dialog open={open} onOpenChange={(v) => (v ? setOpen(true) : onClose())}>
             <DialogContent className="sm:max-w-md bg-background border-foreground/10 text-foreground">
                 <DialogHeader>
-                    <DialogTitle className="text-xl">Start your first sweep</DialogTitle>
+                    <DialogTitle className="text-xl">Find your forgotten accounts</DialogTitle>
                     <DialogDescription className="text-foreground/60">
-                        Connect Gmail so GhostSweep can discover accounts linked to your email.
+                        Your inbox is the map: every sign-up left a welcome email. Here&apos;s how it works.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
-                    {/* What will happen */}
-                    <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-4 space-y-2">
-                        <div className="flex items-start gap-3">
-                            <Shield size={30} className="mt-0.5 text-emerald-700 dark:text-emerald-300" />
-                            <div className="text-sm">
-                                <p className="font-medium text-foreground">You stay in control</p>
-                                <p className="text-xs text-foreground/60 leading-relaxed">
-                                    During Google OAuth, please allow the requested access so we can scan safely.
-                                    <span className="text-foreground/70"> We don’t run the scan automatically.</span>
-                                </p>
-                            </div>
-                        </div>
+                    <ol className="rounded-xl border border-foreground/10 bg-foreground/5 p-4 space-y-3 text-sm">
+                        {[
+                            { title: "Connect Gmail or Outlook", text: "Sign in on Google's or Microsoft's own permission screen and allow access." },
+                            { title: "Start your scan", text: "You'll come straight back here with your inbox selected. One click starts it." },
+                            { title: "See what has your data", text: "Forgotten accounts, breaches and hidden value, ranked by risk." },
+                        ].map((step, i) => (
+                            <li key={step.title} className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-semibold text-black">
+                                    {i + 1}
+                                </span>
+                                <div>
+                                    <p className="font-medium text-foreground">{step.title}</p>
+                                    <p className="text-xs text-foreground/60 leading-relaxed">{step.text}</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
 
-                        <div className="flex items-start gap-3">
-                            <Mail size={24} className="mt-0.5 text-emerald-700 dark:text-emerald-300" />
-                            <div className="text-sm">
-                                <p className="font-medium text-foreground">Next step after connecting</p>
-                                <p className="text-xs text-foreground/60 leading-relaxed">
-                                    Once you're back in GhostSweep, you’ll click <span className="text-foreground/80 font-medium">Run Sweep</span> to start scanning.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Bullet checklist */}
-                    <div className="space-y-2 text-xs text-foreground/70">
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
-                            <span>OAuth → grant access → return to dashboard</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
-                            <span>Click “Run Sweep” to start the scan</span>
-                        </div>
-                    </div>
+                    <p className="flex items-start gap-2 text-xs text-foreground/60">
+                        <Shield className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-300" />
+                        Read-only metadata (sender, subject, date). Nothing is stored or sold, and you can disconnect anytime.
+                    </p>
 
                     {/* Actions */}
-                    <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
-                        <Button
-                            variant="outline"
-                            className="border-foreground/15 bg-background"
-                            onClick={onClose}
-                        >
-                            Not now
-                        </Button>
-                        <a href="/api/google/oauth/start" className="w-auto">
-                            <Button
-                                className="bg-foreground text-background hover:bg-foreground/90 w-full"
-                                onClick={() => setIsConnecting(true)}
-                            >
-                                {isConnecting ? (
-                                    <span className="flex items-center gap-2">
-                                        <Spinner />
-                                        Opening Google…
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        Connect Gmail
-                                        <ArrowRight className="h-4 w-4" />
-                                    </span>
-                                )}
+                    <div className="flex flex-col gap-2">
+                        <a href="/api/google/oauth/start" onClick={() => setIsConnecting(true)}>
+                            <Button disabled={isConnecting} className="bg-foreground text-background hover:bg-foreground/90 w-full gap-2">
+                                {isConnecting ? <Spinner /> : <GmailLogo className="h-4 w-4" />}
+                                Connect Gmail
                             </Button>
                         </a>
+                        <a href="/api/microsoft/oauth" onClick={() => setIsConnecting(true)}>
+                            <Button disabled={isConnecting} variant="outline" className="w-full gap-2 border-foreground/15">
+                                <OutLookLogo className="h-4 w-4" />
+                                Connect Outlook
+                            </Button>
+                        </a>
+                        <Button variant="ghost" className="text-foreground/60" onClick={onClose}>
+                            I&apos;ll do this later
+                        </Button>
                     </div>
-
-                    {/* Small footer help */}
-                    {/* <div className="pt-2 border-t border-foreground/10 text-[11px] text-foreground/45 leading-relaxed">
-                        Prefer to do this later? You can connect Gmail anytime from{" "}
-                        <Link href="/dashboard/settings" className="text-foreground/70 underline underline-offset-2 hover:text-foreground">
-                            Settings
-                        </Link>
-                        .
-                    </div> */}
                 </div>
             </DialogContent>
         </Dialog>

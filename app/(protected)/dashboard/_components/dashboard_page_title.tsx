@@ -80,26 +80,45 @@ export default function DashboardTitle() {
     const [selectedEmail, setSelectedEmail] = useState<string>("");
     const [selectedProvider, setSelectedProvider] = useState<"gmail" | "outlook" | null>(null);
 
-    // ✅ Listen for OAuth errors in URL params
+    // ✅ React to the result of a Gmail/Outlook connection (set by the OAuth callbacks)
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const googleError = params.get('google_oauth_error');
         const microsoftError = params.get('microsoft_oauth_error');
+        const connected = params.get('connected');
+        const account = params.get('account');
+
+        const describeError = (reason: string, provider: string) => {
+            if (reason === 'denied') return `${provider} access wasn't granted, so we can't scan that inbox yet. Try again and allow access on the permission screen.`;
+            if (reason === 'already_linked') return `That ${provider} inbox is already connected to a different GhostSweep account. Sign in to that account, or connect a different inbox.`;
+            return `There was an issue connecting your ${provider} account. Please try again.`;
+        };
 
         if (googleError) {
-            toast.error('Gmail connection failed', {
-                description: "There was an issue connecting your Gmail account. Please try again.",
-            });
-            window.history.replaceState({}, document.title, window.location.pathname);
+            toast.error('Gmail connection failed', { description: describeError(googleError, 'Gmail'), duration: 8000 });
         }
 
         if (microsoftError) {
-            toast.error('Outlook connection failed', {
-                description: "There was an issue connecting your Outlook account. Please try again.",
+            toast.error('Outlook connection failed', { description: describeError(microsoftError, 'Outlook'), duration: 8000 });
+        }
+
+        if ((connected === 'gmail' || connected === 'outlook') && account) {
+            toast.success(`${connected === 'gmail' ? 'Gmail' : 'Outlook'} connected`, {
+                description: `${account} is ready to scan.`,
             });
+            // Pick the inbox they just connected and put the scan one click away.
+            // One-time read of the OAuth redirect result on mount, so setting state here is intended.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setSelectedEmail(account);
+            setSelectedProvider(connected);
+            setSweepDialogOpen(true);
+            queryClient.invalidateQueries({ queryKey: [connected === 'gmail' ? 'gmailAccount' : 'microsoftAccount'] });
+        }
+
+        if (googleError || microsoftError || connected) {
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-    }, []);
+    }, [queryClient]);
 
     // Fetch accounts
     const [gmailQuery, microsoftQuery] = useQueries({
@@ -159,6 +178,8 @@ export default function DashboardTitle() {
     const gmailAddress = gmailData?.accounts?.[0]?.gmail_address ?? null;
     const outlookAddress = microsoftData?.accounts?.[0]?.outlook_address ?? null;
     const connectedEmail = gmailAddress || outlookAddress;
+    const accountsLoaded = gmailQuery.isSuccess && microsoftQuery.isSuccess;
+    const sweepLoaded = latestSweep !== undefined;
     const totalAccountsCount = (gmailData?.accounts?.length || 0) + (microsoftData?.accounts?.length || 0);
     const isInProgress =
         latestSweep?.status === "pending" || latestSweep?.status === "processing";
@@ -494,6 +515,60 @@ export default function DashboardTitle() {
                 </div>
             </div>
 
+            {/* First-run guidance: stays until the first scan, unlike the one-time onboarding popup */}
+            {accountsLoaded && !connectedEmail && (
+                <div className="mb-4 rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-5 sm:p-6">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div className="space-y-1.5">
+                            <p className="text-[11px] font-medium uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                                Step 2 of 3
+                            </p>
+                            <h2 className="text-base font-semibold text-foreground md:text-lg">
+                                Connect your inbox to find your forgotten accounts
+                            </h2>
+                            <p className="text-xs text-foreground/60 md:text-sm max-w-xl">
+                                We only read sender, subject and date to spot sign-ups and receipts. Read-only, never stored, and you can disconnect anytime.
+                            </p>
+                        </div>
+                        <div className="flex flex-col gap-2 sm:flex-row shrink-0">
+                            <a href="/api/google/oauth/start" onClick={() => setIsConnecting(true)}>
+                                <Button disabled={isConnecting} className="w-full gap-2 bg-foreground text-background hover:bg-foreground/90">
+                                    <GmailLogo className="h-4 w-4" />
+                                    Connect Gmail
+                                </Button>
+                            </a>
+                            <a href="/api/microsoft/oauth" onClick={() => setIsConnecting(true)}>
+                                <Button disabled={isConnecting} variant="outline" className="w-full gap-2 border-foreground/15">
+                                    <OutLookLogo className="h-4 w-4" />
+                                    Connect Outlook
+                                </Button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {connectedEmail && sweepLoaded && !latestSweep?.status && (
+                <div className="mb-4 rounded-xl border border-cyan-500/25 bg-cyan-500/5 p-5 sm:p-6">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div className="space-y-1.5">
+                            <p className="text-[11px] font-medium uppercase tracking-widest text-cyan-700 dark:text-cyan-400">
+                                Step 3 of 3
+                            </p>
+                            <h2 className="text-base font-semibold text-foreground md:text-lg">
+                                Ready to scan {selectedEmail || connectedEmail}
+                            </h2>
+                            <p className="text-xs text-foreground/60 md:text-sm max-w-xl">
+                                The scan runs in the background. You can close this tab and we&apos;ll notify you when your results are ready.
+                            </p>
+                        </div>
+                        <Button onClick={onSweep} className="shrink-0 gap-2 bg-cyan-500 hover:bg-cyan-600 text-white">
+                            Scan my inbox
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             {/* Background sweep banner */}
             {isInProgress && latestSweep && (
                 <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-800 dark:text-cyan-100 sm:flex-row sm:items-center sm:justify-between">
@@ -600,7 +675,8 @@ export default function DashboardTitle() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 latestSweep={latestSweep as any}
                 getElapsedMinutesAction={getElapsedMinutes}
-                connectedEmail={connectedEmail}
+                // Right after OAuth the account list may still be refetching; the inbox from the redirect counts as connected
+                connectedEmail={connectedEmail || selectedEmail || null}
                 gmailAccounts={gmailData?.accounts || []}
                 microsoftAccounts={microsoftData?.accounts || []}
                 selectedEmail={selectedEmail}
