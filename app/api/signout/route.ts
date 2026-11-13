@@ -11,9 +11,12 @@ export async function POST(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (user) {
-        // "global" revokes every refresh token for this user on all devices (server-side, in Supabase Auth)
-        // and clears the session cookies on this response
-        const { error } = await supabase.auth.signOut({ scope: "global" });
+        // Default "global" revokes every refresh token for this user on all devices (server-side,
+        // in Supabase Auth) and clears the session cookies on this response.
+        // "?scope=local" ends only this session: used when asking the user to sign in again
+        // before a sensitive change, without logging them out of their other devices.
+        const scope = req.nextUrl.searchParams.get("scope") === "local" ? "local" : "global";
+        const { error } = await supabase.auth.signOut({ scope });
         if (error) {
             console.error("Sign out failed:", error.message);
         }

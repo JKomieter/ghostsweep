@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import stripe from "@/lib/stripe";
 import { revokeGoogleTokens } from "@/utils/google_revoke";
+import { hasRecentAuthentication, reauthRequiredResponse } from "@/utils/recent-auth";
 
 export async function POST() {
     const supabase = await createClient();
@@ -10,8 +11,6 @@ export async function POST() {
         error: userError,
     } = await supabase.auth.getUser();
 
-    console.log("Deleting user ID:", user?.id);
-
     if (userError) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -19,6 +18,13 @@ export async function POST() {
     if (!user?.id) {
         return NextResponse.json({ error: "User ID not found" }, { status: 400 });
     }
+
+    // Irreversible: require the user to have signed in recently, not just hold an old session
+    if (!(await hasRecentAuthentication(supabase))) {
+        return reauthRequiredResponse();
+    }
+
+    console.log("Deleting user ID:", user.id);
 
     // Cancel Stripe subscription if exists
     try {
