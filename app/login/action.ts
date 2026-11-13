@@ -294,3 +294,18 @@ export async function signup({ email, password, captchaToken }: { email: string,
         return { success: false, error: formattedError.message }
     }
 }
+// Resends the sign-up confirmation email from the server, so the link uses the same
+// server-side (PKCE, HttpOnly cookie) flow as the original sign-up
+export async function resendConfirmation({ email }: { email: string }) {
+    if (!email || !email.includes('@')) {
+        return { success: false, error: 'Please enter a valid email address.' }
+    }
+
+    const supabase = await createClient()
+    const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim().toLowerCase() })
+
+    if (error) {
+        return { success: false, error: error.message }
+    }
+    return { success: true }
+}

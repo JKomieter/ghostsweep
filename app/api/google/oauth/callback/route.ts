@@ -140,6 +140,9 @@ export async function GET(request: NextRequest) {
         successUrl.searchParams.set("account", userInfo.email!);
         const res = NextResponse.redirect(successUrl);
         res.cookies.set("gmail_oauth_state", "", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
             maxAge: 0,
             path: "/",
         });

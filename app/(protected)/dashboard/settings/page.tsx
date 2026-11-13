@@ -38,7 +38,7 @@ import {
     Download,
 } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/client";
+import { fetchCurrentUser } from "@/hooks/use-get-user";
 import ConnectAccountModal from "./_components/connect-account-modal";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
 import { BUSTER_SCAN_CREDITS, PAID_PLANS, isPaidPlan, planDisplayName, scanCreditsLabel, type PlanResponse } from "@/lib/plans";
@@ -118,7 +118,6 @@ function SettingsSection({
 }
 
 export default function SettingsPage() {
-    const supabase = createClient();
     const queryClient = useQueryClient();
     
     // User email for delete confirmation
@@ -144,13 +143,13 @@ export default function SettingsPage() {
     // Load user email
     useEffect(() => {
         const loadUser = async () => {
-            const { data } = await supabase.auth.getUser();
-            if (data.user?.email) {
-                setUserEmail(data.user.email);
+            const user = await fetchCurrentUser();
+            if (user?.email) {
+                setUserEmail(user.email);
             }
         };
         loadUser();
-    }, [supabase]);
+    }, []);
 
     // Fetch email accounts
     const { data: emailAccounts, isLoading: emailAccountsLoading } = useQuery({
