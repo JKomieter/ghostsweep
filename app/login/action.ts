@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/server'
 import { checkLoginRateLimit, clearFailedLoginAttempts, recordFailedLoginAttempt } from '@/utils/login-rate-limit'
 import { logLoginSecurityEvent } from '@/utils/security-logging'
 import { headers } from 'next/headers'
+import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from '@/utils/password-policy'
 
 interface AuthError {
     message: string
@@ -235,8 +236,8 @@ export async function signup({ email, password, captchaToken }: { email: string,
             throw new Error('Please enter a valid email address.')
         }
 
-        if (password.length < 8) {
-            throw new Error('Password must be at least 8 characters long.')
+        if (!isPasswordValid(password)) {
+            throw new Error(PASSWORD_REQUIREMENTS_MESSAGE)
         }
 
         // Get client IP from headers

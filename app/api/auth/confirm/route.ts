@@ -10,28 +10,26 @@ export async function GET(request: NextRequest) {
     const redirectTo = request.nextUrl.clone();
     redirectTo.pathname = next;
 
-    console.log("token_hash:", token_hash);
-    console.log("type:", type);
-    console.log("next:", next);
+    // Tell the user exactly what went wrong instead of a generic error page
+    const linkExpired = request.nextUrl.clone();
+    linkExpired.pathname = "/link_expired";
+    linkExpired.search = "";
+    if (type) linkExpired.searchParams.set("type", type);
 
-    if (token_hash && type) {
-        const supabase = await createClient();
-
-        const { error } = await supabase.auth.verifyOtp({
-            type,
-            token_hash,
-        });
-
-        if (error) {
-            console.error("verifyOtp error:", error.message);
-        } else {
-            console.log("Redirecting to:", redirectTo.toString());
-            return NextResponse.redirect(redirectTo);
-        }
+    if (!token_hash || !type) {
+        linkExpired.searchParams.set("reason", "invalid");
+        return NextResponse.redirect(linkExpired);
     }
 
-    // Return the user to an error page with some instructions
-    redirectTo.pathname = "/error";
-    console.log("Redirecting to error page:", redirectTo.toString());
+    const supabase = await createClient();
+    const { error } = await supabase.auth.verifyOtp({ type, token_hash });
+
+    if (error) {
+        // Supabase returns otp_expired for both expired and already-used links
+        console.error("verifyOtp error:", error.code ?? error.message);
+        if (error.code !== "otp_expired") linkExpired.searchParams.set("reason", "invalid");
+        return NextResponse.redirect(linkExpired);
+    }
+
     return NextResponse.redirect(redirectTo);
 }

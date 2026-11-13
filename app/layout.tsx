@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import FBPixel from "@/components/pixel-tracker";
 import ChatWidgetGuard from "@/components/chat-widget-guard";
+import AuthLinkErrorRedirect from "@/components/auth-link-error-redirect";
 
 
 const interSans = Inter({
@@ -176,6 +177,7 @@ export default function RootLayout({
 
           <Toaster position="top-right" />
           <ChatWidgetGuard />
+          <AuthLinkErrorRedirect />
         </ThemeProvider>
       </body>
     </html>

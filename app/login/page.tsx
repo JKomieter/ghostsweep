@@ -24,6 +24,7 @@ import HCaptcha from '@hcaptcha/react-hcaptcha'
 // ✅ add your supabase client import (adjust path to your project)
 import { createClient } from "@/utils/supabase/client";
 import { consumePendingPlanPath, rememberPendingPlan } from "@/lib/pending-plan";
+import { PASSWORD_RULES } from "@/utils/password-policy";
 
 type Mode = "signin" | "signup" | "confirm";
 
@@ -276,15 +277,6 @@ function PasswordVisibilityToggle({ shown, onToggle }: { shown: boolean; onToggl
         </button>
     );
 }
-
-// Mirrors utils/password_strength_meter.ts so people see the rules while typing, not after a failed submit
-const PASSWORD_RULES: { label: string; test: (pw: string) => boolean }[] = [
-    { label: "12+ characters", test: (pw) => pw.length >= 12 },
-    { label: "Uppercase letter", test: (pw) => /[A-Z]/.test(pw) },
-    { label: "Lowercase letter", test: (pw) => /[a-z]/.test(pw) },
-    { label: "Number", test: (pw) => /[0-9]/.test(pw) },
-    { label: "Symbol", test: (pw) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw) },
-];
 
 function PasswordRules({ password }: { password: string }) {
     return (
