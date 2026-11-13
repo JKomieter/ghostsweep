@@ -9,6 +9,7 @@ const publicRoutes = [
     "/help",
     "/home",
     "/reset_password",
+    "/link_expired",
     "/api/reset_password",
     "/api/webhooks",
     "/api/waitlist",

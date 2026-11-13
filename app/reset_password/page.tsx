@@ -28,13 +28,9 @@ export default function ResetPasswordPage() {
         const checkSession = async () => {
             const { data, error } = await supabase.auth.getUser()
             if (error || !data.user) {
-                // If there is no user, this link may be invalid/expired
-                // You can either:
-                // - show an error, or
-                // - let them still try (Supabase may still allow updateUser if session is valid)
-                setGeneralError(
-                    "This reset link may be invalid or expired. Try requesting a new password reset email."
-                )
+                // No session means the reset link expired or was already used; say so before they fill in the form
+                router.replace("/link_expired?type=recovery")
+                return
             }
             setIsCheckingSession(false)
         }
@@ -44,7 +40,7 @@ export default function ResetPasswordPage() {
         // const type = searchParams.get("type")
         // For standard Supabase recovery links, a session will already be set.
         checkSession()
-    }, [supabase])
+    }, [supabase, router])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

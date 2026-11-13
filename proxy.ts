@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from './utils/supabase/middleware';
+import { linkErrorPath } from './utils/auth-link-error';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
@@ -314,6 +315,15 @@ export async function proxy(request: NextRequest) {
                     },
                 }
             );
+        }
+    }
+
+    // Supabase sends failed email links (expired or already used) to the Site URL with error params;
+    // show the "link expired" page instead of silently landing the user on the homepage
+    if (!pathname.startsWith('/api/') && request.nextUrl.searchParams.has('error_code')) {
+        const linkError = linkErrorPath(request.nextUrl.searchParams);
+        if (linkError) {
+            return NextResponse.redirect(new URL(linkError, request.url));
         }
     }
 

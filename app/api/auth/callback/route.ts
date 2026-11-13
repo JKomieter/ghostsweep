@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createClient } from '@/utils/supabase/server'
+import { linkErrorPath } from '@/utils/auth-link-error'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -24,6 +25,9 @@ export async function GET(request: Request) {
     }
   }
 
-  // Send the user back to sign-in with an explanation (there is no dedicated auth error page)
+  // An expired or already-used email link gets its own page; other failures go back to sign-in
+  const linkError = linkErrorPath(searchParams)
+  if (linkError) return NextResponse.redirect(`${origin}${linkError}`)
+
   return NextResponse.redirect(`${origin}/login?error=oauth`)
 }
