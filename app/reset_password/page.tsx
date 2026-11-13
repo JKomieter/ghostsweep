@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/utils/supabase/client"
+import { fetchCurrentUser } from "@/hooks/use-get-user"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import Input from "@/components/ui/input"
@@ -11,7 +11,6 @@ import { toast } from "sonner"
 import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from "@/utils/password-policy"
 
 export default function ResetPasswordPage() {
-    const supabase = createClient()
     const router = useRouter()
     // const searchParams = useSearchParams()
 
@@ -26,8 +25,8 @@ export default function ResetPasswordPage() {
     // Optional: check that we actually have a valid session (for recovery links)
     useEffect(() => {
         const checkSession = async () => {
-            const { data, error } = await supabase.auth.getUser()
-            if (error || !data.user) {
+            const user = await fetchCurrentUser()
+            if (!user) {
                 // No session means the reset link expired or was already used; say so before they fill in the form
                 router.replace("/link_expired?type=recovery")
                 return
@@ -40,7 +39,7 @@ export default function ResetPasswordPage() {
         // const type = searchParams.get("type")
         // For standard Supabase recovery links, a session will already be set.
         checkSession()
-    }, [supabase, router])
+    }, [router])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -61,17 +60,17 @@ export default function ResetPasswordPage() {
         setIsSubmitting(true)
 
         try {
-            // For both:
-            // - logged-in user changing password
-            // - user coming from a Supabase recovery link
-            // this will update the current user's password.
-            const { error } = await supabase.auth.updateUser({
-                password: newPassword,
+            // The recovery link signed the user in; the server updates the password
+            // and terminates all other sessions (see /api/account/password)
+            const res = await fetch("/api/account/password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: newPassword }),
             })
 
-            if (error) {
-                console.error("Error updating password:", error)
-                setGeneralError("Could not reset password. This link may have expired.")
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}))
+                setGeneralError(body.error || "Could not reset password. This link may have expired.")
                 return
             }
 
@@ -117,7 +116,7 @@ export default function ResetPasswordPage() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form method="post" onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
                         <label className="text-xs font-light text-foreground/70">
                             New password

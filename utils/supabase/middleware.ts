@@ -1,11 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { supabaseCookieOptions } from './cookie-options'
 
 const publicRoutes = [
     "/login",
     "/forgot_password",
     "/api/auth/confirm",
     "/api/auth/callback",
+    "/api/auth/google", // starts Google sign-in
+    "/api/auth/user", // returns 401 itself when signed out
+    "/api/account/password", // returns 401 itself when signed out
     "/help",
     "/home",
     "/reset_password",
@@ -21,6 +25,7 @@ const publicRoutes = [
     "/api/cron", // authenticated by CRON_SECRET, not a user session
     "/share", // public results card that friends open
     "/api/og",
+    "/api/logo", // company logos, also shown on the public homepage scan
     "/sitemap.xml",
 ]
 
@@ -33,6 +38,7 @@ export async function updateSession(request: NextRequest) {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
         {
+            cookieOptions: supabaseCookieOptions,
             cookies: {
                 getAll() {
                     return request.cookies.getAll()
@@ -42,7 +48,8 @@ export async function updateSession(request: NextRequest) {
                     supabaseResponse = NextResponse.next({
                         request,
                     })
-                    cookiesToSet.forEach(({ name, value }) => supabaseResponse.cookies.set(name, value))
+                    // Pass the options through, or refreshed session cookies lose Secure/SameSite/Max-Age
+                    cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options))
                 },
             },
         }

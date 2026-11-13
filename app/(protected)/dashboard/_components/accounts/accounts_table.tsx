@@ -1,6 +1,6 @@
 import Input from "@/components/ui/input";
 import { Search, Trash2, AlertTriangle } from "lucide-react";
-import Image from "next/image";
+import ServiceLogo from "@/components/service-logo";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import {
@@ -220,11 +220,12 @@ export default function AccountsTable({
                     <div className="flex items-start gap-3">
                         {/* Logo */}
                         <div className="h-8 w-8 rounded-full bg-foreground/10 overflow-hidden shrink-0 flex items-center justify-center">
-                            {logo ? (
-                                <Image src={logo} alt={name} width={32} height={32} className="h-full w-full object-cover" />
-                            ) : (
-                                <span className="text-foreground/40 text-xs font-bold">{name.substring(0, 1).toUpperCase()}</span>
-                            )}
+                            <ServiceLogo
+                                src={logo}
+                                domain={row.original.domain}
+                                name={name}
+                                fallbackClassName="text-foreground/40 text-xs font-bold"
+                            />
                         </div>
 
                         <div className="space-y-1">

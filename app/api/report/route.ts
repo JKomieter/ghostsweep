@@ -88,8 +88,9 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fire-and-forget — orchestration generates the PDF in the background
-    // and broadcasts `report_ready` on the Supabase Realtime channel `report:${userId}`
+    // Fire-and-forget: orchestration generates the PDF in the background. The client polls
+    // GET /api/report (authenticated) until a report newer than `requestedAt` appears.
+    const requestedAt = new Date().toISOString();
     const res = await fetch(
       `${baseUrl}/api/report/${user.id}`,
       {
@@ -109,7 +110,7 @@ export async function POST() {
       );
     }
 
-    return NextResponse.json({ queued: true, userId: user.id });
+    return NextResponse.json({ queued: true, requestedAt });
   } catch (error) {
     console.error("[report] Queue error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

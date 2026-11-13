@@ -16,13 +16,12 @@ import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { Logo } from "@/svgs";
 import { toast } from "sonner";
-import { login, signup } from "./action";
+import { login, signup, resendConfirmation } from "./action";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 // ✅ add your supabase client import (adjust path to your project)
-import { createClient } from "@/utils/supabase/client";
 import { consumePendingPlanPath, rememberPendingPlan } from "@/lib/pending-plan";
 import { PASSWORD_RULES } from "@/utils/password-policy";
 
@@ -56,26 +55,8 @@ function ContinueWithGoogleButton({ label }: { label: string }) {
     const handleGoogle = async () => {
         setLoading(true);
         try {
-            const supabase = createClient();
-
-            const origin =
-                typeof window !== "undefined" ? window.location.origin : "";
-
-            // ✅ Choose where the user should land after OAuth
-            // - If you have an auth callback route, point there.
-            // - Otherwise, point to a page and handle session there.
-            const redirectTo = `${origin}/api/auth/callback`;
-
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: "google",
-                options: {
-                    redirectTo,
-                    // If you need refresh tokens for Gmail access, you'd use:
-                    // queryParams: { access_type: "offline", prompt: "consent" },
-                },
-            });
-
-            if (error) throw error;
+            // Started server-side so the PKCE verifier and session cookies are HttpOnly
+            window.location.href = "/api/auth/google";
         } catch (err) {
             console.error(err);
             toast.error("Google sign-in failed. Please try again.");
@@ -175,7 +156,7 @@ function SignInForm({
             )}
 
             {/* ✅ Existing email+password form */}
-            <form className="space-y-5" onSubmit={handleLogin}>
+            <form method="post" className="space-y-5" onSubmit={handleLogin}>
                 <div className="space-y-2">
                     <label className="text-sm font-light text-foreground/70" htmlFor="email">
                         Email
@@ -304,10 +285,10 @@ function ResendConfirmationButton({ email }: { email: string }) {
 
     const resend = async () => {
         setState("sending");
-        const { error } = await createClient().auth.resend({ type: "signup", email });
+        const { error } = await resendConfirmation({ email });
         if (error) {
             toast.error("Couldn't resend the email", {
-                description: error.message.toLowerCase().includes("rate")
+                description: error.toLowerCase().includes("rate")
                     ? "Please wait a minute before trying again."
                     : "Please try again in a moment, or contact support@ghostsweep.com.",
             });
@@ -426,7 +407,7 @@ function SignUpForm({
             )}
 
             {/* ✅ Existing signup form */}
-            <form className="space-y-5" onSubmit={handleSignup}>
+            <form method="post" className="space-y-5" onSubmit={handleSignup}>
                 <div className="space-y-2">
                     <label className="text-sm font-light text-foreground/70" htmlFor="email">
                         Email

@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import ServiceLogo from "@/components/service-logo";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { 
     ArrowLeft, 
@@ -271,19 +271,12 @@ export default function AccountDetailsPage({ accountId }: Props) {
 
                     {/* Logo */}
                     <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-foreground/10 bg-foreground/5 shrink-0 flex items-center justify-center">
-                        {account.logo_url ? (
-                            <Image 
-                                src={account.logo_url} 
-                                alt={account.name} 
-                                width={56} 
-                                height={56} 
-                                className="h-full w-full object-cover" 
-                            />
-                        ) : (
-                            <span className="text-foreground/40 text-xl font-bold">
-                                {account.name?.substring(0, 1).toUpperCase()}
-                            </span>
-                        )}
+                        <ServiceLogo
+                            src={account.logo_url}
+                            domain={account.domain}
+                            name={account.name}
+                            fallbackClassName="text-foreground/40 text-xl font-bold"
+                        />
                     </div>
 
                     <div className="min-w-0 space-y-1">

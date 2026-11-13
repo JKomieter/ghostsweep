@@ -93,8 +93,13 @@ function addSecurityHeaders(response: NextResponse, pathname: string): NextRespo
     // Site-wide aggregates only, safe for shared caches (keeps the homepage off the DB)
     const isPublicStats = pathname === '/api/marketing/stats';
 
+    // Public company logos: the route sets its own CDN-friendly Cache-Control, so leave it alone
+    const isLogo = pathname.startsWith('/api/logo/');
+
     if (isPublicStats) {
         response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    } else if (isLogo) {
+        // no override
     } else if (isAuthPage || isDashboard || isAPI || isBreachCheck) {
         response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
         response.headers.set('Pragma', 'no-cache');

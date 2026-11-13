@@ -19,7 +19,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { createClient } from "@/utils/supabase/client";
+import { fetchCurrentUser } from "@/hooks/use-get-user";
 import Input from "@/components/ui/input";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from "@/utils/password-policy";
 import { toast } from "sonner";
@@ -32,8 +32,6 @@ export default function Profile({
     open: boolean;
     onOpenChangeAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const supabase = createClient();
-
     const [email, setEmail] = useState("");
     const [loadingUser, setLoadingUser] = useState(false);
     const [userError, setUserError] = useState<string | null>(null);
@@ -56,24 +54,21 @@ export default function Profile({
             try {
                 setLoadingUser(true);
                 setUserError(null);
-                const { data, error } = await supabase.auth.getUser();
+                const user = await fetchCurrentUser();
 
-                if (error) {
-                    console.error("Error fetching user:", error);
+                if (!user) {
                     setUserError("Couldn’t load your profile. Please try again.");
                     return;
                 }
 
-                if (data.user) {
-                    setEmail(data.user.email ?? "");
-                }
+                setEmail(user.email ?? "");
             } finally {
                 setLoadingUser(false);
             }
         };
 
         void loadUser();
-    }, [open, supabase]);
+    }, [open]);
 
     const handleChangePassword = async () => {
         setPasswordError(null);
@@ -96,11 +91,17 @@ export default function Profile({
 
         try {
             setPasswordLoading(true);
-            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            // The server updates the password and terminates all other sessions
+            // (see /api/account/password)
+            const res = await fetch("/api/account/password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: newPassword }),
+            });
 
-            if (error) {
-                console.error("Error updating password:", error);
-                setPasswordError(error.message || "Couldn’t update password.");
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                setPasswordError(body.error || "Couldn’t update password.");
                 return;
             }
 
@@ -135,9 +136,9 @@ export default function Profile({
                 return;
             }
 
-            // After successful deletion: log out + redirect
-            await supabase.auth.signOut();
-            window.location.href = "/login"; 
+            // After successful deletion: global sign-out on the server, then redirect
+            await fetch("/api/signout", { method: "POST" });
+            window.location.href = "/login";
         } catch (err) {
             console.error("Error deleting account:", err);
             setDeleteError("Something went wrong. Please try again.");

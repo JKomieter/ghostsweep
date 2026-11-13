@@ -11,7 +11,12 @@ export async function POST(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (user) {
-        await supabase.auth.signOut();
+        // "global" revokes every refresh token for this user on all devices (server-side, in Supabase Auth)
+        // and clears the session cookies on this response
+        const { error } = await supabase.auth.signOut({ scope: "global" });
+        if (error) {
+            console.error("Sign out failed:", error.message);
+        }
     }
 
     revalidatePath("/", "layout");
