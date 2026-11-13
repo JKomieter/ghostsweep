@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { revokeGoogleTokens } from "@/utils/google_revoke";
 
 export async function DELETE(request: NextRequest) {
     try {
@@ -22,15 +23,20 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: "Account ID required" }, { status: 400 });
         }
     
-        // Get the email address for notification before deleting
+        // Get the email address for notification and the tokens to revoke before deleting
         const { data: account } = await supabase
             .from("gmail_accounts")
-            .select("gmail_address")
+            .select("gmail_address, refresh_token_encrypted, access_token_encrypted")
             .eq("id", accountId)
             .eq("user_id", user.id)
             .single();
-    
+
         const email = account?.gmail_address;
+
+        // Revoke GhostSweep's access at Google, not just our stored copy of the tokens
+        if (account) {
+            await revokeGoogleTokens(account);
+        }
     
         // Delete Gmail account
         const { error } = await supabase

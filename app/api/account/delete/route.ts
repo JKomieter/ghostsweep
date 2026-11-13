@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import stripe from "@/lib/stripe";
+import { revokeGoogleTokens } from "@/utils/google_revoke";
 
 export async function POST() {
     const supabase = await createClient();
@@ -39,8 +40,20 @@ export async function POST() {
         // Just log it and continue
     }
 
+    // Revoke every connected Gmail grant at Google before the stored tokens are deleted
+    const { data: gmailAccounts, error: gmailError } = await supabase
+        .from("gmail_accounts")
+        .select("refresh_token_encrypted, access_token_encrypted")
+        .eq("user_id", user.id);
+
+    if (gmailError) {
+        console.error("Error loading Gmail accounts for revocation:", gmailError.message);
+    }
+
+    await Promise.all((gmailAccounts ?? []).map((account) => revokeGoogleTokens(account)));
+
     // Delete user from Supabase
-    const { error } = await supabase.functions.invoke("delete-user", {
+    const { error } =await supabase.functions.invoke("delete-user", {
         body: { userId: user.id },
         headers: {
             "x-ghostsweep-secret": process.env.FUNCTION_SECRET!
