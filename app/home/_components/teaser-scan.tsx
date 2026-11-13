@@ -12,6 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import ServiceLogo from "@/components/service-logo";
 
 // ─── Types ─────────────────────────────────────────────────────
 type TeaserProfile = {
@@ -35,23 +36,12 @@ function ProgressBar({ progress }: { progress: number }) {
 
 // ─── SiteLogo ──────────────────────────────────────────────────
 function SiteLogo({ domain, fallback }: { domain: string; fallback: string }) {
-  const [failed, setFailed] = useState(false);
-
-  if (failed) {
-    return (
-      <span className="text-xs font-bold text-foreground/60 uppercase font-mono">
-        {fallback.slice(0, 2)}
-      </span>
-    );
-  }
-
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={`https://img.logo.dev/${domain}?token=${process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY}&size=64&format=png`}
-      alt={domain}
-      className="h-full w-full object-contain"
-      onError={() => setFailed(true)}
+    <ServiceLogo
+      domain={domain}
+      name={fallback}
+      initials={2}
+      fallbackClassName="text-xs font-bold text-foreground/60 uppercase font-mono"
     />
   );
 }

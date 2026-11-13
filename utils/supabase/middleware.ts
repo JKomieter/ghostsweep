@@ -21,6 +21,7 @@ const publicRoutes = [
     "/api/cron", // authenticated by CRON_SECRET, not a user session
     "/share", // public results card that friends open
     "/api/og",
+    "/api/logo", // company logos, also shown on the public homepage scan
     "/sitemap.xml",
 ]
 

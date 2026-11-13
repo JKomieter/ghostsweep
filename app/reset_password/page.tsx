@@ -117,7 +117,7 @@ export default function ResetPasswordPage() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form method="post" onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
                         <label className="text-xs font-light text-foreground/70">
                             New password

@@ -8,6 +8,7 @@ import AccountsTable from "../_components/accounts/accounts_table";
 import AccountsPageTitle from "../_components/accounts/accounts_page_title";
 import AccountsMetrics from "../_components/accounts/accounts_metrics";
 import PrivacyScoreCard from "../_components/accounts/privacy_score_card";
+import AccountsOverviewSkeleton from "../_components/accounts/accounts_overview_skeleton";
 import DeletionRequestsTable from "../_components/user_services/service_tabs/deletion_requests_table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -85,6 +86,7 @@ function AccountsPageContent() {
                 <AccountsPageTitle />
                 
                 {/* Privacy Score and Metrics */}
+                {!accountsResult && accountsStatus === "pending" && <AccountsOverviewSkeleton />}
                 {accountsResult && (
                     <>
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
@@ -122,7 +124,8 @@ function AccountsPageContent() {
                     </TabsList>
 
                     <TabsContent value="accounts" className="space-y-6">
-                        {accountsResult && (
+                        {/* Rendered while loading too: the table shows its own skeleton rows */}
+                        {(accountsResult || accountsStatus === "pending") && (
                             <AccountsTable
                                 accountsResult={accountsResult}
                                 accountsStatus={accountsStatus}
@@ -141,7 +144,7 @@ function AccountsPageContent() {
                     </TabsContent>
 
                     <TabsContent value="deletions" className="space-y-6">
-                        {deletionRequestsResult && (
+                        {(deletionRequestsResult || deletionRequestsStatus === "pending") && (
                             <DeletionRequestsTable
                                 deletionRequestsResult={deletionRequestsResult}
                                 deletionRequestsStatus={deletionRequestsStatus}

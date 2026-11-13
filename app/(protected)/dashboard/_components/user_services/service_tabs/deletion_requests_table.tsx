@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import ServiceLogo from "@/components/service-logo";
 import {
     Table,
     TableBody,
@@ -91,15 +91,15 @@ export default function DeletionRequestsTable({
                                 >
                                     <TableCell className="font-medium text-foreground">
                                         <div className="flex items-center gap-2">
-                                            {request.user_service?.service?.logo_url && (
-                                                <Image 
-                                                    src={request.user_service.service.logo_url} 
-                                                    alt="" 
-                                                    width={20}
-                                                    height={20}
-                                                    className="h-5 w-5 rounded"
-                                                    unoptimized
-                                                />
+                                            {request.user_service?.service && (
+                                                <span className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded">
+                                                    <ServiceLogo
+                                                        src={request.user_service.service.logo_url}
+                                                        domain={request.user_service.service.domain}
+                                                        name={request.user_service.service.name}
+                                                        fallbackClassName="text-[10px] font-bold text-foreground/40"
+                                                    />
+                                                </span>
                                             )}
                                             <span>{request.user_service?.service?.name || "Unknown Service"}</span>
                                         </div>

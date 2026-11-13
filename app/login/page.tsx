@@ -175,7 +175,7 @@ function SignInForm({
             )}
 
             {/* ✅ Existing email+password form */}
-            <form className="space-y-5" onSubmit={handleLogin}>
+            <form method="post" className="space-y-5" onSubmit={handleLogin}>
                 <div className="space-y-2">
                     <label className="text-sm font-light text-foreground/70" htmlFor="email">
                         Email
@@ -426,7 +426,7 @@ function SignUpForm({
             )}
 
             {/* ✅ Existing signup form */}
-            <form className="space-y-5" onSubmit={handleSignup}>
+            <form method="post" className="space-y-5" onSubmit={handleSignup}>
                 <div className="space-y-2">
                     <label className="text-sm font-light text-foreground/70" htmlFor="email">
                         Email

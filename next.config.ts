@@ -184,9 +184,9 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // API routes - NEVER cache
+      // API routes - NEVER cache (except public company logos, see /api/logo below)
       {
-        source: '/api/:path*',
+        source: '/api/:path((?!logo/).*)',
         headers: [
           ...securityHeaders,
           {
@@ -249,9 +249,14 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Public company logos - the route sets its own CDN Cache-Control
+      {
+        source: '/api/logo/:domain',
+        headers: securityHeaders,
+      },
       // Default - private cache for everything else
       {
-        source: '/:path*',
+        source: '/:path((?!api/logo/).*)',
         headers: [
           ...securityHeaders,
           {

@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import ServiceLogo from "@/components/service-logo";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, EyeOff, Trash2, RotateCcw, X, AlertTriangle } from "lucide-react";
 
@@ -64,15 +64,11 @@ export default function ShadowCard({
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-md bg-foreground/5 overflow-hidden">
-            <img
-              src={`https://img.logo.dev/${domain}?token=${process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY}&size=64&format=png`}
-              alt={domain}
-              className="h-full w-full object-contain"
-              onError={(e) => {
-                const el = e.currentTarget;
-                el.style.display = "none";
-                el.parentElement!.innerHTML = `<span class="text-xs font-bold text-foreground/60 uppercase font-mono">${domain.slice(0, 2)}</span>`;
-              }}
+            <ServiceLogo
+              domain={domain}
+              name={domain}
+              initials={2}
+              fallbackClassName="text-xs font-bold text-foreground/60 uppercase font-mono"
             />
           </div>
           <div>
