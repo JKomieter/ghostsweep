@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/utils/supabase/client";
 import Input from "@/components/ui/input";
-import { checkPasswordStrength } from "@/utils/password_strength_meter";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from "@/utils/password-policy";
 import { toast } from "sonner";
 import { CircleCheck } from "lucide-react";
 
@@ -89,16 +89,9 @@ export default function Profile({
             return;
         }
 
-        if (newPassword.length < 8) {
-            setPasswordError("Password should be at least 8 characters.");
+        if (!isPasswordValid(newPassword)) {
+            setPasswordError(PASSWORD_REQUIREMENTS_MESSAGE);
             return;
-        }
-
-        const { feedback } = checkPasswordStrength(newPassword);
-
-        if (feedback.length > 0) {
-            setPasswordError("Password must be 8+ characters with uppercase, lowercase, and a special symbol.")
-            return
         }
 
         try {

@@ -8,8 +8,7 @@ import { Spinner } from "@/components/ui/spinner"
 import Input from "@/components/ui/input"
 import { toast } from "sonner"
 
-const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/
+import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from "@/utils/password-policy"
 
 export default function ResetPasswordPage() {
     const supabase = createClient()
@@ -53,10 +52,8 @@ export default function ResetPasswordPage() {
         setGeneralError(null)
         setSuccessMessage(null)
 
-        if (!passwordRegex.test(newPassword)) {
-            setPasswordError(
-                "Password must be at least 8 characters, with one uppercase, one lowercase, one number, and one special character."
-            )
+        if (!isPasswordValid(newPassword)) {
+            setPasswordError(PASSWORD_REQUIREMENTS_MESSAGE)
             return
         }
 
@@ -154,8 +151,8 @@ export default function ResetPasswordPage() {
                     </div>
 
                     <p className="text-[11px] text-foreground/60">
-                        Must be at least 8 characters and include one uppercase letter, one
-                        lowercase letter, one number, and one special character.
+                        Must be at least 12 characters and include one uppercase letter, one
+                        lowercase letter, one number, and one symbol.
                     </p>
 
                     {passwordError && (
