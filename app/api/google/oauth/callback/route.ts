@@ -3,6 +3,7 @@ import { encryptToken } from "@/utils/token_crypto";
 import { google } from "googleapis";
 import { type NextRequest, NextResponse } from "next/server";
 import { clearOAuthStateCookie, oauthStateMatches } from "@/utils/oauth-state";
+import { safeError } from "@/utils/safe-error";
 
 // The state cookie is single-use: cleared on every response, whatever the outcome
 export async function GET(request: NextRequest) {
@@ -164,7 +165,8 @@ async function handleCallback(request: NextRequest): Promise<NextResponse> {
 
         return res;
     } catch (error) {
-        console.error("Error during OAuth callback:", error);
+        // Summary only: the raw googleapis error includes the OAuth code and client secret
+        console.error("Error during OAuth callback:", safeError(error));
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
         url.search = ''

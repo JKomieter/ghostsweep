@@ -10,6 +10,7 @@ const publicRoutes = [
     "/api/auth/google", // starts Google sign-in
     "/api/auth/user", // returns 401 itself when signed out
     "/api/account/password", // returns 401 itself when signed out
+    "/api/signout", // must run even with an expired session, to clear cookies and browser storage
     "/help",
     "/home",
     "/reset_password",

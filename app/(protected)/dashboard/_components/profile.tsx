@@ -1,6 +1,7 @@
 "use client";
 
 import React, {  useEffect, useState } from "react";
+import { logout } from "@/utils/client-logout";
 import {
     Dialog,
     DialogContent,
@@ -75,8 +76,7 @@ export default function Profile({
 
     // Ends only this session, then sends the user to sign in again
     const signInAgain = async () => {
-        await fetch("/api/signout?scope=local", { method: "POST" });
-        window.location.href = "/login";
+        await logout({ scope: "local" });
     };
 
     const handleChangePassword = async () => {
@@ -151,8 +151,7 @@ export default function Profile({
             }
 
             // After successful deletion: global sign-out on the server, then redirect
-            await fetch("/api/signout", { method: "POST" });
-            window.location.href = "/login";
+            await logout();
         } catch (err) {
             console.error("Error deleting account:", err);
             setDeleteError("Something went wrong. Please try again.");

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { logout } from "@/utils/client-logout";
 import { Menu, X, LayoutDashboard, Zap, FileText, Shield, CheckCircle2, LogOut, Map, Fingerprint } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -69,10 +70,7 @@ export default function SlidingSidebar() {
 
     const handleLogout = async () => {
         try {
-            await fetch("/api/signout", {
-                method: "POST",
-            });
-            window.location.href = "/login";
+            await logout();
         } catch (error) {
             console.error("Failed to log out. Please try again.", error);
             toast.error("Failed to log out. Please try again.");

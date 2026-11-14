@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
+import { logout } from "@/utils/client-logout";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus, FileText, Lock } from "lucide-react";
@@ -106,10 +107,7 @@ export default function Header() {
 
     const handleLogout = async () => {
         try {
-            await fetch("/api/signout", {
-                method: "POST"
-            })
-            window.location.href = "/login"
+            await logout()
         } catch (error) {
             console.error("Failed to log out. Please try again.", error)
             toast.error("Failed to log out. Please try again.")
