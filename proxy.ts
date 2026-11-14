@@ -126,9 +126,11 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Block dangerous HTTP methods
+    // Block dangerous HTTP methods. Pages only need GET/HEAD, POST (server actions) and OPTIONS;
+    // PUT/PATCH/DELETE are only meaningful on the API, so pages reject them instead of rendering.
     const BLOCKED_METHODS = ['TRACE', 'TRACK'];
-    if (BLOCKED_METHODS.includes(method)) {
+    const PAGE_METHODS = ['GET', 'HEAD', 'POST', 'OPTIONS'];
+    if (BLOCKED_METHODS.includes(method) || (!pathname.startsWith('/api/') && !PAGE_METHODS.includes(method))) {
         console.warn(`❌ Blocked ${method} request from IP: ${ip}`);
         return new NextResponse(
             JSON.stringify({
@@ -139,7 +141,7 @@ export async function proxy(request: NextRequest) {
                 status: 405,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Allow': 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS',
+                    'Allow': pathname.startsWith('/api/') ? 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS' : PAGE_METHODS.join(', '),
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',
@@ -165,10 +167,19 @@ export async function proxy(request: NextRequest) {
             });
         }
 
+        // Only our own origins get CORS approval; anything else gets no Allow-Origin header
+        if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+            return new NextResponse(null, {
+                status: 403,
+                headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Vary': 'Origin' },
+            });
+        }
+
         return new NextResponse(null, {
             status: 204,
             headers: {
-                'Access-Control-Allow-Origin': origin || '',
+                'Access-Control-Allow-Origin': origin,
+                'Vary': 'Origin',
                 'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                 'Access-Control-Max-Age': '86400',
@@ -189,10 +200,12 @@ export async function proxy(request: NextRequest) {
         return addSecurityHeaders(response, pathname);
     }
 
-    // 🔥 FIXED: Make origin check more lenient for auth pages
-    if (!isOriginAllowed(origin) 
-        // && !pathname.startsWith('/api/auth/')
-    ) {
+    // CSRF defence for state-changing requests: the Origin must be ours, and browsers that send
+    // Sec-Fetch-Site must not mark the request as cross-site (covers requests without an Origin header).
+    // Server-to-server callers (webhooks, cron) don't send Sec-Fetch-Site; webhooks bypass this proxy above.
+    const isStateChanging = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+    const isCrossSiteBrowserRequest = request.headers.get('sec-fetch-site') === 'cross-site';
+    if (!isOriginAllowed(origin) || (isStateChanging && isCrossSiteBrowserRequest)) {
         console.warn(`❌ Blocked request from unauthorized origin: ${origin}`);
         return new NextResponse(
             JSON.stringify({
@@ -342,15 +355,17 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    if (pathname.includes("unsubscribe")) {
+    // Short links only. Exact matches: a substring match would also catch the target pages
+    // (redirect loops) and the APIs behind them (/api/unsubscribe, /api/support/report).
+    if (pathname === '/unsubscribe') {
         const url = request.nextUrl.clone();
         url.pathname = '/home/unsubscribe';
         return NextResponse.redirect(url);
     }
 
-    if (pathname.includes("support")) {
+    if (pathname === '/support' || pathname === '/home/support') {
         const url = request.nextUrl.clone();
-        url.pathname = '/home/support';
+        url.pathname = '/support/report';
         return NextResponse.redirect(url);
     }
 

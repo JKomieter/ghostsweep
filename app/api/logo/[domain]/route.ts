@@ -18,7 +18,8 @@ const logoRateLimit = new Ratelimit({
 });
 
 // Hostnames only (e.g. "netflix.com"), so the upstream URL can't be redirected or path-injected
-const DOMAIN_REGEX = /^(?=.{1,253}$)(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))+$/;
+// Hostnames only: the last label must be an alphabetic TLD, so IP addresses (e.g. 169.254.169.254) are rejected
+const DOMAIN_REGEX = /^(?=.{1,253}$)(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))*\.[a-z]{2,63}$/;
 
 const CACHE_HIT = "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400";
 const CACHE_MISS = "public, max-age=3600, s-maxage=86400";
