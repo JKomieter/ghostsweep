@@ -20,6 +20,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { fetchCurrentUser } from "@/hooks/use-get-user";
+import { REAUTH_REQUIRED_CODE } from "@/utils/reauth-code";
 import Input from "@/components/ui/input";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from "@/utils/password-policy";
 import { toast } from "sonner";
@@ -45,6 +46,8 @@ export default function Profile({
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [deleteError, setDeleteError] = useState<string | null>(null);
+    // Set when the server requires a recent sign-in before a sensitive change
+    const [reauthRequired, setReauthRequired] = useState(false);
 
     // Load user email when modal opens
     useEffect(() => {
@@ -69,6 +72,12 @@ export default function Profile({
 
         void loadUser();
     }, [open]);
+
+    // Ends only this session, then sends the user to sign in again
+    const signInAgain = async () => {
+        await fetch("/api/signout?scope=local", { method: "POST" });
+        window.location.href = "/login";
+    };
 
     const handleChangePassword = async () => {
         setPasswordError(null);
@@ -101,6 +110,7 @@ export default function Profile({
 
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
+                if (body.code === REAUTH_REQUIRED_CODE) setReauthRequired(true);
                 setPasswordError(body.error || "Couldn’t update password.");
                 return;
             }
@@ -131,8 +141,12 @@ export default function Profile({
 
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
+                if (body.code === REAUTH_REQUIRED_CODE) {
+                    setReauthRequired(true);
+                    setDeleteOpen(false);
+                }
                 setDeleteError(body.error || "Could not delete your account.");
-                toast.error("Could not delete your account.")
+                toast.error(body.error || "Could not delete your account.")
                 return;
             }
 
@@ -238,6 +252,18 @@ export default function Profile({
                                 <p className="text-[11px] text-red-600 dark:text-red-400 mt-2">{deleteError}</p>
                             )}
                         </div>
+
+                        {reauthRequired && (
+                            <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 space-y-2">
+                                <p className="text-[11px] text-amber-800 dark:text-amber-300">
+                                    For your security, password changes and account deletion need a recent sign-in.
+                                    Sign in again, then come back to make this change.
+                                </p>
+                                <Button size="sm" variant="outline" onClick={signInAgain}>
+                                    Sign in again
+                                </Button>
+                            </div>
+                        )}
 
                         {/* Footer actions */}
                         <div className="flex items-center justify-end pt-2">

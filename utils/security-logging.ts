@@ -102,30 +102,3 @@ export async function checkSuspiciousActivity(email: string, _ip: string): Promi
         return { isSuspicious: false, riskLevel: 'low' };
     }
 }
-
-/**
- * Get security event history for a user (admin function)
- */
-export async function getSecurityEventHistory(email: string, limit: number = 50): Promise<LoginSecurityEvent[]> {
-    try {
-        const userEventKey = `user_security_events:${email.toLowerCase()}`;
-        const events = await redis.lrange(userEventKey, 0, limit - 1);
-
-        if (!events) {
-            return [];
-        }
-
-        return events
-            .map(e => {
-                try {
-                    return JSON.parse(e as string) as LoginSecurityEvent;
-                } catch {
-                    return null;
-                }
-            })
-            .filter((e): e is LoginSecurityEvent => e !== null);
-    } catch (error) {
-        console.error('Error getting security event history:', error);
-        return [];
-    }
-}

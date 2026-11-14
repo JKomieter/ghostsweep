@@ -1,13 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import crypto from 'crypto';
+import { microsoftRedirectUri } from '@/utils/microsoft-oauth';
 
 const MICROSOFT_AUTH_URL = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
 
-export async function GET() {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const redirectUri = isProduction
-    ? 'https://ghostsweep.com/api/microsoft/oauth/callback'
-    : 'http://localhost:3000/api/microsoft/oauth/callback';
+export async function GET(request: NextRequest) {
+  // Same host the user is on (www or apex), from a fixed list of registered redirect URIs
+  const redirectUri = microsoftRedirectUri(request.nextUrl.origin);
 
   // Generate a cryptographically random state value to prevent CSRF attacks
   const state = crypto.randomBytes(32).toString('hex');

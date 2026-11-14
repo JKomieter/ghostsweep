@@ -348,12 +348,11 @@ export default function DashboardTitle() {
         });
 
         try {
-            const params = new URLSearchParams({
-                email: selectedEmail,
-                email_provider: selectedProvider,
+            const res = await fetch("/api/sweep/run", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: selectedEmail, email_provider: selectedProvider }),
             });
-            const url = `/api/sweep/run?${params.toString()}`;
-            const res = await fetch(url, { method: "GET" });
             const json = await res.json();
 
             if (!res.ok) {

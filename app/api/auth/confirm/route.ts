@@ -6,7 +6,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token_hash = searchParams.get("token_hash");
     const type = searchParams.get("type") as EmailOtpType | null;
-    const next = searchParams.get("next") ?? "/";
+    // Only same-site relative paths ("/dashboard"), never "//host" or absolute URLs: no open redirect
+    const requestedNext = searchParams.get("next") ?? "/";
+    const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.includes("\\")
+        ? requestedNext
+        : "/";
     const redirectTo = request.nextUrl.clone();
     redirectTo.pathname = next;
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_MESSAGE } from "@/utils/password-policy";
+import { hasRecentAuthentication, reauthRequiredResponse } from "@/utils/recent-auth";
 
 // Changes the signed-in user's password: from account settings, or from a password reset link
 // (the recovery link signs the user in first). Runs server-side because session cookies are HttpOnly.
@@ -13,6 +14,11 @@ export async function POST(request: NextRequest) {
             { error: "Your session has expired. Request a new password reset link." },
             { status: 401 }
         );
+    }
+
+    // Require a recent sign-in (a password reset link counts: it signs the user in just now)
+    if (!(await hasRecentAuthentication(supabase))) {
+        return reauthRequiredResponse();
     }
 
     const { password } = await request.json().catch(() => ({ password: null }));
