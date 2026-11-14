@@ -342,15 +342,17 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    if (pathname.includes("unsubscribe")) {
+    // Short links only. Exact matches: a substring match would also catch the target pages
+    // (redirect loops) and the APIs behind them (/api/unsubscribe, /api/support/report).
+    if (pathname === '/unsubscribe') {
         const url = request.nextUrl.clone();
         url.pathname = '/home/unsubscribe';
         return NextResponse.redirect(url);
     }
 
-    if (pathname.includes("support")) {
+    if (pathname === '/support' || pathname === '/home/support') {
         const url = request.nextUrl.clone();
-        url.pathname = '/home/support';
+        url.pathname = '/support/report';
         return NextResponse.redirect(url);
     }
 
