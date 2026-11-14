@@ -167,10 +167,19 @@ export async function proxy(request: NextRequest) {
             });
         }
 
+        // Only our own origins get CORS approval; anything else gets no Allow-Origin header
+        if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+            return new NextResponse(null, {
+                status: 403,
+                headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Vary': 'Origin' },
+            });
+        }
+
         return new NextResponse(null, {
             status: 204,
             headers: {
-                'Access-Control-Allow-Origin': origin || '',
+                'Access-Control-Allow-Origin': origin,
+                'Vary': 'Origin',
                 'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                 'Access-Control-Max-Age': '86400',
@@ -191,10 +200,12 @@ export async function proxy(request: NextRequest) {
         return addSecurityHeaders(response, pathname);
     }
 
-    // 🔥 FIXED: Make origin check more lenient for auth pages
-    if (!isOriginAllowed(origin) 
-        // && !pathname.startsWith('/api/auth/')
-    ) {
+    // CSRF defence for state-changing requests: the Origin must be ours, and browsers that send
+    // Sec-Fetch-Site must not mark the request as cross-site (covers requests without an Origin header).
+    // Server-to-server callers (webhooks, cron) don't send Sec-Fetch-Site; webhooks bypass this proxy above.
+    const isStateChanging = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+    const isCrossSiteBrowserRequest = request.headers.get('sec-fetch-site') === 'cross-site';
+    if (!isOriginAllowed(origin) || (isStateChanging && isCrossSiteBrowserRequest)) {
         console.warn(`❌ Blocked request from unauthorized origin: ${origin}`);
         return new NextResponse(
             JSON.stringify({
