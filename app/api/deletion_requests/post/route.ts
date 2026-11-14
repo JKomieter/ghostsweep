@@ -71,6 +71,18 @@ export async function POST(req: NextRequest) {
         );
     }
 
+    // IDOR protection: the referenced service must belong to the signed-in user
+    const { data: ownedService } = await supabase
+        .from("user_services")
+        .select("id")
+        .eq("id", user_service_id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (!ownedService) {
+        return NextResponse.json({ error: "Service not found" }, { status: 404 });
+    }
+
     // If this is an email send event, receiver_email should exist
     if (deletion_method === "email" && !receiver_email) {
         return NextResponse.json(

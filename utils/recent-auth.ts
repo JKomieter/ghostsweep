@@ -7,7 +7,7 @@ export { REAUTH_REQUIRED_CODE };
 // Sensitive account changes (password change, account deletion) need the user to have actually
 // signed in recently, not just to hold a long-lived session that has been silently refreshed.
 // Matches Supabase Auth's "Secure password change" window.
-export const RECENT_AUTH_MAX_AGE_SECONDS = 24 * 60 * 60;
+export const RECENT_AUTH_MAX_AGE_SECONDS = 60;
 
 
 /**
