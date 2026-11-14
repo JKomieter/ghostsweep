@@ -23,7 +23,11 @@ export async function POST(req: NextRequest) {
     }
 
     revalidatePath("/", "layout");
-    return NextResponse.redirect(new URL("/login", req.url), {
+    const res = NextResponse.redirect(new URL("/login", req.url), {
         status: 302,
     });
+    // Browser-enforced cleanup: wipe localStorage, sessionStorage and IndexedDB for this site.
+    // ("cache" is omitted: authenticated pages are already no-store, and it can stall Chrome.)
+    res.headers.set("Clear-Site-Data", '"storage"');
+    return res;
 }
