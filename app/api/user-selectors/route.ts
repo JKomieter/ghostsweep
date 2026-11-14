@@ -47,7 +47,9 @@ export async function POST(req: NextRequest) {
           { status: 409 }
         );
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Details stay in server logs; never expose database errors to the client
+      console.error("user-selectors error:", error.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     return NextResponse.json({ selector: data });
@@ -85,7 +87,9 @@ export async function DELETE(req: NextRequest) {
       .eq("user_id", user.id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Details stay in server logs; never expose database errors to the client
+      console.error("user-selectors error:", error.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

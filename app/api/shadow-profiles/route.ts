@@ -42,7 +42,9 @@ export async function PATCH(req: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Details stay in server logs; never expose database errors to the client
+      console.error("shadow-profiles error:", error.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     return NextResponse.json({ profile: data });
@@ -84,7 +86,9 @@ export async function DELETE(req: NextRequest) {
       .eq("user_id", user.id);
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Details stay in server logs; never expose database errors to the client
+      console.error("shadow-profiles error:", error.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
@@ -116,7 +120,9 @@ export async function GET() {
       .order("risk_level", { ascending: false });
 
     if (profilesError) {
-      return NextResponse.json({ error: profilesError.message }, { status: 500 });
+      // Details stay in server logs; never expose database errors to the client
+      console.error("shadow-profiles error:", profilesError.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     // Fetch breach links for this user's shadow profiles
@@ -126,7 +132,9 @@ export async function GET() {
       .eq("user_id", user.id);
 
     if (breachError) {
-      return NextResponse.json({ error: breachError.message }, { status: 500 });
+      // Details stay in server logs; never expose database errors to the client
+      console.error("shadow-profiles error:", breachError.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     // Fetch security score

@@ -103,9 +103,10 @@ export async function POST() {
     );
 
     if (!res.ok) {
-      const text = await res.text();
+      // Upstream error details stay in server logs
+      console.error("[report] Queue failed:", res.status, await res.text());
       return NextResponse.json(
-        { error: text || "Failed to queue report" },
+        { error: "Failed to queue report. Please try again." },
         { status: res.status }
       );
     }
