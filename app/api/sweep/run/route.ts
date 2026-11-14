@@ -2,6 +2,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { resolvePlan } from "@/lib/entitlements";
 import { NextResponse, NextRequest } from "next/server";
+import { isIP } from "net";
 
 // POST, not GET: starting a sweep changes state (and uses the user's sweep allowance), so it must
 // not be triggerable by a cross-site link. SameSite=Lax cookies aren't sent on cross-site POSTs,
@@ -176,10 +177,11 @@ export async function POST(request: NextRequest) {
     // ✅ Get user location from IP address
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
     let userLocation = "Remote";
-    
+
     try {
-      // Skip localhost IPs
-      if (ip !== "127.0.0.1" && ip !== "::1" && !ip.startsWith("192.168.") && !ip.startsWith("10.")) {
+      // Only a syntactically valid IP address is put in the lookup URL (no path injection);
+      // localhost/private ranges are skipped
+      if (isIP(ip) !== 0 && ip !== "127.0.0.1" && ip !== "::1" && !ip.startsWith("192.168.") && !ip.startsWith("10.")) {
         const locResponse = await fetch(`https://ipapi.co/${ip}/json/`, {
           signal: AbortSignal.timeout(3000), // 3 second timeout
         });

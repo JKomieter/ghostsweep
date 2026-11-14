@@ -78,8 +78,9 @@ export async function POST(req: Request) {
       level: "warning",
       tags: { webhook: "stripe", stage: "signature_verification" },
     });
+    // Fail closed with a generic message: verification details stay in server logs/Sentry
     return NextResponse.json(
-      { message: `Webhook Error: ${errorMessage}` },
+      { message: "Invalid webhook signature" },
       { status: 400 }
     );
   }

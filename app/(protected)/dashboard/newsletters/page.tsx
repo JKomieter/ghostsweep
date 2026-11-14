@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
+import { openExternalUrl } from "@/utils/external-url";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -222,7 +223,7 @@ export default function NewslettersPage() {
         for (let i = 0; i < urlsToOpen.length; i += batchSize) {
           const batch = urlsToOpen.slice(i, i + batchSize);
           batch.forEach((item: { url: string }) => {
-            window.open(item.url, '_blank');
+            openExternalUrl(item.url);
           });
           // Wait 1.5 seconds before next batch to avoid popup blockers
           if (i + batchSize < urlsToOpen.length) {
@@ -272,7 +273,7 @@ export default function NewslettersPage() {
       const batch = newsletters.slice(i, i + batchSize);
       batch.forEach(newsletter => {
         if (newsletter.unsubscribe_url) {
-          window.open(newsletter.unsubscribe_url, '_blank');
+          openExternalUrl(newsletter.unsubscribe_url);
         }
       });
       
@@ -544,7 +545,7 @@ export default function NewslettersPage() {
                         <Button 
                           size="sm" 
                           className="bg-blue-600 hover:bg-blue-500 text-white text-xs whitespace-nowrap"
-                          onClick={() => window.open(newsletter.unsubscribe_url!, '_blank')}
+                          onClick={() => openExternalUrl(newsletter.unsubscribe_url)}
                           // disabled={blurred && !isPro}
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
