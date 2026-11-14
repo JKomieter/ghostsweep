@@ -8,6 +8,18 @@ import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+
+// Raw HTML in posts is allowed (rehype-raw) but always sanitized afterwards: GitHub's safe
+// allowlist strips <script>, <iframe>, event handlers, style and javascript: URLs.
+// className is additionally allowed so styled HTML in posts keeps its classes.
+const sanitizeSchema = {
+    ...defaultSchema,
+    attributes: {
+        ...defaultSchema.attributes,
+        "*": [...(defaultSchema.attributes?.["*"] ?? []), "className"],
+    },
+};
 import type { Components } from "react-markdown";
 
 // Render each post on first request, then serve it statically (refreshed hourly).
@@ -228,7 +240,7 @@ export default async function BlogPostPage(rawParams: PageParams) {
                     {post.content_md ? (
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
+                            rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
                             components={components}
                         >
                             {post.content_md}

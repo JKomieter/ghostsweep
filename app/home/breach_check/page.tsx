@@ -17,7 +17,15 @@ import { toast } from "sonner";
 import { BreachSignupCta } from "../_components/breach-signup-cta";
 
 function sanitizeHtml(dirty: string): string {
-    if (typeof window === "undefined") return dirty;
+    // No DOM to sanitize with (server render): fail closed by escaping everything as plain text
+    if (typeof window === "undefined") {
+        return dirty
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const DOMPurify = require("dompurify") as { sanitize: (d: string) => string };
     return DOMPurify.sanitize(dirty);

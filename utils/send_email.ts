@@ -1,11 +1,23 @@
+// Header values can contain data from untrusted sources (e.g. service names or contact addresses
+// extracted from emails). Removing CR/LF prevents header injection (e.g. smuggling in a Bcc: line).
+function headerValue(value: string): string {
+    return value.replace(/[\r\n]+/g, " ").trim();
+}
 
+// RFC 2047 encoding so non-ASCII subjects (accents, emoji) survive intact
+function encodeSubject(subject: string): string {
+    const clean = headerValue(subject);
+    return /^[\x20-\x7e]*$/.test(clean)
+        ? clean
+        : `=?UTF-8?B?${Buffer.from(clean, "utf8").toString("base64")}?=`;
+}
 
 function makeRawEmail(opts: { from: string; to: string; subject: string; body: string }) {
     // Minimal RFC 2822 email
     const lines = [
-        `From: ${opts.from}`,
-        `To: ${opts.to}`,
-        `Subject: ${opts.subject}`,
+        `From: ${headerValue(opts.from)}`,
+        `To: ${headerValue(opts.to)}`,
+        `Subject: ${encodeSubject(opts.subject)}`,
         "MIME-Version: 1.0",
         'Content-Type: text/plain; charset="UTF-8"',
         "Content-Transfer-Encoding: 7bit",
