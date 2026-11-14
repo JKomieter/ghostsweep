@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
     client_id: process.env.MICROSOFT_CLIENT_ID!,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: 'email User.Read Mail.ReadBasic openid profile offline_access',
+    // Mail.Read (read-only, includes message bodies) is needed to analyse emails during a sweep.
+    // No send, write or delete permissions are requested.
+    scope: 'email User.Read Mail.Read openid profile offline_access',
     response_mode: 'query',
     state,
   });
