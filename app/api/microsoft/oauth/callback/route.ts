@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { clearOAuthStateCookie, oauthStateMatches } from "@/utils/oauth-state";
+import { microsoftRedirectUri } from "@/utils/microsoft-oauth";
 import { encryptToken } from '@/utils/token_crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -59,10 +60,8 @@ async function handleCallback(req: NextRequest): Promise<NextResponse> {
     }
 
     try {
-        const isProduction = process.env.NODE_ENV === 'production';
-        const redirectUri = isProduction
-            ? 'https://ghostsweep.com/api/microsoft/oauth/callback'
-            : 'http://localhost:3000/api/microsoft/oauth/callback';
+        // Must be identical to the redirect_uri sent in the authorization request
+        const redirectUri = microsoftRedirectUri(req.nextUrl.origin);
 
         // Exchange code for token
         const tokenResponse = await fetch(MICROSOFT_TOKEN_URL, {
