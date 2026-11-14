@@ -1,11 +1,17 @@
 import { createClient } from '@/utils/supabase/server';
+import { clearOAuthStateCookie, oauthStateMatches } from "@/utils/oauth-state";
 import { encryptToken } from '@/utils/token_crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
 const MICROSOFT_TOKEN_URL = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
 const MICROSOFT_GRAPH_URL = 'https://graph.microsoft.com/v1.0/me';
 
+// The state cookie is single-use: cleared on every response, whatever the outcome
 export async function GET(req: NextRequest) {
+    return clearOAuthStateCookie(await handleCallback(req), "microsoft_oauth_state");
+}
+
+async function handleCallback(req: NextRequest): Promise<NextResponse> {
     const supabase = await createClient();
     const {
         data: { user },
@@ -27,7 +33,7 @@ export async function GET(req: NextRequest) {
 
     // Verify CSRF state matches what was set in the cookie
     const cookieState = req.cookies.get('microsoft_oauth_state')?.value;
-    if (!cookieState || !returnedState || cookieState !== returnedState) {
+    if (!oauthStateMatches(cookieState, returnedState)) {
         const url = req.nextUrl.clone();
         url.pathname = '/dashboard';
         url.search = '';

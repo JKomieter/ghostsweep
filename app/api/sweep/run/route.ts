@@ -3,14 +3,17 @@ import { createClient } from "@/utils/supabase/server";
 import { resolvePlan } from "@/lib/entitlements";
 import { NextResponse, NextRequest } from "next/server";
 
-export async function GET(request: NextRequest) {
+// POST, not GET: starting a sweep changes state (and uses the user's sweep allowance), so it must
+// not be triggerable by a cross-site link. SameSite=Lax cookies aren't sent on cross-site POSTs,
+// and the proxy rejects foreign Origin headers.
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Get email and provider from query params
-    const searchParams = request.nextUrl.searchParams;
-    const email = searchParams.get("email");
-    const emailProvider = searchParams.get("email_provider") as "gmail" | "outlook" | null;
+    // Get email and provider from the JSON body
+    const body = await request.json().catch(() => ({}));
+    const email: string | null = typeof body.email === "string" ? body.email : null;
+    const emailProvider = (typeof body.email_provider === "string" ? body.email_provider : null) as "gmail" | "outlook" | null;
 
     // ✅ Get user from session (this is automatic in Next.js)
     const { data: { user }, error: userError } = await supabase.auth.getUser();

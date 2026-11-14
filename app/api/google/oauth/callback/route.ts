@@ -2,8 +2,14 @@ import { createClient } from "@/utils/supabase/server";
 import { encryptToken } from "@/utils/token_crypto";
 import { google } from "googleapis";
 import { type NextRequest, NextResponse } from "next/server";
+import { clearOAuthStateCookie, oauthStateMatches } from "@/utils/oauth-state";
 
+// The state cookie is single-use: cleared on every response, whatever the outcome
 export async function GET(request: NextRequest) {
+    return clearOAuthStateCookie(await handleCallback(request), "gmail_oauth_state");
+}
+
+async function handleCallback(request: NextRequest): Promise<NextResponse> {
     const supabase = await createClient();
     const {
         data: { user },
@@ -25,7 +31,7 @@ export async function GET(request: NextRequest) {
     const cookieState = request.cookies.get("gmail_oauth_state")?.value;
 
     // 2. Verify state
-    if (!cookieState || !returnedState || cookieState !== returnedState) {
+    if (!oauthStateMatches(cookieState, returnedState)) {
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
         url.search = ''
@@ -139,13 +145,6 @@ export async function GET(request: NextRequest) {
         successUrl.searchParams.set("connected", "gmail");
         successUrl.searchParams.set("account", userInfo.email!);
         const res = NextResponse.redirect(successUrl);
-        res.cookies.set("gmail_oauth_state", "", {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 0,
-            path: "/",
-        });
 
         // Insert notification for Gmail
         const { error: notifyError } = await supabase

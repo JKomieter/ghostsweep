@@ -31,11 +31,14 @@ function isKnownCrawler(request: NextRequest): boolean {
     return !!ua && CRAWLER_UA_PATTERN.test(ua);
 }
 
+// Origins allowed to make requests carrying an Origin header (CSRF defence).
+// localhost is only trusted in development.
 const ALLOWED_ORIGINS = [
     'https://ghostsweep.com',
     'https://www.ghostsweep.com',
-    'http://localhost:3000',
-    'http://localhost:3001',
+    ...(process.env.NODE_ENV === 'development'
+        ? ['http://localhost:3000', 'http://localhost:3001']
+        : []),
 ];
 
 const WHITELISTED_IPS = ['127.0.0.1', '192.168.1.1'];
