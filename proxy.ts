@@ -126,9 +126,11 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Block dangerous HTTP methods
+    // Block dangerous HTTP methods. Pages only need GET/HEAD, POST (server actions) and OPTIONS;
+    // PUT/PATCH/DELETE are only meaningful on the API, so pages reject them instead of rendering.
     const BLOCKED_METHODS = ['TRACE', 'TRACK'];
-    if (BLOCKED_METHODS.includes(method)) {
+    const PAGE_METHODS = ['GET', 'HEAD', 'POST', 'OPTIONS'];
+    if (BLOCKED_METHODS.includes(method) || (!pathname.startsWith('/api/') && !PAGE_METHODS.includes(method))) {
         console.warn(`❌ Blocked ${method} request from IP: ${ip}`);
         return new NextResponse(
             JSON.stringify({
@@ -139,7 +141,7 @@ export async function proxy(request: NextRequest) {
                 status: 405,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Allow': 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS',
+                    'Allow': pathname.startsWith('/api/') ? 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS' : PAGE_METHODS.join(', '),
                     'Cache-Control': 'no-cache, no-store, must-revalidate, private',
                     'X-Content-Type-Options': 'nosniff',
                     'Server': '',

@@ -67,6 +67,16 @@ const nextConfig: NextConfig = {
         value: 'max-age=31536000; includeSubDomains; preload',
       },
       {
+        // Other sites can't embed our pages, API responses or images (Spectre-style cross-origin reads)
+        key: 'Cross-Origin-Resource-Policy',
+        value: 'same-site',
+      },
+      {
+        // Isolates our window from cross-origin pages that open it; still allows the popups we open
+        key: 'Cross-Origin-Opener-Policy',
+        value: 'same-origin-allow-popups',
+      },
+      {
         key: 'Content-Security-Policy',
         value: process.env.NODE_ENV === "development"
           ? // DEVELOPMENT CSP (permissive)
@@ -90,6 +100,11 @@ const nextConfig: NextConfig = {
             "connect-src 'self' https://api.anthropic.com https://accounts.google.com https://oauth2.googleapis.com https://gmail.googleapis.com https://va.vercel-scripts.com https://*.supabase.co https://www.facebook.com https://connect.facebook.net https://qurius.app https://*.qurius.app https://hcaptcha.com *.hcaptcha.com", // ✅ Added Facebook & hCaptcha
             "worker-src 'self' blob:",
             "frame-src 'self' https://accounts.google.com https://www.youtube.com https://qurius.app https://*.qurius.app https://hcaptcha.com *.hcaptcha.com",
+            // These don't fall back to default-src, so they must be set explicitly
+            "frame-ancestors 'none'",
+            "form-action 'self'",
+            "base-uri 'self'",
+            "object-src 'none'",
           ].join("; "),
       },
       {
