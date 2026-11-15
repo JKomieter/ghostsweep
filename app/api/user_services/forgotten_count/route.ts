@@ -3,6 +3,7 @@ import { isPaidPlan } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { type NextRequest, NextResponse } from "next/server";
 import { isForgottenService } from "@/utils/is_forgotten_service";
+import { containsPattern } from "@/utils/postgrest-filter";
 
 const FREE_ACCOUNT_LIMIT = 10;
 
@@ -108,8 +109,10 @@ export async function GET(request: NextRequest) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function applyFilters(query: any) {
             if (searchQuery) {
+                // Escaped and quoted: search text can't inject extra PostgREST filter conditions
+                const pattern = containsPattern(searchQuery);
                 query = query.or(
-                    `name.ilike.%${searchQuery}%,domain.ilike.%${searchQuery}%`,
+                    `name.ilike.${pattern},domain.ilike.${pattern}`,
                     { foreignTable: "services" }
                 );
             }
