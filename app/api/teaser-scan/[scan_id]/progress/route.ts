@@ -1,8 +1,5 @@
 import { NextRequest } from "next/server";
-
-const ORCHESTRATION_URL = process.env.NODE_ENV === "production" ?
-    "https://ghostsweep-orchestration.fly.dev" :
-    "http://localhost:4000";
+import { ORCHESTRATION_URL } from "@/lib/orchestration";
 
 // Use Node.js runtime for long-lived SSE connections (no edge timeout)
 export const runtime = "nodejs";

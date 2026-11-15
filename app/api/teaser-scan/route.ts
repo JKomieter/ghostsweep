@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-
-const ORCHESTRATION_URL = "https://ghostsweep-orchestration.fly.dev";
+import { ORCHESTRATION_URL } from "@/lib/orchestration";
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,

@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { isPaidPlan } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { NextResponse } from "next/server";
+import { ORCHESTRATION_URL } from "@/lib/orchestration";
 
 export async function POST() {
   try {
@@ -89,7 +90,7 @@ export async function POST() {
 
     // Trigger the orchestration API with the scan ID
     const response = await fetch(
-      `https://ghostsweep-orchestration.fly.dev/scan/${user.id}`,
+      `${ORCHESTRATION_URL}/scan/${user.id}`,
       {
         method: "POST",
         headers: { 
