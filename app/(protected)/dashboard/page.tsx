@@ -8,12 +8,14 @@ import SummaryCards from "./_components/summary-cards";
 import CleanupProgress from "./_components/cleanup_progress";
 import ShareResultsCard from "./_components/share_results_card";
 import ReferralShareCta from "./_components/referral_share_cta";
+import BusterPromoBanner from "./_components/buster_promo_banner";
 
 export default function DashboardPage() {
     return (
         <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
             <div className="max-w-6xl mx-auto space-y-8">
                 <DashboardPageTitle />
+                <BusterPromoBanner />
                 <ReferralShareCta />
                 <FreemiumUpgradeTeaser />
                 <SummaryCards />
