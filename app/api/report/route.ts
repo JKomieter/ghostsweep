@@ -2,10 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 import { getUserPlan } from "@/lib/entitlements";
 import type { SupabaseClient } from "@supabase/supabase-js";
-
-const baseUrl = process.env.NODE_ENV === "production" ?
-"https://ghostsweep-orchestration.fly.dev" :
-"http://localhost:4000";
+import { ORCHESTRATION_URL } from "@/lib/orchestration";
 
 // The privacy report is a paid feature (Buster, Pro, Annual). Free users get a 402 so the
 // client can show the upgrade paywall instead of the PDF.
@@ -41,7 +38,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const res = await fetch(`${baseUrl}/api/report/${user.id}`, {
+    const res = await fetch(`${ORCHESTRATION_URL}/api/report/${user.id}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -92,7 +89,7 @@ export async function POST() {
     // GET /api/report (authenticated) until a report newer than `requestedAt` appears.
     const requestedAt = new Date().toISOString();
     const res = await fetch(
-      `${baseUrl}/api/report/${user.id}`,
+      `${ORCHESTRATION_URL}/api/report/${user.id}`,
       {
         method: "POST",
         headers: {
