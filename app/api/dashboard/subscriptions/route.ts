@@ -4,6 +4,12 @@ import { getUserPlan } from "@/lib/entitlements";
 import { newestFirst, pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
 
+/** "Netflix <info@mailer.netflix.com>" → "mailer.netflix.com" */
+function senderDomain(from?: string | null): string | null {
+  const match = from?.match(/@([a-z0-9.-]+\.[a-z]{2,})/i);
+  return match ? match[1].toLowerCase() : null;
+}
+
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -137,7 +143,7 @@ export async function GET(req: NextRequest) {
 
   // Free tier: limit data returned
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 7;
+  const PREVIEW_LIMIT = 5;
   
   // Free tier: a fixed preview of PREVIEW_LIMIT services, chosen across ALL statuses (active,
   // canceled, kept) so canceling or deleting can't pull hidden subscriptions into view.
@@ -163,8 +169,28 @@ export async function GET(req: NextRequest) {
     seen.add(key);
     return true;
   });
-  const processedSubs = (previewIds ? uniqueSubs.filter((sub) => previewIds.has(sub.id)) : uniqueSubs)
-    .map((sub) => ({ ...sub, amount: Number(sub.amount) / 100 }));
+  const visibleSubs = previewIds ? uniqueSubs.filter((sub) => previewIds.has(sub.id)) : uniqueSubs;
+
+  // Attach each subscription's service domain/logo so the client can show its logo
+  const serviceIds = Array.from(new Set(visibleSubs.map((sub) => sub.service_id).filter(Boolean))) as string[];
+  const servicesById = new Map<string, { domain: string | null; logo_url: string | null }>();
+  if (serviceIds.length > 0) {
+    const { data: services } = await supabase
+      .from("services")
+      .select("id, domain, logo_url")
+      .in("id", serviceIds);
+    for (const svc of services || []) servicesById.set(svc.id, { domain: svc.domain, logo_url: svc.logo_url });
+  }
+
+  const processedSubs = visibleSubs.map((sub) => {
+    const service = sub.service_id ? servicesById.get(sub.service_id) : undefined;
+    return {
+      ...sub,
+      amount: Number(sub.amount) / 100,
+      logo_url: sub.logo_url || service?.logo_url || null,
+      domain: service?.domain || senderDomain(sub.email_from),
+    };
+  });
 
   return NextResponse.json({
     plan,

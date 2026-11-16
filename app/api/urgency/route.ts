@@ -10,6 +10,7 @@ type UrgencyTeaser = {
   id: string;
   name: string;
   domain: string | null;
+  logoUrl: string | null;
   breached: boolean;
   emailCount: number;
   lastSeenAt: string | null;
@@ -70,7 +71,7 @@ export async function GET() {
   const [servicesRes, breachesRes, deletionsRes] = await Promise.all([
     supabase
       .from("user_services")
-      .select("id, service_id, email_count, last_seen_at, first_seen_at, is_spam, service:services!inner(id,name,domain,category)")
+      .select("id, service_id, email_count, last_seen_at, first_seen_at, is_spam, service:services!inner(id,name,domain,category,logo_url)")
       .eq("user_id", userId),
     supabase.from("user_breaches").select("service_id").eq("user_id", userId),
     supabase.from("deletion_requests").select("user_service_id").eq("user_id", userId),
@@ -134,6 +135,7 @@ export async function GET() {
         id: r.id as string,
         name: service?.name ?? "Unknown",
         domain: service?.domain ?? null,
+        logoUrl: service?.logo_url ?? null,
         breached: isBreached(r, breachedServiceIds),
         emailCount: typeof r.email_count === "number" ? r.email_count : 0,
         lastSeenAt: r.last_seen_at ?? null,

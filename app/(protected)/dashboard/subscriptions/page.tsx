@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import ServiceLogo from "@/components/service-logo";
 import { ExternalLink, CheckCircle2, Filter, Calendar, AlertTriangle, X, Check, Trash2 } from "lucide-react";
 import { usePaywall, UpgradeRequiredError, throwIfUpgradeRequired } from "../_components/upgrade_paywall";
 
@@ -24,6 +25,7 @@ type Subscription = {
   status: "active" | "canceled" | "kept";
   detected_at: string | null;
   logo_url: string | null;
+  domain: string | null;
   plan_details: string | null;
   email_subject: string | null;
   cancel_url: string | null;
@@ -367,12 +369,7 @@ export default function SubscriptionsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row gap-5">
                         <div className="h-12 w-12 shrink-0 rounded-xl bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
-                          {sub.logo_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={sub.logo_url} alt={sub.service_name} className="h-full w-full object-contain" />
-                          ) : (
-                            <div className="text-foreground/40 text-xs font-mono">{sub.service_name.slice(0, 2).toUpperCase()}</div>
-                          )}
+                          <ServiceLogo src={sub.logo_url} domain={sub.domain} name={sub.service_name} initials={2} className="rounded-md" fallbackClassName="font-mono text-foreground/40" />
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -568,12 +565,7 @@ export default function SubscriptionsPage() {
                   <DialogHeader>
                     <div className="flex items-center gap-4 mb-4">
                       <div className="h-12 w-12 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
-                        {modalSub.logo_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={modalSub.logo_url} alt={modalSub.service_name} className="h-full w-full object-contain" />
-                        ) : (
-                          <div className="text-foreground/40 text-xs font-mono">{modalSub.service_name.slice(0, 2).toUpperCase()}</div>
-                        )}
+                        <ServiceLogo src={modalSub.logo_url} domain={modalSub.domain} name={modalSub.service_name} initials={2} className="rounded-md" fallbackClassName="font-mono text-foreground/40" />
                       </div>
                       <div>
                         <DialogTitle className="text-xl font-semibold text-foreground">{modalSub.service_name}</DialogTitle>

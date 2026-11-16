@@ -240,25 +240,10 @@ export async function GET(req: NextRequest) {
       .filter((e): e is string => typeof e === 'string' && e.length > 0)
   ));
 
-  // Free users only ever get rows from their fixed preview set (filtered above)
-  const accountsToReturn = accounts;
-  
-  // For free users, blur the account names in the preview
-  const processedAccounts = accountsToReturn.map(acc => {
-    if (isFree) {
-      return {
-        ...acc,
-        // name: acc.name ? acc.name.substring(0, 2) + "••••••" : null,
-        name: acc.name,
-        // domain: acc.domain ? "••••••." + (acc.domain.split('.').pop() || "com") : null,
-        domain: (acc.domain.split('.').pop() || "com"),
-        // email: acc.email ? acc.email.substring(0, 2) + "••••••@••••••.com" : null,
-        email: acc.email
-      };
-    }
-    return acc;
-  });
-  
+  // Free users only ever get rows from their fixed preview set (filtered above). Their name, domain
+  // and logo stay visible so the preview shows real, recognizable accounts.
+  const processedAccounts = accounts;
+
   return NextResponse.json({
     plan,
     blurred: isFree,

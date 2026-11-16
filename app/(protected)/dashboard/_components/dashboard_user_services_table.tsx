@@ -15,12 +15,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton, SkeletonGroup } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import ServiceLogo from "@/components/service-logo";
 import { UpgradeTrigger } from "./upgrade_paywall";
 
 type UrgencyTeaser = {
     id: string;
     name: string;
     domain: string | null;
+    logoUrl: string | null;
     breached: boolean;
     emailCount: number;
     lastSeenAt: string | null;
@@ -295,21 +297,42 @@ export default function DashboardUrgencyPanel() {
                                     {totalServices > 0 ? "No breached or unused accounts. Nice." : "No accounts yet"}
                                 </div>
                             ) : (
-                                (data?.topRiskTeasers ?? []).map((t) => (
-                                    <div
-                                        key={t.id}
-                                        className="flex items-center justify-between gap-3 rounded-lg border border-foreground/5 bg-foreground/2 px-4 py-3 transition-all hover:border-foreground/10 hover:bg-foreground/3"
-                                    >
-                                        <div className="min-w-0 flex-1">
-                                            <div className="text-sm font-medium text-foreground truncate">{t.name}</div>
-                                            <div className="text-[11px] text-foreground/40 truncate mt-0.5">
-                                                {t.domain ?? "—"} · <span className={t.breached ? "text-red-600 dark:text-red-400" : undefined}>{riskReason(t)}</span>
+                                <div className="grid gap-2 sm:grid-cols-2">
+                                    {(data?.topRiskTeasers ?? []).map((t) => (
+                                        <div
+                                            key={t.id}
+                                            className="flex items-center gap-3 rounded-lg border border-foreground/5 bg-foreground/2 p-3 transition-all hover:border-foreground/10 hover:bg-foreground/3"
+                                        >
+                                            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-foreground/10 bg-white p-1.5 dark:bg-foreground/90">
+                                                <ServiceLogo
+                                                    src={t.logoUrl}
+                                                    domain={t.domain}
+                                                    name={t.name}
+                                                    initials={2}
+                                                    className="rounded-md"
+                                                    fallbackClassName="text-foreground/60 dark:text-background/70"
+                                                />
                                             </div>
-                                        </div>
 
-                                        <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${t.breached ? 'bg-red-500' : 'bg-foreground/20'}`} />
-                                    </div>
-                                ))
+                                            <div className="min-w-0 flex-1">
+                                                <div className="text-sm font-medium text-foreground truncate">{t.name}</div>
+                                                <div className="text-[11px] text-foreground/40 truncate mt-0.5">
+                                                    {t.domain ?? "—"}
+                                                </div>
+                                            </div>
+
+                                            <span
+                                                className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                                                    t.breached
+                                                        ? "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
+                                                        : "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                                                }`}
+                                            >
+                                                {riskReason(t)}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
 
                             {/* Locked hint rows */}
