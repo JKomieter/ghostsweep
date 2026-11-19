@@ -4,6 +4,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     globalNotFound: true,
+    agentUpgrade: "security",
   },
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
