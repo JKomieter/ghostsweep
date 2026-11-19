@@ -61,14 +61,15 @@ export async function POST(req: Request) {
   try {
     const signature = req.headers.get("stripe-signature");
 
+    // A missing signature takes the same failure path as an invalid one, so every
+    // verification failure returns an identical response
     if (!signature) {
-      console.error("❌ Missing Stripe signature");
-      return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
+      throw new Error("Missing Stripe signature");
     }
 
     event = stripe.webhooks.constructEvent(
       await req.text(),
-      signature as string,
+      signature,
       process.env.STRIPE_WEBHOOK_SECRET as string
     );
   } catch (err) {

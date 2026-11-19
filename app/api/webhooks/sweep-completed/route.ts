@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { SITE_URL } from "@/lib/share";
@@ -19,12 +20,22 @@ type SweepRow = {
 
 type WebhookPayload = { type: string; table: string; record: SweepRow | null; old_record: SweepRow | null };
 
+// Constant-time check of the shared secret. Hashing first gives equal-length inputs, so neither
+// the content nor the length of the expected secret leaks through timing. Missing or wrong
+// secrets get the same 401.
+function secretMatches(received: string | null, expected: string | undefined): boolean {
+    if (!received || !expected) return false;
+    const a = createHash("sha256").update(received).digest();
+    const b = createHash("sha256").update(expected).digest();
+    return timingSafeEqual(a, b);
+}
+
 function escapeHtml(s: string) {
     return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 }
 
 export async function POST(req: NextRequest) {
-    if (!process.env.FUNCTION_SECRET || req.headers.get("x-ghostsweep-secret") !== process.env.FUNCTION_SECRET) {
+    if (!secretMatches(req.headers.get("x-ghostsweep-secret"), process.env.FUNCTION_SECRET)) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
