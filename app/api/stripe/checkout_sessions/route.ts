@@ -1,3 +1,4 @@
+import { safeError } from "@/utils/safe-error";
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { createClient } from '@/utils/supabase/server';
@@ -218,7 +219,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (err) {
-        console.error("Stripe checkout error:", err);
+        console.error("Stripe checkout error:", safeError(err));
 
         // Handle specific Stripe errors
         if (err instanceof Error && err.message.includes('No such price')) {

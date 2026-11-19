@@ -1,3 +1,4 @@
+import { safeError } from "@/utils/safe-error";
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server"
 import stripe from "@/lib/stripe"
@@ -44,7 +45,7 @@ export async function POST() {
             console.warn(`Stripe customer ${stripeCustomerId} not found in current mode — stale ID in DB.`);
             stripeCustomerId = null;
         } else {
-            console.error("Stripe customer lookup error:", err);
+            console.error("Stripe customer lookup error:", safeError(err));
             return NextResponse.json({ error: "Failed to verify billing account" }, { status: 500 });
         }
     }
@@ -66,7 +67,7 @@ export async function POST() {
                 : "https://www.ghostsweep.com/dashboard",
         });
     } catch (stripeError) {
-        console.error("Stripe billing portal error:", stripeError);
+        console.error("Stripe billing portal error:", safeError(stripeError));
         return NextResponse.json({ error: "Failed to create billing portal session" }, { status: 500 });
     }
 
