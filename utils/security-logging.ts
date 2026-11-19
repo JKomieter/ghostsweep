@@ -19,7 +19,7 @@ export interface LoginSecurityEvent {
  */
 export async function logLoginSecurityEvent(event: LoginSecurityEvent): Promise<void> {
     try {
-        const eventKey = `security_event:${Date.now()}:${Math.random().toString(36).substr(2, 9)}`;
+        const eventKey = `security_event:${Date.now()}:${crypto.randomUUID()}`;
         
         // Store event in Redis with 30-day expiration
         await redis.setex(eventKey, 30 * 24 * 60 * 60, JSON.stringify(event));
