@@ -1,3 +1,4 @@
+import { safeError } from "@/utils/safe-error";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
@@ -162,7 +163,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, message });
     } catch (err) {
-        console.error("Retention action failed:", action, err);
+        console.error("Retention action failed:", action, safeError(err));
         return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 }

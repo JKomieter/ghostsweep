@@ -1,3 +1,4 @@
+import { safeError } from "@/utils/safe-error";
 // app/api/webhooks/stripe/route.ts
 import { NextResponse } from "next/server"
 import { createClient } from "@/utils/supabase/server"
@@ -37,7 +38,7 @@ function reportWebhookError(
   event?: Stripe.Event,
   extra?: Record<string, unknown>
 ) {
-  console.error(`❌ ${message}:`, err)
+  console.error(`❌ ${message}:`, safeError(err))
   Sentry.withScope((scope) => {
     scope.setTag("webhook", "stripe")
     if (event) {
