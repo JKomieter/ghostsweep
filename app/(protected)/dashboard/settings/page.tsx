@@ -40,6 +40,7 @@ import {
 import Link from "next/link";
 import { fetchCurrentUser } from "@/hooks/use-get-user";
 import ConnectAccountModal from "./_components/connect-account-modal";
+import ChangePassword from "./_components/change-password";
 import { usePrivacyReport } from "@/hooks/use-privacy-report";
 import { BUSTER_SCAN_CREDITS, PAID_PLANS, isPaidPlan, planDisplayName, scanCreditsLabel, type PlanResponse } from "@/lib/plans";
 import { usePaywall } from "../_components/upgrade_paywall";
@@ -751,6 +752,15 @@ export default function SettingsPage() {
                             )
                         )}
                     </div>
+                </SettingsSection>
+
+                {/* Password Section */}
+                <SettingsSection
+                    title="Password"
+                    description="Set or change the password you use to sign in"
+                    icon={Lock}
+                >
+                    <ChangePassword />
                 </SettingsSection>
 
                 {/* Danger Zone Section */}
