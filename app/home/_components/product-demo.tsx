@@ -160,7 +160,7 @@ function usePrefersReducedMotion() {
 // ─── Small pieces ──────────────────────────────────────────────
 function RiskBadge({ risk }: { risk: Risk }) {
     return (
-        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${RISK_STYLE[risk]}`}>
+        <span className={`inline-flex rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${RISK_STYLE[risk]}`}>
             {risk}
         </span>
     );
@@ -179,7 +179,7 @@ function LockedButton({ onClick, children }: { onClick: () => void; children: Re
         <button
             type="button"
             onClick={onClick}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-semibold text-black shadow-sm transition hover:bg-emerald-400 active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 active:scale-[0.98]"
         >
             <Lock className="h-3.5 w-3.5" />
             {children}
@@ -527,7 +527,6 @@ function ScanScreen({ progress, line }: { progress: number; line: number }) {
     return (
         <div className="flex min-h-[340px] flex-col items-center justify-center px-2 py-8 text-center">
             <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10">
-                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/20" />
                 <ScanSearch className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <p className="text-base font-semibold text-foreground">Sweeping j•••@gmail.com</p>
@@ -561,21 +560,21 @@ function UpgradeSheet({ reason, onClose }: { reason: PaywallReason; onClose: () 
 
     return (
         <div
-            className="absolute inset-0 z-20 flex items-end sm:items-center justify-center bg-background/70 p-3 backdrop-blur-sm"
+            className="absolute inset-0 z-20 flex items-end sm:items-center justify-center bg-background/90 p-3"
             onClick={onClose}
             role="dialog"
             aria-modal="true"
             aria-labelledby="demo-upgrade-title"
         >
             <div
-                className="relative w-full max-w-lg rounded-2xl border border-emerald-500/30 bg-card p-5 sm:p-6 shadow-2xl"
+                className="relative w-full max-w-lg rounded-2xl border border-emerald-500/30 bg-card p-5 sm:p-6 shadow-sm"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
                     onClick={onClose}
                     aria-label="Back to demo"
-                    className="absolute right-3 top-3 rounded-full p-1.5 text-foreground/45 transition hover:bg-foreground/10 hover:text-foreground"
+                    className="absolute right-3 top-3 rounded-md p-1.5 text-foreground/45 transition hover:bg-foreground/10 hover:text-foreground"
                 >
                     <X className="h-4 w-4" />
                 </button>
@@ -601,7 +600,7 @@ function UpgradeSheet({ reason, onClose }: { reason: PaywallReason; onClose: () 
                                 }`}
                             >
                                 {featured && (
-                                    <span className="absolute -top-2 right-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-black">
+                                    <span className="absolute -top-2 right-2 rounded-md bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground">
                                         Best value
                                     </span>
                                 )}
@@ -746,7 +745,7 @@ export default function ProductDemo() {
 
                 <div
                     ref={rootRef}
-                    className="relative overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-2xl shadow-foreground/10"
+                    className="relative overflow-hidden rounded-2xl border border-foreground/10 bg-card shadow-sm shadow-foreground/10"
                 >
                     {/* Window chrome */}
                     <div className="flex items-center gap-2 border-b border-foreground/10 px-4 py-2.5">
@@ -756,7 +755,7 @@ export default function ProductDemo() {
                         <div className="ml-3 hidden sm:block flex-1 truncate rounded-md bg-foreground/5 px-3 py-1 font-mono text-[11px] text-foreground/50">
                             ghostsweep.com/dashboard
                         </div>
-                        <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                        <span className="ml-auto rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
                             Sample data
                         </span>
                     </div>
@@ -821,7 +820,7 @@ export default function ProductDemo() {
                     )}
 
                     {phase === "ready" && !hasInteracted && (
-                        <div className="pointer-events-none absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 rounded-full bg-foreground px-3 py-1.5 text-[11px] font-medium text-background shadow-lg animate-bounce">
+                        <div className="pointer-events-none absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-[11px] font-medium text-background shadow-lg animate-bounce">
                             <MousePointerClick className="h-3.5 w-3.5" /> Try clicking anything
                         </div>
                     )}
@@ -840,7 +839,7 @@ export default function ProductDemo() {
                     </div>
                     <Link
                         href={SIGNUP_HREF}
-                        className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-[0.98]"
+                        className="group inline-flex shrink-0 items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90 active:scale-[0.98]"
                     >
                         Scan my inbox free
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

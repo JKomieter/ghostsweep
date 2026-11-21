@@ -264,7 +264,7 @@ export default function IdentityShadowClient() {
           {/* Left Sidebar */}
           <div className="lg:w-60 shrink-0 space-y-6">
             {/* Risk Radar */}
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
+            <div className="rounded-lg border border-foreground/10 bg-card p-4">
               {isLoading ? (
                 <div className="flex flex-col items-center gap-3 py-8">
                   <Skeleton className="h-40 w-40 rounded-full" />
@@ -280,8 +280,8 @@ export default function IdentityShadowClient() {
             </div>
 
             {/* Security Score */}
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
-              <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+            <div className="rounded-lg border border-foreground/10 bg-card p-4">
+              <span className="text-xs font-medium text-foreground/55">
                 Security Score
               </span>
               {isLoading ? (
@@ -289,7 +289,7 @@ export default function IdentityShadowClient() {
               ) : score ? (
                 <div className="mt-2 flex items-end gap-2">
                   <span
-                    className={`text-4xl font-light tracking-tight ${
+                    className={`text-3xl font-mono font-medium tabular-nums ${
                       score.score >= 70
                         ? "text-emerald-600 dark:text-emerald-400"
                         : score.score >= 40
@@ -315,7 +315,7 @@ export default function IdentityShadowClient() {
             </div>
 
             {/* Selectors */}
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
+            <div className="rounded-lg border border-foreground/10 bg-card p-4">
               {isLoading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-3 w-16" />
@@ -328,8 +328,8 @@ export default function IdentityShadowClient() {
             </div>
 
             {/* Quick Nav */}
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-3">
-              <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40 px-1 mb-2 block">
+            <div className="rounded-lg border border-foreground/10 bg-card p-3">
+              <span className="text-xs font-medium text-foreground/55 px-1 mb-2 block">
                 Quick Links
               </span>
               {[
@@ -339,7 +339,7 @@ export default function IdentityShadowClient() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center justify-between px-2 py-2 rounded-md text-xs text-foreground/50 hover:text-foreground/80 hover:bg-foreground/3 transition-colors"
+                  className="flex items-center justify-between px-2 py-2 rounded-md text-xs text-foreground/50 hover:text-foreground/80 hover:bg-foreground/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <item.icon className="h-3 w-3" />
@@ -354,7 +354,7 @@ export default function IdentityShadowClient() {
           {/* Center Panel - Shadow Map */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+              <span className="text-xs font-medium text-foreground/55">
                 Shadow Map — {totalCount} account{totalCount !== 1 ? "s" : ""}{" "}
                 discovered
               </span>
@@ -367,7 +367,7 @@ export default function IdentityShadowClient() {
                 ))}
               </div>
             ) : profiles.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-foreground/5 bg-foreground/2 py-20">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-foreground/10 bg-card py-20">
                 <Fingerprint className="h-10 w-10 text-foreground/10 mb-4" />
                 <p className="text-sm text-foreground/30 mb-1">
                   No shadow profiles found yet
@@ -393,7 +393,7 @@ export default function IdentityShadowClient() {
                     (_, i) => (
                       <div
                         key={`hidden-${i}`}
-                        className="relative rounded-lg border border-foreground/5 bg-foreground/2 p-5 overflow-hidden"
+                        className="relative rounded-lg border border-foreground/10 bg-card p-5 overflow-hidden"
                       >
                         <div className="blur-[6px] pointer-events-none select-none space-y-3">
                           <div className="flex items-center gap-3">
@@ -420,13 +420,13 @@ export default function IdentityShadowClient() {
                       <p className="text-sm font-medium text-foreground">
                         +{hiddenCount} more shadow profile{hiddenCount !== 1 ? "s" : ""} hidden
                       </p>
-                      <p className="text-xs text-foreground/40 mt-0.5">
+                      <p className="text-xs text-foreground/55 mt-0.5">
                         Upgrade to see all discovered accounts and take action
                       </p>
                     </div>
                     <UpgradeTrigger
  reason="generic"
-                      className="shrink-0 rounded-md bg-emerald-500/15 border border-emerald-500/30 px-4 py-2 text-xs font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+                      className="shrink-0 rounded-md bg-emerald-500/15 border border-emerald-500/30 px-4 py-2 text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25 transition-colors"
                     >
                       Upgrade
                     </UpgradeTrigger>
@@ -438,10 +438,10 @@ export default function IdentityShadowClient() {
 
           {/* Right Sidebar - Remediation Queue */}
           <div className="lg:w-[260px] shrink-0">
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
+            <div className="rounded-lg border border-foreground/10 bg-card p-4">
               <div className="flex items-center gap-2 mb-4">
                 <ShieldAlert className="h-3.5 w-3.5 text-red-600/60 dark:text-red-400/60" />
-                <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+                <span className="text-xs font-medium text-foreground/55">
                   Remediation Queue
                 </span>
               </div>

@@ -54,7 +54,7 @@ export default function Header() {
     const closeMobile = () => setMobileOpen(false);
 
     return (
-        <header className="sticky top-0 z-50 border-b border-foreground/5 bg-background/80 backdrop-blur-xl">
+        <header className="sticky top-0 z-50 border-b border-foreground/5 bg-background">
             <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
                 {/* Logo */}
                 <Link href="/home" onClick={closeMobile} className="flex items-center gap-2.5">
@@ -78,7 +78,7 @@ export default function Header() {
                     </Link>
                     <Link
                         href="/login?mode=signup"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-[13px] font-medium text-black shadow-sm transition hover:bg-emerald-400"
+                        className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-1.5 text-[13px] font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
                     >
                         Connect inbox
                         <ArrowRight className="h-3 w-3" />
@@ -102,7 +102,7 @@ export default function Header() {
 
             {/* Mobile dropdown */}
             {mobileOpen && (
-                <div className="border-t border-foreground/5 bg-background/95 backdrop-blur-xl lg:hidden">
+                <div className="border-t border-foreground/5 bg-background lg:hidden">
                     <div className="mx-auto max-w-5xl px-6 py-4 space-y-5">
                         <NavLinks
                             onClick={closeMobile}
@@ -120,7 +120,7 @@ export default function Header() {
                             <Link
                                 href="/login?mode=signup"
                                 onClick={closeMobile}
-                                className="flex items-center justify-center gap-1.5 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-black shadow-sm transition hover:bg-emerald-400"
+                                className="flex items-center justify-center gap-1.5 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
                             >
                                 Connect inbox (free)
                                 <ArrowRight className="h-3.5 w-3.5" />

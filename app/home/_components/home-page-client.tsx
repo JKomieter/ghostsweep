@@ -7,9 +7,7 @@ import Script from "next/script";
 import {
     ArrowRight,
     Check,
-    Sparkles,
     Mail,
-    Ghost,
     Lock,
     EyeOff,
     ShieldCheck,
@@ -29,11 +27,11 @@ import {
     Linkedin,
     Loader2,
 } from "lucide-react";
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import TeaserScan from "./teaser-scan";
 import ProductDemo from "./product-demo";
-import { CHECKOUT_REASSURANCE, FREE_PLAN, PAID_PLANS, type PaidPlanId } from "@/lib/plans";
+import { CHECKOUT_REASSURANCE, FREE_PLAN, PAID_PLANS } from "@/lib/plans";
 
 const SIGNUP_HREF = "/login?mode=signup";
 
@@ -99,49 +97,13 @@ const faqSchema = {
     })),
 };
 
-// ─── Animated Counter ──────────────────────────────────────────
-function CountUp({
-    value,
-    duration = 1200,
-    prefix = "",
-    suffix = "",
-}: {
-    value: number;
-    duration?: number;
-    prefix?: string;
-    suffix?: string;
-}) {
-    const [display, setDisplay] = useState(0);
-    const ref = useRef<HTMLSpanElement>(null);
-    const hasAnimated = useRef(false);
-
-    useEffect(() => {
-        if (hasAnimated.current) return;
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && !hasAnimated.current) {
-                    hasAnimated.current = true;
-                    const start = performance.now();
-                    const tick = (now: number) => {
-                        const progress = Math.min((now - start) / duration, 1);
-                        setDisplay(Math.round(progress * value));
-                        if (progress < 1) requestAnimationFrame(tick);
-                    };
-                    requestAnimationFrame(tick);
-                }
-            },
-            { threshold: 0.3 }
-        );
-
-        if (ref.current) observer.observe(ref.current);
-        return () => observer.disconnect();
-    }, [value, duration]);
-
+// ─── Counter ───────────────────────────────────────────────────
+// Static on purpose: numbers that tick up read as marketing, not evidence.
+function CountUp({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
     return (
-        <span ref={ref}>
+        <span className="font-mono tabular-nums">
             {prefix}
-            {display.toLocaleString()}
+            {value.toLocaleString()}
             {suffix}
         </span>
     );
@@ -233,11 +195,11 @@ function SectionHeading({
     description?: React.ReactNode;
 }) {
     return (
-        <div className="text-center mb-14 sm:mb-16">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400 mb-4">
+        <div className="max-w-3xl mb-12 sm:mb-14">
+            <p className="font-mono text-xs uppercase tracking-[0.12em] text-foreground/55 mb-4">
                 {eyebrow}
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-foreground leading-tight">
+            <h2 className="text-3xl sm:text-4xl font-medium text-foreground leading-tight">
                 {title}
                 {muted && (
                     <>
@@ -247,7 +209,7 @@ function SectionHeading({
                 )}
             </h2>
             {description && (
-                <p className="mx-auto mt-5 max-w-xl text-base text-foreground/65 leading-relaxed">
+                <p className="mt-4 max-w-xl text-base text-foreground/65 leading-relaxed">
                     {description}
                 </p>
             )}
@@ -268,7 +230,7 @@ function PrimaryCTA({
     return (
         <Link
             href={href}
-            className={`group inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-[0.98] ${sizing}`}
+            className={`group inline-flex items-center justify-center gap-2 rounded-md bg-primary font-medium text-primary-foreground transition-colors hover:bg-primary/90 ${sizing}`}
         >
             {children}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -276,12 +238,45 @@ function PrimaryCTA({
     );
 }
 
-const TRUST_POINTS = [
-    { icon: ShieldCheck, label: "CASA Tier 2 verified" },
-    { icon: Lock, label: "Zero email storage" },
-    { icon: EyeOff, label: "We never sell your data" },
-    { icon: Check, label: "No credit card to start" },
+// Every line here must stay true and match the FAQ / security page.
+const ACCESS_FACTS = [
+    { label: "Inbox access", value: "Read-only, Gmail or Outlook" },
+    { label: "Email content", value: "Processed in memory, never stored" },
+    { label: "Your data", value: "Never sold, never shared" },
+    { label: "Revoking", value: "Anytime, from GhostSweep or your Google / Microsoft account" },
+    { label: "To start", value: "Free, no credit card" },
 ];
+
+function AccessPanel() {
+    return (
+        <aside className="rounded-lg border border-foreground/10 bg-card text-left">
+            <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-5 py-3">
+                <span className="font-mono text-xs text-foreground/60">What GhostSweep can access</span>
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    CASA Tier 2 verified
+                </span>
+            </div>
+            <dl className="divide-y divide-foreground/10">
+                {ACCESS_FACTS.map((f) => (
+                    <div key={f.label} className="grid grid-cols-[7.5rem_1fr] gap-4 px-5 py-3.5 text-sm">
+                        <dt className="text-foreground/55">{f.label}</dt>
+                        <dd className="text-foreground">{f.value}</dd>
+                    </div>
+                ))}
+            </dl>
+            <div className="border-t border-foreground/10 px-5 py-3">
+                <Link
+                    href="/home/security"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                >
+                    Read how we handle your data
+                    <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+            </div>
+        </aside>
+    );
+}
 
 // ─── Hero: real breach check ───────────────────────────────────
 type Breach = {
@@ -345,35 +340,29 @@ function Hero() {
     ).slice(0, 5);
 
     return (
-        <section className="relative isolate overflow-hidden pt-16 pb-16 sm:pt-28 sm:pb-24">
-            {/* Background glow */}
-            <div className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-                <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-xl -translate-x-1/2 rotate-30 bg-linear-to-tr from-emerald-400 to-teal-600 opacity-20 dark:opacity-15 sm:left-[calc(50%-30rem)] sm:w-6xl" />
-            </div>
+        <section className="pt-14 pb-16 sm:pt-20 sm:pb-24">
+            <div className="mx-auto grid max-w-6xl items-start gap-12 px-6 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+              <div>
+                <p className="mb-6 font-mono text-xs uppercase tracking-[0.12em] text-foreground/55">
+                    Account discovery · Breach checks · Deletion
+                </p>
 
-            <div className="mx-auto max-w-5xl px-6 text-center">
-                <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-card px-4 py-1.5 text-xs font-medium text-foreground/70 shadow-sm">
-                    <Ghost className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                    Stop being haunted by your ghost accounts
-                </div>
-
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-foreground leading-[1.06]">
-                    Find every account
-                    <br className="hidden sm:block" />{" "}
-                    <span className="text-emerald-600 dark:text-emerald-400">you forgot you made.</span>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-foreground leading-[1.05]">
+                    Find every account{" "}
+                    <span className="text-foreground/50">you forgot you made.</span>
                 </h1>
 
-                <p className="mx-auto mt-6 max-w-2xl text-lg sm:text-xl text-foreground/65 leading-relaxed">
+                <p className="mt-6 max-w-xl text-lg text-foreground/65 leading-relaxed">
                     GhostSweep scans your inbox and the open web to uncover old accounts, data
                     breaches, and forgotten gift cards — then helps you delete what you don't need.
                 </p>
 
-                <div className="mt-10 w-full max-w-lg mx-auto">
+                <div className="mt-9 w-full max-w-lg">
                     {(status === "idle" || status === "loading") && (
                         <>
                             <Link
                                 href={SIGNUP_HREF}
-                                className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-full bg-emerald-500 px-9 py-4 text-base font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-[0.98]"
+                                className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-md bg-primary px-7 py-3.5 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                             >
                                 <span className="flex items-center gap-1.5">
                                     <GmailLogo className="h-5 w-5" />
@@ -391,7 +380,7 @@ function Hero() {
                                     <label htmlFor="hero-email" className="sr-only">
                                         Email address
                                     </label>
-                                    <div className="flex items-stretch gap-2 rounded-full border border-foreground/10 bg-card p-1.5 focus-within:border-foreground/25 transition">
+                                    <div className="flex items-stretch gap-2 rounded-md border border-foreground/10 bg-card p-1.5 focus-within:border-foreground/25 transition">
                                         <div className="flex flex-1 items-center gap-2 px-3">
                                             <Mail className="h-4 w-4 text-foreground/40 shrink-0" />
                                             <input
@@ -411,7 +400,7 @@ function Hero() {
                                         <button
                                             type="submit"
                                             disabled={!email.trim() || status === "loading"}
-                                            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-foreground/15 px-4 text-sm font-medium text-foreground transition hover:bg-foreground/5 disabled:opacity-50 shrink-0"
+                                            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-foreground/15 px-4 text-sm font-medium text-foreground transition hover:bg-foreground/5 disabled:opacity-50 shrink-0"
                                         >
                                             {status === "loading" ? (
                                                 <>
@@ -433,7 +422,7 @@ function Hero() {
 
                     {status === "result" && (
                         <div
-                            className={`rounded-2xl border p-6 text-left shadow-lg ${
+                            className={`rounded-lg border p-6 text-left ${
                                 breaches.length > 0
                                     ? "border-red-500/30 bg-red-500/5"
                                     : "border-emerald-500/30 bg-emerald-500/5"
@@ -477,7 +466,7 @@ function Hero() {
                             )}
                             <Link
                                 href={signupWithEmail}
-                                className="w-full flex items-center justify-center gap-2 rounded-full bg-emerald-500 py-3 text-sm font-semibold text-black hover:bg-emerald-400 transition"
+                                className="w-full flex items-center justify-center gap-2 rounded-md bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition"
                             >
                                 <GmailLogo className="h-4 w-4" />
                                 Find every account linked to this email
@@ -496,19 +485,19 @@ function Hero() {
                     )}
 
                     {status === "error" && (
-                        <div className="rounded-2xl border border-foreground/10 bg-card p-6 text-left shadow-lg">
+                        <div className="rounded-lg border border-foreground/10 bg-card p-6 text-left">
                             <p className="text-sm text-foreground/75 mb-4">{errorMsg}</p>
                             <div className="flex flex-col sm:flex-row gap-2">
                                 <Link
                                     href={signupWithEmail}
-                                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 py-2.5 text-sm font-semibold text-black hover:bg-emerald-400 transition"
+                                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-md bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition"
                                 >
                                     Connect inbox (free)
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                                 <button
                                     onClick={reset}
-                                    className="flex-1 rounded-full border border-foreground/10 py-2.5 text-sm text-foreground/70 hover:bg-foreground/5 transition"
+                                    className="flex-1 rounded-md border border-foreground/10 py-2.5 text-sm text-foreground/70 hover:bg-foreground/5 transition"
                                 >
                                     Try again
                                 </button>
@@ -517,7 +506,7 @@ function Hero() {
                     )}
                 </div>
 
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-foreground/60">
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-foreground/60">
                     {status === "idle" && !showBreachCheck && (
                         <button
                             type="button"
@@ -544,17 +533,10 @@ function Hero() {
                     </a>
                 </div>
 
-                {/* Trust strip */}
-                <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs font-medium text-foreground/65">
-                    {TRUST_POINTS.map((t) => (
-                        <li key={t.label} className="flex items-center gap-1.5">
-                            <t.icon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                            {t.label}
-                        </li>
-                    ))}
-                </ul>
-
                 <SocialProofStats />
+              </div>
+
+              <AccessPanel />
             </div>
         </section>
     );
@@ -568,42 +550,36 @@ function WhatWeDoSection() {
             title: "Find every account",
             description:
                 "Connect Gmail or Outlook and we surface every service you've ever signed up for — going back years.",
-            color: "text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
         },
         {
             icon: Fingerprint,
             title: "Uncover shadow profiles",
             description:
                 "We search hundreds of sites for accounts tied to your email, phone, or username — even ones you never created.",
-            color: "text-purple-700 dark:text-purple-400 bg-purple-500/10 border-purple-500/20",
         },
         {
             icon: AlertTriangle,
             title: "See what's been breached",
             description:
                 "Every account is checked against known data breaches, with alerts when your details show up in new leaks.",
-            color: "text-red-700 dark:text-red-400 bg-red-500/10 border-red-500/20",
         },
         {
             icon: Trash2,
             title: "Delete what you don't need",
             description:
                 "Direct links and step-by-step guides to close old accounts for good — and track every request.",
-            color: "text-rose-700 dark:text-rose-400 bg-rose-500/10 border-rose-500/20",
         },
         {
             icon: MailX,
             title: "Silence newsletter noise",
             description:
                 "Every mailing list you're on, in one place. Unsubscribe from the ones you don't read in a click.",
-            color: "text-blue-700 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
         },
         {
             icon: DollarSign,
             title: "Recover forgotten money",
             description:
                 "Gift cards, rewards points, expiring coupons, and subscriptions you're still paying for — found in your inbox.",
-            color: "text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
         },
     ];
 
@@ -621,9 +597,9 @@ function WhatWeDoSection() {
                     {capabilities.map((cap) => (
                         <div
                             key={cap.title}
-                            className="rounded-2xl border border-foreground/10 bg-card p-7 shadow-sm transition hover:shadow-md hover:border-foreground/20"
+                            className="rounded-lg border border-foreground/10 bg-card p-6 transition-colors hover:border-foreground/25"
                         >
-                            <div className={`h-11 w-11 rounded-xl border flex items-center justify-center mb-5 ${cap.color}`}>
+                            <div className="h-9 w-9 rounded-md border border-foreground/10 bg-foreground/[0.03] text-foreground/70 flex items-center justify-center mb-5">
                                 <cap.icon className="h-5 w-5" />
                             </div>
                             <h3 className="text-base font-semibold text-foreground mb-2">{cap.title}</h3>
@@ -644,11 +620,10 @@ function WhatWeDoSection() {
 function IdentityShadowSection() {
     return (
         <section className="py-20 sm:py-28 border-t border-foreground/10 relative overflow-hidden scroll-mt-16" id="shadow-scan">
-            <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-3xl" />
 
             <div className="mx-auto max-w-5xl px-6 relative z-10">
                 <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/25 bg-purple-500/5 px-4 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-400 mb-5">
+                    <div className="inline-flex items-center gap-2 rounded-md border border-purple-500/25 bg-purple-500/5 px-4 py-1.5 text-xs font-medium text-purple-700 dark:text-purple-400 mb-5">
                         <Fingerprint className="h-3.5 w-3.5" />
                         Try it now — no account needed
                     </div>
@@ -723,7 +698,7 @@ function HowItWorksSection() {
                     {steps.map((step) => (
                         <li key={step.num} className="rounded-2xl border border-foreground/10 bg-card p-6 shadow-sm">
                             <div className="flex items-center gap-3 mb-4">
-                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-black">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                                     {step.num}
                                 </span>
                                 <step.icon className="h-5 w-5 text-foreground/40" />
@@ -809,12 +784,9 @@ function PrivacySection() {
                     </div>
 
                     <div className="flex-1 w-full">
-                        <div className="rounded-2xl border border-foreground/10 bg-card overflow-hidden shadow-xl shadow-foreground/5">
+                        <div className="rounded-2xl border border-foreground/10 bg-card overflow-hidden shadow-sm shadow-foreground/5">
                             <div className="flex items-center gap-2 border-b border-foreground/10 px-5 py-3">
-                                <div className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-                                <div className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-                                <div className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-                                <span className="ml-2 text-[11px] text-foreground/50 font-mono">privacy_audit.log</span>
+                                <span className="text-[11px] text-foreground/50 font-mono">privacy_audit.log</span>
                             </div>
                             <div className="p-6 font-mono text-xs space-y-3 text-foreground/70">
                                 <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
@@ -839,101 +811,118 @@ function PrivacySection() {
 }
 
 // ─── Pricing ───────────────────────────────────────────────────
-function PricingSection() {
-    // Prices and features live in lib/plans.ts so the site, billing page and paywall always agree
-    const paid = (id: PaidPlanId, extra: { badge: string | null; cta: string; href: string; featured: boolean }) => ({
-        name: PAID_PLANS[id].name,
-        price: PAID_PLANS[id].price,
-        period: PAID_PLANS[id].period === "one-time" ? "" : PAID_PLANS[id].period,
-        note: PAID_PLANS[id].note,
-        description: PAID_PLANS[id].description,
-        features: PAID_PLANS[id].features.map((text) => ({ text, locked: false })),
-        ...extra,
-    });
+// Three choices: try it, clean up once, or stay protected. Pro Monthly and Pro Annual are
+// the same product, so they share one card with a billing toggle. Prices and features come
+// from lib/plans.ts so the site, billing page and paywall always agree.
+type Billing = "annual" | "monthly";
 
-    const plans = [
-        {
-            name: FREE_PLAN.name,
-            price: FREE_PLAN.price,
-            period: "",
-            note: FREE_PLAN.note,
-            badge: null as string | null,
-            description: FREE_PLAN.description,
-            cta: "Start free",
-            href: SIGNUP_HREF,
-            featured: false,
-            features: FREE_PLAN.features,
-        },
-        paid("buster", { badge: null, cta: PAID_PLANS.buster.cta, href: "/login?mode=signup&plan=buster", featured: false }),
-        paid("pro", { badge: null, cta: PAID_PLANS.pro.cta, href: "/login?mode=signup&plan=monthly", featured: false }),
-        paid("sentinel", { badge: "Best value", cta: PAID_PLANS.sentinel.cta, href: "/login?mode=signup&plan=annual", featured: true }),
-    ];
+function PlanFeatures({ items }: { items: string[] }) {
+    return (
+        <ul className="mt-6 space-y-2.5 flex-1">
+            {items.map((text) => (
+                <li key={text} className="flex items-start gap-2.5 text-sm text-foreground/80">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-emerald-700 dark:text-emerald-400" />
+                    {text}
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+function PlanPrice({ price, period, note }: { price: string; period?: string; note: string }) {
+    return (
+        <>
+            <div className="mt-4 flex items-baseline gap-1">
+                <span className="font-mono text-3xl font-medium tabular-nums text-foreground">{price}</span>
+                {period && <span className="text-sm text-foreground/55">{period}</span>}
+            </div>
+            <p className="mt-1 min-h-5 text-xs text-foreground/55">{note}</p>
+        </>
+    );
+}
+
+function PlanButton({ href, primary, children }: { href: string; primary?: boolean; children: React.ReactNode }) {
+    return (
+        <Link
+            href={href}
+            className={`mt-8 flex w-full items-center justify-center rounded-md py-2.5 text-sm font-medium transition-colors ${
+                primary
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "border border-foreground/15 text-foreground hover:bg-foreground/5"
+            }`}
+        >
+            {children}
+        </Link>
+    );
+}
+
+function PricingSection() {
+    const [billing, setBilling] = useState<Billing>("annual");
+    const buster = PAID_PLANS.buster;
+    const pro = billing === "annual" ? PAID_PLANS.sentinel : PAID_PLANS.pro;
+    const proFeatures =
+        billing === "annual"
+            ? [PAID_PLANS.pro.features[0], ...PAID_PLANS.sentinel.features.slice(1)]
+            : PAID_PLANS.pro.features;
 
     return (
         <section className="py-20 sm:py-28 border-t border-foreground/10 scroll-mt-16" id="pricing">
-            <div className="mx-auto max-w-6xl px-6">
+            <div className="mx-auto max-w-5xl px-6">
                 <SectionHeading
                     eyebrow="Pricing"
                     title="Start free."
-                    muted="Upgrade when you're ready."
-                    description="Run your first scan at no cost. Pay only if you want the full list and the tools to clean it up."
+                    muted="Pay only to clean up."
+                    description="Your first scan costs nothing. Upgrade if you want the full list and the tools to act on it."
                 />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
-                    {plans.map((plan) => (
-                        <div
-                            key={plan.name}
-                            className={`relative rounded-2xl border p-7 flex flex-col bg-card ${
-                                plan.featured
-                                    ? "border-emerald-500 ring-1 ring-emerald-500 shadow-xl shadow-emerald-500/10"
-                                    : "border-foreground/10 shadow-sm"
-                            }`}
-                        >
-                            {plan.badge && (
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-black">
-                                    {plan.badge}
-                                </div>
-                            )}
-                            <div className="mb-2 text-sm font-semibold text-foreground">{plan.name}</div>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-semibold tracking-tight text-foreground">{plan.price}</span>
-                                {plan.period && <span className="text-foreground/55 text-sm">{plan.period}</span>}
-                            </div>
-                            <p className={`mt-1 text-xs font-medium ${plan.featured ? "text-emerald-700 dark:text-emerald-400" : "text-foreground/55"}`}>
-                                {plan.note}
-                            </p>
-                            <p className="text-sm text-foreground/65 mt-3 mb-6">{plan.description}</p>
-                            <ul className="space-y-2.5 mb-8 flex-1">
-                                {plan.features.map((feature) => (
-                                    <li key={feature.text} className="flex items-start gap-2 text-sm">
-                                        {feature.locked ? (
-                                            <Lock className="h-4 w-4 shrink-0 mt-0.5 text-foreground/30" />
-                                        ) : (
-                                            <Check className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
-                                        )}
-                                        <span className={feature.locked ? "text-foreground/40" : "text-foreground/80"}>
-                                            {feature.text}
-                                        </span>
-                                    </li>
+                <div className="grid grid-cols-1 overflow-hidden rounded-lg border border-foreground/10 bg-card md:grid-cols-3 md:divide-x divide-y md:divide-y-0 divide-foreground/10">
+                    {/* Free */}
+                    <div className="flex flex-col p-7">
+                        <h3 className="text-sm font-medium text-foreground">{FREE_PLAN.name}</h3>
+                        <p className="mt-1 text-sm text-foreground/60">See what&apos;s out there.</p>
+                        <PlanPrice price={FREE_PLAN.price} note={FREE_PLAN.note} />
+                        <PlanFeatures items={FREE_PLAN.features.filter((f) => !f.locked).map((f) => f.text)} />
+                        <PlanButton href={SIGNUP_HREF}>Start free</PlanButton>
+                    </div>
+
+                    {/* Buster — one-off */}
+                    <div className="flex flex-col p-7">
+                        <h3 className="text-sm font-medium text-foreground">{buster.name}</h3>
+                        <p className="mt-1 text-sm text-foreground/60">One full cleanup, paid once.</p>
+                        <PlanPrice price={buster.price} note={buster.note} />
+                        <PlanFeatures items={buster.features} />
+                        <PlanButton href="/login?mode=signup&plan=buster">{buster.cta}</PlanButton>
+                    </div>
+
+                    {/* Pro — ongoing */}
+                    <div className="relative flex flex-col bg-emerald-500/[0.04] p-7 shadow-[inset_0_2px_0_0_var(--primary)]">
+                        <div className="flex items-center justify-between gap-3">
+                            <h3 className="text-sm font-medium text-foreground">Pro</h3>
+                            <div role="radiogroup" aria-label="Billing period" className="inline-flex rounded-md border border-foreground/15 p-0.5 text-xs">
+                                {(["annual", "monthly"] as const).map((b) => (
+                                    <button
+                                        key={b}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={billing === b}
+                                        onClick={() => setBilling(b)}
+                                        className={`rounded-sm px-2.5 py-1 capitalize transition-colors ${
+                                            billing === b ? "bg-foreground text-background" : "text-foreground/60 hover:text-foreground"
+                                        }`}
+                                    >
+                                        {b}
+                                    </button>
                                 ))}
-                            </ul>
-                            <Link
-                                href={plan.href}
-                                className={`w-full flex items-center justify-center rounded-full py-3 text-sm font-semibold transition ${
-                                    plan.featured
-                                        ? "bg-emerald-500 text-black hover:bg-emerald-400"
-                                        : "border border-foreground/15 text-foreground hover:bg-foreground/5"
-                                }`}
-                            >
-                                {plan.cta}
-                            </Link>
+                            </div>
                         </div>
-                    ))}
+                        <p className="mt-1 text-sm text-foreground/60">Ongoing monitoring and alerts.</p>
+                        <PlanPrice price={pro.price} period={pro.period} note={pro.note} />
+                        <PlanFeatures items={proFeatures} />
+                        <PlanButton primary href={`/login?mode=signup&plan=${billing}`}>{pro.cta}</PlanButton>
+                    </div>
                 </div>
 
-                <p className="text-center mt-8 text-sm text-foreground/60">
-                    {CHECKOUT_REASSURANCE}
-                </p>
+                <p className="mt-6 text-sm text-foreground/55">{CHECKOUT_REASSURANCE}</p>
             </div>
         </section>
     );
@@ -968,7 +957,7 @@ function FounderSection() {
             <div className="mx-auto max-w-4xl px-6">
                 <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
                     <div className="relative shrink-0">
-                        <div className="relative w-44 h-44 md:w-52 md:h-52 rounded-2xl overflow-hidden border border-foreground/10 shadow-xl">
+                        <div className="relative w-44 h-44 md:w-52 md:h-52 rounded-2xl overflow-hidden border border-foreground/10 shadow-sm">
                             <Image
                                 src="https://ghostsweep.t3.storage.dev/f1789004-4f47-4d23-a5c9-d66f62e532f3.jpg"
                                 alt="Joel Komieter — Founder of GhostSweep"
@@ -981,7 +970,7 @@ function FounderSection() {
                             href="https://www.linkedin.com/in/joelkomieter"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="absolute -bottom-3 -right-3 flex items-center gap-1.5 rounded-full bg-[#0A66C2] px-3 py-1.5 text-xs font-medium text-white shadow-lg hover:bg-[#004182] transition-colors"
+                            className="absolute -bottom-3 -right-3 flex items-center gap-1.5 rounded-md bg-[#0A66C2] px-3 py-1.5 text-xs font-medium text-white shadow-lg hover:bg-[#004182] transition-colors"
                         >
                             <Linkedin className="h-3.5 w-3.5" />
                             <span>Verified Founder</span>
@@ -1011,7 +1000,7 @@ function FinalCTA() {
             <div className="mx-auto max-w-3xl px-6 text-center">
                 <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-foreground leading-tight">
                     Your digital life is messier than you think.{" "}
-                    <span className="text-emerald-600 dark:text-emerald-400">Clean it up.</span>
+                    <span className="text-foreground/50">Clean it up.</span>
                 </h2>
                 <p className="mx-auto mt-5 max-w-lg text-base text-foreground/65 leading-relaxed">
                     One scan shows every forgotten account, shadow profile, breach risk,
@@ -1019,18 +1008,12 @@ function FinalCTA() {
                 </p>
                 <div className="mt-9">
                     <PrimaryCTA size="lg">
-                        <Sparkles className="h-4 w-4" />
                         Get my free scan
                     </PrimaryCTA>
                 </div>
-                <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-foreground/60">
-                    {TRUST_POINTS.map((t) => (
-                        <li key={t.label} className="flex items-center gap-1.5">
-                            <t.icon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                            {t.label}
-                        </li>
-                    ))}
-                </ul>
+                <p className="mt-5 font-mono text-xs text-foreground/55">
+                    CASA Tier 2 verified · Read-only access · Never stored · Never sold
+                </p>
             </div>
         </section>
     );
@@ -1053,10 +1036,10 @@ function StickyMobileCTA() {
                 visible ? "translate-y-0" : "translate-y-full"
             }`}
         >
-            <div className="border-t border-foreground/10 bg-background/95 backdrop-blur-xl px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="border-t border-foreground/10 bg-background px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
                 <Link
                     href={SIGNUP_HREF}
-                    className="flex items-center justify-center gap-2 w-full rounded-full bg-emerald-500 py-3.5 text-sm font-semibold text-black shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition"
+                    className="flex items-center justify-center gap-2 w-full rounded-md bg-primary py-3.5 text-sm font-semibold text-primary-foreground shadow-lg active:scale-[0.98] transition"
                 >
                     Start free scan
                     <ArrowRight className="h-4 w-4" />
@@ -1089,7 +1072,7 @@ export default function HomePageClient({ latestBlogs }: { latestBlogs?: React.Re
                 data-key="315c76c9fbd4cb83cdb225d1c9b0cf0138a42ec10f1650597edf8063aaa85fcd"
                 data-plan="pro"
                 data-theme="auto"
-                data-primary-color="#10B981"
+                data-primary-color="#1F5F4A"
             />
 
             <Hero />

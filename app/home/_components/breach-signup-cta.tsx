@@ -53,7 +53,7 @@ export function BreachSignupCta({
 
                 <Link
                     href={signupHrefFor(query)}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-emerald-400 transition"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition"
                 >
                     Connect inbox (free)
                     <ArrowRight className="h-4 w-4" />

@@ -219,7 +219,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
         return (
             <SkeletonGroup label="Loading account" className="space-y-6 min-h-[400px]">
                 <div className="flex items-center gap-4">
-                    <Skeleton className="h-14 w-14 rounded-xl" />
+                    <Skeleton className="h-14 w-14 rounded-lg" />
                     <div className="space-y-2.5 flex-1">
                         <Skeleton className="h-6 w-48" />
                         <Skeleton className="h-3.5 w-32" />
@@ -227,13 +227,13 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">
                     {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="rounded-lg border border-foreground/5 bg-foreground/2 p-5 space-y-3">
+                        <div key={i} className="rounded-lg border border-foreground/10 bg-card p-5 space-y-3">
                             <Skeleton className="h-3 w-20" />
                             <Skeleton className="h-6 w-28" />
                         </div>
                     ))}
                 </div>
-                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-3">
+                <div className="rounded-lg border border-foreground/10 bg-card p-6 space-y-3">
                     <Skeleton className="h-4 w-40" />
                     <Skeleton className="h-3.5 w-full" />
                     <Skeleton className="h-3.5 w-4/5" />
@@ -263,19 +263,19 @@ export default function AccountDetailsPage({ accountId }: Props) {
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="flex items-start gap-4">
                     <Link href="/dashboard/accounts" className="shrink-0">
-                        <Button variant="ghost" size="sm" className="gap-2 px-2 border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3">
+                        <Button variant="ghost" size="sm" className="gap-2 px-2 border border-foreground/10 bg-card hover:border-foreground/20 hover:bg-foreground/[0.03]">
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline text-sm">Back</span>
                         </Button>
                     </Link>
 
                     {/* Logo */}
-                    <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-foreground/10 bg-foreground/5 shrink-0 flex items-center justify-center">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-foreground/10 bg-foreground/5 shrink-0 flex items-center justify-center">
                         <ServiceLogo
                             src={account.logo_url}
                             domain={account.domain}
                             name={account.name}
-                            fallbackClassName="text-foreground/40 text-xl font-bold"
+                            fallbackClassName="text-foreground/55 text-xl font-bold"
                         />
                     </div>
 
@@ -363,7 +363,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
             </div>
 
             {/* Risk Status Banner */}
-            <Card className="border-foreground/5 bg-foreground/2">
+            <Card className="border-foreground/10 bg-card">
                 <CardContent className="py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -391,7 +391,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="bg-transparent border-b border-foreground/5 w-full justify-start">
+                <TabsList className="bg-transparent border-b border-foreground/10 w-full justify-start">
                     <TabsTrigger
                         value="overview"
                         className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"
@@ -418,7 +418,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 <TabsContent value="overview" className="space-y-6 mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Account Info */}
-                        <Card className="border-foreground/5 bg-foreground/2">
+                        <Card className="border-foreground/10 bg-card">
                             <CardHeader>
                                 <CardTitle className="text-lg">Account Information</CardTitle>
                             </CardHeader>
@@ -459,7 +459,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                         </Card>
 
                         {/* Quick Actions */}
-                        <Card className="border-foreground/5 bg-foreground/2">
+                        <Card className="border-foreground/10 bg-card">
                             <CardHeader>
                                 <CardTitle className="text-lg">Quick Actions</CardTitle>
                                 <CardDescription>Manage this account</CardDescription>
@@ -557,7 +557,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 <TabsContent value="deletion" className="space-y-6 mt-6">
                     {/* Deletion Request Status Banner */}
                     {account.deletion_request && (
-                        <Card className="border-foreground/5 bg-foreground/2">
+                        <Card className="border-foreground/10 bg-card">
                             <CardHeader className="pb-3">
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     Deletion Request
@@ -608,7 +608,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                         </Card>
                     )}
 
-                    <Card className="border-foreground/5 bg-foreground/2">
+                    <Card className="border-foreground/10 bg-card">
                         <CardHeader>
                             <CardTitle className="text-lg">
                                 {account.deletion_request ? "Deletion Instructions" : "Delete Your Account"}
@@ -714,7 +714,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                     const stepDescription = isStringStep ? step : step.description;
 
                                                     return (
-                                                        <div key={index} className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                        <div key={index} className="flex items-start gap-4 p-4 rounded-lg bg-card border border-foreground/10">
                                                             <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                                 {stepNumber}
                                                             </div>
@@ -730,7 +730,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                             </>
                                         ) : (
                                             <>
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-card border border-foreground/10">
                                                     <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                         1
                                                     </div>
@@ -753,7 +753,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-card border border-foreground/10">
                                                     <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                         2
                                                     </div>
@@ -765,7 +765,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-card border border-foreground/10">
                                                     <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
                                                         3
                                                     </div>
@@ -795,7 +795,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                         )}
 
                                         {/* Mark as deleted step */}
-                                        <div className="flex items-start gap-4 p-4 rounded-lg bg-foreground/2 border border-foreground/5">
+                                        <div className="flex items-start gap-4 p-4 rounded-lg bg-card border border-foreground/10">
                                             <div className="flex items-center justify-center h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                                                 ✓
                                             </div>
@@ -806,7 +806,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                 </p>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
-                                                        <Button className="mt-3 gap-2 bg-emerald-600 hover:bg-emerald-700">
+                                                        <Button className="mt-3 gap-2 bg-primary hover:bg-primary/90">
                                                             <CheckCircle2 className="h-4 w-4" />
                                                             I&apos;ve Deleted This Account
                                                         </Button>
@@ -822,7 +822,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                             <AlertDialogAction
                                                                 onClick={() => markAsDeleted.mutate()}
-                                                                className="bg-emerald-600 hover:bg-emerald-700"
+                                                                className="bg-primary hover:bg-primary/90"
                                                             >
                                                                 {markAsDeleted.isPending ? <Spinner className="h-4 w-4" /> : "Confirm"}
                                                             </AlertDialogAction>
@@ -841,7 +841,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                 {/* Breaches Tab */}
                 {account.is_breached && (
                     <TabsContent value="breaches" className="space-y-6 mt-6">
-                        <Card className="border-foreground/5 bg-foreground/2">
+                        <Card className="border-foreground/10 bg-card">
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     <ShieldAlert className="h-5 w-5 text-red-600 dark:text-red-400" />
@@ -877,7 +877,7 @@ export default function AccountDetailsPage({ accountId }: Props) {
                                         <p className="text-foreground/60">
                                             This account was found in a breach, but details are not available.
                                         </p>
-                                        <p className="text-sm text-foreground/40 mt-1">
+                                        <p className="text-sm text-foreground/55 mt-1">
                                             We recommend changing your password for this service.
                                         </p>
                                     </div>

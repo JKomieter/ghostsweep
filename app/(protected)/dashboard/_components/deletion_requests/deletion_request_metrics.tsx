@@ -16,19 +16,19 @@ function StatCard({
     const dotColor = {
         default: "bg-foreground/20",
         warning: "bg-amber-500",
-        success: "bg-emerald-500",
+        success: "bg-primary",
         danger: "bg-red-500",
     }[accent];
 
     return (
-        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
+        <div className="rounded-lg border border-foreground/10 bg-card p-4">
             <div className="flex items-start justify-between">
-                <div className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+                <div className="text-xs font-medium text-foreground/55">
                     {label}
                 </div>
                 <div className={`h-1 w-1 rounded-full ${dotColor}`} />
             </div>
-            <h2 className="mt-2 text-2xl font-light text-foreground">
+            <h2 className="mt-2 text-2xl font-medium text-foreground">
                 {value}
             </h2>
         </div>

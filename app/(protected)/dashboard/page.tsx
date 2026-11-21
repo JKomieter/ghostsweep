@@ -15,13 +15,13 @@ export default function DashboardPage() {
         <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
             <div className="max-w-6xl mx-auto space-y-8">
                 <DashboardPageTitle />
-                <BusterPromoBanner />
-                <ReferralShareCta />
-                <FreemiumUpgradeTeaser />
                 <SummaryCards />
-                <ShareResultsCard />
+                <BusterPromoBanner />
+                <FreemiumUpgradeTeaser />
                 <CleanupProgress />
                 <DashboardUserServicesTable />
+                <ShareResultsCard />
+                <ReferralShareCta />
                 <div className="grid sm:grid-cols-3 gap-6 grid-cols-1">
                     <Breaches />
                     <News />

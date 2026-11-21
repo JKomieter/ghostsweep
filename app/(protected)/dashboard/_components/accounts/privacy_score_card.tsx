@@ -12,10 +12,10 @@ export default function PrivacyScoreCard({
     };
 
     return (
-        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 hover:bg-foreground/3">
+        <div className="rounded-lg border border-foreground/10 bg-card p-6 hover:bg-foreground/[0.03]">
             <div className="space-y-3">
-                <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">Privacy Score</span>
-                <div className={`text-4xl font-light tracking-tight ${getScoreColor(privacyScore)}`}>
+                <span className="text-xs font-medium text-foreground/55">Privacy Score</span>
+                <div className={`text-3xl font-mono font-medium tabular-nums ${getScoreColor(privacyScore)}`}>
                     {privacyScore}/100
                 </div>
             </div>

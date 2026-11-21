@@ -78,9 +78,9 @@ export default function ReferralShareCta() {
     };
 
     return (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="rounded-lg border border-border bg-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
-                <p className="text-sm font-semibold text-foreground">Invite friends. Get a free month.</p>
+                <p className="text-sm font-medium text-foreground">Invite friends. Get a free month.</p>
                 <p className="text-sm text-muted-foreground">
                     Get a month free for every friend who upgrades. They get 50% off too!
                 </p>
@@ -122,7 +122,7 @@ export default function ReferralShareCta() {
                         )}
                         <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm text-foreground flex items-center gap-2">
                             <Link className="size-4 text-muted-foreground" />
-                            <span className="break-all">{displayLink}</span>
+                            <span className="break-all font-mono text-xs">{displayLink}</span>
                         </div>
                         <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground leading-relaxed">
                             {shareMessage}
@@ -133,7 +133,7 @@ export default function ReferralShareCta() {
                                 disabled={!isReady}
                                 className={
                                     isCopied
-                                        ? "bg-emerald-600 text-white hover:bg-emerald-600"
+                                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
                                         : ""
                                 }
                             >

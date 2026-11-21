@@ -34,13 +34,13 @@ export default function RemediationQueue({
       <div>
         <div className="flex items-center gap-2 mb-3">
           <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+          <span className="text-xs font-medium text-foreground/55">
             Active Breaches
           </span>
         </div>
 
         {breachedProfiles.length === 0 ? (
-          <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 text-center">
+          <div className="rounded-lg border border-foreground/10 bg-card p-4 text-center">
             <Shield className="h-5 w-5 text-emerald-500/60 mx-auto mb-2" />
             <p className="text-xs text-foreground/30">No breaches detected</p>
           </div>
@@ -61,7 +61,7 @@ export default function RemediationQueue({
                 </div>
                 <p
                   className={`text-[10px] font-mono mt-1 ${
-                    isPremium ? "text-foreground/40" : "blur-[3px] text-foreground/40 select-none"
+                    isPremium ? "text-foreground/55" : "blur-[3px] text-foreground/55 select-none"
                   }`}
                 >
                   {entry.profile_url}
@@ -74,14 +74,14 @@ export default function RemediationQueue({
 
       {/* Reveal Toggle / Upgrade CTA */}
       {!isPremium && breachedProfiles.length > 0 && (
-        <div className="rounded-lg border border-emerald-500/20 bg-linear-to-br from-emerald-500/5 to-transparent p-4">
+        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
           <div className="flex items-center gap-2 mb-2">
             <Lock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               Reveal Full Data
             </span>
           </div>
-          <p className="text-[11px] text-foreground/40 mb-3 leading-relaxed">
+          <p className="text-[11px] text-foreground/55 mb-3 leading-relaxed">
             Upgrade to see full profile URLs, leaked credentials, and unlock
             automated account deletion.
           </p>
@@ -98,12 +98,12 @@ export default function RemediationQueue({
 
       {/* Cleartext toggle for premium users */}
       {isPremium && breachedProfiles.length > 0 && (
-        <div className="flex items-center justify-between rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2.5">
+        <div className="flex items-center justify-between rounded-lg border border-foreground/10 bg-card px-3 py-2.5">
           <div className="flex items-center gap-2">
-            <Eye className="h-3.5 w-3.5 text-foreground/40" />
+            <Eye className="h-3.5 w-3.5 text-foreground/55" />
             <span className="text-xs text-foreground/60">Show Full URLs</span>
           </div>
-          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
         </div>
       )}
     </div>

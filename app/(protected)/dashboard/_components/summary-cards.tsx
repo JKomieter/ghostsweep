@@ -9,28 +9,28 @@ const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD",
 
 type RecentFind = { id: string; type: string; amount: number; service_name: string | null; detected_at: string | null };
 
-function StatCard({ label, value, accent = "default", href, hint }: { label: string; value: React.ReactNode; accent?: "default" | "danger" | "warning" | "success"; href?: string; hint?: string }) {
-    const accentConfig = {
-        default: { text: "text-foreground", indicator: "bg-foreground/40" },
-        danger: { text: "text-foreground", indicator: "bg-red-500" },
-        warning: { text: "text-foreground", indicator: "bg-amber-500" },
-        success: { text: "text-foreground", indicator: "bg-emerald-500" },
+// One ledger strip rather than five floating cards: hairline-divided cells, plain labels,
+// monospaced figures. Colour only marks meaning (a small status dot), never decoration.
+function StatCell({ label, value, accent = "default", href, hint }: { label: string; value: React.ReactNode; accent?: "default" | "danger" | "warning" | "success"; href?: string; hint?: string }) {
+    const dot = {
+        default: null,
+        danger: "bg-red-500",
+        warning: "bg-amber-500",
+        success: "bg-primary",
     }[accent];
     const content = (
-        <div className="group relative h-full">
-            <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
-                <div className="flex items-start justify-between">
-                    <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">{label}</span>
-                    {hint && <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">{hint}</span>}
-                </div>
-                <div className="flex items-end justify-between">
-                    <span className={`text-4xl font-light tracking-tight ${accentConfig.text}`}>{value}</span>
-                    <div className={`h-1 w-1 rounded-full ${accentConfig.indicator}`} />
-                </div>
+        <div className="flex h-full flex-col justify-between gap-3 bg-card p-5 transition-colors group-hover:bg-background">
+            <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2 text-xs text-foreground/60">
+                    {dot && <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${dot}`} />}
+                    {label}
+                </span>
+                {hint && <span className="text-xs font-medium text-primary">{hint}</span>}
             </div>
+            <span className="font-mono text-2xl font-medium tabular-nums text-foreground">{value}</span>
         </div>
     );
-    if (href) return <Link href={href} className="block">{content}</Link>;
+    if (href) return <Link href={href} className="group block h-full">{content}</Link>;
     return content;
 }
 
@@ -62,28 +62,25 @@ export default function SummaryCards() {
     const recent = data?.recent ?? [];
 
     return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            <StatCard
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-foreground/10 bg-foreground/10 sm:grid-cols-2 xl:grid-cols-5">
+            <StatCell
                 label="Total Value Found"
-                value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : `$${totalValue.toLocaleString()}`}
+                value={isLoading ? <Skeleton className="inline-block align-middle h-7 w-20" /> : `$${totalValue.toLocaleString()}`}
                 accent="success"
                 href="/dashboard/value-recovery"
                 hint={planData?.current_plan === "free" && totalValue > 0 ? "Unlock to claim →" : undefined}
             />
-            <StatCard
+            <StatCell
                 label="Active Subscriptions"
-                value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : `${usd.format(totalSubs)}/mo`}
+                value={isLoading ? <Skeleton className="inline-block align-middle h-7 w-20" /> : `${usd.format(totalSubs)}/mo`}
                 accent="warning"
                 href="/dashboard/subscriptions"
             />
-            <StatCard label="Newsletters" value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : newsletters} href="/dashboard/newsletters" />
-            <StatCard label="Accounts" value={isLoading ? <Skeleton className="inline-block align-middle h-10 w-24" /> : oldAccounts} href="/dashboard/accounts" />
-            <div className="group relative h-full">
-                <div className="flex h-full flex-col justify-between space-y-4 rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-all hover:border-foreground/10 hover:bg-foreground/3">
-                    <div className="flex items-start justify-between">
-                        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">Recent Finds</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
+            <StatCell label="Newsletters" value={isLoading ? <Skeleton className="inline-block align-middle h-7 w-20" /> : newsletters} href="/dashboard/newsletters" />
+            <StatCell label="Accounts" value={isLoading ? <Skeleton className="inline-block align-middle h-7 w-20" /> : oldAccounts} href="/dashboard/accounts" />
+            <div className="flex h-full flex-col gap-3 bg-card p-5 sm:col-span-2 xl:col-span-1">
+                <span className="text-xs text-foreground/60">Recent finds</span>
+                <div>
                         {isLoading ? (
                             <div className="space-y-2">
                                 <Skeleton className="h-3 w-full" />
@@ -91,7 +88,7 @@ export default function SummaryCards() {
                                 <Skeleton className="h-3 w-3/5" />
                             </div>
                         ) : recent.length === 0 ? (
-                            <span className="text-foreground/40 text-sm">No recent finds</span>
+                            <span className="text-foreground/50 text-sm">No recent finds</span>
                         ) : (
                             recent.map((item: RecentFind) => (
                                 <div key={item.id} className="text-xs text-foreground/80 truncate">
@@ -106,7 +103,6 @@ export default function SummaryCards() {
                                 </div>
                             ))
                         )}
-                    </div>
                 </div>
             </div>
         </div>

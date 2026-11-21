@@ -50,7 +50,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
 
   if (done) {
     return (
-      <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4 backdrop-blur-sm">
+      <div className="mt-4 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4">
         <h2 className="text-sm font-light text-emerald-700 dark:text-emerald-300">
           You&apos;re unsubscribed
         </h2>
@@ -82,7 +82,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
           value={email}
           placeholder="you@example.com"
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-foreground placeholder:text-foreground/65 outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 backdrop-blur-sm"
+          className="w-full rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-foreground placeholder:text-foreground/65 outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
         />
       </div>
 
@@ -90,7 +90,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
       <input type="hidden" value={list} readOnly />
 
       {error && (
-        <p className="text-xs text-red-700 dark:text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 backdrop-blur-sm">
+        <p className="text-xs text-red-700 dark:text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
           {error}
         </p>
       )}

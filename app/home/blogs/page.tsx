@@ -38,7 +38,7 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
             <div className="mx-auto max-w-4xl px-6 pt-24 pb-20 sm:pt-32 space-y-12">
                 {/* Header */}
                 <header className="text-center max-w-2xl mx-auto space-y-5">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
+                    <div className="inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
                         <Ghost className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         GhostSweep Blog
                     </div>
@@ -82,7 +82,7 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
                             <Link
                                 href={pageHref(page - 1)}
                                 rel="prev"
-                                className="inline-flex items-center gap-1.5 rounded-full border border-foreground/10 px-4 py-2 text-foreground/70 hover:text-foreground hover:border-foreground/20 transition"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-foreground/10 px-4 py-2 text-foreground/70 hover:text-foreground hover:border-foreground/20 transition"
                             >
                                 <ArrowLeft className="h-3.5 w-3.5" />
                                 Newer
@@ -99,7 +99,7 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
                             <Link
                                 href={pageHref(page + 1)}
                                 rel="next"
-                                className="inline-flex items-center gap-1.5 rounded-full border border-foreground/10 px-4 py-2 text-foreground/70 hover:text-foreground hover:border-foreground/20 transition"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-foreground/10 px-4 py-2 text-foreground/70 hover:text-foreground hover:border-foreground/20 transition"
                             >
                                 Older
                                 <ArrowRight className="h-3.5 w-3.5" />

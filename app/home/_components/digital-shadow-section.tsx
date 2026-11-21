@@ -106,7 +106,7 @@ function NetworkGraphPreview() {
             y: cy,
             r: 18,
             type: "user",
-            color: "#00f2de",
+            color: "#1f5f4a",
             pulsePhase: 0,
         };
 
@@ -152,7 +152,7 @@ function NetworkGraphPreview() {
                 to: s.id,
                 kind: "user_service",
                 weight: 2,
-                color: "#00f2de",
+                color: "#1f5f4a",
                 alpha: 0.6,
                 dashed: false,
             });
@@ -401,9 +401,9 @@ function NetworkGraphPreview() {
 
     return (
         <div className="relative w-full">
-            <div className="rounded-2xl border border-foreground/5 bg-gradient-to-b from-card to-background overflow-hidden shadow-2xl">
+            <div className="rounded-2xl border border-foreground/5 bg-card overflow-hidden shadow-sm">
                 {/* Header */}
-                <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-foreground/5 bg-background/40 backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-foreground/5 bg-background">
                     <div className="min-w-0">
                         <div className="text-base font-semibold text-foreground flex items-center gap-2">
                             <span className="text-cyan-600 dark:text-cyan-400">⚡</span>
@@ -431,7 +431,7 @@ function NetworkGraphPreview() {
                             className="absolute z-50 pointer-events-none"
                             style={{ left: hovered.x, top: hovered.y }}
                         >
-                            <div className="bg-background/90 backdrop-blur-xl border border-foreground/10 rounded-xl px-4 py-3 shadow-2xl">
+                            <div className="bg-background border border-foreground/10 rounded-xl px-4 py-3 shadow-sm">
                                 <div className="text-sm font-semibold text-foreground">{hovered.title}</div>
                                 <div className="text-xs text-foreground/60 mt-1">{hovered.desc}</div>
                             </div>
@@ -440,7 +440,7 @@ function NetworkGraphPreview() {
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-3 border-t border-foreground/5 bg-background/20 backdrop-blur">
+                <div className="px-6 py-3 border-t border-foreground/5 bg-background">
                     <div className="flex items-center justify-between text-xs">
                         <div className="text-foreground/50">
                             <span className="text-cyan-600 dark:text-cyan-400 font-medium">{MOCK_SERVICES.length} services</span>

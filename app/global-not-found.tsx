@@ -36,7 +36,7 @@ export default function GlobalNotFound() {
                     {/* Main Content */}
                     <div className="text-center max-w-2xl">
                         <div className="mb-6">
-                            <span className="inline-block px-4 py-2 bg-cyan-400/10 text-cyan-600 dark:text-cyan-400 rounded-full text-sm font-semibold">
+                            <span className="inline-block px-4 py-2 bg-cyan-400/10 text-cyan-600 dark:text-cyan-400 rounded-md text-sm font-semibold">
                                 Error 404
                             </span>
                         </div>

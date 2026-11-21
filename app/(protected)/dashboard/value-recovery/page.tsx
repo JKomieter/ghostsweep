@@ -22,7 +22,7 @@ const RISK_CONFIG: Record<RiskLevel, { color: string; bgColor: string; borderCol
   safe: { color: "text-emerald-600 dark:text-emerald-400", bgColor: "bg-emerald-500/10", borderColor: "border-emerald-500/30", icon: ShieldCheck, label: "Verified Safe" },
   caution: { color: "text-amber-700 dark:text-amber-400", bgColor: "bg-amber-500/10", borderColor: "border-amber-500/30", icon: AlertTriangle, label: "Use Caution" },
   high_risk: { color: "text-red-600 dark:text-red-400", bgColor: "bg-red-500/10", borderColor: "border-red-500/30", icon: ShieldAlert, label: "High Risk" },
-  unknown: { color: "text-foreground/40", bgColor: "bg-foreground/5", borderColor: "border-foreground/10", icon: ShieldQuestion, label: "Unverified" },
+  unknown: { color: "text-foreground/55", bgColor: "bg-foreground/5", borderColor: "border-foreground/10", icon: ShieldQuestion, label: "Unverified" },
 };
 
 const TABS = [
@@ -197,25 +197,24 @@ export default function ValueRecoveryPage() {
       {/* Deep Audit upgrade banner for free users */}
       <DeepAuditBanner />
       
-      <div className="relative mx-auto max-w-4xl rounded-xl border border-foreground/10 bg-background/40 p-1 backdrop-blur-xl shadow-2xl mb-10 overflow-hidden">
-        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 blur opacity-50" />
-        <div className="relative rounded-lg bg-card p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+      <div className="rounded-lg border border-foreground/10 bg-card mb-10">
+        <div className="p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Potential Value</div>
-            <div className="text-4xl font-light text-foreground flex items-baseline gap-3">
+            <div className="text-xs text-foreground/50 mb-4 font-medium">Potential Value</div>
+            <div className="text-3xl font-mono font-medium tabular-nums text-foreground flex items-baseline gap-3">
               <span className="text-emerald-600 dark:text-emerald-400">
                 {loading ? <Skeleton className="h-10 w-32" /> : (
                   // previewOnly ? <span className="blur-sm select-none">$•,•••</span> : formatCurrency(total)
                     formatCurrency(total)
                 )}
               </span>
-              <span className="text-lg font-light text-foreground/40">recoverable</span>
+              <span className="text-lg font-normal text-foreground/55">recoverable</span>
             </div>
             {previewOnly && total > 0 && (
               <button
                 type="button"
                 onClick={() => openPaywall("value")}
-                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400"
+                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
               >
                 <Lock className="h-4 w-4" />
                 {formatCurrency(total)} found — unlock to claim
@@ -223,7 +222,7 @@ export default function ValueRecoveryPage() {
             )}
           </div>
           <div className="flex flex-col gap-3 min-w-[240px]">
-             <div className="flex items-center justify-between text-xs text-foreground/50 uppercase tracking-wider font-semibold">
+             <div className="flex items-center justify-between text-xs text-foreground/50 font-medium">
                 <span>Recovery Status</span>
                 <span className="text-emerald-600 dark:text-emerald-400">{progress}%</span>
              </div>
@@ -237,10 +236,10 @@ export default function ValueRecoveryPage() {
       </div>
 
       {/* Filters and sort */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 px-4 sm:px-6 py-4 rounded-xl bg-foreground/2 border border-foreground/5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 px-4 sm:px-6 py-4 rounded-lg bg-card border border-foreground/10">
         <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
           <Tabs value={tab} onValueChange={setTab} className="w-full">
-            <TabsList className="bg-background/40 border border-foreground/5 w-full justify-start md:justify-center lg:justify-start min-w-max">
+            <TabsList className="bg-background/40 border border-foreground/10 w-full justify-start md:justify-center lg:justify-start min-w-max">
               {TABS.map(t => (
                 <TabsTrigger 
                   key={t.key} 
@@ -329,10 +328,10 @@ export default function ValueRecoveryPage() {
       {/* Value cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {loading ? (
-          Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-2xl bg-foreground/5" />)
+          Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-lg bg-foreground/5" />)
         ) : data?.values && data.values.length > 0 ? (
           data.values.map((item: FoundValue) => (
-            <div key={item.id} className="animate-content-in group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10 cursor-pointer" onClick={() => setModalValue(item)}>
+            <div key={item.id} className="animate-content-in group relative rounded-lg border border-foreground/10 bg-card p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/20 cursor-pointer" onClick={() => setModalValue(item)}>
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-foreground/10 text-foreground hover:bg-foreground/20"><ExternalLink className="h-4 w-4" /></Button>
               </div>
@@ -342,9 +341,9 @@ export default function ValueRecoveryPage() {
                     <Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5 border-foreground/20 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500 rounded-md" />
                 </div>
                 
-                <div className="h-12 w-12 rounded-xl bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
+                <div className="h-12 w-12 rounded-lg bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
                     {item.locked ? (
-                        <Lock className="h-5 w-5 text-foreground/40" />
+                        <Lock className="h-5 w-5 text-foreground/55" />
                     ) : item.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -370,8 +369,8 @@ export default function ValueRecoveryPage() {
                   </div>
                   
                   <div className="flex items-center gap-2 mb-4 flex-wrap">
-                     <Badge variant="secondary" className="bg-foreground/5 hover:bg-foreground/10 text-foreground/60 border border-foreground/5 font-mono text-[10px] tracking-wider uppercase">{item.type.replace("_", " ")}</Badge>
-                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                     <Badge variant="secondary" className="bg-foreground/5 hover:bg-foreground/10 text-foreground/60 border border-foreground/10 font-mono text-xs">{item.type.replace("_", " ")}</Badge>
+                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md border ${
                         item.status === 'active' ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10' : 
                         item.status === 'expired' ? 'border-red-500/30 text-red-500 bg-red-400/10' : 
                         'border-blue-500/30 text-blue-600 dark:text-blue-400 bg-blue-500/10'
@@ -384,7 +383,7 @@ export default function ValueRecoveryPage() {
                         const config = RISK_CONFIG[riskLevel];
                         const RiskIcon = config.icon;
                         return (
-                          <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${config.borderColor} ${config.color} ${config.bgColor}`}>
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md border ${config.borderColor} ${config.color} ${config.bgColor}`}>
                             <RiskIcon className="h-3 w-3" />
                             {config.label}
                           </span>
@@ -393,16 +392,16 @@ export default function ValueRecoveryPage() {
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-light text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">{formatCurrency(Number(item.amount) || 0)}</span>
+                    <span className="text-3xl font-mono font-medium tabular-nums text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">{formatCurrency(Number(item.amount) || 0)}</span>
                   </div>
-                   <div className="text-xs text-foreground/40 mt-2 font-mono">Found {item.detected_at && new Date(item.detected_at).toLocaleDateString()}</div>
+                   <div className="text-xs text-foreground/55 mt-2 font-mono">Found {item.detected_at && new Date(item.detected_at).toLocaleDateString()}</div>
                    {previewOnly && item.has_secret && (
                      item.locked ? (
-                       <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
+                       <div className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
                          <Lock className="h-3 w-3" /> Code locked
                        </div>
                      ) : (
-                       <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                       <div className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                          <Gift className="h-3 w-3" /> Free unlock — code revealed
                        </div>
                      )
@@ -417,11 +416,10 @@ export default function ValueRecoveryPage() {
         
         {/* Free tier teaser */}
         {previewOnly && count > previewCount && (
-          <div className="col-span-full mt-2 rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-orange-500/5 to-transparent p-8 text-center relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-amber-500/10 blur-3xl" />
+          <div className="col-span-full mt-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-8 text-center relative overflow-hidden">
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/30">
-                <span className="text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400">
+              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-md bg-amber-500/20 border border-amber-500/30">
+                <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
                   🔒 More Hidden In Your History
                 </span>
               </div>
@@ -436,10 +434,10 @@ export default function ValueRecoveryPage() {
                 You&apos;re only seeing <span className="text-foreground font-medium">{previewCount}</span> of them. 
                 Our <span className="text-amber-700 dark:text-amber-300 font-medium">Deep Audit</span> goes back <span className="text-amber-700 dark:text-amber-300 font-medium">10+ years</span>.
               </p>
-              <p className="text-foreground/40 text-sm mb-6">
+              <p className="text-foreground/55 text-sm mb-6">
                 Unlock gift cards, coupons, rewards points, and refunds hiding deeper in your inbox.
               </p>
-              <button type="button" onClick={() => openPaywall("value")} className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 px-6 py-3 text-sm font-semibold text-black transition shadow-lg shadow-amber-500/20">
+              <button type="button" onClick={() => openPaywall("value")} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 px-6 py-3 text-sm font-semibold text-primary-foreground transition">
                 <span>{total > 0 ? `Unlock to claim ${formatCurrency(total)}` : `Unlock all ${count} items`}</span>
                 <span>→</span>
               </button>
@@ -448,7 +446,7 @@ export default function ValueRecoveryPage() {
         )}
         {/* Modal for value details */}
         <Dialog open={!!modalValue} onOpenChange={open => !open && setModalValue(null)}>
-          <DialogContent className="max-w-xl p-0 bg-card border border-foreground/10 rounded-2xl shadow-2xl overflow-hidden">
+          <DialogContent className="max-w-xl p-0 bg-card border border-foreground/10 rounded-lg overflow-hidden">
              
              {modalValue && (
              <>
@@ -456,9 +454,9 @@ export default function ValueRecoveryPage() {
                   <DialogHeader>
                     <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-start gap-4">
-                            <div className="h-14 w-14 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
+                            <div className="h-14 w-14 rounded-lg bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
                               {modalValue.locked ? (
-                                <Lock className="h-6 w-6 text-foreground/40" />
+                                <Lock className="h-6 w-6 text-foreground/55" />
                               ) : modalValue.logo_url ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={modalValue.logo_url} alt="logo" className="h-full w-full object-contain" />
@@ -473,8 +471,8 @@ export default function ValueRecoveryPage() {
                                   {modalValue.locked ? <Hidden placeholder="Hidden merchant" /> : modalValue.service_name}
                                 </DialogTitle>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                     <Badge variant="outline" className="text-[10px] uppercase tracking-wider bg-foreground/5 border-foreground/10 text-foreground/50">{modalValue.type.replace("_", " ")}</Badge>
-                                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                                     <Badge variant="outline" className="text-xs bg-foreground/5 border-foreground/10 text-foreground/50">{modalValue.type.replace("_", " ")}</Badge>
+                                      <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium ${
                                         modalValue.status === 'active' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-400/10' : 
                                         modalValue.status === 'expired' ? 'text-red-600 dark:text-red-400 bg-red-400/10' : 
                                         'text-blue-600 dark:text-blue-400 bg-blue-400/10'
@@ -487,7 +485,7 @@ export default function ValueRecoveryPage() {
                                       const config = RISK_CONFIG[riskLevel];
                                       const RiskIcon = config.icon;
                                       return (
-                                        <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${config.borderColor} ${config.color} ${config.bgColor}`}>
+                                        <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md border ${config.borderColor} ${config.color} ${config.bgColor}`}>
                                           <RiskIcon className="h-3 w-3" />
                                           {config.label}
                                         </span>
@@ -497,8 +495,8 @@ export default function ValueRecoveryPage() {
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-3xl font-light text-foreground">{formatCurrency(Number(modalValue.amount) || 0)}</div>
-                            <div className="text-xs text-foreground/40 font-mono">ESTIMATED VALUE</div>
+                            <div className="text-3xl font-mono font-medium tabular-nums text-foreground">{formatCurrency(Number(modalValue.amount) || 0)}</div>
+                            <div className="text-xs text-foreground/55 font-mono">ESTIMATED VALUE</div>
                         </div>
                     </div>
                   </DialogHeader>
@@ -548,17 +546,17 @@ export default function ValueRecoveryPage() {
                  {/* Email Info Section */}
                  <div>
                      <div className="grid grid-cols-[80px_1fr] gap-x-4 gap-y-2 items-center text-sm">
-                        <span className="text-foreground/40 font-medium text-xs uppercase tracking-wide">Subject</span>
+                        <span className="text-foreground/55 font-medium text-xs">Subject</span>
                         <div className="text-foreground/90 truncate min-w-0">
                           {modalValue.locked ? <Hidden placeholder="Your order confirmation" /> : modalValue.email_subject || "No subject"}
                         </div>
                         
-                        <span className="text-foreground/40 font-medium text-xs uppercase tracking-wide">Sender</span>
+                        <span className="text-foreground/55 font-medium text-xs">Sender</span>
                         <div className="text-foreground/90 truncate min-w-0">
                           {modalValue.locked ? <Hidden placeholder="rewards@merchant.com" /> : modalValue.email_from || "Unknown"}
                         </div>
 
-                         <span className="text-foreground/40 font-medium text-xs uppercase tracking-wide">Date</span>
+                         <span className="text-foreground/55 font-medium text-xs">Date</span>
                          <span className="text-foreground/90">{modalValue.email_date || "-"}</span>
                      </div>
                  </div>
@@ -566,7 +564,7 @@ export default function ValueRecoveryPage() {
                  {/* Snippet / Data */}
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      <div className="space-y-4">
-                        <h4 className="text-xs uppercase tracking-widest text-foreground/40 font-semibold">Secure Data</h4>
+                        <h4 className="text-xs text-foreground/55 font-medium">Secure Data</h4>
                         
                         {/* High-risk items: block access to codes */}
                         {modalValue.risk_level === "high_risk" ? (
@@ -592,7 +590,7 @@ export default function ValueRecoveryPage() {
                             <Button
                               size="sm"
                               onClick={() => { setModalValue(null); openPaywall("value"); }}
-                              className="bg-emerald-500 text-black hover:bg-emerald-400"
+                              className="bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                               Unlock code
                             </Button>
@@ -601,7 +599,7 @@ export default function ValueRecoveryPage() {
                         <div className="space-y-4">
                            {modalValue.code && (
                               <div>
-                                 <div className="text-[10px] text-foreground/40 uppercase tracking-widest mb-1.5">Code</div>
+                                 <div className="text-xs text-foreground/55 mb-1.5">Code</div>
                                  <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigator.clipboard.writeText(modalValue.code || "")}>
                                     <span className="font-mono text-lg text-emerald-600 dark:text-emerald-400 tracking-wide">{modalValue.code}</span>
                                     <Copy className="h-3.5 w-3.5 text-foreground/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
@@ -611,7 +609,7 @@ export default function ValueRecoveryPage() {
 
                            {modalValue.pin && (
                               <div>
-                                 <div className="text-[10px] text-foreground/40 uppercase tracking-widest mb-1.5">PIN</div>
+                                 <div className="text-xs text-foreground/55 mb-1.5">PIN</div>
                                  <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigator.clipboard.writeText(modalValue.pin || "")}>
                                     <span className="font-mono text-lg text-emerald-600 dark:text-emerald-400 tracking-wide">{modalValue.pin}</span>
                                     <Copy className="h-3.5 w-3.5 text-foreground/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
@@ -621,7 +619,7 @@ export default function ValueRecoveryPage() {
 
                            {modalValue.redemption_url && (
                               <div>
-                                 <div className="text-[10px] text-foreground/40 uppercase tracking-widest mb-1.5">Link</div>
+                                 <div className="text-xs text-foreground/55 mb-1.5">Link</div>
                                  <a href={modalValue.redemption_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors break-all">
                                     Redemption URL <ExternalLink className="h-3 w-3 opacity-50" />
                                  </a>
@@ -636,8 +634,8 @@ export default function ValueRecoveryPage() {
                      </div>
 
                      <div className="space-y-4">
-                        <h4 className="text-xs uppercase tracking-widest text-foreground/40 font-semibold">Context</h4>
-                         <div className="text-sm text-foreground/60 leading-relaxed italic border-l-2 border-foreground/5 pl-4 py-1">
+                        <h4 className="text-xs text-foreground/55 font-medium">Context</h4>
+                         <div className="text-sm text-foreground/60 leading-relaxed italic border-l-2 border-foreground/10 pl-4 py-1">
                             {modalValue.email_body_snippet ? (
                                <>
                                  &quot;{modalValue.email_body_snippet}&quot;
@@ -652,13 +650,13 @@ export default function ValueRecoveryPage() {
 
                  {/* Timestamps */}
                  <div className="px-6 pb-6">
-                    <div className="flex items-center justify-between text-[10px] text-foreground/30 font-mono pt-4 border-t border-foreground/5">
+                    <div className="flex items-center justify-between text-[10px] text-foreground/30 font-mono pt-4 border-t border-foreground/10">
                         <div>DETECTED: {new Date(modalValue.detected_at || "").toLocaleString()}</div>
                         <div>ID: {modalValue.id.slice(0, 8)}</div>
                     </div>
                  </div>
               
-               <div className="p-6 bg-foreground/2 border-t border-foreground/5 flex justify-end gap-3">
+               <div className="p-6 bg-card border-t border-foreground/10 flex justify-end gap-3">
                    <DialogClose asChild>
                        <Button variant="ghost" className="text-foreground/60 hover:text-foreground hover:bg-foreground/10">Close</Button>
                    </DialogClose>
@@ -672,7 +670,7 @@ export default function ValueRecoveryPage() {
                        Blocked for Safety
                      </Button>
                    ) : (
-                     <Button className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20" 
+                     <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" 
                        disabled={individualRecoveryMutation.isPending}
                        onClick={() => modalValue && markAsRecovered(modalValue.id)}>
                          {individualRecoveryMutation.isPending ? "Processing..." : "Mark as Recovered"}

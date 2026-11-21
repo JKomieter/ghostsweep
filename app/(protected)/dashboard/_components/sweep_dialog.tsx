@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import AccountSelect from "./account_select";
-import { Loader2, Clock, RefreshCw, Sparkles } from "lucide-react";
+import { Loader2, Clock, RefreshCw } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import { FREE_ACCOUNT_PREVIEW, scanCreditsLabel } from "@/lib/plans";
 import { UpgradeTrigger } from "./upgrade_paywall";
@@ -98,7 +98,7 @@ export default function SweepDialog({
             <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3 space-y-2">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin text-cyan-700 dark:text-cyan-300" />
-                <span className="font-medium text-cyan-800 dark:text-cyan-100">{latestSweep?.phaseLabel ?? "Running GhostSweep…"}</span>
+                <span className="font-medium text-cyan-800 dark:text-foreground">{latestSweep?.phaseLabel ?? "Running GhostSweep…"}</span>
               </div>
               <p className="text-[11px] text-cyan-800/80 dark:text-cyan-200/80">
                 {latestSweep?.phaseStep && latestSweep?.phaseCount
@@ -114,7 +114,7 @@ export default function SweepDialog({
               {typeof latestSweep?.progress === "number" && (
                 <div className="mt-1">
                   <div className="h-1.5 bg-cyan-900/50 rounded-full overflow-hidden">
-                    <div className="h-full bg-cyan-400 transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
+                    <div className="h-full bg-primary transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
                   </div>
                   <p className="mt-1 text-[11px] text-cyan-800 dark:text-cyan-200">{latestSweep.progress}% complete</p>
                 </div>
@@ -144,7 +144,7 @@ export default function SweepDialog({
               <div className={`rounded-lg border p-3 ${planIsFree ? 'border-foreground/10 bg-foreground/5' : 'border-emerald-500/30 bg-emerald-500/10'}`}>
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className={`h-4 w-4 ${planIsFree ? 'text-foreground/50' : 'text-emerald-600 dark:text-emerald-400'}`} />
-                  <span className={`text-xs font-semibold uppercase tracking-wider ${planIsFree ? 'text-foreground/50' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                  <span className={`text-xs font-medium ${planIsFree ? 'text-foreground/50' : 'text-emerald-600 dark:text-emerald-400'}`}>
                     Value Discovery Depth
                   </span>
                 </div>
@@ -154,7 +154,6 @@ export default function SweepDialog({
                       <span className="font-medium text-foreground">Quick Scan:</span> Last 2 years of subscriptions & trials
                     </p>
                     <div className="flex items-center gap-2 pt-1 border-t border-foreground/10">
-                      <Sparkles className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
                       <UpgradeTrigger
  reason="generic"
                         className="text-xs text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 underline underline-offset-2 transition-colors"
@@ -314,7 +313,7 @@ export default function SweepDialog({
                     </Button>
                   </a>
                   <a href="/api/microsoft/oauth" onClick={onStartConnectAction}>
-                    <Button size="sm" disabled={isConnecting} className="w-full sm:w-auto min-w-[130px] bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5">
+                    <Button size="sm" disabled={isConnecting} className="w-full sm:w-auto min-w-[130px] bg-primary hover:bg-primary/90 text-primary-foreground inline-flex items-center gap-1.5">
                       {isConnecting ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />

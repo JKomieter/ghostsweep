@@ -61,7 +61,7 @@ export default async function LinkExpiredPage({
     return (
         <main className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
             <div className="w-full max-w-md text-center flex flex-col items-center gap-6">
-                <div className="bg-amber-500/10 p-4 rounded-full border border-amber-500/20">
+                <div className="bg-amber-500/10 p-4 rounded-md border border-amber-500/20">
                     <Clock className="h-10 w-10 text-amber-700 dark:text-amber-300" />
                 </div>
 

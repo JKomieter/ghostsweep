@@ -69,13 +69,13 @@ export function BreachDetailsSheet({
 
     return (
         <Sheet open={open} onOpenChange={onOpenChangeAction}>
-            <SheetContent className="w-full sm:max-w-xl bg-background border-l border-foreground/5 text-sm px-6">
+            <SheetContent className="w-full sm:max-w-xl bg-background border-l border-foreground/10 text-sm px-6">
                 <SheetHeader className="space-y-3">
                     <SheetTitle className="flex flex-col gap-2">
-                        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+                        <span className="text-xs font-medium text-foreground/55">
                             Breach details
                         </span>
-                        <span className="text-xl font-light text-foreground">
+                        <span className="text-xl font-mono font-medium tabular-nums text-foreground">
                             {service?.name || breach?.raw?.title || "Service breach"}
                         </span>
                     </SheetTitle>
@@ -118,7 +118,7 @@ export function BreachDetailsSheet({
 
                 {/* Empty state */}
                 {!isLoading && !error && (!breach || !service) && (
-                    <div className="mt-6 text-xs text-foreground/40">
+                    <div className="mt-6 text-xs text-foreground/55">
                         No breach details found for this record.
                     </div>
                 )}
@@ -129,11 +129,11 @@ export function BreachDetailsSheet({
                         {/* Top summary */}
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <span className="text-base font-light text-foreground">
+                                <span className="text-base font-normal text-foreground">
                                     {service.name || breach?.name || "Unknown service"}
                                 </span>
                                 {service.domain && (
-                                    <span className="text-xs text-foreground/40">
+                                    <span className="text-xs text-foreground/55">
                                         {service.domain}
                                     </span>
                                 )}
@@ -145,7 +145,7 @@ export function BreachDetailsSheet({
                                         <div className={`h-1.5 w-1.5 rounded-full ${
                                             severity.label === 'High' ? 'bg-red-500' :
                                             severity.label === 'Medium' ? 'bg-amber-500' :
-                                            'bg-emerald-500'
+                                            'bg-primary'
                                         }`} />
                                         <span className="text-[11px] text-foreground/60">Severity: {severity.label}</span>
                                     </div>
@@ -158,7 +158,7 @@ export function BreachDetailsSheet({
                                 )}
 
                                 {breach.pwn_count && breach.pwn_count > 0 && (
-                                    <span className="text-[11px] text-foreground/40">
+                                    <span className="text-[11px] text-foreground/55">
                                         ~{breach.pwn_count.toLocaleString()} accounts affected
                                     </span>
                                 )}
@@ -167,7 +167,7 @@ export function BreachDetailsSheet({
 
                         {/* Data exposed */}
                         <div className="space-y-3">
-                            <h3 className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">Data exposed</h3>
+                            <h3 className="text-xs font-medium text-foreground/55">Data exposed</h3>
                             {breach.data_classes && breach.data_classes.length > 0 ? (
                                 <div className="flex flex-wrap gap-2">
                                     {breach.data_classes.map((dc) => (
@@ -180,7 +180,7 @@ export function BreachDetailsSheet({
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-xs text-foreground/40">
+                                <p className="text-xs text-foreground/55">
                                     The breach record did not specify exact data types.
                                 </p>
                             )}
@@ -188,8 +188,8 @@ export function BreachDetailsSheet({
 
                         {/* Description */}
                         <div className="space-y-3">
-                            <h3 className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">What happened</h3>
-                            <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 max-h-48 overflow-auto">
+                            <h3 className="text-xs font-medium text-foreground/55">What happened</h3>
+                            <div className="rounded-lg border border-foreground/10 bg-card p-4 max-h-48 overflow-auto">
                                 <p className="text-xs leading-relaxed text-foreground/60 whitespace-pre-wrap">
                                     {breach.description
                                         ? String(breach.description)

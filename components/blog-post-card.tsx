@@ -41,7 +41,7 @@ export function BlogPostCard({
             <div className="flex-1 p-6 space-y-3">
                 <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground/55">
                     {post.category && (
-                        <span className="rounded-full border border-foreground/5 bg-foreground/3 px-2 py-0.5 text-[10px] uppercase tracking-wider text-foreground/65">
+                        <span className="rounded-md border border-foreground/5 bg-foreground/3 px-2 py-0.5 text-[10px] uppercase tracking-wider text-foreground/65">
                             {post.category}
                         </span>
                     )}

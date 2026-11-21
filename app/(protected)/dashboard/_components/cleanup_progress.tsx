@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Circle, ChevronRight, PartyPopper } from "lucide-react";
+import { CheckCircle2, Circle, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { ChecklistItem, ProgressResponse } from "@/app/api/dashboard/progress/route";
 
@@ -44,7 +44,7 @@ export default function CleanupProgress() {
     const allDone = completed === total;
 
     return (
-        <section className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-5">
+        <section className="rounded-lg border border-foreground/10 bg-card p-6 space-y-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-1">
                     <div className="text-sm font-medium text-foreground">Your cleanup</div>
@@ -56,19 +56,19 @@ export default function CleanupProgress() {
                 <div className="flex gap-6 text-right">
                     {data.privacyScore !== null && (
                         <div>
-                            <div className="text-2xl font-light text-foreground">{data.privacyScore}</div>
-                            <div className="text-[11px] uppercase tracking-widest text-foreground/40">Privacy score</div>
+                            <div className="text-2xl font-mono font-medium tabular-nums text-foreground">{data.privacyScore}</div>
+                            <div className="text-xs text-foreground/55">Privacy score</div>
                         </div>
                     )}
                     <div>
-                        <div className="text-2xl font-light text-foreground">{data.month.accountsClosed}</div>
-                        <div className="text-[11px] uppercase tracking-widest text-foreground/40">Cleaned this month</div>
+                        <div className="text-2xl font-mono font-medium tabular-nums text-foreground">{data.month.accountsClosed}</div>
+                        <div className="text-xs text-foreground/55">Cleaned this month</div>
                     </div>
                     <div>
-                        <div className="text-2xl font-light text-foreground">
+                        <div className="text-2xl font-mono font-medium tabular-nums text-foreground">
                             {completed}/{total}
                         </div>
-                        <div className="text-[11px] uppercase tracking-widest text-foreground/40">Steps done</div>
+                        <div className="text-xs text-foreground/55">Steps done</div>
                     </div>
                 </div>
             </div>
@@ -77,12 +77,12 @@ export default function CleanupProgress() {
 
             {win && (
                 <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-300">
-                    <PartyPopper className="h-4 w-4 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 shrink-0" />
                     {win}
                 </div>
             )}
 
-            <ul className="divide-y divide-foreground/5">
+            <ul className="divide-y divide-foreground/10">
                 {data.checklist.map((item) => {
                     const complete = isComplete(item);
                     return (

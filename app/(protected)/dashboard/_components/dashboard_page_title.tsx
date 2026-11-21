@@ -469,7 +469,7 @@ export default function DashboardTitle() {
 
                 <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
                     {/* Email status pill */}
-                    <div className={`inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    <div className={`inline-flex items-center justify-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
                         connectedEmail 
                             ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-100" 
                             : "border-yellow-500/30 bg-yellow-500/10 text-yellow-800 dark:text-yellow-200"
@@ -481,7 +481,7 @@ export default function DashboardTitle() {
                                     {connectedEmail}
                                 </span>
                                 {totalAccountsCount > 1 && (
-                                    <span className="ml-0.5 rounded-full bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100 whitespace-nowrap">
+                                    <span className="ml-0.5 rounded-md bg-emerald-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100 whitespace-nowrap">
                                         +{totalAccountsCount - 1} more
                                     </span>
                                 )}
@@ -496,7 +496,7 @@ export default function DashboardTitle() {
                     {/* Run Sweep button */}
                     <Button
                         size="sm"
-                        className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 text-white font-medium transition-colors"
+                        className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors"
                         onClick={() => setSweepDialogOpen(true)}
                         disabled={isInProgress}
                     >
@@ -516,10 +516,10 @@ export default function DashboardTitle() {
 
             {/* First-run guidance: stays until the first scan, unlike the one-time onboarding popup */}
             {accountsLoaded && !connectedEmail && (
-                <div className="mb-4 rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-5 sm:p-6">
+                <div className="mb-4 rounded-lg border border-emerald-500/25 bg-emerald-500/5 p-5 sm:p-6">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="space-y-1.5">
-                            <p className="text-[11px] font-medium uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+                            <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
                                 Step 2 of 3
                             </p>
                             <h2 className="text-base font-semibold text-foreground md:text-lg">
@@ -548,10 +548,10 @@ export default function DashboardTitle() {
             )}
 
             {connectedEmail && sweepLoaded && !latestSweep?.status && (
-                <div className="mb-4 rounded-xl border border-cyan-500/25 bg-cyan-500/5 p-5 sm:p-6">
+                <div className="mb-4 rounded-lg border border-cyan-500/25 bg-cyan-500/5 p-5 sm:p-6">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="space-y-1.5">
-                            <p className="text-[11px] font-medium uppercase tracking-widest text-cyan-700 dark:text-cyan-400">
+                            <p className="text-xs font-medium text-cyan-700 dark:text-cyan-400">
                                 Step 3 of 3
                             </p>
                             <h2 className="text-base font-semibold text-foreground md:text-lg">
@@ -561,7 +561,7 @@ export default function DashboardTitle() {
                                 The scan runs in the background. You can close this tab and we&apos;ll notify you when your results are ready.
                             </p>
                         </div>
-                        <Button onClick={onSweep} className="shrink-0 gap-2 bg-cyan-500 hover:bg-cyan-600 text-white">
+                        <Button onClick={onSweep} className="shrink-0 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
                             Scan my inbox
                         </Button>
                     </div>
@@ -570,7 +570,7 @@ export default function DashboardTitle() {
 
             {/* Background sweep banner */}
             {isInProgress && latestSweep && (
-                <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-800 dark:text-cyan-100 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-4 flex flex-col gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-800 dark:text-foreground sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -602,7 +602,7 @@ export default function DashboardTitle() {
                             <>
                                 <div className="hidden h-1.5 w-32 overflow-hidden rounded-full bg-cyan-900/50 sm:block">
                                     <div
-                                        className="h-full bg-cyan-400 transition-all duration-300"
+                                        className="h-full bg-primary transition-all duration-300"
                                         style={{ width: `${latestSweep.progress}%` }}
                                     />
                                 </div>
@@ -617,7 +617,7 @@ export default function DashboardTitle() {
                             variant="ghost"
                             disabled={isCancelling || latestSweep.status === "cancelled"}
                             onClick={() => onCancelSweep.mutate()}
-                            className="h-8 text-[11px] text-cyan-800 dark:text-cyan-100 hover:bg-foreground/10"
+                            className="h-8 text-[11px] text-cyan-800 dark:text-foreground hover:bg-foreground/10"
                         >
                             {latestSweep.status === "cancelled"
                                 ? "Stopping…"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { X, DollarSign, Mail, Ghost, Shield, Zap, ArrowRight, Loader2 } from "lucide-react";
+import { X, ArrowRight, Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useCheckout } from "@/hooks/use-checkout";
 import { ANNUAL_MONTHLY_EQUIVALENT, PAID_PLANS, type PaidPlanId, type PlanResponse } from "@/lib/plans";
@@ -90,214 +90,97 @@ export default function FreemiumUpgradeTeaser() {
     }
 
     const totalValue = Math.round(overviewData?.totalValue || 0);
-    const newsletters = overviewData?.newsletters || 0;
-    const accounts = overviewData?.oldAccounts || 0;
-    const breaches = sweepData?.breachesFound || 0;
-
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-background/40 to-purple-500/10 p-6 md:p-8 mb-8">
-            {/* Background decoration */}
-            <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl" />
-            
-            {/* Dismiss button */}
-            <button 
+        <section className="relative rounded-lg border border-foreground/10 bg-card">
+            <button
                 onClick={handleDismiss}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-foreground/10 text-foreground/40 hover:text-foreground/70 transition"
+                className="absolute top-3 right-3 p-1.5 rounded-md text-foreground/55 hover:bg-foreground/[0.05] hover:text-foreground/70 transition-colors"
                 aria-label="Dismiss"
             >
                 <X className="h-4 w-4" />
             </button>
 
-            <div className="relative z-10">
-                {/* Header */}
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-emerald-500/20">
-                        <Zap className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <span className="text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                        Sweep Complete
-                    </span>
-                </div>
-
-                {/* Money first: recovering cash converts better than privacy */}
-                {totalValue > 0 ? (
-                    <>
-                        <h2 className="text-2xl md:text-3xl font-light text-foreground mb-3">
-                            <span className="font-medium text-emerald-600 dark:text-emerald-400">${totalValue.toLocaleString()}</span> found in your inbox — unlock to claim it
-                        </h2>
-                        <p className="text-foreground/60 mb-6 max-w-xl">
-                            Your free scan found gift cards, coupons and rewards you haven&apos;t used. Upgrade to see
-                            where they are and get every code — and our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> goes back <span className="text-emerald-600 dark:text-emerald-400 font-medium">10+ years</span> for more.
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <h2 className="text-2xl md:text-3xl font-light text-foreground mb-3">
-                            Quick Scan Complete — Go Deeper?
-                        </h2>
-                        <p className="text-foreground/60 mb-6 max-w-xl">
-                            Your free scan checked the last <span className="text-foreground font-medium">2 years</span> of email headers. 
-                            Upgrade to our <span className="text-emerald-600 dark:text-emerald-400 font-medium">Deep Audit</span> for <span className="text-emerald-600 dark:text-emerald-400 font-medium">10+ years</span> of full analysis.
-                        </p>
-                    </>
-                )}
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    {totalValue > 0 && (
-                        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-[10px] uppercase tracking-wider text-emerald-600/70 dark:text-emerald-400/70 font-semibold">Hidden Value</span>
-                            </div>
-                            <div className="text-2xl font-light text-foreground">${totalValue.toLocaleString()}</div>
-                            <div className="text-xs text-foreground/40 mt-1">unlock to claim</div>
-                        </div>
-                    )}
-
-                    {newsletters > 0 && (
-                        <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                <span className="text-[10px] uppercase tracking-wider text-blue-600/70 dark:text-blue-400/70 font-semibold">Newsletters</span>
-                            </div>
-                            <div className="text-2xl font-light text-foreground">{newsletters}</div>
-                            <div className="text-xs text-foreground/40 mt-1">cluttering your inbox</div>
-                        </div>
-                    )}
-
-                    {accounts > 0 && (
-                        <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Ghost className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                                <span className="text-[10px] uppercase tracking-wider text-purple-600/70 dark:text-purple-400/70 font-semibold">Accounts</span>
-                            </div>
-                            <div className="text-2xl font-light text-foreground">{accounts}</div>
-                            <div className="text-xs text-foreground/40 mt-1">holding your data</div>
-                        </div>
-                    )}
-
-                    {breaches > 0 && (
-                        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Shield className="h-4 w-4 text-red-600 dark:text-red-400" />
-                                <span className="text-[10px] uppercase tracking-wider text-red-600/70 dark:text-red-400/70 font-semibold">Breaches</span>
-                            </div>
-                            <div className="text-2xl font-light text-foreground">{breaches}</div>
-                            <div className="text-xs text-foreground/40 mt-1">exposing your data</div>
-                        </div>
+            <div className="grid gap-8 p-6 md:p-7 lg:grid-cols-[1.2fr_1fr]">
+                <div>
+                    <p className="font-mono text-xs text-foreground/55">Free scan complete</p>
+                    {/* Money first: recovering cash converts better than privacy */}
+                    {totalValue > 0 ? (
+                        <>
+                            <h2 className="mt-2 text-xl md:text-2xl font-medium text-foreground">
+                                <span className="font-mono tabular-nums">${totalValue.toLocaleString()}</span> in gift cards and rewards found. Unlock to claim it.
+                            </h2>
+                            <p className="mt-2 text-sm text-foreground/65 max-w-xl">
+                                Upgrade to see where each one is and get every code. The Deep Audit also searches 10+ years of email for more.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <h2 className="mt-2 text-xl md:text-2xl font-medium text-foreground">Want the full picture?</h2>
+                            <p className="mt-2 text-sm text-foreground/65 max-w-xl">
+                                Your free scan checked the last 2 years of email headers. The Deep Audit covers 10+ years.
+                            </p>
+                        </>
                     )}
                 </div>
 
-                {/* What you get with Pro */}
-                <div className="border-t border-foreground/5 pt-6 mb-6">
-                    <div className="text-xs uppercase tracking-widest text-foreground/40 mb-4 font-semibold">
-                        Deep Audit vs Quick Scan
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        {/* Quick Scan (current) */}
-                        <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-4">
-                            <div className="text-xs font-semibold uppercase tracking-wider text-foreground/40 mb-3">Quick Scan (Free)</div>
-                            <ul className="space-y-2 text-sm text-foreground/50">
-                                <li className="flex items-center gap-2">
-                                    <span className="text-foreground/30">•</span> Last 2 years
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-foreground/30">•</span> Headers only
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-foreground/30">•</span> Preview mode
-                                </li>
-                            </ul>
-                        </div>
-                        {/* Deep Audit (Pro) */}
-                        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-                            <div className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-3">Deep Audit (Pro)</div>
-                            <ul className="space-y-2 text-sm text-foreground/80">
-                                <li className="flex items-center gap-2">
-                                    <span className="text-emerald-600 dark:text-emerald-400">✓</span> Full 10+ years
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-emerald-600 dark:text-emerald-400">✓</span> Content analysis
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-emerald-600 dark:text-emerald-400">✓</span> Full access
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="text-xs uppercase tracking-widest text-foreground/40 mb-4 font-semibold">
-                        When you upgrade, you can:
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-start gap-3">
-                            <div className="mt-0.5 h-5 w-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                <DollarSign className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-foreground font-medium">Reveal Hidden Value</div>
-                                <div className="text-xs text-foreground/40">Unlock gift cards, coupons & rewards</div>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <div className="mt-0.5 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center">
-                                <Mail className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-foreground font-medium">Bulk Unsubscribe</div>
-                                <div className="text-xs text-foreground/40">Clean your inbox in one click</div>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <div className="mt-0.5 h-5 w-5 rounded-full bg-purple-500/20 flex items-center justify-center">
-                                <Ghost className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <div>
-                                <div className="text-sm text-foreground font-medium">Delete Accounts</div>
-                                <div className="text-xs text-foreground/40">Remove your data from the web</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* CTA — straight to Stripe checkout */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {TEASER_PLANS.map(({ id, blurb, featured }) => {
-                        const plan = PAID_PLANS[id];
-                        return (
-                            <button
-                                key={id}
-                                type="button"
-                                onClick={() => startCheckout(id)}
-                                disabled={pendingPlan !== null}
-                                className={`group flex flex-col gap-1 rounded-xl border p-4 text-left transition disabled:opacity-60 ${
-                                    featured
-                                        ? "border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/60 hover:bg-emerald-500/10"
-                                        : "border-foreground/10 bg-foreground/5 hover:border-emerald-500/40 hover:bg-emerald-500/5"
-                                }`}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className={`text-xs font-semibold uppercase tracking-wider ${featured ? "text-emerald-600 dark:text-emerald-400" : "text-foreground/50"}`}>
-                                        {plan.name}
-                                    </span>
-                                    {pendingPlan === id ? (
-                                        <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
-                                    ) : (
-                                        <ArrowRight className="h-3.5 w-3.5 text-foreground/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-                                    )}
-                                </div>
-                                <div className="text-xl font-semibold text-foreground">
-                                    {plan.price}
-                                    {plan.period !== "one-time" && <span className="text-sm font-normal text-foreground/50">{plan.period}</span>}
-                                </div>
-                                <div className="text-[11px] text-foreground/50">{plan.note}</div>
-                                <div className="mt-1 text-xs text-foreground/60">{blurb}</div>
-                            </button>
-                        );
-                    })}
-                </div>
+                <table className="w-full self-start text-sm">
+                    <thead>
+                        <tr className="text-left text-xs text-foreground/55">
+                            <th className="pb-2 font-normal" />
+                            <th className="pb-2 font-normal">Quick Scan</th>
+                            <th className="pb-2 font-medium text-foreground">Deep Audit</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-foreground/10 border-t border-foreground/10">
+                        {[
+                            ["History", "2 years", "10+ years"],
+                            ["Analysis", "Headers only", "Full content"],
+                            ["Results", "Preview", "Everything unlocked"],
+                        ].map(([label, free, pro]) => (
+                            <tr key={label}>
+                                <td className="py-2 pr-3 text-foreground/55">{label}</td>
+                                <td className="py-2 pr-3 text-foreground/60">{free}</td>
+                                <td className="py-2 text-foreground">{pro}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
-        </div>
+
+            {/* CTA — straight to Stripe checkout */}
+            <div className="grid grid-cols-1 gap-px border-t border-foreground/10 bg-foreground/10 sm:grid-cols-3 rounded-b-lg overflow-hidden">
+                {TEASER_PLANS.map(({ id, blurb, featured }) => {
+                    const plan = PAID_PLANS[id];
+                    return (
+                        <button
+                            key={id}
+                            type="button"
+                            onClick={() => startCheckout(id)}
+                            disabled={pendingPlan !== null}
+                            className={`group flex flex-col gap-1 p-5 text-left transition-colors disabled:opacity-60 ${
+                                featured ? "bg-emerald-500/[0.05] hover:bg-emerald-500/10" : "bg-card hover:bg-background"
+                            }`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <span className={`text-xs font-medium ${featured ? "text-primary" : "text-foreground/60"}`}>
+                                    {plan.name}
+                                </span>
+                                {pendingPlan === id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                                ) : (
+                                    <ArrowRight className="h-3.5 w-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
+                                )}
+                            </div>
+                            <div className="font-mono text-lg font-medium tabular-nums text-foreground">
+                                {plan.price}
+                                {plan.period !== "one-time" && <span className="font-sans text-sm font-normal text-foreground/50">{plan.period}</span>}
+                            </div>
+                            <div className="text-xs text-foreground/55">{plan.note}</div>
+                            <div className="mt-1 text-xs text-foreground/65">{blurb}</div>
+                        </button>
+                    );
+                })}
+            </div>
+        </section>
     );
 }
