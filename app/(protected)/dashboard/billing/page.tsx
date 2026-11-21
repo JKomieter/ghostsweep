@@ -22,7 +22,7 @@ type PageProps = {
 const PLAN_BADGES: Record<PlanTab, { badge: string | null; badgeStyle: string }> = {
     buster: { badge: null, badgeStyle: "" },
     pro: { badge: "Most popular", badgeStyle: "bg-foreground text-background" },
-    sentinel: { badge: `Save ${ANNUAL_SAVINGS_PERCENT}%`, badgeStyle: "bg-emerald-500 text-black" },
+    sentinel: { badge: `Save ${ANNUAL_SAVINGS_PERCENT}%`, badgeStyle: "bg-primary text-primary-foreground" },
 };
 
 function formatDate(d: string) {
@@ -74,10 +74,10 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
-            <div className="w-full max-w-xl mx-auto rounded-lg border border-foreground/5 bg-foreground/2 p-6 md:p-8 shadow-lg space-y-8">
+            <div className="w-full max-w-xl mx-auto rounded-lg border border-foreground/10 bg-card p-6 md:p-8 space-y-8">
                 {/* Header */}
                 <header className="space-y-2">
-                    <h1 className="text-3xl font-light tracking-tight text-foreground">
+                    <h1 className="text-3xl font-medium tracking-tight text-foreground">
                         GhostSweep Billing
                     </h1>
                     <p className="text-sm text-foreground/60">
@@ -99,13 +99,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
 
                 {/* Already on a paid plan */}
                 {isPaid ? (
-                    <section className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-4">
+                    <section className="rounded-lg border border-foreground/10 bg-card p-6 space-y-4">
                         <div className="flex items-start gap-3">
-                            <div className="mt-0.5 rounded-full bg-emerald-500/20 p-2.5 text-emerald-600 dark:text-emerald-400">
+                            <div className="mt-0.5 rounded-md bg-emerald-500/20 p-2.5 text-emerald-600 dark:text-emerald-400">
                                 <ShieldCheck className="h-5 w-5" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-sm font-light text-foreground">
+                                <p className="text-sm font-normal text-foreground">
                                     {isBuster
                                         ? `You own the ${PAID_PLANS.buster.name} (one-time purchase)`
                                         : isSentinel
@@ -124,7 +124,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     <p className="mt-2 text-xs text-foreground/60 flex items-center gap-2">
                                         <CalendarClock className="h-4 w-4" />
                                         Renews on{" "}
-                                        <span className="font-light text-foreground">
+                                        <span className="font-normal text-foreground">
                                             {formatDate(renewsAt)}
                                         </span>
                                     </p>
@@ -148,7 +148,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         <div className="flex gap-2 pt-1 flex-wrap">
                                             <Link
                                                 href="/dashboard/billing?plan=pro"
-                                                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs bg-emerald-500 text-black hover:bg-emerald-400 transition font-medium"
+                                                className="inline-flex items-center justify-center rounded-md px-3 py-2 text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition font-medium"
                                             >
                                                 {PAID_PLANS.pro.name} — {PAID_PLANS.pro.price}{PAID_PLANS.pro.period}
                                             </Link>
@@ -167,7 +167,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         href="/dashboard"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
-                                            "bg-foreground/2 hover:bg-foreground/3 border border-foreground/5 hover:border-foreground/10 text-foreground"
+                                            "bg-card hover:bg-foreground/[0.03] border border-foreground/10 hover:border-foreground/20 text-foreground"
                                         )}
                                     >
                                         Back to dashboard
@@ -176,7 +176,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         href="/support/report"
                                         className={cn(
                                             "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm",
-                                            "bg-foreground/2 hover:bg-foreground/3 border border-foreground/5 hover:border-foreground/10 text-emerald-600 dark:text-emerald-400"
+                                            "bg-card hover:bg-foreground/[0.03] border border-foreground/10 hover:border-foreground/20 text-emerald-600 dark:text-emerald-400"
                                         )}
                                     >
                                         Billing help
@@ -188,7 +188,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                 ) : (
                     <>
                         {/* Plan tabs */}
-                        <div className="flex rounded-lg border border-foreground/5 bg-foreground/2 p-1 text-xs gap-1">
+                        <div className="flex rounded-lg border border-foreground/10 bg-card p-1 text-xs gap-1">
                             {(["buster", "pro", "sentinel"] as PlanTab[]).map((tab) => {
                                 const isActive = selectedTab === tab;
                                 const p = PAID_PLANS[tab];
@@ -222,7 +222,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     ? "border-amber-500/25 bg-amber-500/5"
                                     : selectedTab === "sentinel"
                                     ? "border-emerald-500/30 bg-emerald-500/5"
-                                    : "border-foreground/5 bg-foreground/2"
+                                    : "border-foreground/10 bg-card"
                             )}
                         >
                             <div>
@@ -236,13 +236,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                         {planConfig.name}
                                     </p>
                                     {selectedTab === "buster" && (
-                                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-amber-500 text-black">
+                                        <span className="rounded-md px-2 py-0.5 text-xs font-bold bg-amber-500 text-black">
                                             One-Time
                                         </span>
                                     )}
                                     {planConfig.badge && (
                                         <span className={cn(
-                                            "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+                                            "rounded-md px-2 py-0.5 text-xs font-bold",
                                             planConfig.badgeStyle
                                         )}>
                                             {planConfig.badge}
@@ -250,13 +250,13 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     )}
                                 </div>
                                 <p className={cn(
-                                    "mt-1 text-3xl font-light",
+                                    "mt-1 text-3xl font-mono font-medium tabular-nums",
                                     selectedTab === "buster" ? "text-amber-700 dark:text-amber-400"
                                     : selectedTab === "sentinel" ? "text-emerald-600 dark:text-emerald-400"
                                     : "text-foreground"
                                 )}>
                                     {planConfig.price}
-                                    <span className="text-base text-foreground/40 ml-1">
+                                    <span className="text-base text-foreground/55 ml-1">
                                         {planConfig.period}
                                     </span>
                                 </p>
@@ -266,7 +266,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                             <div className="h-px bg-foreground/5" />
 
                             <div className="space-y-2">
-                                <p className="text-[11px] font-medium uppercase tracking-widest text-foreground/35">
+                                <p className="text-xs font-medium text-foreground/35">
                                     What you get
                                 </p>
                                 <ul className="space-y-2">
@@ -291,7 +291,7 @@ export default async function BillingPage({ searchParams }: PageProps) {
                                     {planConfig.name}
                                     {" — "}
                                     {planConfig.price}
-                                    {planConfig.period !== "one-time" ? " " + planConfig.period : " (one-time)"}
+                                    {planConfig.period !== "one-time" ? " " + planConfig.period : "(one-time)"}
                                 </span>
                                 .
                             </p>

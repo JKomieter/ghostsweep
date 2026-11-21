@@ -82,14 +82,14 @@ export default function StartScanOnboardingDialog() {
                 </DialogHeader>
 
                 <div className="space-y-4">
-                    <ol className="rounded-xl border border-foreground/10 bg-foreground/5 p-4 space-y-3 text-sm">
+                    <ol className="rounded-lg border border-foreground/10 bg-foreground/5 p-4 space-y-3 text-sm">
                         {[
                             { title: "Connect Gmail or Outlook", text: "Sign in on Google's or Microsoft's own permission screen and allow access." },
                             { title: "Start your scan", text: "You'll come straight back here with your inbox selected. One click starts it." },
                             { title: "See what has your data", text: "Forgotten accounts, breaches and hidden value, ranked by risk." },
                         ].map((step, i) => (
                             <li key={step.title} className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-semibold text-black">
+                                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
                                     {i + 1}
                                 </span>
                                 <div>

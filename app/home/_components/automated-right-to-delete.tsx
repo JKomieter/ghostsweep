@@ -65,7 +65,7 @@ export function AutomatedRightToDelete() {
   return (
     <section className="space-y-8">
       <div className="space-y-3 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
+        <div className="inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
           <Zap className="h-3 w-3 text-muted-foreground" />
           Right-to-delete workflow
         </div>
@@ -110,7 +110,7 @@ export function AutomatedRightToDelete() {
           </div>
           <div className="bg-foreground/5 rounded-full h-2.5 overflow-hidden">
             <div
-              className="h-full bg-linear-to-r from-green-500 to-emerald-400 transition-all duration-500"
+              className="h-full bg-primary transition-all duration-500"
               style={{ width: `${(successCount / totalCount) * 100}%` }}
             />
           </div>

@@ -88,9 +88,9 @@ export default function NotificationDropdown() {
             <DropdownMenuContent
                 align="end"
                 sideOffset={8}
-                className="w-80 max-h-96 overflow-y-auto border border-foreground/10 bg-background/95 backdrop-blur-md"
+                className="w-80 max-h-96 overflow-y-auto border border-foreground/10 bg-background"
             >
-                <DropdownMenuLabel className="flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground">
+                <DropdownMenuLabel className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>Notifications</span>
                     {notifications.length > 0 && (
                         <span className="text-[10px] text-muted-foreground/70">
@@ -153,11 +153,11 @@ export default function NotificationDropdown() {
 
                             {/* Small type pill */}
                             <div className="mt-1 flex items-center gap-2">
-                                <span className="rounded-full bg-foreground/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                                <span className="rounded-md bg-foreground/5 px-2 py-0.5 text-xs text-muted-foreground">
                                     {prettyTypeLabel(n.type)}
                                 </span>
                                 {!n.read && (
-                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                                 )}
                             </div>
                         </DropdownMenuItem>

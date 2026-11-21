@@ -91,7 +91,7 @@ export default function CancelFlowDialog({ open, onOpenChange }: { open: boolean
 
                 {status === "pending" ? (
                     <div className="flex justify-center py-8">
-                        <Loader2 className="h-5 w-5 animate-spin text-foreground/40" />
+                        <Loader2 className="h-5 w-5 animate-spin text-foreground/55" />
                     </div>
                 ) : status === "error" ? (
                     <p className="text-sm text-foreground/60">We couldn&apos;t load your offers. You can still cancel below.</p>
@@ -128,7 +128,7 @@ export default function CancelFlowDialog({ open, onOpenChange }: { open: boolean
                                             <Button
                                                 size="sm"
                                                 variant={offer === data.offers[0] ? "default" : "outline"}
-                                                className={offer === data.offers[0] ? "bg-emerald-500 text-black hover:bg-emerald-400" : undefined}
+                                                className={offer === data.offers[0] ? "bg-primary text-primary-foreground hover:bg-primary/90" : undefined}
                                                 disabled={busy}
                                                 onClick={() => mutation.mutate(offer)}
                                             >

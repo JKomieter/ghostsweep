@@ -14,8 +14,7 @@ import {
     Fingerprint,
     DollarSign,
     Ghost,
-    Sparkles,
-} from "lucide-react";
+    } from "lucide-react";
 
 export default function HowItWorksPage() {
     const howToSchema = {
@@ -131,12 +130,9 @@ export default function HowItWorksPage() {
 
             {/* Hero */}
             <section className="relative isolate overflow-hidden pt-24 pb-20 sm:pt-32 sm:pb-28">
-                <div className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-                    <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-xl -translate-x-1/2 rotate-30 bg-linear-to-tr from-emerald-500 to-teal-700 opacity-10 sm:left-[calc(50%-30rem)] sm:w-6xl" />
-                </div>
 
                 <div className="mx-auto max-w-3xl px-6 text-center">
-                    <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
+                    <div className="mb-8 inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
                         <Ghost className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         How GhostSweep works
                     </div>
@@ -299,9 +295,8 @@ export default function HowItWorksPage() {
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link
                             href="/login?mode=signup"
-                            className="group inline-flex items-center gap-2.5 rounded-full bg-emerald-500 px-8 py-4 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_60px_-10px_rgba(16,185,129,0.4)]"
+                            className="group inline-flex items-center gap-2.5 rounded-md bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                         >
-                            <Sparkles className="h-4 w-4" />
                             Start Free Scan
                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Link>

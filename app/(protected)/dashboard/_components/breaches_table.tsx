@@ -62,12 +62,12 @@ export default function Breaches() {
     });
 
     return (
-        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
+        <div className="rounded-lg border border-foreground/10 bg-card p-6 min-h-[300px] sm:col-span-2 col-span-1 overflow-y-auto overflow-x-auto flex flex-col">
             <div className="mb-4">
-                <h2 className="text-sm font-light tracking-wide text-foreground">Recent Breaches</h2>
+                <h2 className="text-sm font-medium tracking-wide text-foreground">Recent Breaches</h2>
 
                 {showUpgradeBanner && (
-                    <div className="mt-3 rounded-lg border border-foreground/5 bg-foreground/2 p-3">
+                    <div className="mt-3 rounded-lg border border-foreground/10 bg-card p-3">
                         <p className="text-xs text-foreground/60">
                             We found <strong className="text-foreground">{totalCount}</strong> breaches linked to your data.
                             <UpgradeTrigger reason="generic">
@@ -85,11 +85,11 @@ export default function Breaches() {
                 <Table className="h-full flex-1">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[30%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Service</TableHead>
-                            <TableHead className="w-[15%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Breach Date</TableHead>
-                            <TableHead className="w-[30%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Data Exposed</TableHead>
-                            <TableHead className="w-[15%] text-[11px] font-medium uppercase tracking-widest text-foreground/40">Severity</TableHead>
-                            <TableHead className="w-[10%] text-[11px] font-medium uppercase tracking-widest text-foreground/40 text-right">Actions</TableHead>
+                            <TableHead className="w-[30%] text-xs font-medium text-foreground/55">Service</TableHead>
+                            <TableHead className="w-[15%] text-xs font-medium text-foreground/55">Breach Date</TableHead>
+                            <TableHead className="w-[30%] text-xs font-medium text-foreground/55">Data Exposed</TableHead>
+                            <TableHead className="w-[15%] text-xs font-medium text-foreground/55">Severity</TableHead>
+                            <TableHead className="w-[10%] text-xs font-medium text-foreground/55 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -99,7 +99,7 @@ export default function Breaches() {
                         ) : gated ? (
                             // ✅ Free tier: do NOT show list at all
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/40">
+                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/55">
                                     {totalCount > 0
                                         ? `Breach list is Pro-only. You have ${totalCount} breach${totalCount === 1 ? "" : "es"} detected.`
                                         : "No breaches found."}
@@ -126,9 +126,9 @@ export default function Breaches() {
                                     <TableRow key={ub.id}>
                                         <TableCell className="align-top">
                                             <div className="flex flex-col gap-0.5">
-                                                <span className="text-sm font-light text-foreground">{name}</span>
+                                                <span className="text-sm font-normal text-foreground">{name}</span>
                                                 {breach.domain && (
-                                                    <span className="text-xs text-foreground/40">{breach.domain}</span>
+                                                    <span className="text-xs text-foreground/55">{breach.domain}</span>
                                                 )}
                                             </div>
                                         </TableCell>
@@ -139,7 +139,7 @@ export default function Breaches() {
 
                                         <TableCell className="align-top">
                                             {exposed.length === 0 ? (
-                                                <span className="text-xs text-foreground/40">Not specified</span>
+                                                <span className="text-xs text-foreground/55">Not specified</span>
                                             ) : (
                                                 <div className="flex flex-wrap gap-1.5">
                                                     {firstFew.map((dc) => (
@@ -151,7 +151,7 @@ export default function Breaches() {
                                                         </span>
                                                     ))}
                                                     {extraCount > 0 && (
-                                                        <span className="text-[11px] text-foreground/40">+{extraCount} more</span>
+                                                        <span className="text-[11px] text-foreground/55">+{extraCount} more</span>
                                                     )}
                                                 </div>
                                             )}
@@ -163,7 +163,7 @@ export default function Breaches() {
                                                     severity.label === 'Critical' ? 'bg-red-500' :
                                                     severity.label === 'High' ? 'bg-orange-500' :
                                                     severity.label === 'Medium' ? 'bg-yellow-500' :
-                                                    'bg-emerald-500'
+                                                    'bg-primary'
                                                 }`} />
                                                 <span className="text-xs text-foreground/60">{severity.label}</span>
                                             </div>
@@ -173,7 +173,7 @@ export default function Breaches() {
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-7 px-3 text-[11px] border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3"
+                                                className="h-7 px-3 text-[11px] border border-foreground/10 bg-card hover:border-foreground/20 hover:bg-foreground/[0.03]"
                                                 onClick={() => {
                                                     setUserBreachId(ub.id);
                                                     setOpen(true);
@@ -187,7 +187,7 @@ export default function Breaches() {
                             })
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/40">
+                                <TableCell colSpan={5} className="h-24 text-center text-xs text-foreground/55">
                                     No breaches found
                                 </TableCell>
                             </TableRow>

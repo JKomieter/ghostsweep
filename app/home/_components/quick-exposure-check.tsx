@@ -76,7 +76,7 @@ export function QuickExposureCheck() {
   return (
     <section className="space-y-8">
       <div className="space-y-3 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
+        <div className="inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
           <AlertTriangle className="h-3 w-3 text-muted-foreground" />
           Optional quick exposure check
         </div>
@@ -99,14 +99,14 @@ export function QuickExposureCheck() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="you@example.com or example.com"
-              className="w-full rounded-full border border-foreground/10 bg-foreground/5 py-4 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:border-foreground/20 focus:bg-foreground/10 focus:outline-none transition"
+              className="w-full rounded-md border border-foreground/10 bg-foreground/5 py-4 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:border-foreground/20 focus:bg-foreground/10 focus:outline-none transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={status === "loading" || !query.trim()}
-            className="w-full rounded-full bg-foreground py-3 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50 transition flex items-center justify-center gap-2"
+            className="w-full rounded-md bg-foreground py-3 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50 transition flex items-center justify-center gap-2"
           >
             {status === "loading" ? (
               <>
@@ -188,7 +188,7 @@ export function QuickExposureCheck() {
                           {breach.Domain || "Unknown domain"} • {dateLabel}
                         </p>
                       </div>
-                      <span className="inline-flex items-center rounded-full bg-foreground/5 px-2 py-1 text-[10px] font-medium text-foreground/85 whitespace-nowrap">
+                      <span className="inline-flex items-center rounded-md bg-foreground/5 px-2 py-1 text-[10px] font-medium text-foreground/85 whitespace-nowrap">
                         {isSensitive ? "Sensitive dataset" : "Breach record"}
                       </span>
                     </div>

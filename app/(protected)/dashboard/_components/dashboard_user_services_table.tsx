@@ -9,7 +9,7 @@ import {
     Clock,
     Lock,
     ShieldAlert,
-    Sparkles,
+    Info,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -97,14 +97,14 @@ function riskCopy(totals: UrgencyResponse["totals"]) {
             title: `${totals.stillEmailing} service${totals.stillEmailing === 1 ? "" : "s"} still emailing you`,
             desc: "These are active data relationships. Review what stays and what gets removed.",
             tone: "info" as const,
-            icon: Sparkles,
+            icon: Info,
         };
     }
     return {
         title: `Footprint discovered: ${totals.totalServices}`,
         desc: "Next step: run a sweep and start cleaning up accounts you don’t need.",
         tone: "info" as const,
-        icon: Sparkles,
+        icon: Info,
     };
 }
 
@@ -152,15 +152,15 @@ export default function DashboardUrgencyPanel() {
 
     const countdown = formatCountdown(data?.monitoringEndsAt ?? null);
     const banner = totals ? riskCopy(totals) : null;
-    const BannerIcon = banner?.icon ?? Sparkles;
+    const BannerIcon = banner?.icon ?? Info;
 
     return (
-        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 space-y-6">
+        <div className="rounded-lg border border-foreground/10 bg-card p-6 space-y-6">
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                     <div className="text-sm font-medium text-foreground">Risk Snapshot</div>
-                    <div className="text-xs text-foreground/40">
+                    <div className="text-xs text-foreground/55">
                         {isLoading ? "—" : "Critical accounts requiring attention"}
                     </div>
                 </div>
@@ -186,13 +186,13 @@ export default function DashboardUrgencyPanel() {
             {/* Loading / Error */}
             {isLoading ? (
                 <SkeletonGroup label="Loading risk snapshot" className="space-y-3">
-                    <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-5 space-y-2.5">
+                    <div className="rounded-lg border border-foreground/10 bg-card p-5 space-y-2.5">
                         <Skeleton className="h-4 w-56 max-w-full" />
                         <Skeleton className="h-3 w-80 max-w-full" />
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 space-y-3">
+                            <div key={i} className="rounded-lg border border-foreground/10 bg-card p-4 space-y-3">
                                 <Skeleton className="h-3 w-24" />
                                 <Skeleton className="h-7 w-14" />
                             </div>
@@ -200,9 +200,9 @@ export default function DashboardUrgencyPanel() {
                     </div>
                 </SkeletonGroup>
             ) : isError ? (
-                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6">
+                <div className="rounded-lg border border-foreground/10 bg-card p-6">
                     <div className="text-sm text-foreground/80">Failed to load</div>
-                    <div className="mt-1 text-xs text-foreground/40">
+                    <div className="mt-1 text-xs text-foreground/55">
                         {(error as any)?.message ?? "Unknown error"}
                     </div>
                     <div className="mt-4">
@@ -212,7 +212,7 @@ export default function DashboardUrgencyPanel() {
                     </div>
                 </div>
             ) : !totals ? (
-                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 text-sm text-foreground/40">
+                <div className="rounded-lg border border-foreground/10 bg-card p-6 text-sm text-foreground/55">
                     No data. Connect email to begin.
                 </div>
             ) : (
@@ -235,7 +235,7 @@ export default function DashboardUrgencyPanel() {
 
                                 {/* Free urgency hook */}
                                 {gated && countdown ? (
-                                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-foreground/5 bg-foreground/5 px-3 py-1.5 text-[11px] text-foreground/60">
+                                    <div className="mt-3 inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] text-foreground/60">
                                         <Clock className="h-3 w-3" />
                                         Ends in <span className="font-medium text-foreground/80">{countdown}</span>
                                     </div>
@@ -274,7 +274,7 @@ export default function DashboardUrgencyPanel() {
                     {/* Teasers */}
                     <div className="space-y-3">
                         <div className="flex items-center justify-between gap-3">
-                            <div className="text-xs text-foreground/40">
+                            <div className="text-xs text-foreground/55">
                                 High-risk accounts
                             </div>
 
@@ -293,7 +293,7 @@ export default function DashboardUrgencyPanel() {
 
                         <div className="space-y-2">
                             {(data?.topRiskTeasers ?? []).length === 0 ? (
-                                <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 text-xs text-foreground/40">
+                                <div className="rounded-lg border border-foreground/10 bg-card p-4 text-xs text-foreground/55">
                                     {totalServices > 0 ? "No breached or unused accounts. Nice." : "No accounts yet"}
                                 </div>
                             ) : (
@@ -301,7 +301,7 @@ export default function DashboardUrgencyPanel() {
                                     {(data?.topRiskTeasers ?? []).map((t) => (
                                         <div
                                             key={t.id}
-                                            className="flex items-center gap-3 rounded-lg border border-foreground/5 bg-foreground/2 p-3 transition-all hover:border-foreground/10 hover:bg-foreground/3"
+                                            className="flex items-center gap-3 rounded-lg border border-foreground/10 bg-card p-3 transition-all hover:border-foreground/20 hover:bg-foreground/[0.03]"
                                         >
                                             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-foreground/10 bg-white p-1.5 dark:bg-foreground/90">
                                                 <ServiceLogo
@@ -316,13 +316,13 @@ export default function DashboardUrgencyPanel() {
 
                                             <div className="min-w-0 flex-1">
                                                 <div className="text-sm font-medium text-foreground truncate">{t.name}</div>
-                                                <div className="text-[11px] text-foreground/40 truncate mt-0.5">
+                                                <div className="text-[11px] text-foreground/55 truncate mt-0.5">
                                                     {t.domain ?? "—"}
                                                 </div>
                                             </div>
 
                                             <span
-                                                className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                                                className={`shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-medium ${
                                                     t.breached
                                                         ? "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
                                                         : "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400"
@@ -337,9 +337,9 @@ export default function DashboardUrgencyPanel() {
 
                             {/* Locked hint rows */}
                             {gated ? (
-                                <div className="mt-3 rounded-lg border border-foreground/5 bg-foreground/2 px-4 py-3">
+                                <div className="mt-3 rounded-lg border border-foreground/10 bg-card px-4 py-3">
                                     <div className="flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-2 text-xs text-foreground/40">
+                                        <div className="flex items-center gap-2 text-xs text-foreground/55">
                                             <Lock className="h-3 w-3" />
                                             {hiddenCount.toLocaleString()} more hidden
                                         </div>
@@ -356,7 +356,7 @@ export default function DashboardUrgencyPanel() {
 
                     {/* Bottom action */}
                     <div className="flex items-center justify-between gap-3">
-                        <div className="text-xs text-foreground/40">
+                        <div className="text-xs text-foreground/55">
                             {gated ? (
                                 <>
                                     You’re only seeing a preview. Unlock the full list to start deletions and tracking.
@@ -376,7 +376,7 @@ export default function DashboardUrgencyPanel() {
                             </UpgradeTrigger>
                         ) : (
                             <Link href="/dashboard/accounts">
-                                <Button variant="ghost" className="border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3">
+                                <Button variant="ghost" className="border border-foreground/10 bg-card hover:border-foreground/20 hover:bg-foreground/[0.03]">
                                     Go to accounts
                                 </Button>
                             </Link>
@@ -405,12 +405,12 @@ function StatCard({
                 : "bg-foreground/20";
 
     return (
-        <div className="rounded-lg border border-foreground/5 bg-foreground/2 p-4">
+        <div className="rounded-lg border border-foreground/10 bg-card p-4">
             <div className="flex items-start justify-between">
-                <div className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">{label}</div>
+                <div className="text-xs font-medium text-foreground/55">{label}</div>
                 <div className={`h-1 w-1 rounded-full ${indicatorClass}`} />
             </div>
-            <div className="mt-2 text-2xl font-light text-foreground">{value}</div>
+            <div className="mt-2 text-2xl font-mono font-medium tabular-nums text-foreground">{value}</div>
         </div>
     );
 }

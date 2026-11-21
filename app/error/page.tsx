@@ -10,7 +10,7 @@ export default function ErrorPage() {
             <div className="w-full max-w-md text-center flex flex-col items-center gap-6">
 
                 {/* Icon */}
-                <div className="bg-red-500/10 p-4 rounded-full border border-red-500/20">
+                <div className="bg-red-500/10 p-4 rounded-md border border-red-500/20">
                     <ShieldAlert className="h-10 w-10 text-red-700 dark:text-red-300" />
                 </div>
 

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { logout } from "@/utils/client-logout";
 import { Logo } from "@/svgs";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Sparkles, Plus, FileText, Lock } from "lucide-react";
+import { Loader2, Settings, HelpCircle, LogOut, ChevronDown, Plus, FileText, Lock } from "lucide-react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import {
     DropdownMenu,
@@ -128,7 +128,7 @@ export default function Header() {
 
     return (
         <div className={`relative flex ${isInProgress ? 'h-[88px]' : 'h-14'}`}>
-            <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-20 border-border/60 bg-background/80 backdrop-blur-sm">
+            <div className="fixed flex-1 left-0 top-0 w-full h-14 flex items-center px-4 border-b z-20 border-border/60 bg-background">
                 <div className="flex-1 sm:px-4 p-0 flex justify-between items-center">
                     <div className="flex flex-row items-center gap-4">
                         <SlidingSidebar />
@@ -142,17 +142,15 @@ export default function Header() {
                     {/* Plan Badge */}
                     <div className="hidden sm:block">
                         {status === 'pending' ? (
-                            <div className="h-7 w-20 bg-neutral-200 rounded-full animate-pulse" />
+                            <div className="h-7 w-20 bg-foreground/10 rounded-md animate-pulse" />
                         ) : (
-                            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
-                                isSubscriber
-                                    ? "bg-linear-to-r from-cyan-500/20 to-blue-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30"
-                                    : isBusterActive
-                                    ? "bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
-                                    : isBusterAudited
-                                    ? "bg-foreground/12 text-muted-foreground border border-foreground/15"
-                                    : "bg-foreground/12 text-foreground/75 border border-foreground/15"
-                            }`}>
+                            <span className="inline-flex items-center gap-2 rounded-md border border-foreground/15 px-2.5 py-1 font-mono text-xs text-foreground/75">
+                                <span
+                                    aria-hidden
+                                    className={`h-1.5 w-1.5 rounded-full ${
+                                        isSubscriber ? "bg-primary" : isBusterActive ? "bg-amber-500" : "bg-foreground/30"
+                                    }`}
+                                />
                                 {plan}
                             </span>
                         )}
@@ -161,15 +159,13 @@ export default function Header() {
                     <div className="flex flex-row items-center space-x-4">
                         <div className="flex items-center gap-2">
                             {status === 'success' && !isPaidUser && (
-                                <Button onClick={() => openPaywall("generic")} variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
-                                    <Sparkles className="h-3.5 w-3.5" />
+                                <Button onClick={() => openPaywall("generic")} variant={"default"} size="sm" className="font-medium text-xs gap-1.5">
                                     Upgrade
                                 </Button>
                             )}
                             {isBusterAudited && (
                                 <Link href="/dashboard/billing?plan=pro">
-                                    <Button variant={"default"} size="sm" className="bg-linear-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 font-medium text-xs gap-1.5 shadow-lg shadow-emerald-500/20">
-                                        <Sparkles className="h-3.5 w-3.5" />
+                                    <Button variant={"default"} size="sm" className="font-medium text-xs gap-1.5">
                                         Go unlimited
                                     </Button>
                                 </Link>
@@ -210,8 +206,8 @@ export default function Header() {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-9 gap-2 px-2 hover:bg-foreground/5">
-                                        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-foreground/10 flex items-center justify-center">
-                                            <span className="text-[10px] font-semibold text-cyan-600 dark:text-cyan-400">{userInitials}</span>
+                                        <div className="h-7 w-7 rounded-full bg-foreground/[0.06] border border-foreground/10 flex items-center justify-center">
+                                            <span className="text-[10px] font-medium text-foreground/80">{userInitials}</span>
                                         </div>
                                         <ChevronDown className="h-3 w-3 text-muted-foreground" />
                                     </Button>
@@ -238,7 +234,7 @@ export default function Header() {
                                         <DropdownMenuItem onClick={() => openPaywall("report")} className="cursor-pointer">
                                             <Lock className="mr-2 h-4 w-4" />
                                             Download Privacy Report
-                                            <span className="ml-auto rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                            <span className="ml-auto rounded-sm border border-foreground/15 px-1.5 py-0.5 font-mono text-[10px] text-foreground/60">
                                                 PRO
                                             </span>
                                         </DropdownMenuItem>
@@ -246,7 +242,7 @@ export default function Header() {
                                     {isPaidUser && latestReport && (
                                         <DropdownMenuItem
                                             onClick={downloadLatestReport}
-                                            className="cursor-pointer text-cyan-600 dark:text-cyan-400 focus:text-cyan-700 dark:focus:text-cyan-300"
+                                            className="cursor-pointer"
                                         >
                                             <FileText className="mr-2 h-4 w-4" />
                                             Download Last Report
@@ -284,17 +280,16 @@ export default function Header() {
             {/* Sweep progress banner - shown on ALL pages when sweep is in progress */}
             {isInProgress && latestSweep && (
                 <div className="fixed left-0 top-14 w-full z-10">
-                    <div className="mx-auto flex items-center justify-between gap-3 border-b border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-sm px-4 py-2.5 text-xs text-cyan-100">
+                    <div className="mx-auto flex items-center justify-between gap-3 border-b border-foreground/10 bg-background px-4 py-2.5 text-xs text-foreground">
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <Loader2 className="h-4 w-4 animate-spin text-cyan-600 dark:text-cyan-400" />
-                                <div className="absolute inset-0 h-4 w-4 animate-ping opacity-20 rounded-full bg-cyan-400" />
+                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
                             </div>
                             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                                 <span className="font-medium text-foreground">
                                     {latestSweep.phaseLabel ?? "Scanning your inbox…"}
                                 </span>
-                                <div className="flex items-center gap-2 text-cyan-700/70 dark:text-cyan-300/70">
+                                <div className="flex items-center gap-2 font-mono text-foreground/55">
                                     {typeof latestSweep.messagesProcessed === "number" && (
                                         <span>• {latestSweep.messagesProcessed.toLocaleString()} messages</span>
                                     )}
@@ -307,15 +302,15 @@ export default function Header() {
                         <div className="flex items-center gap-3">
                             {typeof latestSweep.progress === "number" && (
                                 <div className="hidden sm:flex items-center gap-2">
-                                    <div className="h-1.5 w-28 overflow-hidden rounded-full bg-cyan-900/50">
-                                        <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-400 transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
+                                    <div className="h-1 w-28 overflow-hidden rounded-full bg-foreground/10">
+                                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${latestSweep.progress}%` }} />
                                     </div>
-                                    <span className="text-[10px] font-mono text-cyan-700 dark:text-cyan-300">{latestSweep.progress}%</span>
+                                    <span className="text-[11px] font-mono tabular-nums text-foreground/70">{latestSweep.progress}%</span>
                                 </div>
                             )}
                             {pathname !== "/dashboard" && (
                                 <Link href="/dashboard">
-                                    <Button size="sm" variant="ghost" className="h-7 text-[11px] text-cyan-800 dark:text-cyan-100 hover:bg-foreground/10 border border-cyan-500/30">
+                                    <Button size="sm" variant="ghost" className="h-7 text-xs border border-foreground/15 hover:bg-foreground/[0.04]">
                                         View details
                                     </Button>
                                 </Link>

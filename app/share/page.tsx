@@ -39,7 +39,7 @@ export default async function SharePage({ searchParams }: PageProps) {
                     width={1200}
                     height={630}
                     unoptimized
-                    className="w-full rounded-2xl border border-foreground/10 shadow-xl"
+                    className="w-full rounded-2xl border border-foreground/10 shadow-sm"
                 />
                 <h1 className="mt-10 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
                     How many ghost accounts do you have?
@@ -55,7 +55,7 @@ export default async function SharePage({ searchParams }: PageProps) {
                 )}
                 <Link
                     href={signupHref}
-                    className="mt-8 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-8 py-4 text-base font-semibold text-black shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400"
+                    className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90"
                 >
                     Find my ghost accounts (free)
                     <ArrowRight className="h-4 w-4" />

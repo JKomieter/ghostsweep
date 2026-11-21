@@ -224,7 +224,7 @@ export default function AccountsTable({
                                 src={logo}
                                 domain={row.original.domain}
                                 name={name}
-                                fallbackClassName="text-foreground/40 text-xs font-bold"
+                                fallbackClassName="text-foreground/55 text-xs font-bold"
                             />
                         </div>
 
@@ -234,7 +234,7 @@ export default function AccountsTable({
                                 {isBreached && <div className="h-1.5 w-1.5 rounded-full bg-red-400" title="Breached" />}
                                 {daysSinceLastSeen && daysSinceLastSeen > 365 && !isWhitelisted && <div className="h-1.5 w-1.5 rounded-full bg-amber-400" title="Unused" />}
                                 {isWhitelisted && (
-                                    <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium border border-emerald-500/20">
+                                    <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium border border-emerald-500/20">
                                         Safe
                                     </span>
                                 )}
@@ -295,7 +295,7 @@ export default function AccountsTable({
                 const daysSince = row.original.days_since_last_seen;
 
                 if (!lastSeen) {
-                    return <span className="text-foreground/40 text-sm">Unknown</span>;
+                    return <span className="text-foreground/55 text-sm">Unknown</span>;
                 }
 
                 if (daysSince !== null) {
@@ -332,7 +332,7 @@ export default function AccountsTable({
                         <Button
                             variant="ghost" 
                             size="sm"
-                            className={`text-xs ${isWhitelisted ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground/40 hover:text-foreground'}`}
+                            className={`text-xs ${isWhitelisted ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground/55 hover:text-foreground'}`}
                             onClick={() => toggleWhitelist.mutate({ id, currentStatus: isWhitelisted })}
                         >
                             {isWhitelisted ? "Trusted" : "Whitelist"}
@@ -387,7 +387,7 @@ export default function AccountsTable({
                 <div className="flex flex-1 items-center gap-2">
                     {/* Search */}
                     <div className="relative max-w-sm w-full md:w-64">
-                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-foreground/40" />
+                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-foreground/55" />
                         <Input
                         id="search"
                             placeholder="Search accounts..."
@@ -458,13 +458,13 @@ export default function AccountsTable({
             </div>
 
             {/* Table */}
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 overflow-hidden">
+            <div className="rounded-lg border border-foreground/10 bg-card overflow-hidden">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-foreground/5 hover:bg-foreground/2">
+                            <TableRow key={headerGroup.id} className="border-foreground/10 hover:bg-foreground/2">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="text-foreground/40 font-medium">
+                                    <TableHead key={header.id} className="text-foreground/55 font-medium">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -484,7 +484,7 @@ export default function AccountsTable({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="animate-content-in border-foreground/5 hover:bg-foreground/5 cursor-pointer transition-colors"
+                                    className="animate-content-in border-foreground/10 hover:bg-foreground/5 cursor-pointer transition-colors"
                                     onClick={(e) => {
                                         // Don't navigate if clicking on checkbox, buttons, or other interactive elements
                                         const target = e.target as HTMLElement;
@@ -507,7 +507,7 @@ export default function AccountsTable({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center text-foreground/40">
+                                <TableCell colSpan={columns.length} className="h-24 text-center text-foreground/55">
                                     No accounts found.
                                 </TableCell>
                             </TableRow>
@@ -518,7 +518,7 @@ export default function AccountsTable({
 
             {/* Free tier teaser */}
             {accountsResult?.previewOnly && (
-                <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-500/10 to-transparent p-8 text-center">
+                <div className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-8 text-center">
                     <div className="text-5xl mb-4">👻</div>
                     <h3 className="text-xl text-foreground font-semibold mb-3">Your Digital Shadow Is Bigger</h3>
                     <p className="text-foreground/60 mb-2 max-w-md mx-auto">
@@ -530,10 +530,10 @@ export default function AccountsTable({
                             ⚠️ {accountsResult.breachedCount} account(s) found in data breaches
                         </p>
                     )}
-                    <p className="text-foreground/40 text-sm mb-6">
+                    <p className="text-foreground/55 text-sm mb-6">
                         Upgrade to see all accounts, delete them, and protect your privacy.
                     </p>
-                    <UpgradeTrigger reason="accounts" className="inline-flex items-center justify-center rounded-lg bg-purple-500 hover:bg-purple-400 px-6 py-3 text-sm font-semibold text-white transition">
+                    <UpgradeTrigger reason="accounts" className="inline-flex items-center justify-center rounded-lg bg-primary hover:bg-primary/90 px-6 py-3 text-sm font-medium text-primary-foreground transition">
                         {upgradeLabel}
                     </UpgradeTrigger>
                 </div>

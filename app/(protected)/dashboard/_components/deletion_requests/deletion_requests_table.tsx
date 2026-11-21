@@ -76,7 +76,7 @@ export default function DeletionRequestsTable({
         <div className="space-y-6">
             {/* Filter */}
             <div className="flex items-center gap-3">
-                <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+                <span className="text-xs font-medium text-foreground/55">
                     Filter
                 </span>
                 <Select
@@ -86,7 +86,7 @@ export default function DeletionRequestsTable({
                         setPage(1);
                     }}
                 >
-                    <SelectTrigger className="w-[200px] h-9 text-xs border-foreground/5 bg-foreground/2">
+                    <SelectTrigger className="w-[200px] h-9 text-xs border-foreground/10 bg-card">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -100,17 +100,17 @@ export default function DeletionRequestsTable({
             </div>
 
             {/* Table */}
-            <div className="rounded-lg border border-foreground/5 bg-foreground/2 overflow-hidden">
+            <div className="rounded-lg border border-foreground/10 bg-card overflow-hidden">
                 <div className="overflow-x-auto">
                     <Table>
-                        <TableHeader className="bg-foreground/2">
-                            <TableRow className="border-foreground/5 hover:bg-transparent">
-                                <TableHead className="font-medium text-[11px] uppercase tracking-widest text-foreground/40">Service</TableHead>
-                                <TableHead className="font-medium text-[11px] uppercase tracking-widest text-foreground/40">Status</TableHead>
-                                <TableHead className="font-medium text-[11px] uppercase tracking-widest text-foreground/40">Method</TableHead>
-                                <TableHead className="font-medium text-[11px] uppercase tracking-widest text-foreground/40">Sent</TableHead>
-                                <TableHead className="font-medium text-[11px] uppercase tracking-widest text-foreground/40">Updated</TableHead>
-                                <TableHead className="text-right font-medium text-[11px] uppercase tracking-widest text-foreground/40">Action</TableHead>
+                        <TableHeader className="bg-card">
+                            <TableRow className="border-foreground/10 hover:bg-transparent">
+                                <TableHead className="font-medium text-xs text-foreground/55">Service</TableHead>
+                                <TableHead className="font-medium text-xs text-foreground/55">Status</TableHead>
+                                <TableHead className="font-medium text-xs text-foreground/55">Method</TableHead>
+                                <TableHead className="font-medium text-xs text-foreground/55">Sent</TableHead>
+                                <TableHead className="font-medium text-xs text-foreground/55">Updated</TableHead>
+                                <TableHead className="text-right font-medium text-xs text-foreground/55">Action</TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -118,7 +118,7 @@ export default function DeletionRequestsTable({
                             {isLoading ? (
                                 <TableRowsSkeleton rows={5} columns={6} />
                             ) : (requests?.length ?? 0) === 0 ? (
-                                <TableRow className="hover:bg-transparent border-foreground/5">
+                                <TableRow className="hover:bg-transparent border-foreground/10">
                                     <TableCell
                                         colSpan={6}
                                         className="h-20 text-center text-sm text-foreground/60"
@@ -145,14 +145,14 @@ export default function DeletionRequestsTable({
                                     const lastUpdateIso = req.last_reply_at ?? req.updated_at ?? null;
 
                                     return (
-                                        <TableRow key={req.id} className="hover:bg-foreground/3 border-foreground/5">
+                                        <TableRow key={req.id} className="hover:bg-foreground/[0.03] border-foreground/10">
                                             <TableCell className="text-sm">
                                                 <div className="flex flex-col">
-                                                    <span className="font-light text-foreground">
+                                                    <span className="font-normal text-foreground">
                                                         {svc?.name || "Unknown"}
                                                     </span>
                                                     {svc?.domain && (
-                                                        <span className="text-xs text-foreground/40">
+                                                        <span className="text-xs text-foreground/55">
                                                             {svc.domain}
                                                         </span>
                                                     )}
@@ -181,7 +181,7 @@ export default function DeletionRequestsTable({
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="text-xs h-7 border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3"
+                                                    className="text-xs h-7 border border-foreground/10 bg-card hover:border-foreground/20 hover:bg-foreground/[0.03]"
                                                     onClick={() => handleView(req)}
                                                 >
                                                     View
@@ -206,7 +206,7 @@ export default function DeletionRequestsTable({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3"
+                            className="border border-foreground/10 bg-card hover:border-foreground/20 hover:bg-foreground/[0.03]"
                             disabled={!canPrev || isLoading}
                             onClick={() => canPrev && setPage((p) => p - 1)}
                         >
@@ -215,7 +215,7 @@ export default function DeletionRequestsTable({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="border border-foreground/5 bg-foreground/2 hover:border-foreground/10 hover:bg-foreground/3"
+                            className="border border-foreground/10 bg-card hover:border-foreground/20 hover:bg-foreground/[0.03]"
                             disabled={!canNext || isLoading}
                             onClick={() => canNext && setPage((p) => p + 1)}
                         >

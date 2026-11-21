@@ -26,7 +26,7 @@ export default function HelpPage() {
                 <section className="grid gap-4 md:grid-cols-3 text-sm">
                     <Link
                         href="#getting-started"
-                        className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:border-foreground/10 hover:bg-foreground/3 transition backdrop-blur-sm"
+                        className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:border-foreground/10 hover:bg-foreground/3 transition"
                     >
                         <p className="text-xs font-light text-foreground">
                             Getting started
@@ -37,7 +37,7 @@ export default function HelpPage() {
                     </Link>
                     <Link
                         href="#privacy-security"
-                        className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:border-foreground/10 hover:bg-foreground/3 transition backdrop-blur-sm"
+                        className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:border-foreground/10 hover:bg-foreground/3 transition"
                     >
                         <p className="text-xs font-light text-foreground">
                             Privacy & security
@@ -48,7 +48,7 @@ export default function HelpPage() {
                     </Link>
                     <Link
                         href="#billing"
-                        className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:border-foreground/10 hover:bg-foreground/3 transition backdrop-blur-sm"
+                        className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:border-foreground/10 hover:bg-foreground/3 transition"
                     >
                         <p className="text-xs font-light text-foreground">
                             Billing & plans
@@ -67,7 +67,7 @@ export default function HelpPage() {
                             Getting started
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm backdrop-blur-sm">
+                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm">
                         <div>
                             <p className="text-xs font-medium text-muted-foreground">
                                 What does GhostSweep do?
@@ -111,7 +111,7 @@ export default function HelpPage() {
                             Privacy & security
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm backdrop-blur-sm">
+                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm">
                         <div>
                             <p className="text-xs font-light text-foreground">
                                 Do you read the content of my emails?
@@ -165,7 +165,7 @@ export default function HelpPage() {
                             Account, plans & billing
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm backdrop-blur-sm">
+                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm">
                         <div>
                             <p className="text-xs font-light text-foreground">
                                 What plans are there?
@@ -211,7 +211,7 @@ export default function HelpPage() {
                             Troubleshooting
                         </h2>
                     </div>
-                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm backdrop-blur-sm">
+                    <div className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm">
                         <div>
                             <p className="text-xs font-light text-foreground">
                                 My sweep shows no services. Is that normal?
@@ -251,7 +251,7 @@ export default function HelpPage() {
                 </section>
 
                 {/* Contact support */}
-                <section className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm backdrop-blur-sm">
+                <section className="space-y-3 rounded-lg border border-foreground/5 bg-foreground/2 p-5 text-sm">
                     <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-foreground" />
                         <h2 className="text-base font-light tracking-tight text-foreground">
@@ -266,13 +266,13 @@ export default function HelpPage() {
                     <div className="flex flex-wrap gap-3">
                         <a
                             href="mailto:support@ghostsweep.com?subject=GhostSweep%20Support"
-                            className="inline-flex items-center gap-2 rounded-full border border-foreground/5 bg-foreground/2 px-4 py-1.5 text-xs font-light hover:bg-foreground/3 hover:border-foreground/10 transition text-foreground"
+                            className="inline-flex items-center gap-2 rounded-md border border-foreground/5 bg-foreground/2 px-4 py-1.5 text-xs font-light hover:bg-foreground/3 hover:border-foreground/10 transition text-foreground"
                         >
                             Contact support
                         </a>
                         <Link
                             href="/support/report"
-                            className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-4 py-1.5 text-xs font-light shadow-sm hover:bg-foreground/90 transition"
+                            className="inline-flex items-center gap-2 rounded-md bg-foreground text-background px-4 py-1.5 text-xs font-light shadow-sm hover:bg-foreground/90 transition"
                         >
                             Report an issue
                         </Link>

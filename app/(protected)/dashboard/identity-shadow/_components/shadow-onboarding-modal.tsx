@@ -42,12 +42,12 @@ export default function ShadowOnboardingModal() {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70"
         onClick={dismiss}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg rounded-2xl border border-foreground/10 bg-card shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg rounded-lg border border-foreground/10 bg-card overflow-hidden">
         {/* Close */}
         <button
           onClick={dismiss}
@@ -57,9 +57,9 @@ export default function ShadowOnboardingModal() {
         </button>
 
         {/* Header */}
-        <div className="px-6 pt-8 pb-5 border-b border-foreground/5">
+        <div className="px-6 pt-8 pb-5 border-b border-foreground/10">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
               <Fingerprint className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
@@ -80,19 +80,19 @@ export default function ShadowOnboardingModal() {
 
         {/* Selector guidance */}
         <div className="px-6 py-5 space-y-4">
-          <p className="text-[11px] font-medium uppercase tracking-widest text-foreground/30">
+          <p className="text-xs font-medium text-foreground/55">
             What to add as selectors
           </p>
 
           <div className="space-y-3">
             {/* Usernames */}
-            <div className="flex items-start gap-3 rounded-xl bg-foreground/3 border border-foreground/5 p-3.5">
+            <div className="flex items-start gap-3 rounded-lg bg-foreground/3 border border-foreground/10 p-3.5">
               <User className="h-4 w-4 text-amber-700/70 dark:text-amber-400/70 mt-0.5 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-foreground mb-1">
                   Usernames you use
                 </p>
-                <p className="text-xs text-foreground/40 leading-relaxed">
+                <p className="text-xs text-foreground/55 leading-relaxed">
                   Add usernames you think you&apos;ve signed up with — not your full
                   legal name. One word, no spaces. Hyphens, underscores, and dots
                   are fine.
@@ -111,13 +111,13 @@ export default function ShadowOnboardingModal() {
             </div>
 
             {/* Email */}
-            <div className="flex items-start gap-3 rounded-xl bg-foreground/3 border border-foreground/5 p-3.5">
+            <div className="flex items-start gap-3 rounded-lg bg-foreground/3 border border-foreground/10 p-3.5">
               <Mail className="h-4 w-4 text-emerald-600/70 dark:text-emerald-400/70 mt-0.5 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-foreground mb-1">
                   Email addresses
                 </p>
-                <p className="text-xs text-foreground/40 leading-relaxed">
+                <p className="text-xs text-foreground/55 leading-relaxed">
                   Add every email you&apos;ve used to sign up for things — personal,
                   work, old ones you forgot about.
                 </p>
@@ -125,13 +125,13 @@ export default function ShadowOnboardingModal() {
             </div>
 
             {/* Phone */}
-            <div className="flex items-start gap-3 rounded-xl bg-foreground/3 border border-foreground/5 p-3.5">
+            <div className="flex items-start gap-3 rounded-lg bg-foreground/3 border border-foreground/10 p-3.5">
               <Phone className="h-4 w-4 text-blue-600/70 dark:text-blue-400/70 mt-0.5 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-foreground mb-1">
                   Phone numbers
                 </p>
-                <p className="text-xs text-foreground/40 leading-relaxed">
+                <p className="text-xs text-foreground/55 leading-relaxed">
                   Include country code. Many services link accounts to phone
                   numbers.
                 </p>
@@ -141,7 +141,7 @@ export default function ShadowOnboardingModal() {
         </div>
 
         {/* How it works */}
-        <div className="px-6 py-4 border-t border-foreground/5 bg-foreground/2">
+        <div className="px-6 py-4 border-t border-foreground/10 bg-card">
           <div className="flex items-start gap-3 mb-4">
             <Search className="h-4 w-4 text-foreground/30 mt-0.5 shrink-0" />
             <div>
@@ -164,10 +164,10 @@ export default function ShadowOnboardingModal() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-foreground/5 flex justify-end">
+        <div className="px-6 py-5 border-t border-foreground/10 flex justify-end">
           <Button
             onClick={dismiss}
-            className="bg-emerald-500 text-black hover:bg-emerald-400 font-semibold rounded-lg px-6 text-sm flex items-center gap-2"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-lg px-6 text-sm flex items-center gap-2"
           >
             Got it, let&apos;s go
             <ArrowRight className="h-3.5 w-3.5" />

@@ -78,7 +78,7 @@ export default function ShareResultsCard() {
     return (
         <section
             ref={ref}
-            className="rounded-lg border border-foreground/5 bg-foreground/2 p-6 transition-colors data-[highlight=true]:border-emerald-500/50 data-[highlight=true]:bg-emerald-500/5"
+            className="rounded-lg border border-foreground/10 bg-card p-6 transition-colors data-[highlight=true]:border-emerald-500/50 data-[highlight=true]:bg-emerald-500/5"
         >
             <div className="grid gap-6 md:grid-cols-[1fr_1.1fr] md:items-center">
                 <div className="space-y-3">
@@ -89,7 +89,7 @@ export default function ShareResultsCard() {
                     </p>
                     <div className="flex flex-wrap gap-2 pt-1">
                         {canNativeShare && (
-                            <Button size="sm" onClick={nativeShare} className="bg-emerald-500 text-black hover:bg-emerald-400">
+                            <Button size="sm" onClick={nativeShare} className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 <Share2 className="mr-1.5 h-3.5 w-3.5" /> Share
                             </Button>
                         )}
@@ -113,7 +113,7 @@ export default function ShareResultsCard() {
                     </div>
                 </div>
                 {/* eslint-disable-next-line @next/next/no-img-element -- generated on demand, nothing to optimise */}
-                <img src={image} alt={shareHeadline(count)} className="w-full rounded-xl border border-foreground/10" />
+                <img src={image} alt={shareHeadline(count)} className="w-full rounded-lg border border-foreground/10" />
             </div>
         </section>
     );

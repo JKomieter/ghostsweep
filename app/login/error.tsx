@@ -18,11 +18,7 @@ export default function LoginError({
   }, [error]);
 
   return (
-    <div className="relative flex min-h-screen w-full overflow-hidden bg-linear-to-b from-background via-background to-background">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-40 top-[-10%] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="absolute right-[-10%] bottom-[-10%] h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
-      </div>
+    <div className="relative flex min-h-screen w-full overflow-hidden bg-background">
 
       <div className="relative z-10 flex w-full items-center justify-center px-4">
         <div className="max-w-md space-y-6 text-center">

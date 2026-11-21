@@ -169,7 +169,7 @@ function SignInForm({
                         onChange={setEmail}
                         required
                         autoComplete="email"
-                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
@@ -195,7 +195,7 @@ function SignInForm({
                             onChange={setPassword}
                             required
                             autoComplete="current-password"
-                            className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20 pr-10"
+                            className="h-11 rounded-lg border-foreground/5 bg-foreground/2 text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20 pr-10"
                         />
                         <PasswordVisibilityToggle shown={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
                     </div>
@@ -214,7 +214,7 @@ function SignInForm({
                 )}
                 <Button
                     type="submit"
-                    className="h-11 w-full rounded-lg bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    className="h-11 w-full rounded-lg bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-all duration-200 hover:scale-[1.02] shadow-lg"
                     disabled={isLoading || (shouldShowCaptcha && !captchaToken)}
                 >
                     {isLoading ? <Spinner /> : "Sign in"}
@@ -420,7 +420,7 @@ function SignUpForm({
                         onChange={setEmail}
                         required
                         autoComplete="email"
-                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
                     />
                 </div>
 
@@ -437,7 +437,7 @@ function SignUpForm({
                             onChange={setPassword}
                             required
                             autoComplete="new-password"
-                            className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20 pr-10"
+                            className="h-11 rounded-lg border-foreground/5 bg-foreground/2 text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20 pr-10"
                         />
                         <PasswordVisibilityToggle shown={showPassword} onToggle={() => setShowPassword((prev) => !prev)} />
                     </div>
@@ -456,7 +456,7 @@ function SignUpForm({
                         onChange={setConfirmPassword}
                         required
                         autoComplete="new-password"
-                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 backdrop-blur-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
+                        className="h-11 rounded-lg border-foreground/5 bg-foreground/2 text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-primary/20"
                     />
                     {mismatch && (
                         <p className="text-[11px] text-red-600 dark:text-red-400">Passwords don&apos;t match yet.</p>
@@ -474,7 +474,7 @@ function SignUpForm({
 
                 <Button
                     type="submit"
-                    className="h-11 w-full rounded-lg bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                    className="h-11 w-full rounded-lg bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-all duration-200 hover:scale-[1.02] shadow-lg"
                     disabled={isLoading}
                 >
                     {isLoading ? <Spinner /> : "Create free account"}
@@ -505,7 +505,7 @@ function SignUpForm({
 function ConfirmEmail({ email, onChangeEmail }: { email: string; onChangeEmail: () => void }) {
     return (
         <div className="flex flex-col items-center justify-center text-center space-y-6">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/15 border border-primary/20 backdrop-blur-sm">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/15 border border-primary/20">
                 <MailIcon className="h-10 w-10 text-primary" />
             </div>
             <div className="space-y-3">
@@ -516,7 +516,7 @@ function ConfirmEmail({ email, onChangeEmail }: { email: string; onChangeEmail: 
                     and you&apos;ll land in your dashboard, ready to connect your inbox and run your first scan.
                 </p>
             </div>
-            <div className="w-full rounded-lg border border-foreground/5 bg-foreground/2 backdrop-blur-sm p-4 max-w-md text-left space-y-2">
+            <div className="w-full rounded-lg border border-foreground/5 bg-foreground/2 p-4 max-w-md text-left space-y-2">
                 <p className="text-xs text-foreground/50">
                     Didn&apos;t get it after a minute? Check your spam or promotions folder.
                 </p>
@@ -543,7 +543,7 @@ function SignupSteps() {
                 <li key={step} className="flex items-center gap-2">
                     <span
                         className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${
-                            i === 0 ? "bg-emerald-500 text-black" : "border border-foreground/15 text-foreground/50"
+                            i === 0 ? "bg-primary text-primary-foreground" : "border border-foreground/15 text-foreground/50"
                         }`}
                     >
                         {i + 1}
@@ -588,11 +588,6 @@ function LoginContent() {
 
     return (
         <div className="relative flex min-h-screen w-full overflow-hidden bg-background">
-            <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -left-40 top-[-10%] h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
-                <div className="absolute right-[-10%] bottom-[-10%] h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
-            </div>
-            {/* (snip) */}
             <div className="relative z-10 grid flex-1 grid-cols-1 lg:grid-cols-2">
                 {/* Left side */}
                 {/* Left Side - Branding */}
@@ -602,14 +597,12 @@ function LoginContent() {
                         className="absolute inset-0 opacity-80"
                         style={{
                             background:
-                                "linear-gradient(to bottom, rgba(16,185,129,0.25), rgba(0,0,0,0.9)), url('security.png')",
+                                "linear-gradient(to bottom, rgba(31,95,74,0.35), rgba(17,19,21,0.92)), url('security.png')",
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                         }}
                     />
 
-                    {/* Extra radial glow */}
-                    <div className="absolute inset-0 bg-gradient-radial from-emerald-400/30 via-transparent to-transparent blur-2xl" />
 
                     <div className="relative flex flex-col justify-between p-12 xl:p-16 2xl:p-20">
                         <div className="space-y-10">
@@ -626,7 +619,7 @@ function LoginContent() {
 
                             {/* Hero copy */}
                             <div className="space-y-5 max-w-lg">
-                                <h1 className="text-4xl xl:text-5xl font-light leading-tight bg-linear-to-b from-foreground to-foreground/70 bg-clip-text text-transparent">
+                                <h1 className="text-4xl xl:text-5xl font-medium leading-tight text-foreground">
                                     Sweep your digital footprint clean.
                                 </h1>
                                 <p className="text-sm md:text-base text-foreground/60 leading-relaxed">
@@ -640,7 +633,7 @@ function LoginContent() {
                         {/* Trust / security badges */}
                         <div className="space-y-4 max-w-sm">
                             <div className="flex items-center gap-3 text-foreground/80">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background/40 border border-foreground/5 backdrop-blur-sm">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background border border-foreground/5">
                                     <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div className="space-y-0.5">
@@ -655,7 +648,7 @@ function LoginContent() {
                             </div>
 
                             <div className="flex items-center gap-3 text-foreground/80">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background/40 border border-foreground/5 backdrop-blur-sm">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background border border-foreground/5">
                                     <Lock className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div className="space-y-0.5">
@@ -690,7 +683,7 @@ function LoginContent() {
 
                     <div className="w-full max-w-md">
                         {hasReferral && (
-                            <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-800 dark:text-emerald-100 shadow-lg shadow-emerald-500/10">
+                            <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-800 dark:text-emerald-100 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
                                         <Gift className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
@@ -704,16 +697,16 @@ function LoginContent() {
                                 </div>
                             </div>
                         )}
-                        <div className="mt-16 sm:mt-10 rounded-lg border border-foreground/5 bg-foreground/2 backdrop-blur-xl p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
+                        <div className="mt-16 sm:mt-10 rounded-lg border border-foreground/5 bg-foreground/2 p-6 sm:p-7 shadow-[0_18px_60px_rgba(0,0,0,0.75)] space-y-7">
                             {mode === "confirm" ? (
                                 <ConfirmEmail email={email} onChangeEmail={() => setMode("signup")} />
                             ) : (
                                 <>
-                                    <div className="flex rounded-full border border-foreground/5 bg-foreground/2 backdrop-blur-sm p-1">
+                                    <div className="flex rounded-md border border-foreground/5 bg-foreground/2 p-1">
                                         <button
                                             type="button"
-                                            className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signin"
-                                                    ? "bg-foreground text-background shadow shadow-emerald-400/30"
+                                            className={`flex-1 rounded-md py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signin"
+                                                    ? "bg-foreground text-background shadow"
                                                     : "text-foreground/60 hover:text-foreground"
                                                 }`}
                                             onClick={() => setMode("signin")}
@@ -722,8 +715,8 @@ function LoginContent() {
                                         </button>
                                         <button
                                             type="button"
-                                            className={`flex-1 rounded-full py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signup"
-                                                    ? "bg-foreground text-background shadow shadow-emerald-400/30"
+                                            className={`flex-1 rounded-md py-2.5 text-xs sm:text-sm font-light transition-all duration-200 ${mode === "signup"
+                                                    ? "bg-foreground text-background shadow"
                                                     : "text-foreground/60 hover:text-foreground"
                                                 }`}
                                             onClick={() => setMode("signup")}

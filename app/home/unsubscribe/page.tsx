@@ -14,7 +14,7 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
     return (
         <main className="min-h-screen flex items-center justify-center bg-background px-6">
             <div className="w-full max-w-md">
-                <div className="rounded-2xl border border-foreground/10 bg-foreground/3 p-8 shadow-2xl">
+                <div className="rounded-2xl border border-foreground/10 bg-foreground/3 p-8 shadow-sm">
                     <div className="flex items-center gap-2.5 mb-6">
                         <div className="h-9 w-9 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center">
                             <Ghost className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />

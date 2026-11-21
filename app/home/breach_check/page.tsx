@@ -110,7 +110,7 @@ export default function BreachCheckPage() {
             <div className="mx-auto max-w-3xl px-6 pt-24 pb-20 sm:pt-32 space-y-10">
                 {/* Header */}
                 <header className="text-center space-y-5 max-w-2xl mx-auto">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
+                    <div className="inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
                         <Ghost className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         Breach Checker
                     </div>
@@ -126,7 +126,7 @@ export default function BreachCheckPage() {
                 </header>
 
                 {/* Form */}
-                <Card className="bg-foreground/2 border border-foreground/5 rounded-2xl shadow-2xl">
+                <Card className="bg-foreground/2 border border-foreground/5 rounded-2xl shadow-sm">
                     <CardHeader className="pb-4">
                         <CardTitle className="text-base font-medium text-foreground">
                             Enter an email or domain
@@ -157,7 +157,7 @@ export default function BreachCheckPage() {
                             />
                             <Button
                                 type="submit"
-                                className="sm:w-auto w-full bg-emerald-500 text-black hover:bg-emerald-400 font-semibold rounded-xl"
+                                className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl"
                                 disabled={status === "loading" || !query.trim()}
                             >
                                 {status === "loading" ? (
@@ -259,7 +259,7 @@ export default function BreachCheckPage() {
                                                     · {dateLabel}
                                                 </p>
                                             </div>
-                                            <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-red-500/10 border border-red-500/20 px-2.5 py-1 text-[10px] font-medium text-red-600 dark:text-red-400">
+                                            <span className="shrink-0 inline-flex items-center gap-1 rounded-md bg-red-500/10 border border-red-500/20 px-2.5 py-1 text-[10px] font-medium text-red-600 dark:text-red-400">
                                                 <AlertTriangle className="h-2.5 w-2.5" />
                                                 {isSensitive
                                                     ? "Sensitive"

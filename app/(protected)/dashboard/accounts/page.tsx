@@ -108,7 +108,7 @@ function AccountsPageContent() {
 
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList className="bg-transparent border-b border-foreground/5">
+                    <TabsList className="bg-transparent border-b border-foreground/10">
                         <TabsTrigger 
                             value="accounts" 
                             className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:text-foreground text-foreground/60 rounded-none"

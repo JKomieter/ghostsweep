@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Sparkles, ArrowRight, Clock, Search, TrendingUp, Lock } from "lucide-react";
+import { ArrowRight, Clock, Search, TrendingUp, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { UpgradeTrigger } from "../../_components/upgrade_paywall";
@@ -63,15 +63,13 @@ export default function DeepAuditBanner() {
     const foundValue = valueData?.totalValue || 0;
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-background/60 to-orange-500/10 p-6 md:p-8 mb-8">
+        <div className="relative overflow-hidden rounded-lg border border-amber-500/30 bg-amber-500/5 p-6 md:p-8 mb-8">
             {/* Background glow */}
-            <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-amber-500/20 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-orange-500/10 blur-3xl" />
             
             {/* Dismiss button */}
             <button 
                 onClick={handleDismiss}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-foreground/10 text-foreground/40 hover:text-foreground/70 transition"
+                className="absolute top-4 right-4 p-2 rounded-md hover:bg-foreground/10 text-foreground/55 hover:text-foreground/70 transition"
                 aria-label="Dismiss"
             >
                 <span className="text-lg">×</span>
@@ -79,15 +77,15 @@ export default function DeepAuditBanner() {
 
             <div className="relative z-10">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/30">
+                <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-md bg-amber-500/20 border border-amber-500/30">
                     <Search className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
-                    <span className="text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400">
+                    <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
                         Quick Scan Complete
                     </span>
                 </div>
 
                 {/* Main message */}
-                <h2 className="text-2xl md:text-3xl font-light text-foreground mb-2">
+                <h2 className="text-2xl md:text-3xl font-medium text-foreground mb-2">
                     We found <span className="text-amber-700 dark:text-amber-400 font-medium">{itemCount} items</span> from the last 2 years
                 </h2>
                 <p className="text-lg text-foreground/70 mb-6">
@@ -97,10 +95,10 @@ export default function DeepAuditBanner() {
                 {/* Comparison grid */}
                 <div className="grid md:grid-cols-2 gap-4 mb-8">
                     {/* Current scan (Free) */}
-                    <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-5">
+                    <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-5">
                         <div className="flex items-center gap-2 mb-3">
-                            <Clock className="h-4 w-4 text-foreground/40" />
-                            <span className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                            <Clock className="h-4 w-4 text-foreground/55" />
+                            <span className="text-xs font-medium text-foreground/55">
                                 Quick Scan (Free)
                             </span>
                         </div>
@@ -121,13 +119,12 @@ export default function DeepAuditBanner() {
                     </div>
 
                     {/* Deep Audit (Pro) */}
-                    <div className="rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5 p-5 relative overflow-hidden">
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-5 relative overflow-hidden">
                         <div className="absolute top-3 right-3">
                             <Lock className="h-4 w-4 text-amber-700/50 dark:text-amber-400/50" />
                         </div>
                         <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="h-4 w-4 text-amber-700 dark:text-amber-400" />
-                            <span className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                            <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
                                 Deep Audit (Buster &amp; Pro)
                             </span>
                         </div>
@@ -160,13 +157,12 @@ export default function DeepAuditBanner() {
                 {/* CTA */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <UpgradeTrigger reason="generic">
-                        <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold px-6 py-5 text-base gap-2 shadow-lg shadow-amber-500/20">
-                            <Sparkles className="h-4 w-4" />
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-5 text-base gap-2">
                             Unlock everything
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </UpgradeTrigger>
-                    <div className="text-sm text-foreground/40">
+                    <div className="text-sm text-foreground/55">
                         From {PAID_PLANS.buster.price} one-time or {PAID_PLANS.pro.price}{PAID_PLANS.pro.period}
                     </div>
                 </div>

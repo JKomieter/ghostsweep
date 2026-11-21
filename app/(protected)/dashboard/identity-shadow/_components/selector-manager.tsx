@@ -85,7 +85,7 @@ export default function SelectorManager({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+        <span className="text-xs font-medium text-foreground/55">
           Selectors
         </span>
         {!isAdding && (
@@ -117,7 +117,7 @@ export default function SelectorManager({
                 {detectedType === "email" && <Mail className="h-3 w-3 text-emerald-600/70 dark:text-emerald-400/70" />}
                 {detectedType === "phone" && <Phone className="h-3 w-3 text-blue-600/70 dark:text-blue-400/70" />}
                 {detectedType === "username" && <User className="h-3 w-3 text-amber-700/70 dark:text-amber-400/70" />}
-                <span className="text-[10px] font-mono uppercase tracking-wider text-foreground/30">
+                <span className="text-xs font-mono text-foreground/55">
                   Detected as <span className={detectedType === "email" ? "text-emerald-600/70 dark:text-emerald-400/70" : detectedType === "phone" ? "text-blue-600/70 dark:text-blue-400/70" : "text-amber-700/70 dark:text-amber-400/70"}>{detectedType}</span>
                 </span>
               </div>
@@ -128,7 +128,7 @@ export default function SelectorManager({
               )}
               {detectedType === "username" && !hasSpace && (
                 <p className="text-[10px] text-foreground/25 leading-relaxed">
-                  Add usernames you actually use online — not your legal name. No spaces allowed. Hyphens, underscores, and dots are fine (e.g. <span className="font-mono text-foreground/40">john_doe</span>, <span className="font-mono text-foreground/40">j-doe99</span>). Add each username as a separate selector.
+                  Add usernames you actually use online — not your legal name. No spaces allowed. Hyphens, underscores, and dots are fine (e.g. <span className="font-mono text-foreground/55">john_doe</span>, <span className="font-mono text-foreground/55">j-doe99</span>). Add each username as a separate selector.
                 </p>
               )}
             </div>
@@ -153,7 +153,7 @@ export default function SelectorManager({
                 setIsAdding(false);
                 setValue("");
               }}
-              className="text-foreground/40 hover:text-foreground/60 text-xs"
+              className="text-foreground/55 hover:text-foreground/60 text-xs"
             >
               Cancel
             </Button>
@@ -171,7 +171,7 @@ export default function SelectorManager({
         {selectors.map((sel) => (
           <div
             key={sel.id}
-            className="group/sel flex items-center justify-between rounded-md px-2.5 py-2 hover:bg-foreground/3 transition-colors"
+            className="group/sel flex items-center justify-between rounded-md px-2.5 py-2 hover:bg-foreground/[0.03] transition-colors"
           >
             <div className="flex items-center gap-2 min-w-0">
               {sel.selector_type === "email" ? (
@@ -184,7 +184,7 @@ export default function SelectorManager({
               <span className="text-xs font-mono text-foreground/60 truncate">
                 {sel.selector_value}
               </span>
-              <span className="text-[9px] font-mono uppercase tracking-wider text-foreground/20 shrink-0">
+              <span className="text-[9px] font-mono text-foreground/20 shrink-0">
                 {sel.selector_type}
               </span>
             </div>

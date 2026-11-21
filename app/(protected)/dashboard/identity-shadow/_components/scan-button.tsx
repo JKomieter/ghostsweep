@@ -38,7 +38,7 @@ export default function ScanButton({
     <div className="flex items-center gap-3">
       {/* Progress info shown while scanning */}
       {isScanning && status && (
-        <div className="hidden sm:flex items-center gap-3 text-xs text-foreground/40 font-mono">
+        <div className="hidden sm:flex items-center gap-3 text-xs text-foreground/55 font-mono">
           {message && (
             <span className="max-w-[180px] truncate text-foreground/25">
               {message}
@@ -67,7 +67,7 @@ export default function ScanButton({
         onClick={onScan}
         disabled={isScanning}
         size="sm"
-        className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50 transition-all text-xs font-mono uppercase tracking-wider gap-1.5"
+        className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 hover:border-emerald-500/50 transition-all text-xs font-mono gap-1.5"
       >
         {isScanning ? (
           <>

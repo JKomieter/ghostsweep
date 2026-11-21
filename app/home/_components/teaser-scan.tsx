@@ -27,7 +27,7 @@ function ProgressBar({ progress }: { progress: number }) {
   return (
     <div className="w-full h-1.5 bg-foreground/5 rounded-full overflow-hidden">
       <div
-        className="h-full bg-linear-to-r from-purple-500 to-emerald-500 rounded-full transition-all duration-700 ease-out"
+        className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>
@@ -343,7 +343,7 @@ export default function TeaserScan({
     <div className="w-full" ref={sectionRef}>
       {/* Input form */}
       {status === "idle" && (
-        <div className="rounded-2xl border border-foreground/10 bg-foreground/2 p-8 backdrop-blur-sm">
+        <div className="rounded-2xl border border-foreground/10 bg-foreground/2 p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
               <Fingerprint className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -413,7 +413,7 @@ export default function TeaserScan({
 
       {/* Scanning / Done / Error state */}
       {(status === "scanning" || status === "done" || status === "error") && (
-        <div className="rounded-2xl border border-foreground/10 bg-background/80 overflow-hidden backdrop-blur-sm shadow-2xl shadow-purple-900/10">
+        <div className="rounded-2xl border border-foreground/10 bg-background overflow-hidden shadow-sm">
           {/* Terminal header */}
           <div className="flex items-center gap-2 border-b border-foreground/5 px-5 py-3.5 bg-foreground/3">
             <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
@@ -469,7 +469,7 @@ export default function TeaserScan({
                   {/* Upgrade overlay */}
                   <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/70 to-transparent flex flex-col items-center justify-end pb-6">
                     <div className="text-center space-y-3">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-400">
+                      <div className="inline-flex items-center gap-2 rounded-md bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-400">
                         <Lock className="h-3 w-3" />
                         <span>
                           +{hiddenCount} more profile{hiddenCount !== 1 ? "s" : ""} found — sign up to unlock
@@ -478,7 +478,7 @@ export default function TeaserScan({
                       <div>
                         <Link
                           href={loginHref}
-                          className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]"
+                          className="group inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                         >
                           Sign up to reveal all
                           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -502,7 +502,7 @@ export default function TeaserScan({
                   </p>
                   <Link
                     href={loginHref}
-                    className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-emerald-400 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]"
+                    className="group inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                   >
                     Sign up free
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -539,7 +539,7 @@ export default function TeaserScan({
                   </button>
                   <Link
                     href={loginHref}
-                    className="group inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-5 py-2.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
+                    className="group inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition"
                   >
                     Get full access
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

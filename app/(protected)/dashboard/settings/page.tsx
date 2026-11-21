@@ -366,7 +366,7 @@ export default function SettingsPage() {
                                 </p>
                                 <Button 
                                     size="sm" 
-                                    className="bg-cyan-500 hover:bg-cyan-600"
+                                    className="bg-primary hover:bg-primary/90"
                                     onClick={() => setConnectAccountModalOpen(true)}
                                 >
                                     Connect Email
@@ -380,7 +380,7 @@ export default function SettingsPage() {
                                         className="flex items-center justify-between rounded-lg border border-foreground/10 bg-background/40 px-4 py-3"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-full bg-red-500/10">
+                                            <div className="p-2 rounded-md bg-red-500/10">
                                                 <Mail className="h-4 w-4 text-red-600 dark:text-red-400" />
                                             </div>
                                             <div>
@@ -432,7 +432,7 @@ export default function SettingsPage() {
                                         className="flex items-center justify-between rounded-lg border border-foreground/10 bg-background/40 px-4 py-3"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-full bg-blue-500/10">
+                                            <div className="p-2 rounded-md bg-blue-500/10">
                                                 <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                             </div>
                                             <div>
@@ -530,7 +530,7 @@ export default function SettingsPage() {
                         {/* Run scan now button */}
                         <Button 
                             onClick={handleRunScan}
-                            className="w-full bg-cyan-500 hover:bg-cyan-600"
+                            className="w-full bg-primary hover:bg-primary/90"
                             disabled={sweepData?.status === "processing" || sweepData?.status === "pending"}
                         >
                             {sweepData?.status === "processing" || sweepData?.status === "pending" ? (
@@ -600,7 +600,7 @@ export default function SettingsPage() {
                             >
                                 <Lock className="h-4 w-4 mr-2" />
                                 Download Privacy Report
-                                <span className="ml-auto rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                <span className="ml-auto rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
                                     Buster &amp; Pro
                                 </span>
                             </Button>
@@ -735,7 +735,7 @@ export default function SettingsPage() {
                                         Your Buster Pass includes {scanCreditsLabel(BUSTER_SCAN_CREDITS)} and never expires. Go Pro for unlimited scans and always-on monitoring.
                                     </p>
                                     <Link href="/dashboard/billing?plan=pro" className="block">
-                                        <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                                        <Button className="w-full bg-primary hover:bg-primary/90">
                                             <Crown className="h-4 w-4 mr-2" />
                                             Upgrade to Pro
                                         </Button>
@@ -744,7 +744,7 @@ export default function SettingsPage() {
                             ) : (
                                 <Button
                                     onClick={() => openPaywall("generic")}
-                                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+                                    className="w-full bg-primary hover:bg-primary/90"
                                 >
                                     <Crown className="h-4 w-4 mr-2" />
                                     Upgrade to Buster or Pro

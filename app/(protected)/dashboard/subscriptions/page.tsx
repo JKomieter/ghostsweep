@@ -226,37 +226,36 @@ export default function SubscriptionsPage() {
       <div className="container mx-auto max-w-6xl">
         
         {/* Stats Header */}
-        <div className="relative mx-auto max-w-5xl rounded-xl border border-foreground/10 bg-background/40 p-1 backdrop-blur-xl shadow-2xl mb-10 overflow-hidden">
-          <div className="absolute -inset-1 rounded-xl bg-linear-to-r from-red-500/20 via-orange-500/20 to-yellow-500/20 blur opacity-50" />
-          <div className="relative rounded-lg bg-card p-6 sm:p-8">
+        <div className="rounded-lg border border-foreground/10 bg-card mb-10">
+          <div className="p-6 sm:p-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="md:col-span-2">
-                <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Monthly Spending</div>
-                <div className="text-4xl font-light text-red-600 dark:text-red-400 mb-2">
+                <div className="text-xs text-foreground/50 mb-4 font-medium">Monthly Spending</div>
+                <div className="text-3xl font-mono font-medium tabular-nums text-foreground mb-2">
                   {loading ? <Skeleton className="h-10 w-32" /> : formatCurrency(monthlyTotal)}
                 </div>
                 <div className="text-lg text-foreground/60">
                   {formatCurrency(annualTotal)}/year
                 </div>
-                <div className="text-sm text-foreground/40 mt-2">
+                <div className="text-sm text-foreground/55 mt-2">
                   {loading ? <Skeleton className="h-4 w-20" /> : `${totalCount} active subscriptions`}
                 </div>
               </div>
               
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Potential Savings</div>
-                <div className="text-2xl font-light text-emerald-600 dark:text-emerald-400">
+                <div className="text-xs text-foreground/50 mb-4 font-medium">Potential Savings</div>
+                <div className="text-2xl font-mono font-medium tabular-nums text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(annualTotal)}
                 </div>
-                <div className="text-xs text-foreground/40 mt-1">if cancel all</div>
+                <div className="text-xs text-foreground/55 mt-1">if cancel all</div>
               </div>
               
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-foreground/50 mb-4 font-semibold">Lifetime Saved</div>
-                <div className="text-2xl font-light text-emerald-600 dark:text-emerald-400">
+                <div className="text-xs text-foreground/50 mb-4 font-medium">Lifetime Saved</div>
+                <div className="text-2xl font-mono font-medium tabular-nums text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(lifetimeSavings)}
                 </div>
-                <div className="text-xs text-foreground/40 mt-1">from cancellations</div>
+                <div className="text-xs text-foreground/55 mt-1">from cancellations</div>
               </div>
             </div>
           </div>
@@ -266,7 +265,7 @@ export default function SubscriptionsPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
           <div className="w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
             <Tabs value={tab} onValueChange={setTab} className="w-full">
-              <TabsList className="bg-background/40 border border-foreground/5 w-full justify-start md:justify-center lg:justify-start min-w-max">
+              <TabsList className="bg-background/40 border border-foreground/10 w-full justify-start md:justify-center lg:justify-start min-w-max">
                 {TABS.map(t => (
                   <TabsTrigger key={t.key} value={t.key} className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-700 dark:data-[state=active]:text-red-300 min-w-[100px]">
                     {t.label} ({getTabCount(t.key)})
@@ -311,7 +310,7 @@ export default function SubscriptionsPage() {
 
         {/* Bulk Actions */}
         {tab === "active" && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 py-4 rounded-xl bg-foreground/2 border border-foreground/5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 py-4 rounded-lg bg-card border border-foreground/10">
             <div className="flex flex-col md:flex-row md:items-center gap-4">
               <Button variant="ghost" size="sm" className="h-8 text-foreground/70 hover:text-foreground hover:bg-foreground/10 w-fit" onClick={allSelected ? clearSelected : selectAll}>
                 <Checkbox checked={allSelected} className="mr-2 border-foreground/30 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500" /> 
@@ -344,7 +343,7 @@ export default function SubscriptionsPage() {
         {/* Subscription Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {loading ? (
-            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 w-full rounded-2xl bg-foreground/5" />)
+            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 w-full rounded-lg bg-foreground/5" />)
           ) : data?.subscriptions && data.subscriptions.length > 0 ? (
             data.subscriptions.map((sub: Subscription) => {
               const monthlyAmount = getMonthlyAmount(sub.amount, sub.billing_frequency);
@@ -354,7 +353,7 @@ export default function SubscriptionsPage() {
               const isHighValue = annualAmount > 500;
               
               return (
-                <div key={sub.id} className="animate-content-in group relative rounded-2xl border border-foreground/5 bg-foreground/2 p-4 sm:p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/10">
+                <div key={sub.id} className="animate-content-in group relative rounded-lg border border-foreground/10 bg-card p-4 sm:p-6 transition duration-300 hover:bg-foreground/5 hover:border-foreground/20">
                   <div className="flex items-start gap-4">
                     {tab === "active" && (
                       <div className="pt-1.5 shrink-0">
@@ -368,8 +367,8 @@ export default function SubscriptionsPage() {
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row gap-5">
-                        <div className="h-12 w-12 shrink-0 rounded-xl bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
-                          <ServiceLogo src={sub.logo_url} domain={sub.domain} name={sub.service_name} initials={2} className="rounded-md" fallbackClassName="font-mono text-foreground/40" />
+                        <div className="h-12 w-12 shrink-0 rounded-lg bg-foreground/5 p-2 border border-foreground/10 flex items-center justify-center">
+                          <ServiceLogo src={sub.logo_url} domain={sub.domain} name={sub.service_name} initials={2} className="rounded-md" fallbackClassName="font-mono text-foreground/55" />
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -386,7 +385,7 @@ export default function SubscriptionsPage() {
                                 </p>
                               )}
                               <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <Badge variant="outline" className={`text-[10px] uppercase tracking-wider border-foreground/10 text-foreground/50 ${
+                                <Badge variant="outline" className={`text-xs border-foreground/10 text-foreground/60 ${
                                   sub.status === 'canceled' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
                                   sub.status === 'kept' ? 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400' :
                                   'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
@@ -395,17 +394,17 @@ export default function SubscriptionsPage() {
                                 </Badge>
                                 
                                 {sub.billing_frequency && (
-                                  <span className="text-xs text-foreground/40 capitalize">{sub.billing_frequency}</span>
+                                  <span className="text-xs text-foreground/55 capitalize">{sub.billing_frequency}</span>
                                 )}
                               </div>
                             </div>
                             
                             <div className="sm:text-right shrink-0">
-                              <div className="text-2xl font-light text-red-600 dark:text-red-400">
+                              <div className="text-2xl font-mono font-medium tabular-nums text-red-600 dark:text-red-400">
                                 {/* {blurred && !isPro ? "$██" : formatCurrency(monthlyAmount)} */}
                                 {formatCurrency(monthlyAmount)}
                               </div>
-                              <div className="text-xs text-foreground/40">per month</div>
+                              <div className="text-xs text-foreground/55">per month</div>
                             </div>
                           </div>
                           
@@ -434,13 +433,13 @@ export default function SubscriptionsPage() {
                           {/* Warning badges */}
                           <div className="flex flex-wrap gap-2 mb-4">
                             {isHighValue && (
-                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-orange-700 dark:text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20">
+                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-orange-700 dark:text-orange-400 bg-orange-500/10 px-2 py-1 rounded-md border border-orange-500/20">
                                 <AlertTriangle className="h-3 w-3" />
                                 <span className="truncate">High value: {formatCurrency(annualAmount)}/y</span>
                               </div>
                             )}
                             {isUnused && (
-                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-yellow-700 dark:text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full border border-yellow-500/20">
+                              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-yellow-700 dark:text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-md border border-yellow-500/20">
                                 <AlertTriangle className="h-3 w-3" />
                                 Unused: {daysSinceLastBill}d
                               </div>
@@ -539,7 +538,7 @@ export default function SubscriptionsPage() {
         
         {/* Free tier overlay */}
         {previewOnly && data?.subscriptions && data.subscriptions.length > 0 && (
-          <div className="mt-8 rounded-2xl border border-red-500/30 bg-gradient-to-b from-red-500/10 to-transparent p-8 text-center">
+          <div className="mt-8 rounded-lg border border-red-500/30 bg-red-500/5 p-8 text-center">
             <div className="text-5xl mb-4">💸</div>
             <h3 className="text-xl text-foreground font-semibold mb-3">You&apos;re Leaking Money</h3>
             <p className="text-foreground/60 mb-2 max-w-md mx-auto">
@@ -547,7 +546,7 @@ export default function SubscriptionsPage() {
               <span className="text-red-600 dark:text-red-400 font-bold">{formatCurrency(annualTotal)} a year</span>.
               {totalCount > previewCount && <> We&apos;re only showing {previewCount} of them.</>}
             </p>
-            <p className="text-foreground/40 text-sm mb-6">
+            <p className="text-foreground/55 text-sm mb-6">
               Upgrade to see the full list, view costs, and cancel them with one click.
             </p>
             <button type="button" onClick={() => openPaywall("generic")} className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-400 px-6 py-3 text-sm font-semibold text-white transition">
@@ -558,14 +557,14 @@ export default function SubscriptionsPage() {
 
         {/* Instructions Modal */}
         <Dialog open={!!modalSub} onOpenChange={open => !open && setModalSub(null)}>
-          <DialogContent className="max-w-lg p-0 bg-card border border-foreground/10 rounded-2xl shadow-2xl overflow-hidden">
+          <DialogContent className="max-w-lg p-0 bg-card border border-foreground/10 rounded-lg overflow-hidden">
             {modalSub && (
               <>
                 <div className="p-6">
                   <DialogHeader>
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="h-12 w-12 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
-                        <ServiceLogo src={modalSub.logo_url} domain={modalSub.domain} name={modalSub.service_name} initials={2} className="rounded-md" fallbackClassName="font-mono text-foreground/40" />
+                      <div className="h-12 w-12 rounded-lg bg-foreground/5 border border-foreground/10 flex items-center justify-center p-2">
+                        <ServiceLogo src={modalSub.logo_url} domain={modalSub.domain} name={modalSub.service_name} initials={2} className="rounded-md" fallbackClassName="font-mono text-foreground/55" />
                       </div>
                       <div>
                         <DialogTitle className="text-xl font-semibold text-foreground">{modalSub.service_name}</DialogTitle>
@@ -603,7 +602,7 @@ export default function SubscriptionsPage() {
                   </div>
                 </div>
                 
-                <div className="p-6 bg-foreground/2 border-t border-foreground/5 flex justify-between gap-3">
+                <div className="p-6 bg-card border-t border-foreground/10 flex justify-between gap-3">
                   <DialogClose asChild>
                     <Button variant="ghost" className="text-foreground/60 hover:text-foreground hover:bg-foreground/10">
                       Close
@@ -621,7 +620,7 @@ export default function SubscriptionsPage() {
                     </Button>
                     
                     <Button 
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
                       onClick={() => markAsCanceled(modalSub.id)}
                       disabled={updateStatusMutation.isPending}
                     >

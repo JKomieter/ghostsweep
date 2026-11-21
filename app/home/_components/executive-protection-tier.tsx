@@ -7,7 +7,7 @@ export function ExecutiveProtectionTier() {
   return (
     <section className="space-y-6">
       <div className="space-y-2 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
+        <div className="inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-3 py-1.5 text-[11px] font-medium text-foreground/75">
           <BarChart3 className="h-3 w-3 text-muted-foreground" />
           For security and admin teams
         </div>
@@ -29,7 +29,7 @@ export function ExecutiveProtectionTier() {
         />
 
         {/* Card Content */}
-        <div className="relative bg-background/95 backdrop-blur-sm p-6 sm:p-8 space-y-6">
+        <div className="relative bg-background p-6 sm:p-8 space-y-6">
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-400">
@@ -63,7 +63,7 @@ export function ExecutiveProtectionTier() {
           <div className="border-t border-foreground/10 pt-4">
             <Link
               href="mailto:support@ghostsweep.com?subject=Inquiry:%20GhostSweep%20Executive%20Admin%20Suite"
-              className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-foreground/5 px-5 py-2.5 text-xs font-medium text-foreground hover:bg-foreground/10 transition"
+              className="inline-flex items-center gap-2 rounded-md border border-foreground/15 bg-foreground/5 px-5 py-2.5 text-xs font-medium text-foreground hover:bg-foreground/10 transition"
             >
               Talk with the founder
               <ArrowRight className="h-3.5 w-3.5" />

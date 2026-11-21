@@ -97,7 +97,7 @@ export default function DeletionRequestsTable({
                                                         src={request.user_service.service.logo_url}
                                                         domain={request.user_service.service.domain}
                                                         name={request.user_service.service.name}
-                                                        fallbackClassName="text-[10px] font-bold text-foreground/40"
+                                                        fallbackClassName="text-[10px] font-bold text-foreground/55"
                                                     />
                                                 </span>
                                             )}
@@ -117,7 +117,7 @@ export default function DeletionRequestsTable({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={4} className="h-24 text-center text-foreground/40">
+                                <TableCell colSpan={4} className="h-24 text-center text-foreground/55">
                                     No deletion requests found.
                                 </TableCell>
                             </TableRow>

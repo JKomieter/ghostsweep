@@ -63,11 +63,11 @@ export default function BusterPromoBanner() {
     };
 
     return (
-        <div className="relative overflow-hidden rounded-xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-background/40 to-purple-500/10 p-4 sm:p-6">
+        <div className="relative overflow-hidden rounded-lg border border-foreground/10 bg-card p-4 sm:p-6 shadow-[inset_3px_0_0_0_var(--primary)]">
             <button
                 type="button"
                 onClick={handleDismiss}
-                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-foreground/10 text-foreground/40 hover:text-foreground/70 transition"
+                className="absolute top-3 right-3 p-1.5 rounded-md hover:bg-foreground/[0.05] text-foreground/55 hover:text-foreground/70 transition"
                 aria-label="Dismiss announcement"
             >
                 <X className="h-4 w-4" />
@@ -75,7 +75,7 @@ export default function BusterPromoBanner() {
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pr-8">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                    <div className="flex items-center gap-2 font-mono text-xs text-foreground/60">
                         <Tag className="h-3.5 w-3.5" />
                         Limited-time offer · Ends Dec 1
                     </div>
@@ -87,7 +87,7 @@ export default function BusterPromoBanner() {
                         <button
                             type="button"
                             onClick={handleCopy}
-                            className="inline-flex items-center gap-1 rounded-md border border-dashed border-emerald-500/50 bg-emerald-500/10 px-2 py-0.5 font-mono font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition"
+                            className="inline-flex items-center gap-1 rounded-sm border border-dashed border-foreground/30 px-2 py-0.5 font-mono font-medium text-foreground hover:bg-foreground/[0.05] transition-colors"
                             aria-label={`Copy code ${PROMO_CODE}`}
                         >
                             {PROMO_CODE}
@@ -101,7 +101,7 @@ export default function BusterPromoBanner() {
                     type="button"
                     onClick={() => startCheckout("buster")}
                     disabled={pendingPlan !== null}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition disabled:opacity-60"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition disabled:opacity-60"
                 >
                     {pendingPlan === "buster" ? (
                         <Loader2 className="h-4 w-4 animate-spin" />

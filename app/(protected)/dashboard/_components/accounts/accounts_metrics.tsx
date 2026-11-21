@@ -31,11 +31,11 @@ export default function AccountsMetrics({
     return (
         <div className="grid grid-cols-3 gap-4">
             {metrics.map((metric) => (
-                <div key={metric.label} className="rounded-lg border border-foreground/5 bg-foreground/2 p-4 hover:bg-foreground/3">
-                    <span className="text-[11px] font-medium uppercase tracking-widest text-foreground/40">
+                <div key={metric.label} className="rounded-lg border border-foreground/10 bg-card p-4 hover:bg-foreground/[0.03]">
+                    <span className="text-xs font-medium text-foreground/55">
                         {metric.label}
                     </span>
-                    <div className={`text-2xl font-light tracking-tight ${metric.color || "text-foreground"}`}>
+                    <div className={`text-2xl font-mono font-medium tabular-nums ${metric.color || "text-foreground"}`}>
                         {metric.value}
                     </div>
                 </div>

@@ -162,7 +162,7 @@ export default function DeletionEmailModal({
             <DialogContent className="sm:max-w-lg bg-background border border-foreground/10">
                 <DialogHeader className="space-y-2">
                     <DialogTitle className="flex flex-col gap-1">
-                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                             Privacy request email
                         </span>
                         <span className="text-lg font-semibold">{serviceName}</span>
@@ -206,7 +206,7 @@ export default function DeletionEmailModal({
                 {/* From + To */}
                 <div className="mt-4 space-y-3 text-xs">
                     <div className="space-y-1">
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        <div className="text-xs text-muted-foreground">
                             From (your email)
                         </div>
                         <div className="rounded-md border border-foreground/10 bg-background/60 px-3 py-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-200">
@@ -215,7 +215,7 @@ export default function DeletionEmailModal({
                     </div>
 
                     <div className="space-y-1">
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        <div className="text-xs text-muted-foreground">
                             To (service deletion email)
                         </div>
                         <div className="rounded-md border border-foreground/10 bg-background/60 px-3 py-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-200">
@@ -225,7 +225,7 @@ export default function DeletionEmailModal({
 
                     {/* Editable subject */}
                     <div className="space-y-1">
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        <div className="text-xs text-muted-foreground">
                             Subject (editable)
                         </div>
                         {isLoadingTemplate ? (
@@ -248,7 +248,7 @@ export default function DeletionEmailModal({
 
                 {/* Editable body */}
                 <div className="mt-4 space-y-1">
-                    <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    <div className="text-xs text-muted-foreground">
                         Email body (editable)
                     </div>
 

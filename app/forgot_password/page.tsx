@@ -31,7 +31,7 @@ export default function ForgotPassword() {
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
-            <div className="w-full max-w-md rounded-lg border border-foreground/5 bg-foreground/2 p-6 shadow-lg backdrop-blur-xl">
+            <div className="w-full max-w-md rounded-lg border border-foreground/5 bg-foreground/2 p-6 shadow-lg">
                 {
                     mode === "forgot" &&
                     <>

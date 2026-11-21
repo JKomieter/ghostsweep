@@ -72,7 +72,7 @@ export default function SecurityPage() {
             <div className="mx-auto max-w-4xl px-6 pt-24 pb-20 sm:pt-32 space-y-20">
                 {/* Hero */}
                 <section className="text-center max-w-3xl mx-auto space-y-6">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
+                    <div className="inline-flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-4 py-1.5 text-xs text-foreground/50">
                         <Shield className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         Google OAuth · Zero-storage scanning · You control all actions
                     </div>
@@ -92,14 +92,14 @@ export default function SecurityPage() {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Link
                             href="/login?mode=signup"
-                            className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
+                            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
                         >
                             Start Secure Scan
                             <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
                         <Link
                             href="/home/privacy"
-                            className="inline-flex items-center justify-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-6 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/10 transition"
+                            className="inline-flex items-center justify-center gap-2 rounded-md border border-foreground/10 bg-foreground/5 px-6 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/10 transition"
                         >
                             Read privacy policy
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -567,7 +567,7 @@ export default function SecurityPage() {
                                 href="https://myaccount.google.com/permissions"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
+                                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition"
                             >
                                 Check OAuth permissions
                                 <ExternalLink className="h-3 w-3" />

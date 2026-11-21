@@ -38,7 +38,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                     {/* Help Center */}
                     <Link href="/help" onClick={() => onOpenChangeAction(false)}>
                         <div className="group flex items-start gap-3 rounded-lg border border-foreground/10 bg-background/40 px-3 py-3 hover:border-primary/60 hover:bg-foreground/5 transition">
-                            <div className="mt-0.5 rounded-full bg-primary/10 p-1.5">
+                            <div className="mt-0.5 rounded-md bg-primary/10 p-1.5">
                                 <HelpCircle className="h-3.5 w-3.5 text-primary" />
                             </div>
                             <div className="space-y-0.5">
@@ -56,7 +56,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                         onClick={() => onOpenChangeAction(false)}
                     >
                         <div className="group flex items-start gap-3 rounded-lg border border-foreground/10 bg-background/40 px-3 py-3 hover:border-primary/60 hover:bg-foreground/5 transition">
-                            <div className="mt-0.5 rounded-full bg-primary/10 p-1.5">
+                            <div className="mt-0.5 rounded-md bg-primary/10 p-1.5">
                                 <Mail className="h-3.5 w-3.5 text-primary" />
                             </div>
                             <div className="space-y-0.5">
@@ -74,7 +74,7 @@ export function SupportModal({ open, onOpenChangeAction }: SupportModalProps) {
                     {/* Report an Issue */}
                     <Link href="/support/report" onClick={() => onOpenChangeAction(false)}>
                         <div className="group flex items-start gap-3 rounded-lg border border-foreground/10 bg-background/40 px-3 py-3 hover:border-primary/60 hover:bg-foreground/5 transition">
-                            <div className="mt-0.5 rounded-full bg-red-500/10 p-1.5">
+                            <div className="mt-0.5 rounded-md bg-red-500/10 p-1.5">
                                 <Bug className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                             </div>
                             <div className="space-y-0.5">

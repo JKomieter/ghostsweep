@@ -88,10 +88,10 @@ export default function ConnectAccountModal({
                         <button
                             onClick={handleConnectGoogle}
                             disabled={connecting !== null}
-                            className="w-full flex items-center justify-between p-4 rounded-xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between p-4 rounded-lg border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-foreground/10">
+                                <div className="p-3 rounded-lg bg-foreground/10">
                                     <GoogleIcon className="h-6 w-6" />
                                 </div>
                                 <div className="text-left">
@@ -114,10 +114,10 @@ export default function ConnectAccountModal({
                         <button
                             onClick={handleConnectMicrosoft}
                             disabled={connecting !== null}
-                            className="w-full flex items-center justify-between p-4 rounded-xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between p-4 rounded-lg border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/20 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-foreground/10">
+                                <div className="p-3 rounded-lg bg-foreground/10">
                                     <MicrosoftIcon className="h-6 w-6" />
                                 </div>
                                 <div className="text-left">
@@ -138,7 +138,7 @@ export default function ConnectAccountModal({
                     </div>
 
                     {/* Privacy note */}
-                    <div className="p-4 rounded-lg bg-background/40 border border-foreground/5">
+                    <div className="p-4 rounded-lg bg-background/40 border border-foreground/10">
                         <p className="text-xs text-muted-foreground leading-relaxed">
                             <span className="text-foreground font-medium">Your privacy is protected.</span>{" "}
                             GhostSweep uses OAuth 2.0 with read-only permissions. We never store 

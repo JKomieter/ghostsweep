@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { logout } from "@/utils/client-logout";
-import { Menu, X, LayoutDashboard, Zap, FileText, Shield, CheckCircle2, LogOut, Map, Fingerprint } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, Fingerprint, Users, Repeat, Mail, Wallet, Settings, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -10,51 +10,27 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import useGetUser from "@/hooks/use-get-user";
 
-const navItems = [
+const navGroups = [
     {
-        label: "Overview",
-        href: "/dashboard",
-        icon: LayoutDashboard,
+        label: null,
+        items: [{ label: "Overview", href: "/dashboard", icon: LayoutDashboard }],
     },
     {
-        label: "Value Recovery",
-        href: "/dashboard/value-recovery",
-        icon: Zap,
+        label: "Findings",
+        items: [
+            { label: "Accounts", href: "/dashboard/accounts", icon: Users },
+            { label: "Identity Shadow", href: "/dashboard/identity-shadow", icon: Fingerprint },
+            { label: "Subscriptions", href: "/dashboard/subscriptions", icon: Repeat },
+            { label: "Newsletters", href: "/dashboard/newsletters", icon: Mail },
+            { label: "Value Recovery", href: "/dashboard/value-recovery", icon: Wallet },
+        ],
     },
     {
-        label: "Subscriptions",
-        href: "/dashboard/subscriptions",
-        icon: FileText,
-    },
-    {
-        label: "Newsletters",
-        href: "/dashboard/newsletters",
-        icon: Shield,
-    },
-    {
-        label: "Accounts",
-        href: "/dashboard/accounts",
-        icon: Map,
-    },
-    {
-        label: "Identity Shadow",
-        href: "/dashboard/identity-shadow",
-        icon: Fingerprint,
-    },
-    // {
-    //     label: "Breaches",
-    //     href: "/dashboard/breaches",
-    //     icon: CheckCircle2,
-    // },
-    {
-        label: "Settings",
-        href: "/dashboard/settings",
-        icon: X,
-    },
-    {
-        label: "Billing",
-        href: "/dashboard/billing",
-        icon: LogOut,
+        label: "Account",
+        items: [
+            { label: "Settings", href: "/dashboard/settings", icon: Settings },
+            { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
+        ],
     },
 ];
 
@@ -64,9 +40,8 @@ export default function SlidingSidebar() {
 
     const {data: user} = useGetUser();
 
-    const isSelected = (path: string) => {
-        return path === pathname;
-    };
+    const isSelected = (path: string) =>
+        path === "/dashboard" ? pathname === path : pathname === path || pathname.startsWith(`${path}/`);
 
     const handleLogout = async () => {
         try {
@@ -80,13 +55,13 @@ export default function SlidingSidebar() {
     return (
         <>
             {/* Trigger Button */}
-            <Button variant="outline" size="icon" onClick={() => setOpen(true)}>
+            <Button variant="outline" size="icon" aria-label="Open menu" onClick={() => setOpen(true)}>
                 <Menu className="h-4 w-4" />
             </Button>
 
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
+                className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 ${
                     open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
                 onClick={() => setOpen(false)}
@@ -104,7 +79,8 @@ export default function SlidingSidebar() {
                     <span className="text-sm font-semibold text-foreground">GhostSweep</span>
                     <button
                         onClick={() => setOpen(false)}
-                        className="rounded-lg border border-foreground/10 p-1.5 text-foreground/70 hover:bg-foreground/10 transition-colors"
+                        aria-label="Close menu"
+                        className="rounded-md border border-foreground/10 p-1.5 text-foreground/70 hover:bg-foreground/[0.06] transition-colors"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -113,45 +89,49 @@ export default function SlidingSidebar() {
                 {/* User Info - New Section */}
                 <div className="px-4 py-3 border-b border-foreground/10">
                     <p className="text-xs text-foreground/50">Signed in as</p>
-                    <p className="text-sm font-medium text-foreground truncate">{user?.email}</p>
+                    <p className="font-mono text-xs text-foreground truncate">{user?.email}</p>
                 </div>
 
                 {/* Nav */}
-                <nav className="flex flex-col flex-1 p-3 space-y-1">
-                    {/* Main Section */}
-                    <div className="space-y-1">
-                        {navItems.map((item) => {
-                            const Icon = item.icon;
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setOpen(false)}
-                                    className={cn(
-                                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                                        isSelected(item.href)
-                                            ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
-                                            : "text-foreground/70 hover:bg-foreground/10 hover:text-foreground"
-                                    )}
-                                >
-                                    <Icon className="h-4 w-4 shrink-0" />
-                                    <span>{item.label}</span>
-                                </Link>
-                            );
-                        })}
+                <nav className="flex flex-col flex-1 p-3">
+                    <div className="space-y-5">
+                        {navGroups.map((group) => (
+                            <div key={group.label ?? "main"} className="space-y-0.5">
+                                {group.label && (
+                                    <p className="px-3 pb-1.5 text-xs text-foreground/50">{group.label}</p>
+                                )}
+                                {group.items.map((item) => {
+                                    const Icon = item.icon;
+                                    const active = isSelected(item.href);
+                                    return (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setOpen(false)}
+                                            aria-current={active ? "page" : undefined}
+                                            className={cn(
+                                                "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                                                active
+                                                    ? "bg-foreground/[0.06] font-medium text-foreground before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-primary"
+                                                    : "text-foreground/70 hover:bg-foreground/[0.04] hover:text-foreground"
+                                            )}
+                                        >
+                                            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-foreground/50")} />
+                                            <span>{item.label}</span>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        ))}
                     </div>
-
-                    {/* Divider */}
-                    <div className="my-2 h-px bg-foreground/10" />
-
 
                     {/* Logout - Bottom */}
                     <div className="mt-auto pt-4 border-t border-foreground/10">
                         <button
                             onClick={handleLogout}
-                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-500/10 hover:text-red-800 dark:hover:text-red-200 transition-colors"
+                            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground/70 hover:bg-foreground/[0.04] hover:text-foreground transition-colors"
                         >
-                            <LogOut className="h-4 w-4 shrink-0" />
+                            <LogOut className="h-4 w-4 shrink-0 text-foreground/50" />
                             <span>Log out</span>
                         </button>
                     </div>

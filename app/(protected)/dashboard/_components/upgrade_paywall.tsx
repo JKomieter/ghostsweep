@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Check, FileText, Ghost, Gift, Loader2, Lock, Shield, Sparkles } from "lucide-react";
+import { Check, FileText, Ghost, Gift, Loader2, Lock, Shield } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -137,7 +137,7 @@ function UpgradePaywall({ reason, onClose }: { reason: PaywallReason | null; onC
 
                 {stats.length > 0 && (
                     <div className="rounded-lg border border-foreground/10 bg-foreground/[0.03] p-4">
-                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-foreground/50">
+                        <p className="mb-3 text-xs font-medium text-foreground/50">
                             Your scan found
                         </p>
                         <div className="grid grid-cols-3 gap-3">
@@ -218,13 +218,13 @@ function PlanCard({
     return (
         <div
             className={cn(
-                "relative flex flex-col rounded-xl border p-5",
+                "relative flex flex-col rounded-lg border p-5",
                 featured ? "border-emerald-500 ring-1 ring-emerald-500 bg-emerald-500/[0.04]" : "border-foreground/10"
             )}
         >
             {featured && (
-                <span className="absolute -top-2.5 left-5 inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">
-                    <Sparkles className="h-3 w-3" /> Most popular
+                <span className="absolute -top-2.5 left-5 inline-flex items-center gap-1 rounded-md bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
+                    Most popular
                 </span>
             )}
             <div className="text-sm font-semibold text-foreground">{plan.name}</div>
@@ -245,7 +245,7 @@ function PlanCard({
                 onClick={() => onSelect(planId)}
                 disabled={pendingPlan !== null}
                 variant={featured ? "default" : "outline"}
-                className={cn(featured && "bg-emerald-500 text-black hover:bg-emerald-400")}
+                className={cn(featured && "bg-primary text-primary-foreground hover:bg-primary/90")}
             >
                 {isPending ? (
                     <>

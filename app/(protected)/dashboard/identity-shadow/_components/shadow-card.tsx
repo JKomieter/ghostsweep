@@ -49,10 +49,10 @@ export default function ShadowCard({
     <div
       className={`group relative rounded-lg border bg-foreground/2 p-5 transition-all duration-300 ${
         isHighRisk
-          ? "border-red-500/30 hover:border-red-500/60 shadow-[0_0_15px_rgba(255,49,49,0.06)]"
+          ? "border-red-500/30 hover:border-red-500/60"
           : isMediumRisk
           ? "border-amber-500/20 hover:border-amber-500/40"
-          : "border-foreground/5 hover:border-foreground/10"
+          : "border-foreground/10 hover:border-foreground/20"
       }`}
     >
       {/* Scan line effect on hover */}
@@ -76,17 +76,17 @@ export default function ShadowCard({
           </div>
         </div>
         {isHighRisk && (
-          <Badge className="bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30 text-[10px] font-mono uppercase tracking-wider">
+          <Badge className="bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30 text-xs font-mono">
             High Risk
           </Badge>
         )}
         {isMediumRisk && !isHighRisk && (
-          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] font-mono uppercase tracking-wider">
+          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30 text-xs font-mono">
             Medium
           </Badge>
         )}
         {!isHighRisk && !isMediumRisk && (
-          <Badge className="bg-foreground/5 text-foreground/40 border-foreground/10 text-[10px] font-mono uppercase tracking-wider">
+          <Badge className="bg-foreground/5 text-foreground/55 border-foreground/10 text-xs font-mono">
             Low
           </Badge>
         )}
@@ -95,19 +95,19 @@ export default function ShadowCard({
       {/* Data rows */}
       <div className="space-y-2 mb-4">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-foreground/30 font-mono uppercase tracking-wider">
+          <span className="text-foreground/55 font-mono">
             Site
           </span>
           <span className="text-foreground/70 font-mono">{profile.site_name}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-foreground/30 font-mono uppercase tracking-wider">
+          <span className="text-foreground/55 font-mono">
             Discovered
           </span>
           <span className="text-foreground/70 font-mono">{discoveredDate}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-foreground/30 font-mono uppercase tracking-wider">
+          <span className="text-foreground/55 font-mono">
             Status
           </span>
           <span
@@ -124,7 +124,7 @@ export default function ShadowCard({
         </div>
         {profile.has_breach && (
           <div className="flex items-center justify-between text-xs">
-            <span className="text-foreground/30 font-mono uppercase tracking-wider">
+            <span className="text-foreground/55 font-mono">
               Breach
             </span>
             <span className="text-red-600 dark:text-red-400 font-mono flex items-center gap-1">
@@ -141,7 +141,7 @@ export default function ShadowCard({
           variant="outline"
           size="sm"
           onClick={() => window.open(profile.profile_url, "_blank")}
-          className="flex-1 border-foreground/10 text-foreground/60 hover:border-emerald-500/40 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/5 font-mono text-xs uppercase tracking-wider gap-1.5"
+          className="flex-1 border-foreground/10 text-foreground/60 hover:border-emerald-500/40 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/5 font-mono text-xs gap-1.5"
         >
           <ExternalLink className="h-3 w-3" />
           Visit
@@ -152,7 +152,7 @@ export default function ShadowCard({
               variant="outline"
               size="sm"
               onClick={() => onStatusChange(profile.id, "ignored")}
-              className="border-foreground/10 text-foreground/40 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-500/30 hover:bg-amber-500/5"
+              className="border-foreground/10 text-foreground/55 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-500/30 hover:bg-amber-500/5"
               title="Ignore"
             >
               <EyeOff className="h-3 w-3" />
@@ -161,7 +161,7 @@ export default function ShadowCard({
               variant="outline"
               size="sm"
               onClick={() => onStatusChange(profile.id, "deleted")}
-              className="border-foreground/10 text-foreground/40 hover:text-red-600 dark:hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5"
+              className="border-foreground/10 text-foreground/55 hover:text-red-600 dark:hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/5"
               title="Mark as deleted"
             >
               <Trash2 className="h-3 w-3" />
@@ -174,7 +174,7 @@ export default function ShadowCard({
               variant="outline"
               size="sm"
               onClick={() => onStatusChange(profile.id, "active")}
-              className="border-foreground/10 text-foreground/40 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5"
+              className="border-foreground/10 text-foreground/55 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5"
               title="Restore to active"
             >
               <RotateCcw className="h-3 w-3" />
@@ -190,7 +190,7 @@ export default function ShadowCard({
               setConfirmDelete(false);
               onDelete(profile.id);
             }}
-            className="border-red-500/50 text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 font-mono text-[10px] uppercase tracking-wider gap-1 px-2"
+            className="border-red-500/50 text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 font-mono text-xs gap-1 px-2"
             title="Confirm permanent deletion"
           >
             <AlertTriangle className="h-3 w-3" />
@@ -202,7 +202,7 @@ export default function ShadowCard({
             size="sm"
             onClick={() => setConfirmDelete(true)}
             onBlur={() => setConfirmDelete(false)}
-            className="border-foreground/10 text-foreground/40 hover:text-red-500 hover:border-red-500/40 hover:bg-red-500/5"
+            className="border-foreground/10 text-foreground/55 hover:text-red-500 hover:border-red-500/40 hover:bg-red-500/5"
             title="Remove permanently"
           >
             <X className="h-3 w-3" />
