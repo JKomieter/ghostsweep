@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { Fingerprint, Activity, ShieldAlert, ChevronRight } from "lucide-react";
+import { Fingerprint, Activity, ShieldAlert, ChevronRight, CircleHelp } from "lucide-react";
 import Link from "next/link";
 
 import RiskRadar from "./risk-radar";
@@ -49,6 +49,7 @@ const ACTIVE_STATUSES: ScanStatus[] = ["starting", "scanning", "processing"];
 export default function IdentityShadowClient() {
   const { openPaywall } = usePaywall();
   const [activeScanId, setActiveScanId] = useState<string | null>(null);
+  const [guideOpen, setGuideOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Derive scanning state from poll data
@@ -224,7 +225,7 @@ export default function IdentityShadowClient() {
   return (
     <div className="p-4 md:p-8 min-h-[calc(100vh-3.5rem)]">
       {/* Onboarding guidance modal for first-time visitors */}
-      <ShadowOnboardingModal />
+      <ShadowOnboardingModal open={guideOpen} onOpenChange={setGuideOpen} />
 
       {/* Scanline overlay when scanning */}
       {isScanning && (
@@ -235,8 +236,8 @@ export default function IdentityShadowClient() {
 
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/5">
               <Fingerprint className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             </div>
@@ -248,6 +249,15 @@ export default function IdentityShadowClient() {
                 Ghost accounts & exposure map
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => setGuideOpen(true)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground/30 hover:text-foreground/70 hover:bg-foreground/5 transition"
+              aria-label="How Identity Shadow works"
+              title="How Identity Shadow works"
+            >
+              <CircleHelp className="h-4 w-4" />
+            </button>
           </div>
           <ScanButton
             isScanning={isScanning}
