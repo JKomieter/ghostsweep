@@ -21,6 +21,9 @@ const STATIC_PAGES: StaticPage[] = [
     { path: '/home/how-it-works', changeFrequency: 'monthly', priority: 0.85 },
     { path: '/home/security', changeFrequency: 'monthly', priority: 0.85 },
 
+    // --- Company pages ---
+    { path: '/about', changeFrequency: 'yearly', priority: 0.6 },
+
     // --- Content pages ---
     { path: '/home/blogs', changeFrequency: 'weekly', priority: 0.7 },
 

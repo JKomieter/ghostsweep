@@ -12,8 +12,6 @@ import {
     EyeOff,
     ShieldCheck,
     Fingerprint,
-    Instagram,
-    Music2,
     ScanSearch,
     Search,
     Trash2,
@@ -31,6 +29,7 @@ import { useState, useEffect, type FormEvent } from "react";
 import { GmailLogo, OutLookLogo } from "@/svgs";
 import TeaserScan from "./teaser-scan";
 import ProductDemo from "./product-demo";
+import SiteFooter from "./site-footer";
 import { CHECKOUT_REASSURANCE, FREE_PLAN, PAID_PLANS } from "@/lib/plans";
 
 const SIGNUP_HREF = "/login?mode=signup";
@@ -980,12 +979,18 @@ function FounderSection() {
                     <div className="flex-1 text-center md:text-left">
                         <span className="text-5xl text-emerald-500/50 font-serif leading-none select-none">&ldquo;</span>
                         <blockquote className="text-xl md:text-2xl font-light text-foreground/85 leading-relaxed mb-6 -mt-4">
-                            I built GhostSweep because your digital identity shouldn't be someone else's
-                            business model. Every forgotten account is a risk. This tool exists to give
-                            that power back to you.
+                            In 2023, a sketchy online store I'd forgotten about led to someone trying to
+                            use my credit card. When I checked, I had 15+ forgotten shopping accounts
+                            alone. I built GhostSweep so nobody has to find out the hard way.
                         </blockquote>
                         <p className="font-semibold text-foreground">Joel Komieter</p>
                         <p className="text-sm text-foreground/60">Founder & Engineer</p>
+                        <Link
+                            href="/about"
+                            className="mt-4 inline-block text-sm text-emerald-700 dark:text-emerald-400 font-medium hover:underline"
+                        >
+                            Read my story &rarr;
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -1088,44 +1093,7 @@ export default function HomePageClient({ latestBlogs }: { latestBlogs?: React.Re
             {latestBlogs}
             <FinalCTA />
 
-            <footer className="border-t border-foreground/10 py-12 bg-foreground/2">
-                <div className="mx-auto max-w-5xl px-6">
-                    <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-                        <span className="text-foreground font-semibold tracking-tight">GhostSweep</span>
-
-                        <p className="text-xs text-foreground/55">
-                            © {new Date().getFullYear()} GhostSweep Inc. Privacy-first.
-                        </p>
-
-                        <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-foreground/60">
-                            <Link href="/home/privacy" className="hover:text-foreground transition">Privacy</Link>
-                            <Link href="/home/terms" className="hover:text-foreground transition">Terms</Link>
-                            <Link href="/home/security" className="hover:text-foreground transition">Security</Link>
-                            <Link href="mailto:support@ghostsweep.com" className="hover:text-foreground transition">Support</Link>
-                            <div className="flex items-center gap-4 border-l border-foreground/10 pl-6">
-                                <Link
-                                    href="https://www.instagram.com/ghost_sweep/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label="GhostSweep on Instagram"
-                                    className="hover:text-foreground transition"
-                                >
-                                    <Instagram className="h-4 w-4" />
-                                </Link>
-                                <Link
-                                    href="https://www.tiktok.com/@ghostsweep_?lang=en"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label="GhostSweep on TikTok"
-                                    className="hover:text-foreground transition"
-                                >
-                                    <Music2 className="h-4 w-4" />
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <SiteFooter />
 
             {/* Mobile spacer so the sticky CTA never covers the footer */}
             <div className="h-24 md:hidden" />
