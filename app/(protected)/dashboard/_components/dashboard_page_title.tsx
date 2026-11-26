@@ -12,6 +12,7 @@ import { useState } from "react";
 import * as pixel from "@/lib/meta-pixels";
 import { OutLookLogo, GmailLogo } from "@/svgs";
 import { usePaywall } from "./upgrade_paywall";
+import { trackFunnel } from "@/lib/analytics";
 
 const EmailIcon = ({ type }: { type: "gmail" | "outlook" | null }) => {
     if (type === "gmail") return <GmailLogo className="h-3.5 w-3.5" />;
@@ -231,6 +232,11 @@ export default function DashboardTitle() {
                 } : undefined,
             });
 
+            trackFunnel({
+                name: "sweep_completed",
+                props: { accounts_found: latestSweep.servicesFound || 0, breaches_found: latestSweep.breachesFound || 0 },
+            });
+
             pixel.event("Search", {
                 content_category: "email_scan",
                 accounts_found: latestSweep.servicesFound || 0,
@@ -383,6 +389,7 @@ export default function DashboardTitle() {
                 }
             }
 
+            trackFunnel({ name: "sweep_started", props: { provider: selectedProvider } });
             refetchLatestSweep();
             setSweepDialogOpen(false);
         } catch (error) {
