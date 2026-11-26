@@ -1,5 +1,6 @@
 
 import { createClient } from "@/utils/supabase/server";
+import { FREE_NEWSLETTER_PREVIEW } from "@/lib/plans";
 import { getUserPlan } from "@/lib/entitlements";
 import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
@@ -74,9 +75,8 @@ export async function GET(req: NextRequest) {
   // Free tier: a fixed preview of the noisiest senders, chosen across ALL statuses (including
   // unsubscribed/deleted) so unsubscribing or deleting can't pull hidden newsletters into view.
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 10;
   const previewIds = isFree
-    ? pickPreviewIds(allRelevantServices, PREVIEW_LIMIT, {
+    ? pickPreviewIds(allRelevantServices, FREE_NEWSLETTER_PREVIEW, {
         id: (us) => us.id,
         compare: (a, b) => (b.email_count || 0) - (a.email_count || 0),
       })
@@ -169,7 +169,7 @@ export async function GET(req: NextRequest) {
     plan,
     blurred: isFree,
     previewOnly: isFree, // New flag to indicate limited data
-    previewCount: isFree ? PREVIEW_LIMIT : null,
+    previewCount: isFree ? FREE_NEWSLETTER_PREVIEW : null,
     totalCount, // Count of returned items (filtered)
     activeCount, // Count of all active items
     unsubscribedCount, // Count of all unsubscribed items

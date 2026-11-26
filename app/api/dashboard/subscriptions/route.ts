@@ -1,5 +1,6 @@
 
 import { createClient } from "@/utils/supabase/server";
+import { FREE_SUBSCRIPTION_PREVIEW } from "@/lib/plans";
 import { getUserPlan } from "@/lib/entitlements";
 import { newestFirst, pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
@@ -143,9 +144,8 @@ export async function GET(req: NextRequest) {
 
   // Free tier: limit data returned
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 5;
   
-  // Free tier: a fixed preview of PREVIEW_LIMIT services, chosen across ALL statuses (active,
+  // Free tier: a fixed preview of FREE_SUBSCRIPTION_PREVIEW services, chosen across ALL statuses (active,
   // canceled, kept) so canceling or deleting can't pull hidden subscriptions into view.
   let previewIds: Set<string> | null = null;
   if (isFree) {
@@ -154,7 +154,7 @@ export async function GET(req: NextRequest) {
       .select("id, service_name, detected_at")
       .eq("user_id", user.id)
       .eq("type", "subscription");
-    previewIds = pickPreviewIds(universe || [], PREVIEW_LIMIT, {
+    previewIds = pickPreviewIds(universe || [], FREE_SUBSCRIPTION_PREVIEW, {
       id: (row) => row.id,
       group: serviceKey,
       compare: (a, b) => newestFirst(a.detected_at, b.detected_at),
@@ -196,7 +196,7 @@ export async function GET(req: NextRequest) {
     plan,
     blurred: isFree,
     previewOnly: isFree,
-    previewCount: isFree ? PREVIEW_LIMIT : null,
+    previewCount: isFree ? FREE_SUBSCRIPTION_PREVIEW : null,
     // Real totals for everyone (computed over all active subscriptions, not just the preview)
     monthlyTotal,
     annualTotal,
