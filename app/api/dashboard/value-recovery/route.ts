@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { FREE_VALUE_PREVIEW } from "@/lib/plans";
 import { getUserPlan } from "@/lib/entitlements";
 import { newestFirst, pickPreviewIds } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
@@ -61,9 +62,8 @@ export async function GET(req: NextRequest) {
 
   // Free tier: preview slice only, with codes/links locked
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 10;
 
-  // Free tier: a fixed preview of the newest PREVIEW_LIMIT items, chosen across ALL types and statuses
+  // Free tier: a fixed preview of the newest FREE_VALUE_PREVIEW items, chosen across ALL types and statuses
   // so recovering/ignoring items can't pull hidden ones (or their codes) into view.
   let previewIds: Set<string> | null = null;
   let freeRevealId: string | null = null;
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
       .in("type", allowedTypes)
       .in("status", allowedStatuses);
     const rows = universe || [];
-    previewIds = pickPreviewIds(rows, PREVIEW_LIMIT, {
+    previewIds = pickPreviewIds(rows, FREE_VALUE_PREVIEW, {
       id: (v) => v.id,
       compare: (a, b) => newestFirst(a.detected_at, b.detected_at),
     });
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
     plan,
     blurred: isFree,
     previewOnly: isFree,
-    previewCount: isFree ? PREVIEW_LIMIT : null,
+    previewCount: isFree ? FREE_VALUE_PREVIEW : null,
     // Real totals for everyone (computed over all items, not just the preview) — seeing the full
     // amount is what makes the upgrade worth it; paying unlocks the rest of the list and recovery
     totalValue,

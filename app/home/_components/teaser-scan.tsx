@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ServiceLogo from "@/components/service-logo";
+import { trackFunnel } from "@/lib/analytics";
+import { saveTeaserHandoff } from "@/lib/teaser-handoff";
 
 // ─── Types ─────────────────────────────────────────────────────
 type TeaserProfile = {
@@ -146,6 +148,14 @@ export default function TeaserScan({
     }
   }, [status]);
 
+  // Record each finished scan once (the stream can report "done" more than one way)
+  const trackedDoneRef = useRef(false);
+  useEffect(() => {
+    if (status !== "done" || trackedDoneRef.current) return;
+    trackedDoneRef.current = true;
+    trackFunnel({ name: "teaser_scan_completed", props: { profiles_found: foundCount } });
+  }, [status, foundCount]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -272,6 +282,8 @@ export default function TeaserScan({
     abortRef.current = controller;
 
     setStatus("scanning");
+    trackedDoneRef.current = false;
+    trackFunnel({ name: "teaser_scan_started", props: { autostart: overrideUsername !== undefined } });
     setProgress(0);
     setResults([]);
     setFoundCount(0);
@@ -338,6 +350,18 @@ export default function TeaserScan({
   const loginHref = email.trim()
     ? `/login?email=${encodeURIComponent(email.trim())}`
     : "/login?mode=signup";
+
+  // Keep what this scan found so the dashboard can pick it up after sign-up
+  const onSignupClick = (placement: string) => {
+    trackFunnel({ name: "teaser_signup_clicked", props: { profiles_found: foundCount, placement } });
+    if (username.trim() && foundCount > 0) {
+      saveTeaserHandoff({
+        username: username.trim(),
+        profilesFound: foundCount,
+        sites: results.slice(0, 5).map((p) => p.site_name),
+      });
+    }
+  };
 
   return (
     <div className="w-full" ref={sectionRef}>
@@ -478,6 +502,7 @@ export default function TeaserScan({
                       <div>
                         <Link
                           href={loginHref}
+                          onClick={() => onSignupClick("blur_overlay")}
                           className="group inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                         >
                           Sign up to reveal all
@@ -502,6 +527,7 @@ export default function TeaserScan({
                   </p>
                   <Link
                     href={loginHref}
+                    onClick={() => onSignupClick("rate_limited")}
                     className="group inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                   >
                     Sign up free
@@ -539,6 +565,7 @@ export default function TeaserScan({
                   </button>
                   <Link
                     href={loginHref}
+                    onClick={() => onSignupClick("results_footer")}
                     className="group inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition"
                   >
                     Get full access

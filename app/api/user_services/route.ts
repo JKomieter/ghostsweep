@@ -1,11 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
-import { isPaidPlan } from "@/lib/plans";
+import { isPaidPlan, FREE_ACCOUNT_PREVIEW } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { type NextRequest, NextResponse } from "next/server";
 import { containsPattern } from "@/utils/postgrest-filter";
 
 const PAGE_SIZE = 50;
-const FREE_ACCOUNT_LIMIT = 10;
 
 const ALLOWED_STATUSES = new Set([
     "drafted",
@@ -231,8 +230,8 @@ export async function GET(request: NextRequest) {
         // ===========================
         // 🔥 FREE TIER GATING
         // ===========================
-        const isGated = !isPro && totalCount > FREE_ACCOUNT_LIMIT;
-        // const effectiveLimit = isPro ? to : Math.min(to, FREE_ACCOUNT_LIMIT - 1);
+        const isGated = !isPro && totalCount > FREE_ACCOUNT_PREVIEW;
+        // const effectiveLimit = isPro ? to : Math.min(to, FREE_ACCOUNT_PREVIEW - 1);
 
         let query = supabase
             .from("user_services")
@@ -263,7 +262,7 @@ export async function GET(request: NextRequest) {
             query = query.range(from, to);
         } else {
             // Free users: only show first 10 accounts
-            query = query.range(0, FREE_ACCOUNT_LIMIT - 1);
+            query = query.range(0, FREE_ACCOUNT_PREVIEW - 1);
         }
 
         const { data: userServices, error } = await query;
@@ -321,13 +320,13 @@ export async function GET(request: NextRequest) {
             userServices: filteredServices,
             total: totalCount,
             shownCount: filteredServices.length,
-            hiddenCount: isGated ? totalCount - FREE_ACCOUNT_LIMIT : 0,
+            hiddenCount: isGated ? totalCount - FREE_ACCOUNT_PREVIEW : 0,
             page,
             pageSize: PAGE_SIZE,
             hasMore: isPro ? (typeof totalCount === "number" ? to + 1 < totalCount : false) : false,
             gated: isGated,
             currentPlan,
-            freeLimit: FREE_ACCOUNT_LIMIT,
+            freeLimit: FREE_ACCOUNT_PREVIEW,
         });
     } catch (err) {
         console.error("Error in /api/user_services:", err);

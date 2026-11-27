@@ -38,6 +38,7 @@ import {
     Download,
 } from "lucide-react";
 import Link from "next/link";
+import EmailPreferencesSection from "./_components/email-preferences-section";
 import { fetchCurrentUser } from "@/hooks/use-get-user";
 import ConnectAccountModal from "./_components/connect-account-modal";
 import ChangePassword from "./_components/change-password";
@@ -547,6 +548,8 @@ export default function SettingsPage() {
                         </Button>
                     </div>
                 </SettingsSection>
+
+                <EmailPreferencesSection />
 
                 {/* Privacy & Data Section */}
                 <SettingsSection

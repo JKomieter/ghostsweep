@@ -13,6 +13,7 @@ const links = [
     { href: "/home/breach_check", label: "Breach checker" },
     { href: "/home#pricing", label: "Pricing", anchor: true },
     { href: "/home#faq", label: "FAQ", anchor: true },
+    { href: "/about", label: "About" },
 ];
 
 function NavLinks({

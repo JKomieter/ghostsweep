@@ -1,5 +1,6 @@
 
 import { createClient } from "@/utils/supabase/server";
+import { FREE_ACCOUNT_PREVIEW } from "@/lib/plans";
 import { getUserPlan } from "@/lib/entitlements";
 import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { compareRisk, isAccountRow, unusedCutoff } from "@/lib/account-risk";
@@ -117,10 +118,9 @@ export async function GET(req: NextRequest) {
   // Free tier: a fixed preview of the riskiest accounts, chosen across ALL accounts (any status,
   // whitelisted or not) so deleting/whitelisting can't pull hidden accounts into view.
   const isFree = plan === "free";
-  const PREVIEW_LIMIT = 10;
   const byRisk = compareRisk<(typeof allAccounts)[number]>(breachedServiceIds);
   const previewIds = isFree
-    ? pickPreviewIds(allAccounts, PREVIEW_LIMIT, { id: (us) => us.id, compare: byRisk })
+    ? pickPreviewIds(allAccounts, FREE_ACCOUNT_PREVIEW, { id: (us) => us.id, compare: byRisk })
     : null;
 
   // 4. Apply View Filters (Status & Category)
@@ -248,7 +248,7 @@ export async function GET(req: NextRequest) {
     plan,
     blurred: isFree,
     previewOnly: isFree, // New flag to indicate limited data
-    previewCount: isFree ? PREVIEW_LIMIT : null,
+    previewCount: isFree ? FREE_ACCOUNT_PREVIEW : null,
     privacyScore,
     totalCount: totalCount || 0,
     breachedCount: breachedCount || 0,

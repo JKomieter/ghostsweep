@@ -24,6 +24,7 @@ import HCaptcha from '@hcaptcha/react-hcaptcha'
 // ✅ add your supabase client import (adjust path to your project)
 import { consumePendingPlanPath, rememberPendingPlan } from "@/lib/pending-plan";
 import { PASSWORD_RULES } from "@/utils/password-policy";
+import { trackFunnel } from "@/lib/analytics";
 
 type Mode = "signin" | "signup" | "confirm";
 
@@ -49,11 +50,12 @@ function OAuthDivider() {
     );
 }
 
-function ContinueWithGoogleButton({ label }: { label: string }) {
+function ContinueWithGoogleButton({ label, intent }: { label: string; intent: "signin" | "signup" }) {
     const [loading, setLoading] = useState(false);
 
     const handleGoogle = async () => {
         setLoading(true);
+        trackFunnel({ name: "google_auth_started", props: { intent } });
         try {
             // Started server-side so the PKCE verifier and session cookies are HttpOnly
             window.location.href = "/api/auth/google";
@@ -144,7 +146,7 @@ function SignInForm({
     return (
         <div className="space-y-5">
             {/* ✅ Google OAuth */}
-            <ContinueWithGoogleButton label="Continue with Google" />
+            <ContinueWithGoogleButton label="Continue with Google" intent="signin" />
             <OAuthDivider />
 
             {/* ✅ Error Message Display */}
@@ -372,6 +374,7 @@ function SignUpForm({
             if (!result.success) {
                 setErrorMessage(result.error || "An error occurred during signup. Please try again.");
             } else {
+                trackFunnel({ name: "signup_submitted", props: { method: "email" } });
                 setMode("confirm");
             }
         } catch (error) {
@@ -387,7 +390,7 @@ function SignUpForm({
     return (
         <div className="space-y-5">
             {/* ✅ Google OAuth for signup too */}
-            <ContinueWithGoogleButton label="Sign up with Google" />
+            <ContinueWithGoogleButton label="Sign up with Google" intent="signup" />
             <OAuthDivider />
 
             {/* ✅ Error Message Display */}
@@ -755,6 +758,22 @@ function LoginContent() {
                                 </>
                             )}
                         </div>
+
+                        {/* The full trust panel is desktop-only, so phones get the short version here */}
+                        <ul className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-foreground/60 lg:hidden">
+                            <li className="flex items-center gap-1.5">
+                                <Shield className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                Read-only inbox access
+                            </li>
+                            <li className="flex items-center gap-1.5">
+                                <Lock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                Disconnect anytime
+                            </li>
+                            <li className="flex items-center gap-1.5">
+                                <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                CASA Tier 2 verified
+                            </li>
+                        </ul>
 
                         <p className="mt-4 text-[11px] text-center text-foreground/35">
                             Protected with OAuth. GhostSweep never sees your email password.

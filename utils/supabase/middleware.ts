@@ -13,6 +13,7 @@ const publicRoutes = [
     "/api/signout", // must run even with an expired session, to clear cookies and browser storage
     "/help",
     "/home",
+    "/about", // public founder story page
     "/reset_password",
     "/link_expired",
     "/api/reset_password",

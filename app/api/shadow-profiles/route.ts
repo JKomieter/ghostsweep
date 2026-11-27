@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { isPaidPlan } from "@/lib/plans";
+import { isPaidPlan, FREE_SHADOW_PROFILE_PREVIEW } from "@/lib/plans";
 import { getUserPlan, resolvePlan } from "@/lib/entitlements";
 import { pickPreviewIds, upgradeRequired } from "@/lib/free-preview";
 import { NextRequest, NextResponse } from "next/server";
@@ -174,12 +174,11 @@ export async function GET() {
 
     const isPremium =
       isPaidPlan(resolvePlan(plan));
-    const FREE_TIER_LIMIT = 5;
     // Free tier: a fixed preview of the highest-risk profiles (any status), with a stable tie-break
     // so the visible set never shifts between requests
     const previewIds = isPremium
       ? null
-      : pickPreviewIds(enrichedProfiles, FREE_TIER_LIMIT, {
+      : pickPreviewIds(enrichedProfiles, FREE_SHADOW_PROFILE_PREVIEW, {
           id: (p) => String(p.id),
           compare: (a, b) => (Number(b.risk_level) || 0) - (Number(a.risk_level) || 0),
         });
@@ -188,7 +187,7 @@ export async function GET() {
       : enrichedProfiles;
     const hiddenCount = isPremium
       ? 0
-      : Math.max(0, enrichedProfiles.length - FREE_TIER_LIMIT);
+      : Math.max(0, enrichedProfiles.length - FREE_SHADOW_PROFILE_PREVIEW);
 
     return NextResponse.json({
       profiles: visibleProfiles,

@@ -20,6 +20,18 @@ export function scanCreditsLabel(count: number): string {
 /** Number of discovered accounts a free user can see before hitting the paywall. */
 export const FREE_ACCOUNT_PREVIEW = 10;
 
+/** Gift cards and rewards a free user can see (only the most valuable one shows its code). */
+export const FREE_VALUE_PREVIEW = 10;
+
+/** Newsletters a free user can see. */
+export const FREE_NEWSLETTER_PREVIEW = 10;
+
+/** Subscriptions a free user can see. */
+export const FREE_SUBSCRIPTION_PREVIEW = 5;
+
+/** Shadow profiles a free user can see. */
+export const FREE_SHADOW_PROFILE_PREVIEW = 5;
+
 // Raw prices; the display strings below are built from these so nothing can drift
 const BUSTER_PRICE = 12.99;
 const PRO_MONTHLY_PRICE = 7.99;

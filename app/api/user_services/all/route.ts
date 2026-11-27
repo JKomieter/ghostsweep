@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { isPaidPlan } from "@/lib/plans";
+import { isPaidPlan, FREE_ACCOUNT_PREVIEW } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { createClient } from "@/utils/supabase/server";
-
-const FREE_LIMIT = 10;
 
 export async function GET() {
     const supabase = await createClient();
@@ -35,7 +33,7 @@ export async function GET() {
     }
 
     const isPro = isPaidPlan(resolvePlan(sub));
-    const limit = isPro ? undefined : FREE_LIMIT;
+    const limit = isPro ? undefined : FREE_ACCOUNT_PREVIEW;
 
     // 3) Fetch user services (limit for Free)
     let query = supabase
@@ -140,7 +138,7 @@ export async function GET() {
             userServices,
             total,
             gated: !isPro, // optional but helpful for frontend
-            limit: !isPro ? FREE_LIMIT : null, // optional
+            limit: !isPro ? FREE_ACCOUNT_PREVIEW : null, // optional
         },
         { status: 200 },
     );

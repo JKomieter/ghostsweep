@@ -3,13 +3,15 @@ import { Ghost } from "lucide-react";
 import UnsubscribeClient from "../_components/unsubscribe-client";
 
 type PageProps = {
-    searchParams?: Promise<{ email?: string; list?: string }>;
+    searchParams?: Promise<{ email?: string; list?: string; token?: string }>;
 };
 
 export default async function UnsubscribePage({ searchParams }: PageProps) {
     const params = await searchParams;
     const email = params?.email || "";
     const list = params?.list || "product-updates";
+    // Signed link from one of our emails: unsubscribes that account in one click
+    const token = params?.token || "";
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-background px-6">
@@ -33,7 +35,7 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
                         notifications.
                     </p>
 
-                    <UnsubscribeClient initialEmail={email} initialList={list} />
+                    <UnsubscribeClient initialEmail={email} initialList={list} token={token} />
 
                     <p className="mt-6 text-[11px] text-foreground/50 leading-relaxed">
                         If this wasn&apos;t you, you can safely ignore this page. Your

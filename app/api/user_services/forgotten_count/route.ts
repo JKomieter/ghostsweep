@@ -1,11 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
-import { isPaidPlan } from "@/lib/plans";
+import { isPaidPlan, FREE_ACCOUNT_PREVIEW } from "@/lib/plans";
 import { resolvePlan } from "@/lib/entitlements";
 import { type NextRequest, NextResponse } from "next/server";
 import { isForgottenService } from "@/utils/is_forgotten_service";
 import { containsPattern } from "@/utils/postgrest-filter";
-
-const FREE_ACCOUNT_LIMIT = 10;
 
 const ALLOWED_STATUSES = new Set([
     "drafted",
@@ -218,7 +216,7 @@ export async function GET(request: NextRequest) {
 
         // Apply free tier limit if needed
         if (!isPro) {
-            query = query.range(0, FREE_ACCOUNT_LIMIT - 1);
+            query = query.range(0, FREE_ACCOUNT_PREVIEW - 1);
         }
 
         const { data: userServices, error } = await query;
