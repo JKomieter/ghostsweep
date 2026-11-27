@@ -6,6 +6,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { resolvePlan } from "@/lib/entitlements";
 import { RECOVERABLE_VALUE_TYPES, claimableCents } from "@/lib/found-values";
 import { CHECKOUT_REASSURANCE, FREE_ACCOUNT_PREVIEW, PAID_PLANS, isPaidPlan } from "@/lib/plans";
+import { optedOutUserIds, unsubscribeLinks } from "@/lib/marketing-email";
 
 // Post-scan email. Called by a Supabase Database Webhook on sweep_events UPDATE, with the shared
 // x-ghostsweep-secret header. Sends once, when a sweep moves to "completed".
@@ -71,6 +72,27 @@ async function lookupUpgradeContext(userId: string | null): Promise<{ isFree: bo
     }
 }
 
+/**
+ * Unsubscribe links when this user may get promotional content (upgrade pitch, referral offer),
+ * or null when they opted out, the lookup failed or links can't be signed. The scan results
+ * themselves are transactional and always send.
+ */
+async function promoLinks(userId: string | null, email: string) {
+    if (!userId) return null;
+    const links = unsubscribeLinks(userId);
+    if (!links) {
+        console.error("EMAIL_UNSUBSCRIBE_SECRET is not set; sending the post-scan email without promotional content");
+        return null;
+    }
+    try {
+        const optedOut = await optedOutUserIds(createAdminClient(), [{ userId, email }]);
+        return optedOut.has(userId) ? null : links;
+    } catch (err) {
+        console.error("Post-scan email opt-out check failed:", err);
+        return null;
+    }
+}
+
 export async function POST(req: NextRequest) {
     if (!secretMatches(req.headers.get("x-ghostsweep-secret"), process.env.FUNCTION_SECRET)) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -85,10 +107,13 @@ export async function POST(req: NextRequest) {
     const breaches = sweep.breaches_found ?? 0;
     const dashboard = `${SITE_URL}/dashboard`;
     const share = `${SITE_URL}/dashboard?share=1`;
-    const settings = `${SITE_URL}/dashboard/settings`;
+    const settings = `${SITE_URL}/dashboard/settings#email`;
     const billing = `${SITE_URL}/dashboard/billing`;
 
-    const { isFree, claimable } = await lookupUpgradeContext(sweep.user_id);
+    const [{ isFree, claimable }, promo] = await Promise.all([
+        lookupUpgradeContext(sweep.user_id),
+        promoLinks(sweep.user_id, sweep.email),
+    ]);
     const money = claimable > 0 ? `$${claimable.toLocaleString("en-US")}` : "";
 
     const headline = found > 0
@@ -102,7 +127,7 @@ export async function POST(req: NextRequest) {
     const moneyLine = money ? `It also found ${money} in gift cards, rewards and refunds you can still claim.` : "";
 
     // Free users only see a preview, so spell out what unlocking gets them
-    const showUpgrade = isFree && (found > FREE_ACCOUNT_PREVIEW || claimable > 0);
+    const showUpgrade = Boolean(promo) && isFree && (found > FREE_ACCOUNT_PREVIEW || claimable > 0);
     const upgradeLead = found > FREE_ACCOUNT_PREVIEW
         ? `Your free scan shows the ${FREE_ACCOUNT_PREVIEW} riskiest. Unlock all ${found.toLocaleString("en-US")}`
         : "Unlock everything your scan found";
@@ -114,11 +139,16 @@ export async function POST(req: NextRequest) {
         `${headline}.${breachLine ? ` ${breachLine}` : ""}${moneyLine ? ` ${moneyLine}` : ""}`,
         `See what to delete first: ${dashboard}`,
         ...(showUpgrade ? ["", upgradeLine, `${upgradeOffer} ${billing}`, CHECKOUT_REASSURANCE] : []),
-        "",
-        "Know someone with an inbox full of old sign-ups? Share your ghost-account count. Friends get 50% off and you get a free month:",
-        share,
+        ...(promo
+            ? [
+                  "",
+                  "Know someone with an inbox full of old sign-ups? Share your ghost-account count. Friends get 50% off and you get a free month:",
+                  share,
+              ]
+            : []),
         "",
         `Email settings: ${settings}`,
+        ...(promo ? [`Unsubscribe from tips and offers: ${promo.pageUrl}`] : []),
     ].join("\n");
 
     const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#f6f7f9;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#111">
@@ -134,15 +164,22 @@ ${showUpgrade ? `<div style="margin-top:24px;padding:16px;border-radius:10px;bor
 <a href="${billing}" style="font-size:14px;font-weight:600;color:#047857">Unlock everything →</a>
 <p style="margin:10px 0 0;font-size:12px;color:#6b7280">${escapeHtml(CHECKOUT_REASSURANCE)}</p>
 </div>` : ""}
-<div style="margin-top:24px;padding:16px;border-radius:10px;background:#ecfdf5">
+${promo ? `<div style="margin-top:24px;padding:16px;border-radius:10px;background:#ecfdf5">
 <p style="margin:0 0 6px;font-size:15px;font-weight:600">Share your ghost-account count 👻</p>
 <p style="margin:0 0 10px;font-size:14px;color:#374151">Friends get 50% off. You get a free month for each one who upgrades.</p>
 <a href="${share}" style="font-size:14px;font-weight:600;color:#047857">Get my share card →</a>
-</div>
-<p style="margin:24px 0 0;font-size:12px;color:#6b7280">You're getting this because you ran a GhostSweep scan. <a href="${settings}" style="color:#6b7280">Email settings</a></p>
+</div>` : ""}
+<p style="margin:24px 0 0;font-size:12px;color:#6b7280">You're getting this because you ran a GhostSweep scan. <a href="${settings}" style="color:#6b7280">Email settings</a>${promo ? ` · <a href="${promo.pageUrl}" style="color:#6b7280">Unsubscribe from tips and offers</a>` : ""}</p>
 </td></tr></table></body></html>`;
 
-    const { error } = await resend.emails.send({ from: FROM, to: sweep.email, subject, text, html });
+    const { error } = await resend.emails.send({
+        from: FROM,
+        to: sweep.email,
+        subject,
+        text,
+        html,
+        ...(promo ? { headers: promo.headers } : {}),
+    });
     if (error) {
         console.error("Post-scan email failed:", sweep.id, error);
         return NextResponse.json({ error: "Send failed" }, { status: 502 });

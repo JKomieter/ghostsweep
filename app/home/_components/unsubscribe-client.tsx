@@ -6,9 +6,11 @@ import { toast } from "sonner";
 type Props = {
   initialEmail?: string;
   initialList?: string;
+  /** Signed token from an email link. When present, no email address is needed. */
+  token?: string;
 };
 
-export default function UnsubscribeClient({ initialEmail = "", initialList = "product-updates" }: Props) {
+export default function UnsubscribeClient({ initialEmail = "", initialList = "product-updates", token = "" }: Props) {
   const [email, setEmail] = useState(initialEmail);
   const [list] = useState(initialList);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,18 +21,24 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
     e.preventDefault();
     setError(null);
 
-    if (!email) {
+    if (!token && !email) {
       setError("Please enter your email address.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/unsubscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, list }),
-      });
+      const res = token
+        ? await fetch("/api/unsubscribe/one-click", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          })
+        : await fetch("/api/unsubscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, list }),
+          });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -55,9 +63,11 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
           You&apos;re unsubscribed
         </h2>
         <p className="mt-1 text-xs text-emerald-700/80 dark:text-emerald-300/80">
-          {email
-            ? `We’ve unsubscribed ${email} from GhostSweep updates for this email type.`
-            : "You’re unsubscribed from GhostSweep updates for this email type."}
+          {token
+            ? "You won’t get GhostSweep tips and offers any more. You can turn them back on in Settings."
+            : email
+              ? `We’ve unsubscribed ${email} from GhostSweep updates for this email type.`
+              : "You’re unsubscribed from GhostSweep updates for this email type."}
         </p>
         <p className="mt-2 text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
           You may still receive important account or security messages if you
@@ -69,6 +79,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+      {!token && (
       <div className="space-y-1.5">
         <label
           htmlFor="email"
@@ -85,6 +96,7 @@ export default function UnsubscribeClient({ initialEmail = "", initialList = "pr
           className="w-full rounded-lg border border-foreground/5 bg-foreground/2 px-3 py-2 text-sm text-foreground placeholder:text-foreground/65 outline-none focus-visible:ring-2 focus-visible:ring-foreground/20"
         />
       </div>
+      )}
 
       {/* If you want multiple lists later, you can expand this */}
       <input type="hidden" value={list} readOnly />
